@@ -83,7 +83,7 @@
 					advertised="true" size="1">
 				</SERVICE>
 				<SERVICE name='XMLParserTest' type='queue'/>
-				<SERVICE name='TOPIC' type='topic'/>
+				<SERVICE name='JAVA_Topic' type='topic'/>
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>

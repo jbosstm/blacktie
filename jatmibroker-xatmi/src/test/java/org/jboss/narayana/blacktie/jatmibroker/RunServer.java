@@ -380,4 +380,13 @@ public class RunServer {
 	public String getServiceNameTPGetRplyTPNOBLOCK() {
 		return "TestOne";
 	}
+	
+	public void tpadvertiseTestTopic() throws ConnectionException {
+		this.server.tpadvertise(getServiceNameTestTopic(), 
+				TPACallService.class.getName());
+	}
+	
+	public static String getServiceNameTestTopic() {
+		return "JAVA_Topic";
+	}
 }

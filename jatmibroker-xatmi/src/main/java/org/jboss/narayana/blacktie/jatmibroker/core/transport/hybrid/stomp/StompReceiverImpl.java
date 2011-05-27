@@ -46,13 +46,18 @@ public class StompReceiverImpl implements Receiver {
 	private boolean ignoreSingleReceipt;
 
 	public StompReceiverImpl(StompManagement management, String serviceName,
-			boolean conversational, Properties properties)
+			boolean conversational, String type, Properties properties)
 			throws ConnectionException, IOException {
 		this.management = management;
+		String qtype = "/queue/";
+		if (type != null) {
+			 qtype = "/" + type + "/";
+		}
+		
 		if (conversational) {
-			this.destinationName = "/queue/BTC_" + serviceName;
+			this.destinationName = qtype + "BTC_" + serviceName;
 		} else {
-			this.destinationName = "/queue/BTR_" + serviceName;
+			this.destinationName = qtype + "BTR_" + serviceName;
 		}
 
 		this.socket = management.connect();

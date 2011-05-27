@@ -110,8 +110,10 @@ public class TransportImpl implements Transport {
 		Sender toReturn = conversationalMap.get(serviceName);
 		if (toReturn == null) {
 			try {
+				String type = (String) properties.get(
+						"blacktie." + serviceName + ".type");
 				toReturn = new StompSenderImpl(momManagement, serviceName,
-						conversational, conversationalMap);
+						conversational, type, conversationalMap);
 				conversationalMap.put(serviceName, toReturn);
 			} catch (ConnectionException e) {
 				throw e;
@@ -157,8 +159,10 @@ public class TransportImpl implements Transport {
 		if (toReturn == null) {
 			try {
 				log.debug("Resolved destination");
+				String type = (String) properties.get(
+						"blacktie." + serviceName + ".type");
 				return new StompReceiverImpl(momManagement, serviceName,
-						conversational, properties);
+						conversational, type, properties);
 			} catch (ConnectionException e) {
 				throw e;
 			} catch (Throwable t) {
