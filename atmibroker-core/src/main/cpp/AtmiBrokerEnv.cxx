@@ -258,7 +258,7 @@ void AtmiBrokerEnv::destroy() {
 
 char*
 AtmiBrokerEnv::getTransportLibrary(char* serviceName) {
-	if (servers.size() != 0) {
+	if (servers.size() != 0 && serviceName != NULL) {
 		for (ServersInfo::iterator server = servers.begin(); server
 				!= servers.end(); server++) {
 			std::vector<ServiceInfo>* services = &(*server)->serviceVector;
@@ -276,7 +276,7 @@ AtmiBrokerEnv::getTransportLibrary(char* serviceName) {
 
 char*
 AtmiBrokerEnv::getServiceType(char* serviceName) {
-	if (servers.size() != 0) {
+	if (servers.size() != 0 && serviceName != NULL) {
 		for (ServersInfo::iterator server = servers.begin(); server
 				!= servers.end(); server++) {
 			std::vector<ServiceInfo>* services = &(*server)->serviceVector;
