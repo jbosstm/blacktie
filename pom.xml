@@ -111,6 +111,6 @@
 		<module>codeGeneration</module>
 		<module>integration-tests</module>
 		<module>docs</module>
-		<module>dist</module>
+		<module>blacktie</module>
 	</modules>
 </project>
