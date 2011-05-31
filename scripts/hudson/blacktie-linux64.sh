@@ -52,7 +52,7 @@ if [ "$?" != "0" ]; then
 fi
 
 # BUILD BLACKTIE
-cd $WORKSPACE/trunk/blacktie
+cd $WORKSPACE/trunk
 # THESE ARE SEPARATE SO WE DO NOT COPY THE OLD ARTIFACTS IF THE BUILD FAILS
 mvn clean
 if [ "$?" != "0" ]; then

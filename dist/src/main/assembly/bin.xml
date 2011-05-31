@@ -22,67 +22,75 @@
 		<format>tar.gz</format>
 		<format>zip</format>
 	</formats>
-	<moduleSets>
-		<moduleSet>
+	<dependencySets>
+		<dependencySet>
 			<includes>
-				<include>org.jboss.narayana.blacktie:btadmin
-				</include>
+				<include>org.jboss.narayana.blacktie:btadmin</include>
 			</includes>
-			<binaries>
-				<outputDirectory>lib/java</outputDirectory>
-				<unpack>false</unpack>
-			</binaries>
-		</moduleSet>
-		<moduleSet>
+			<useProjectArtifact>false</useProjectArtifact>
+			<unpack>false</unpack>
+			<outputDirectory>lib/java</outputDirectory>
+			<useTransitiveDependencies>true</useTransitiveDependencies>
+		</dependencySet>
+		<dependencySet>
 			<includes>
-				<include>org.jboss.narayana.blacktie:codeGeneration
-				</include>
+				<include>org.jboss.narayana.blacktie:codeGeneration</include>
 			</includes>
-			<binaries>
-				<outputDirectory>lib/java</outputDirectory>
-				<unpack>false</unpack>
-			</binaries>
-		</moduleSet>
-		<moduleSet>
+			<useProjectArtifact>false</useProjectArtifact>
+			<unpack>false</unpack>
+			<outputDirectory>lib/java</outputDirectory>
+			<useTransitiveDependencies>true</useTransitiveDependencies>
+		</dependencySet>
+		<dependencySet>
 			<includes>
 				<include>org.jboss.narayana.blacktie:jatmibroker-xatmi-client</include>
 			</includes>
-			<binaries>
-				<outputDirectory>lib/java</outputDirectory>
-				<unpack>false</unpack>
-			</binaries>
-		</moduleSet>
-		<moduleSet>
+			<useProjectArtifact>false</useProjectArtifact>
+			<unpack>false</unpack>
+			<outputDirectory>lib/java</outputDirectory>
+			<useTransitiveDependencies>true</useTransitiveDependencies>
+		</dependencySet>
+		<dependencySet>
 			<includes>
 				<include>org.jboss.narayana.blacktie:blacktie-rhq-plugin</include>
 			</includes>
-			<binaries>
-				<outputDirectory>blacktie-admin-services</outputDirectory>
-				<includeDependencies>false</includeDependencies>
-				<unpack>false</unpack>
-			</binaries>
-		</moduleSet>
-		<moduleSet>
+			<useProjectArtifact>false</useProjectArtifact>
+			<unpack>false</unpack>
+			<useTransitiveDependencies>false</useTransitiveDependencies>
+			<outputDirectory>blacktie-admin-services</outputDirectory>
+		</dependencySet>
+		<dependencySet>
 			<includes>
 				<include>org.jboss.narayana.blacktie:blacktie-admin-services-ear</include>
 			</includes>
-			<binaries>
-				<outputDirectory>blacktie-admin-services</outputDirectory>
-				<includeDependencies>false</includeDependencies>
-				<unpack>false</unpack>
-			</binaries>
-		</moduleSet>
-		<moduleSet>
+			<useProjectArtifact>false</useProjectArtifact>
+			<useTransitiveDependencies>false</useTransitiveDependencies>
+			<unpack>false</unpack>
+			<outputDirectory>blacktie-admin-services</outputDirectory>
+		</dependencySet>
+		<dependencySet>
 			<includes>
 				<include>org.jboss.narayana.blacktie:stompconnectservice-ear</include>
 			</includes>
-			<binaries>
-				<outputDirectory>blacktie-admin-services</outputDirectory>
-				<includeDependencies>false</includeDependencies>
-				<unpack>false</unpack>
-			</binaries>
-		</moduleSet>
-	</moduleSets>
+			<useProjectArtifact>false</useProjectArtifact>
+			<unpack>false</unpack>
+			<useTransitiveDependencies>false</useTransitiveDependencies>
+			<outputDirectory>blacktie-admin-services</outputDirectory>
+		</dependencySet>
+		<dependencySet>
+			<useProjectArtifact>false</useProjectArtifact>
+			<excludes>
+				<exclude>org.jboss.narayana.blacktie:btadmin</exclude>
+				<exclude>org.jboss.narayana.blacktie:codeGeneration</exclude>
+				<exclude>org.jboss.narayana.blacktie:jatmibroker-xatmi-client</exclude>
+				<exclude>org.jboss.narayana.blacktie:blacktie-rhq-plugin</exclude>
+				<exclude>org.jboss.narayana.blacktie:blacktie-admin-services-ear</exclude>
+				<exclude>org.jboss.narayana.blacktie:stompconnectservice-ear</exclude>
+			</excludes>
+			<outputDirectory>lib/java</outputDirectory>
+			<unpack>false</unpack>
+		</dependencySet>
+	</dependencySets>
 	<files>
 		<file>
 			<source>copyright.txt</source>
@@ -113,6 +121,12 @@
 		</file>
 	</files>
 	<fileSets>
+		<fileSet>
+			<directory>../docs/userguide/target/docbook/publish/en-US/pdf/
+			</directory>
+			<outputDirectory>docs</outputDirectory>
+		</fileSet>
+
 		<fileSet>
 			<directory>../blacktie/licence
 			</directory>

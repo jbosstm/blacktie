@@ -281,6 +281,44 @@
 				<artifactId>blacktie-nbf</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.jboss.narayana.blacktie</groupId>
+				<artifactId>docs</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.narayana.blacktie</groupId>
+				<artifactId>userguide</artifactId>
+				<version>${project.version}</version>
+				<type>jdocbook</type>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.narayana.blacktie</groupId>
+				<artifactId>codeGeneration</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.narayana.blacktie</groupId>
+				<artifactId>btadmin</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.narayana.blacktie</groupId>
+				<artifactId>blacktie-rhq-plugin</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.narayana.blacktie</groupId>
+				<artifactId>blacktie-admin-services-ear</artifactId>
+				<version>${project.version}</version>
+				<type>ear</type>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.narayana.blacktie</groupId>
+				<artifactId>stompconnectservice-ear</artifactId>
+				<version>${project.version}</version>
+				<type>ear</type>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 

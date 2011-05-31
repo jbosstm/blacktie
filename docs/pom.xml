@@ -22,6 +22,6 @@
     <artifactId>docs</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>user_guide</module>
+        <module>userguide</module>
     </modules>
 </project>

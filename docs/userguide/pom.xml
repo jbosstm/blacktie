@@ -19,7 +19,7 @@
 		<relativePath>../../blacktie-common/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>user-guide</artifactId>
+    <artifactId>userguide</artifactId>
     <packaging>jdocbook</packaging>
     <build>
         <plugins>

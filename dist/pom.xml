@@ -17,11 +17,16 @@
 	-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+		<groupId>org.jboss.narayana.blacktie</groupId>
+		<artifactId>blacktie-common</artifactId>
+		<version>3.0.0.M3-SNAPSHOT</version>
+		<relativePath>../blacktie-common/pom.xml</relativePath>
+	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.narayana.blacktie</groupId>
 	<artifactId>blacktie</artifactId>
 	<packaging>pom</packaging>
-	<version>3.0.0.M3-SNAPSHOT</version>
 	<name>Blacktie Distribution</name>
 	<url>http://www.jboss.org/blacktie</url>
 
@@ -139,6 +144,14 @@
 					</execution>
 				</executions>
 			</plugin>
+
+            <plugin>
+                <groupId>org.jboss.maven.plugins</groupId>
+                <artifactId>maven-jdocbook-plugin</artifactId>
+                <extensions>true</extensions>
+            </plugin>
+
+
 		</plugins>
 	</build>
 
@@ -196,28 +209,32 @@
 		</profile>
 	</profiles>
 
-	<modules>
-		<module>../blacktie-utils/cpp-plugin</module>
-		<module>../blacktie-common</module>
-		<module>../blacktie-xsd</module>
-		<module>../atmibroker-idl</module>
-		<module>../stompconnect-1.0</module>
-		<module>../stompconnectservice</module>
-		<module>../stompconnectservice/ear</module>
-		<module>../jatmibroker-xatmi</module>
-		<module>../jatmibroker-xatmi/client</module>
-		<module>../blacktie-admin-services</module>
-		<module>../blacktie-admin-services/ear</module>
-		<module>../blacktie-rhq-plugin</module>
-		<module>../atmibroker-core</module>
-		<module>../tx-test-utilities</module>
-		<module>../atmibroker-tx</module>
-		<module>../atmibroker-hybrid</module>
-		<module>../atmibroker-xatmi</module>
-		<module>../blacktie-nbf</module>
-		<module>../btadmin</module>
-		<module>../codeGeneration</module>
-		<module>../integration-tests</module>
-<!--		<module>../docs</module> -->
-	</modules>
+	<dependencies>
+		<dependency>
+			<groupId>org.jboss.narayana.blacktie</groupId>
+			<artifactId>codeGeneration</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.narayana.blacktie</groupId>
+			<artifactId>btadmin</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.narayana.blacktie</groupId>
+			<artifactId>blacktie-rhq-plugin</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.narayana.blacktie</groupId>
+			<artifactId>blacktie-admin-services-ear</artifactId>
+			<type>ear</type>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.narayana.blacktie</groupId>
+			<artifactId>stompconnectservice-ear</artifactId>
+			<type>ear</type>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.narayana.blacktie</groupId>
+			<artifactId>jatmibroker-xatmi-client</artifactId>
+		</dependency>
+	</dependencies>
 </project>

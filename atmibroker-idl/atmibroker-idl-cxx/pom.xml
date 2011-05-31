@@ -22,6 +22,7 @@
 		<groupId>org.jboss.narayana.blacktie</groupId>
 		<artifactId>blacktie-C</artifactId>
 		<version>3.0.0.M3-SNAPSHOT</version>
+		<relativePath>../../blacktie-common/blacktie-C/pom.xml</relativePath>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
