@@ -83,7 +83,7 @@
 					advertised="true" size="1">
 				</SERVICE>
 				<SERVICE name='XMLParserTest' type='queue'/>
-				<SERVICE name='JAVA_Topic' type='topic'/>
+				<SERVICE name='JAVA_Topic' type='topic' externally-managed-destination='true'/>
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>
