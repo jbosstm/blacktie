@@ -316,6 +316,10 @@ int resumeServerByAdmin() {
 	return -1;
 }
 
+int getServerId() {
+	return serverid;
+}
+
 // AtmiBrokerServer constructor
 //
 // Note: since we use virtual inheritance, we must include an

@@ -53,6 +53,7 @@ extern BLACKTIE_XATMI_DLL long getServiceErrorCounter(char* serviceName);
 extern BLACKTIE_XATMI_DLL void getResponseTime(char* serviceName, unsigned long* min, unsigned long* avg,unsigned long* max);
 extern BLACKTIE_XATMI_DLL int pauseServerByAdmin();
 extern BLACKTIE_XATMI_DLL int resumeServerByAdmin();
+extern BLACKTIE_XATMI_DLL int getServerId();
 #ifdef __cplusplus
 }
 #endif
