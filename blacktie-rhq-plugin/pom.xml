@@ -297,15 +297,4 @@
 			</build>
 		</profile>
 	</profiles>
-
-	<pluginRepositories>
-		<pluginRepository>
-			<id>jboss</id>
-			<name>JBoss Plugin Repository</name>
-			<url>http://repository.jboss.org/maven2/</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-	</pluginRepositories>
 </project>

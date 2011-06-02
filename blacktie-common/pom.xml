@@ -94,21 +94,10 @@
 	</distributionManagement>
 
 	<repositories>
-		<repository>
-			<id>jbossThirdParty</id>
-			<url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases/</url>
-		</repository>
  		<repository>
 			<id>jboss-public-repository-group</id>
 			<url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
 	        </repository>
-		<repository>
-			<id>jbossRepository</id>
-			<url>http://repository.jboss.org/maven2</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
 	</repositories>
 	<build>
 		<plugins>

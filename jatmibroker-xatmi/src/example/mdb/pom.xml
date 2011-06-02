@@ -39,17 +39,6 @@
 				<enabled>true</enabled>
 			</releases>
 		</repository>
-		<repository>
-			<id>repository.jboss.org</id>
-			<name>JBoss Releases Repository</name>
-			<url>http://repository.jboss.org/maven2</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
 	</repositories>
 
 	<build>
@@ -180,7 +169,7 @@
 		<dependency>
 			<groupId>apache-avalon-logkit</groupId>
 			<artifactId>logkit</artifactId>
-			<version>1.2</version>
+			<version>1.2-brew</version>
 			<scope>test</scope>
 		</dependency>
 		<!-- END ORB -->
