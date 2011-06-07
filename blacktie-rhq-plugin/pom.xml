@@ -142,9 +142,9 @@
 
 		<!-- Fix for the Javac bug requiring annotations to be available when compiling classes. (fixed in JDK 6) -->
 		<dependency>
-			<groupId>hibernate-annotations</groupId>
+			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-annotations</artifactId>
-			<version>3.2.1.GA</version>
+			<version>3.2.1.ga</version>
 			<scope>provided</scope> <!-- provided by the agent/plugin-container -->
 		</dependency>
 
