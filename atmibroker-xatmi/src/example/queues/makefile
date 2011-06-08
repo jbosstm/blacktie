@@ -15,7 +15,7 @@ LDFLAGS=-L$(LDIR) -latmibroker-xatmi -latmibroker-core -latmibroker-tx
 all: client txsender log4cxx.properties
 
 log4cxx.properties:
-	jar xf $(BLACKTIE_HOME)/lib/java/codeGeneration-3.0.0.M3-SNAPSHOT-SNAPSHOT.jar log4cxx.properties
+	jar xf $(BLACKTIE_HOME)/lib/java/codeGeneration-3.0.0.M3-SNAPSHOT.jar log4cxx.properties
 
 client: queues.c 
 	gcc -o $@ $^ $(CFLAGS) $(LDFLAGS)

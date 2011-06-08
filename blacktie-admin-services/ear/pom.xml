@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.jboss.narayana.blacktie</groupId>
         <artifactId>blacktie-common</artifactId>
-        <version>3.0.0.M3-SNAPSHOT</version>
+        <version>3.0.0.M3</version>
 		<relativePath>../../blacktie-common/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>

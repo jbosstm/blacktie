@@ -20,13 +20,13 @@
 	<parent>
 		<groupId>org.jboss.narayana.blacktie</groupId>
 		<artifactId>blacktie-java</artifactId>
-		<version>3.0.0.M3-SNAPSHOT</version>
+		<version>3.0.0.M3</version>
 		<relativePath>../blacktie-common/blacktie-java/pom.xml</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.narayana.blacktie</groupId>
 	<artifactId>btadmin</artifactId>
-	<version>3.0.0.M3-SNAPSHOT</version>
+	<version>3.0.0.M3</version>
 	<name>BlackTie Admin CLI Tool</name>
 	<description>A command line interface to issue administration command from</description>
 	<packaging>jar</packaging>
