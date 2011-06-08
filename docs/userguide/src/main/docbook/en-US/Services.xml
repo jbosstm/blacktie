@@ -425,4 +425,47 @@
 			</para>
 		</section>
 	</section>
+
+	<section>
+		<title>How to use topics
+		</title>
+		<para>Basically, topics are used to burst out messages to multiple XATMI services 
+			that do not necessarily expect a reponse.</para>
+
+		<para>If it helps, you might consider using topics for things like stock ticker 
+			updates where the receiver is not required to notify the sender that they have 
+			received the ticker.</para>
+
+
+		<para>
+			To config a SERVIECE use topics, you could set type to 'topic', for example:
+		</para>
+
+		<para>
+			<programlisting language="XML" role="XML"><xi:include
+					href="extras/use_topic.xml" xmlns:xi="http://www.w3.org/2001/XInclude"
+					parse="text" /></programlisting>
+		</para>
+
+		<note>
+			<para>clients do not need to configure the list of services in their btconfig.xml, 
+				they will need to try to connect to the queue first, then, the topic (unless 
+				they have the destination is configured in their btconfig.xml).
+			</para>
+		</note>
+
+		<note>
+			<para>tpacalls to topics MUST have TPNOREPLY set. If the client tpacalls a topic 
+				without TPNOREPLY we should fail the call. It also means tpcalls should fail too.
+			</para>
+
+			<para>
+				And there is a intention that externally-managed-destination is set to true as 
+				there are multiple receivers.
+			</para>
+		</note>
+
+		<para>You can get more information about these in examples/xatmi/topics.
+		</para>
+	</section>
 </chapter>
