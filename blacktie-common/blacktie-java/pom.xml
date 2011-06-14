@@ -28,6 +28,7 @@
 	<artifactId>blacktie-java</artifactId>
 	<packaging>pom</packaging>
 	<name>Blacktie Java JNI Tests</name>
+	<description>A BlackTie component</description>
 
 	<developers>
 		<developer>

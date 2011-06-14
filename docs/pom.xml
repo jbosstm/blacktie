@@ -22,6 +22,7 @@
     <artifactId>docs</artifactId>
     <packaging>pom</packaging>
     <name>BlackTie guides</name>
+	<description>A BlackTie component</description>
     <modules>
         <module>userguide</module>
     </modules>

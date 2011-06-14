@@ -30,6 +30,7 @@
 	<artifactId>example-jmx-admin</artifactId>
 	<version>3.0.0.M4-SNAPSHOT</version>
 	<packaging>jar</packaging>
+	<description>A BlackTie component</description>
 
 	<name>Blacktie JMX Administration Example</name>
 	<repositories>

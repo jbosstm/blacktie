@@ -29,6 +29,7 @@
 	<artifactId>blacktie-admin-services</artifactId>
 	<name>Blacktie Administration Services</name>
 	<packaging>jar</packaging>
+	<description>A BlackTie component</description>
 
 	<developers>
 		<developer>

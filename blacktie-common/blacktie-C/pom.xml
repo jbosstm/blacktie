@@ -28,6 +28,7 @@
 	<artifactId>blacktie-C</artifactId>
 	<packaging>pom</packaging>
 	<name>Blacktie C Defaults and Dependencies</name>
+	<description>A BlackTie component</description>
 
 	<developers>
 		<developer>

@@ -31,6 +31,7 @@
 	<artifactId>atmibroker-idl</artifactId>
 	<name>Blacktie CORBA Transport</name>
 	<packaging>pom</packaging>
+	<description>A BlackTie component</description>
 
 	<developers>
 		<developer>

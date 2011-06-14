@@ -29,6 +29,7 @@
 	<packaging>pom</packaging>
 	<name>Blacktie Distribution</name>
 	<url>http://www.jboss.org/blacktie</url>
+	<description>A BlackTie component</description>
 
 	<developers>
 		<developer>

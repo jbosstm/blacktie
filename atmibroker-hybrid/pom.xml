@@ -29,6 +29,7 @@
 	<artifactId>atmibroker-hybrid</artifactId>
 	<name>Blacktie C++ Hybrid Transport</name>
 	<packaging>jar</packaging>
+	<description>A BlackTie component</description>
 
 	<developers>
 		<developer>

@@ -28,6 +28,7 @@
 	<artifactId>integration-tests</artifactId>
 	<name>Blacktie Java/C C/Java XATMI Tests</name>
 	<packaging>jar</packaging>
+	<description>A BlackTie component</description>
 
 	<developers>
 		<developer>

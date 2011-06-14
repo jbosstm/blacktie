@@ -28,6 +28,7 @@
 	<artifactId>atmibroker-core</artifactId>
 	<name>Blacktie Core C++ Implementation</name>
 	<packaging>jar</packaging>
+	<description>A BlackTie component</description>
 
 	<developers>
 		<developer>

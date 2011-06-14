@@ -29,6 +29,7 @@
 	<artifactId>atmibroker-idl-cxx</artifactId>
 	<name>Blacktie CORBA Transport C++ Bindings</name>
 	<packaging>jar</packaging>
+	<description>A BlackTie component</description>
 
 	<developers>
 		<developer>
