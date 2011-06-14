@@ -29,7 +29,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.narayana.blacktie</groupId>
 	<artifactId>example-jab</artifactId>
-	<version>3.0.0.M3</version>
+	<version>3.0.0.M4-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Blacktie JAB Example</name>
@@ -70,7 +70,7 @@
 		<dependency>
 			<groupId>org.jboss.narayana.blacktie</groupId>
 			<artifactId>jatmibroker-xatmi-client</artifactId>
-			<version>3.0.0.M3</version>
+			<version>3.0.0.M4-SNAPSHOT</version>
 		</dependency>
 		<!-- Override the logkit implementation required to work around missing artifact -->
 		<dependency>

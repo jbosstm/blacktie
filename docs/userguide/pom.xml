@@ -15,7 +15,7 @@
     <parent>
         <groupId>org.jboss.narayana.blacktie</groupId>
         <artifactId>blacktie-common</artifactId>
-        <version>3.0.0.M3</version>
+        <version>3.0.0.M4-SNAPSHOT</version>
 		<relativePath>../../blacktie-common/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -47,6 +47,10 @@
                         <format>
                             <formatName>pdf</formatName>
                             <stylesheetResource>classpath:/xslt/org/jboss/pdf.xsl</stylesheetResource>
+                        </format>
+                        <format>
+                            <formatName>html</formatName>
+                            <stylesheetResource>classpath:/xslt/org/jboss/xhtml.xsl</stylesheetResource>
                         </format>
                     </formats>
                     <options>

@@ -20,7 +20,7 @@
 	<parent>
 		<groupId>org.jboss.narayana.blacktie</groupId>
 		<artifactId>blacktie-C</artifactId>
-		<version>3.0.0.M3</version>
+		<version>3.0.0.M4-SNAPSHOT</version>
 		<relativePath>../blacktie-common/blacktie-C/pom.xml</relativePath>
 	</parent>
 
@@ -28,6 +28,7 @@
 	<artifactId>atmibroker-tx</artifactId>
 	<name>Blacktie C++ TX Client Library</name>
 	<packaging>jar</packaging>
+	<description>A BlackTie component</description>
 
 	<developers>
 		<developer>

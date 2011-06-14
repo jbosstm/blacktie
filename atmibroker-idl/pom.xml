@@ -21,13 +21,13 @@
 	<parent>
 		<groupId>org.jboss.narayana.blacktie</groupId>
 		<artifactId>blacktie-common</artifactId>
-		<version>3.0.0.M3</version>
+		<version>3.0.0.M4-SNAPSHOT</version>
 		<relativePath>../blacktie-common/pom.xml</relativePath>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.narayana.blacktie</groupId>
-	<version>3.0.0.M3</version>
+	<version>3.0.0.M4-SNAPSHOT</version>
 	<artifactId>atmibroker-idl</artifactId>
 	<name>Blacktie CORBA Transport</name>
 	<packaging>pom</packaging>
