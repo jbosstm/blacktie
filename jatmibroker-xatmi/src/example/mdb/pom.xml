@@ -11,249 +11,237 @@
 	should have received a copy of the GNU Lesser General Public License, v.2.1 
 	along with this distribution; if not, write to the Free Software Foundation, 
 	Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. -->
-
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
-	<parent>
-		<groupId>org.jboss.jbossas</groupId>
-		<artifactId>jboss-as-component-matrix</artifactId>
-		<version>5.1.0.GA</version>
-	</parent>
-
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.jboss.narayana.blacktie</groupId>
-	<artifactId>example-mdb-xatmi-service</artifactId>
-	<version>3.0.0.M4-SNAPSHOT</version>
-	<packaging>jar</packaging>
-	<description>A BlackTie component</description>
-
-	<name>Blacktie XATMI MDB Example</name>
-
-	<repositories>
-		<repository>
-			<id>jboss-public-repository-group</id>
-			<name>JBoss Public Repository Group</name>
-			<url>http://repository.jboss.org/nexus/content/groups/public/</url>
-			<layout>default</layout>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</repository>
-	</repositories>
-
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-				</configuration>
-				<executions>
-					<execution>
-						<id>make-assembly</id>
-						<phase>package</phase>
-						<goals>
-							<goal>attached</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-				<executions>
-					<execution>
-						<id>surefire-it</id>
-						<phase>integration-test</phase>
-						<goals>
-							<goal>test</goal>
-						</goals>
-						<configuration>
-							<forkMode>once</forkMode>
-							<workingDirectory>target/test-classes</workingDirectory>
-							<skip>false</skip>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jboss-maven-plugin</artifactId>
-				<version>1.5.0</version>
-				<configuration>
-					<fileNames>
-						<fileName>${project.build.directory}/${project.build.finalName}-jar-with-dependencies.${project.packaging}</fileName>
-					</fileNames>
-					<hostName>${env.JBOSSAS_IP_ADDR}</hostName>
-				</configuration>
-				<executions>
-					<execution>
-						<id>jboss-redeploy</id>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>redeploy</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>jboss-undeploy</id>
-						<phase>post-integration-test</phase>
-						<goals>
-							<goal>undeploy</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</reporting>
-	<dependencies>
-		<dependency>
-			<groupId>org.jboss.narayana.blacktie</groupId>
-			<artifactId>jatmibroker-xatmi</artifactId>
-			<version>3.0.0.M4-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.javaee</groupId>
-			<artifactId>jboss-javaee</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.ejb3</groupId>
-			<artifactId>jboss-ejb3-ext-api</artifactId>
-			<version>1.0.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss.jbossts</groupId>
-			<artifactId>jbossjts</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
-		<!-- Test -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
-			<scope>test</scope>
-		</dependency>
-		<!-- START JBOSS -->
-		<!-- START ORB -->
-		<dependency>
-			<groupId>apache-avalon</groupId>
-			<artifactId>avalon-framework</artifactId>
-			<version>4.1.5</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>apache-avalon-logkit</groupId>
-			<artifactId>logkit</artifactId>
-			<version>1.2-brew</version>
-			<scope>test</scope>
-		</dependency>
-		<!-- END ORB -->
-		<!-- START JTS -->
-		<dependency>
-			<groupId>jboss.jbossts</groupId>
-			<artifactId>jbossjts-jacorb</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss.jbossts</groupId>
-			<artifactId>jbossts-common</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<!-- END JTS -->
-		<!-- END JBOSS -->
-
-		<!-- REQUIRED DEPENDENCIES FOR BLACKTIE -->
-		<dependency>
-			<groupId>org.jboss.integration</groupId>
-			<artifactId>jboss-corba-ots-spi</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>apache-avalon</groupId>
-			<artifactId>avalon-framework</artifactId>
-			<version>4.1.5</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>apache-avalon-logkit</groupId>
-			<artifactId>logkit</artifactId>
-			<version>1.2-brew</version>
-			<scope>test</scope>
-		</dependency>
-		<!-- START JTS -->
-		<dependency>
-			<groupId>jboss.jbossts</groupId>
-			<artifactId>jbossjts-jacorb</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss.jbossts</groupId>
-			<artifactId>jbossts-common</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<!-- END JTS -->
-		<!-- START JMS -->
-		<dependency>
-			<groupId>jboss.messaging</groupId>
-			<artifactId>jboss-messaging-client</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.naming</groupId>
-			<artifactId>jnp-client</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.aop</groupId>
-			<artifactId>jboss-aop</artifactId>
-			<classifier>client</classifier>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.remoting</groupId>
-			<artifactId>jboss-remoting</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>concurrent</groupId>
-			<artifactId>concurrent</artifactId>
-			<version>1.3.4</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.serialization</groupId>
-			<artifactId>jboss-serialization</artifactId>
-			<version>1.1.0.Beta1</version>
-			<scope>test</scope>
-		</dependency>
-		<!-- END JMS -->
-		<!-- END REQUIRED DEPENDENCIES FOR BLACKTIE -->
-
-	</dependencies>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.jboss.jbossas</groupId>
+    <artifactId>jboss-as-component-matrix</artifactId>
+    <version>5.1.0.GA</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.jboss.narayana.blacktie</groupId>
+  <artifactId>example-mdb-xatmi-service</artifactId>
+  <version>3.0.0.M4-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <description>A BlackTie component</description>
+  <name>Blacktie XATMI MDB Example</name>
+  <repositories>
+    <repository>
+      <id>jboss-public-repository-group</id>
+      <name>JBoss Public Repository Group</name>
+      <url>http://repository.jboss.org/nexus/content/groups/public/</url>
+      <layout>default</layout>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
+  </repositories>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attached</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+        <executions>
+          <execution>
+            <id>surefire-it</id>
+            <phase>integration-test</phase>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <configuration>
+              <forkMode>once</forkMode>
+              <workingDirectory>target/test-classes</workingDirectory>
+              <skip>false</skip>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jboss-maven-plugin</artifactId>
+        <version>1.5.0</version>
+        <configuration>
+          <fileNames>
+            <fileName>${project.build.directory}/${project.build.finalName}-jar-with-dependencies.${project.packaging}</fileName>
+          </fileNames>
+          <hostName>${env.JBOSSAS_IP_ADDR}</hostName>
+        </configuration>
+        <executions>
+          <execution>
+            <id>jboss-redeploy</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>redeploy</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>jboss-undeploy</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>undeploy</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </reporting>
+  <dependencies>
+    <dependency>
+      <groupId>org.jboss.narayana.blacktie</groupId>
+      <artifactId>jatmibroker-xatmi</artifactId>
+      <version>3.0.0.M4-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.javaee</groupId>
+      <artifactId>jboss-javaee</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.ejb3</groupId>
+      <artifactId>jboss-ejb3-ext-api</artifactId>
+      <version>1.0.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>jboss.jbossts</groupId>
+      <artifactId>jbossjts</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <!-- Test -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- START JBOSS -->
+    <!-- START ORB -->
+    <dependency>
+      <groupId>apache-avalon</groupId>
+      <artifactId>avalon-framework</artifactId>
+      <version>4.1.5</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>apache-avalon-logkit</groupId>
+      <artifactId>logkit</artifactId>
+      <version>1.2-brew</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- END ORB -->
+    <!-- START JTS -->
+    <dependency>
+      <groupId>jboss.jbossts</groupId>
+      <artifactId>jbossjts-jacorb</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>jboss.jbossts</groupId>
+      <artifactId>jbossts-common</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!-- END JTS -->
+    <!-- END JBOSS -->
+    <!-- REQUIRED DEPENDENCIES FOR BLACKTIE -->
+    <dependency>
+      <groupId>org.jboss.integration</groupId>
+      <artifactId>jboss-corba-ots-spi</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>apache-avalon</groupId>
+      <artifactId>avalon-framework</artifactId>
+      <version>4.1.5</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>apache-avalon-logkit</groupId>
+      <artifactId>logkit</artifactId>
+      <version>1.2-brew</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- START JTS -->
+    <dependency>
+      <groupId>jboss.jbossts</groupId>
+      <artifactId>jbossjts-jacorb</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>jboss.jbossts</groupId>
+      <artifactId>jbossts-common</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!-- END JTS -->
+    <!-- START JMS -->
+    <dependency>
+      <groupId>jboss.messaging</groupId>
+      <artifactId>jboss-messaging-client</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.naming</groupId>
+      <artifactId>jnp-client</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.aop</groupId>
+      <artifactId>jboss-aop</artifactId>
+      <classifier>client</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.remoting</groupId>
+      <artifactId>jboss-remoting</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>concurrent</groupId>
+      <artifactId>concurrent</artifactId>
+      <version>1.3.4</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.serialization</groupId>
+      <artifactId>jboss-serialization</artifactId>
+      <version>1.1.0.Beta1</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- END JMS -->
+    <!-- END REQUIRED DEPENDENCIES FOR BLACKTIE -->
+  </dependencies>
 </project>

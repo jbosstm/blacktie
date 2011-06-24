@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-	<!--
+<!--
 		JBoss, Home of Professional Open Source Copyright 2008, Red Hat
 		Middleware LLC, and others contributors as indicated by the @authors
 		tag. All rights reserved. See the copyright.txt in the distribution
@@ -15,70 +15,63 @@
 		Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 		02110-1301, USA.
 	-->
-
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<parent>
-		<groupId>org.jboss.narayana.blacktie</groupId>
-		<artifactId>blacktie-common</artifactId>
-		<version>3.0.0.M4-SNAPSHOT</version>
-		<relativePath>../blacktie-common/pom.xml</relativePath>
-	</parent>
-
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.jboss.narayana.blacktie</groupId>
-	<version>3.0.0.M4-SNAPSHOT</version>
-	<artifactId>atmibroker-idl</artifactId>
-	<name>Blacktie CORBA Transport</name>
-	<packaging>pom</packaging>
-	<description>A BlackTie component</description>
-
-	<developers>
-		<developer>
-			<id>tomjenkinson</id>
-			<name>Thomas Jenkinson</name>
-			<email>tom.jenkinson@redhat.com</email>
-			<organization>JBoss</organization>
-			<organizationUrl>http://www.jboss.org/</organizationUrl>
-			<roles>
-				<role>Project Lead</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-		<developer>
-			<id>mmusgrov</id>
-			<name>Michael Musgrove</name>
-			<email>mmusgrov@redhat.com</email>
-			<organization>JBoss</organization>
-			<organizationUrl>http://www.jboss.org/</organizationUrl>
-			<roles>
-				<role>Core Developer</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-		<developer>
-			<id>zfeng</id>
-			<name>Amos Feng</name>
-			<email>zfeng@redhat.com</email>
-			<organization>JBoss</organization>
-			<organizationUrl>http://www.jboss.org/</organizationUrl>
-			<roles>
-				<role>Core Developer</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-	</developers>
-
-	<licenses>
-		<license>
-			<name>LGPL 2.1</name>
-			<url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
-		</license>
-	</licenses>
-
-  	<modules>
-		<module>atmibroker-idl-cxx</module>
-		<module>atmibroker-idl-java</module>
-	</modules>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.jboss.narayana.blacktie</groupId>
+    <artifactId>blacktie-common</artifactId>
+    <version>3.0.0.M4-SNAPSHOT</version>
+    <relativePath>../blacktie-common/pom.xml</relativePath>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.jboss.narayana.blacktie</groupId>
+  <version>3.0.0.M4-SNAPSHOT</version>
+  <artifactId>atmibroker-idl</artifactId>
+  <name>Blacktie CORBA Transport</name>
+  <packaging>pom</packaging>
+  <description>A BlackTie component</description>
+  <developers>
+    <developer>
+      <id>tomjenkinson</id>
+      <name>Thomas Jenkinson</name>
+      <email>tom.jenkinson@redhat.com</email>
+      <organization>JBoss</organization>
+      <organizationUrl>http://www.jboss.org/</organizationUrl>
+      <roles>
+        <role>Project Lead</role>
+      </roles>
+      <timezone>0</timezone>
+    </developer>
+    <developer>
+      <id>mmusgrov</id>
+      <name>Michael Musgrove</name>
+      <email>mmusgrov@redhat.com</email>
+      <organization>JBoss</organization>
+      <organizationUrl>http://www.jboss.org/</organizationUrl>
+      <roles>
+        <role>Core Developer</role>
+      </roles>
+      <timezone>0</timezone>
+    </developer>
+    <developer>
+      <id>zfeng</id>
+      <name>Amos Feng</name>
+      <email>zfeng@redhat.com</email>
+      <organization>JBoss</organization>
+      <organizationUrl>http://www.jboss.org/</organizationUrl>
+      <roles>
+        <role>Core Developer</role>
+      </roles>
+      <timezone>0</timezone>
+    </developer>
+  </developers>
+  <licenses>
+    <license>
+      <name>LGPL 2.1</name>
+      <url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
+    </license>
+  </licenses>
+  <modules>
+    <module>atmibroker-idl-cxx</module>
+    <module>atmibroker-idl-java</module>
+  </modules>
 </project>
-

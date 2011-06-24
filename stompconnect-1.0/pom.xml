@@ -1,16 +1,16 @@
+<?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.codehaus.stomp</groupId>
   <artifactId>stompconnect</artifactId>
   <packaging>jar</packaging>
   <version>1.0.6-BT-SNAPSHOT</version>
-  
   <developers>
-	<developer>
-		<id>one</id>
-      		<name>one</name>
-	</developer>
-  </developers>	
+    <developer>
+      <id>one</id>
+      <name>one</name>
+    </developer>
+  </developers>
   <name>StompConnect</name>
   <description>
     StompConnect allows any Message Orientated Middleware (MOM)
@@ -18,7 +18,6 @@
     STOMP Client can interop with it.
   </description>
   <url>http://stomp.codehaus.org/</url>
-
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -26,63 +25,59 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-
   <organization>
     <name>LogicBlaze, Inc.</name>
     <url>http://www.logicblaze.com/</url>
   </organization>
-
   <scm>
     <connection>scm:svn:https://svn.codehaus.org/stomp/tags/stompconnect-1.0</connection>
     <developerConnection>scm:svn:https://svn.codehaus.org/stomp/tags/stompconnect-1.0</developerConnection>
     <url>https://svn.codehaus.org/stomp/tags/stompconnect-1.0</url>
   </scm>
-
   <dependencies>
-  		<!-- Transactions START -->
-		<dependency>
-			<groupId>org.jboss.javaee</groupId>
-			<artifactId>jboss-javaee</artifactId>
-			<scope>provided</scope>
-		<version>5.0.1.GA</version>
-		</dependency>
-		<dependency>
-			<groupId>jboss.jbossts</groupId>
-			<artifactId>jbossjts</artifactId>
-			<scope>provided</scope>
-		<version>4.6.1.GA</version>
-		</dependency>
-		<dependency>
-			<groupId>jboss.jbossts</groupId>
-			<artifactId>jbossjts-jacorb</artifactId>
-			<scope>provided</scope>
-		<version>4.6.1.GA</version>
-		</dependency>
-		<!-- Transactions END -->
-  		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.15</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.sun.jmx</groupId>
-					<artifactId>jmxri</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.sun.jdmk</groupId>
-					<artifactId>jmxtools</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.jms</groupId>
-					<artifactId>jms</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.mail</groupId>
-					<artifactId>mail</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-  
+    <!-- Transactions START -->
+    <dependency>
+      <groupId>org.jboss.javaee</groupId>
+      <artifactId>jboss-javaee</artifactId>
+      <scope>provided</scope>
+      <version>5.0.1.GA</version>
+    </dependency>
+    <dependency>
+      <groupId>jboss.jbossts</groupId>
+      <artifactId>jbossjts</artifactId>
+      <scope>provided</scope>
+      <version>4.6.1.GA</version>
+    </dependency>
+    <dependency>
+      <groupId>jboss.jbossts</groupId>
+      <artifactId>jbossjts-jacorb</artifactId>
+      <scope>provided</scope>
+      <version>4.6.1.GA</version>
+    </dependency>
+    <!-- Transactions END -->
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.15</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.sun.jmx</groupId>
+          <artifactId>jmxri</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.jdmk</groupId>
+          <artifactId>jmxtools</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.jms</groupId>
+          <artifactId>jms</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.mail</groupId>
+          <artifactId>mail</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
@@ -93,7 +88,6 @@
       <artifactId>geronimo-jms_1.1_spec</artifactId>
       <version>1.0</version>
     </dependency>
-
     <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-core</artifactId>
@@ -107,20 +101,17 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
   <repositories>
     <!-- keep the central repo so that it is first tried -->
     <repository>
       <id>central</id>
       <url>http://ibiblio.org/maven2/</url>
     </repository>
-
     <repository>
       <id>apache-incubator-repo</id>
       <name>Apache Incubator Repo</name>
       <url>http://people.apache.org/repo/m2-incubating-repository</url>
     </repository>
-
     <!--  ActiveMQ 4.0 -->
     <repository>
       <id>apache-snapshots</id>
@@ -134,7 +125,6 @@
       </snapshots>
     </repository>
   </repositories>
-
   <distributionManagement>
     <repository>
       <id>jboss-releases-repository</id>
@@ -147,7 +137,6 @@
       <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
-
   <reporting>
     <plugins>
       <plugin>
@@ -156,7 +145,6 @@
       </plugin>
     </plugins>
   </reporting>
-
   <build>
     <extensions>
       <extension>
@@ -165,28 +153,25 @@
         <version>1.0-beta-1</version>
       </extension>
     </extensions>
-
     <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <skipTests>true</skipTests>
-            </configuration>
-          </plugin>
-
- <plugin>
- <!-- Entry needed to create, install and deploy sources jars -->
- <groupId>org.apache.maven.plugins</groupId>
- <artifactId>maven-source-plugin</artifactId>
- </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skipTests>true</skipTests>
+        </configuration>
+      </plugin>
+      <plugin>
+        <!-- Entry needed to create, install and deploy sources jars -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+      </plugin>
       <plugin>
         <artifactId>maven-release-plugin</artifactId>
         <configuration>
           <tagBase>https://svn.codehaus.org/stomp/tags/</tagBase>
         </configuration>
       </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -195,8 +180,7 @@
           <target>1.5</target>
         </configuration>
       </plugin>
-
-<!--
+      <!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
@@ -257,7 +241,5 @@
       </plugin>
 -->
     </plugins>
-
   </build>
-
 </project>

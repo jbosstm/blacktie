@@ -12,56 +12,69 @@
 	along with this distribution; if not, write to the Free Software Foundation, 
 	Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <parent>
-        <groupId>org.jboss.narayana.blacktie</groupId>
-        <artifactId>blacktie-common</artifactId>
-        <version>3.0.0.M4-SNAPSHOT</version>
-		<relativePath>../../blacktie-common/pom.xml</relativePath>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>userguide</artifactId>
-    <packaging>jdocbook</packaging>
-    <name>BlackTie User Guide</name>
-	<description>A BlackTie component</description>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.jboss.maven.plugins</groupId>
-                <artifactId>maven-jdocbook-plugin</artifactId>
-                <extensions>true</extensions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.jboss</groupId>
-                        <artifactId>jbossorg-docbook-xslt</artifactId>
-                        <version>1.1.0</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.jboss</groupId>
-                        <artifactId>jbossorg-jdocbook-style</artifactId>
-                        <version>1.1.0</version>
-                        <type>jdocbook-style</type>
-                    </dependency>
-                </dependencies>
-                <configuration>
-                    <sourceDocumentName>User_Guide.xml</sourceDocumentName>
-                    <formats>
-                        <format>
-                            <formatName>pdf</formatName>
-                            <stylesheetResource>classpath:/xslt/org/jboss/pdf.xsl</stylesheetResource>
-                        </format>
-                        <format>
-                            <formatName>html</formatName>
-                            <stylesheetResource>classpath:/xslt/org/jboss/xhtml.xsl</stylesheetResource>
-                        </format>
-                    </formats>
-                    <options>
-                        <xincludeSupported>true</xincludeSupported>
-                        <!-- needed for uri-resolvers; can be ommitted if using 'current' uri scheme -->
-                        <!-- could also locate the docbook dependency and inspect its version... -->
-                        <docbookVersion>1.72.0</docbookVersion>
-                    </options>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+  <parent>
+    <groupId>org.jboss.narayana.blacktie</groupId>
+    <artifactId>blacktie-common</artifactId>
+    <version>3.0.0.M4-SNAPSHOT</version>
+    <relativePath>../../blacktie-common/pom.xml</relativePath>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>userguide</artifactId>
+  <packaging>jdocbook</packaging>
+  <name>BlackTie User Guide</name>
+  <description>A BlackTie component</description>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jboss.maven.plugins</groupId>
+        <artifactId>maven-jdocbook-plugin</artifactId>
+        <extensions>true</extensions>
+        <dependencies>
+          <dependency>
+            <groupId>org.jboss</groupId>
+            <artifactId>jbossorg-docbook-xslt</artifactId>
+            <version>1.1.0</version>
+          </dependency>
+          <dependency>
+            <groupId>org.jboss</groupId>
+            <artifactId>jbossorg-jdocbook-style</artifactId>
+            <version>1.1.0</version>
+            <type>jdocbook-style</type>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <sourceDocumentName>User_Guide.xml</sourceDocumentName>
+          <formats>
+            <format>
+              <formatName>pdf</formatName>
+              <stylesheetResource>classpath:/xslt/org/jboss/pdf.xsl</stylesheetResource>
+            </format>
+            <format>
+              <formatName>html</formatName>
+              <stylesheetResource>classpath:/xslt/org/jboss/xhtml.xsl</stylesheetResource>
+            </format>
+          </formats>
+          <options>
+            <xincludeSupported>true</xincludeSupported>
+            <!-- needed for uri-resolvers; can be ommitted if using 'current' uri scheme -->
+            <!-- could also locate the docbook dependency and inspect its version... -->
+            <docbookVersion>1.72.0</docbookVersion>
+            <!-- Taken from arquillian -->
+            <xmlTransformerType>saxon</xmlTransformerType>
+            <transformerParameters>
+              <property>
+                <name>javax.xml.parsers.DocumentBuilderFactory</name>
+                <value>org.apache.xerces.jaxp.DocumentBuilderFactoryImpl</value>
+              </property>
+              <property>
+                <name>javax.xml.parsers.SAXParserFactory</name>
+                <value>org.apache.xerces.jaxp.SAXParserFactoryImpl</value>
+              </property>
+            </transformerParameters>
+            <localeSeparator>-</localeSeparator>
+          </options>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

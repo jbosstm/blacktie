@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-	<!--
+<!--
 		JBoss, Home of Professional Open Source Copyright 2008, Red Hat
 		Middleware LLC, and others contributors as indicated by the @authors
 		tag. All rights reserved. See the copyright.txt in the distribution
@@ -15,63 +15,53 @@
 		Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 		02110-1301, USA.
 	-->
-
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
-	<parent>
-		<groupId>org.jboss.jbossas</groupId>
-		<artifactId>jboss-as-component-matrix</artifactId>
-		<version>5.1.0.GA</version>
-	</parent>
-
-
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.jboss.narayana.blacktie</groupId>
-	<artifactId>example-java-server</artifactId>
-	<version>3.0.0.M4-SNAPSHOT</version>
-	<packaging>jar</packaging>
-	<description>A BlackTie component</description>
-
-	<name>Blacktie Java Server Example</name>
-
-	<repositories>
-		<repository>
-			<id>jboss-public-repository-group</id>
-			<name>JBoss Public Repository Group</name>
-			<url>http://repository.jboss.org/nexus/content/groups/public/</url>
-			<layout>default</layout>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</repository>
-	</repositories>
-
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<forkMode>none</forkMode>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-
-
-	<dependencies>
-		<dependency>
-			<groupId>org.jboss.narayana.blacktie</groupId>
-			<artifactId>jatmibroker-xatmi-client</artifactId>
-			<version>3.0.0.M4-SNAPSHOT</version>
-		</dependency>
-	</dependencies>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.jboss.jbossas</groupId>
+    <artifactId>jboss-as-component-matrix</artifactId>
+    <version>5.1.0.GA</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.jboss.narayana.blacktie</groupId>
+  <artifactId>example-java-server</artifactId>
+  <version>3.0.0.M4-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <description>A BlackTie component</description>
+  <name>Blacktie Java Server Example</name>
+  <repositories>
+    <repository>
+      <id>jboss-public-repository-group</id>
+      <name>JBoss Public Repository Group</name>
+      <url>http://repository.jboss.org/nexus/content/groups/public/</url>
+      <layout>default</layout>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
+  </repositories>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <forkMode>none</forkMode>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>org.jboss.narayana.blacktie</groupId>
+      <artifactId>jatmibroker-xatmi-client</artifactId>
+      <version>3.0.0.M4-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
 </project>
