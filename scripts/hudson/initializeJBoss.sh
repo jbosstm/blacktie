@@ -89,6 +89,8 @@ fi
 unzip jbossesb-4.9.zip
 cp $WORKSPACE/trunk/scripts/hudson/hornetq/jboss-as-hornetq-int.jar $WORKSPACE/jboss-5.1.0.GA/common/lib
 cp $WORKSPACE/trunk/scripts/hudson/hornetq/hornetq-deployers-jboss-beans.xml $WORKSPACE/jboss-5.1.0.GA/server/all-with-hornetq/deployers
+ls -l $WORKSPACE/
+ls -l $WORKSPACE/jbossesb-4.9
 cd $WORKSPACE/jbossesb-4.9/install
 cp deployment.properties-example deployment.properties
 sed -i "s?/jbossesb-server-4.5.GA?$WORKSPACE/jboss-5.1.0.GA?" deployment.properties
