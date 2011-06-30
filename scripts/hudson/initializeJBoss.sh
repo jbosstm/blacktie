@@ -7,6 +7,7 @@ fi
 if [ -d $WORKSPACE/jboss-5.1.0.GA ]; then
   rm -rf $WORKSPACE/jboss-5.1.0.GA
   rm -rf $WORKSPACE/hornetq-2.1.2.Final
+  rm -rf $WORKSPACE/jbossesb-4.9
 fi
 
 cd $WORKSPACE
@@ -78,3 +79,20 @@ sed -i 's?<resourceadapter-class>org.hornetq.ra.HornetQResourceAdapter</resource
         <config-property-type>java.lang.Long</config-property-type>\
         <config-property-value>86400000</config-property-value>\
       </config-property>?g' $WORKSPACE/jboss-5.1.0.GA/server/all-with-hornetq/deploy/hornetq-ra.rar/META-INF/ra.xml
+
+#INSTALL JBossESB
+if [ -e $WORKSPACE/jbossesb-4.9.zip ]; then
+	echo "JBossESB already downloaded"
+else
+	wget http://albany/userContent/blacktie/jbossesb-4.9.zip
+fi
+unzip jbossesb-4.9.zip
+cp $WORKSPACE/trunk/scripts/hudson/hornetq/jboss-as-hornetq-int.jar $WORKSPACE/jboss-5.1.0.GA/common/lib
+cp $WORKSPACE/trunk/scripts/hudson/hornetq/hornetq-deployers-jboss-beans.xml $WORKSPACE/jboss-5.1.0.GA/server/all-with-hornetq/deployers
+cd $WORKSPACE/jbossesb-4.9/install
+cp deployment.properties-example deployment.properties
+sed -i "s?/jbossesb-server-4.5.GA?$WORKSPACE/jboss-5.1.0.GA?" deployment.properties
+sed -i "s?=default?=all-with-hornetq?" deployment.properties
+sed -i "s?^org.jboss.esb.tomcat.home?#&?" deployment.properties
+sed -i 's?/hornetq?&.sar?' build.xml
+ant deploy
