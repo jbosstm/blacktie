@@ -209,4 +209,34 @@
 			</listitem>
 		</orderedlist>
 	</section>
+	<section>
+		<title>Using ESB contented based routing in Blacktie</title>
+		<section>
+			<title>Install JBossESB</title>
+			<para>Now we use JBoss AS 5.1.GA and HornetQ 2.1.2 Final</para>
+			<orderedlist>
+				<listitem>
+					<para>copy jboss-as-hornetq-int.jar to $JBOSS_HOME/common/lib</para>
+				</listitem>
+				<listitem>
+					<para>copy hornetq-deployers-jboss-beans.xml to $JBOSS_HOME/server/all-with-hornetq/deployers</para>
+				</listitem>
+				<listitem>
+					<para>cd jbossesb-version/install</para>
+				</listitem>
+				<listitem>
+					<para>update deployment.properties to point to JBossAS installation.</para>
+				</listitem>
+				<listitem>
+					<para>update build.xml and add hornetq.sar to the messaging providers to detect.</para>
+				</listitem>
+				<listitem>
+					<para>ant deploy</para>
+				</listitem>
+			</orderedlist>
+		</section>
+		<section>
+			<title>Deploy User Defined Routing Rules</title>
+		</section>
+	</section>
 </chapter>
