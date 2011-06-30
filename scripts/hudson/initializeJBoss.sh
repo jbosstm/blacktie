@@ -22,9 +22,15 @@ if [ -e $WORKSPACE/hornetq-2.1.2.Final.zip ]; then
 else
 	wget http://albany/userContent/blacktie/hornetq-2.1.2.Final.zip
 fi
-
 echo 'A
 ' | unzip hornetq-2.1.2.Final.zip
+if [ -e $WORKSPACE/jbossesb-4.9.zip ]; then
+	echo "JBossESB already downloaded"
+else
+	wget http://albany/userContent/blacktie/jbossesb-4.9.zip
+fi
+unzip jbossesb-4.9.zip
+
 # INSTALL HORNETQ
 cd $WORKSPACE/hornetq-2.1.2.Final/config/jboss-as-5/
 chmod 775 build.sh
@@ -81,16 +87,8 @@ sed -i 's?<resourceadapter-class>org.hornetq.ra.HornetQResourceAdapter</resource
       </config-property>?g' $WORKSPACE/jboss-5.1.0.GA/server/all-with-hornetq/deploy/hornetq-ra.rar/META-INF/ra.xml
 
 #INSTALL JBossESB
-if [ -e $WORKSPACE/jbossesb-4.9.zip ]; then
-	echo "JBossESB already downloaded"
-else
-	wget http://albany/userContent/blacktie/jbossesb-4.9.zip
-fi
-unzip jbossesb-4.9.zip
 cp $WORKSPACE/trunk/scripts/hudson/hornetq/jboss-as-hornetq-int.jar $WORKSPACE/jboss-5.1.0.GA/common/lib
 cp $WORKSPACE/trunk/scripts/hudson/hornetq/hornetq-deployers-jboss-beans.xml $WORKSPACE/jboss-5.1.0.GA/server/all-with-hornetq/deployers
-ls -l $WORKSPACE/
-ls -l $WORKSPACE/jbossesb-4.9
 cd $WORKSPACE/jbossesb-4.9/install
 cp deployment.properties-example deployment.properties
 sed -i "s?/jbossesb-server-4.5.GA?$WORKSPACE/jboss-5.1.0.GA?" deployment.properties
