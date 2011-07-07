@@ -145,3 +145,4 @@ fi
 ps -f
 # SHUTDOWN JBOSS
 $WORKSPACE/jboss-5.1.0.GA/bin/shutdown.sh -S && cd .
+sleep 30
