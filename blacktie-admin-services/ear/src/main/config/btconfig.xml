@@ -15,7 +15,22 @@
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>fooapp</DOMAIN>
 	<SERVERS>
-
+		<SERVER name='cbr'>
+			<SERVICE_NAMES>
+				<SERVICE name='CBR_Request' externally-managed-destination='true'/>
+			</SERVICE_NAMES>
+		</SERVER>
+		<SERVER name='cbrone'>
+			<SERVICE_NAMES>
+				<SERVICE name='CBR_TestOne' externally-managed-destination='true' size='1' />
+			</SERVICE_NAMES>
+		</SERVER>
+		<SERVER name='cbrtwo'>
+			<SERVICE_NAMES>
+				 <SERVICE name='CBR_TestTwo' externally-managed-destination='true' size='1' />
+			</SERVICE_NAMES>
+		</SERVER>
+	
 		<SERVER name='nbfserv'>
 			<SERVICE_NAMES>
 				<SERVICE name='NBFEXAMPLE'/>

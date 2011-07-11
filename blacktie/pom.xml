@@ -175,7 +175,7 @@
                 </exec>
                 <echo message="update symlinks to zip"/>
                 <exec executable="/bin/sh" dir="target">
-                  <arg line="-c 'zip -q -u -y ${project.artifactId}-${project.version}-${bpa}-bin.zip ${project.artifactId}-${project.version}/lib/cxx*'"/>
+					<arg line="-c 'zip -q -u -y ${project.artifactId}-${project.version}-${bpa}-bin.zip ${project.artifactId}-${project.version}/lib/cxx/*'"/>
                 </exec>
                 <echo message="update symlinks to tar.gz"/>
                 <exec executable="gunzip" dir="target">
