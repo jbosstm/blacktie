@@ -9,7 +9,13 @@
   <queue name="BTR_CBR_TestOne">
 	  <entry name="/queue/BTR_CBR_TestOne"/>
   </queue>
+  <queue name="CBR_TestOne">
+	  <entry name="/queue/CBR_TestOne"/>
+  </queue>
   <queue name="BTR_CBR_TestTwo">
 	  <entry name="/queue/BTR_CBR_TestTwo"/>
+  </queue>
+  <queue name="CBR_TestTwo">
+	  <entry name="/queue/CBR_TestTwo"/>
   </queue>
 </configuration>

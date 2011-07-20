@@ -13,21 +13,16 @@ global java.util.List destinations;
 rule "Routing Rule using XPATH"
 	
 	when
-		xpathGreaterThan "/Order/@totalAmount", "50.0"
+		xpathGreaterThan  expr "/blacktie:employee/blacktie:id", "1000" use namespaces "blacktie=http://www.jboss.org/blacktie"
 	then 
-	    Log : "EXPRESS";
-		Log : "EXPRESS";
-		Log : "Really It's EXPRESS Shipping";
-		Destination : "express";
-		
+	    Log : "TestOne";
+		Destination : "testone";
 end
 
 rule "Routing Rule using XPATH less"
     when
-        xpathLessThan "/Order/@totalAmount", "50.0"
+        xpathLessThan  expr "/blacktie:employee/blacktie:id", "1000" use namespaces "blacktie=http://www.jboss.org/blacktie"
     then
-	    Log : "NORMAL";
-		Log : "NORMAL";
-		Log : "Really It's NORMAL Shipping";
-		Destination : "normal";
+	    Log : "TestTwo";
+		Destination : "testtwo";
 end

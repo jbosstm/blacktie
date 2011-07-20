@@ -31,7 +31,6 @@ int main(int argc, char **argv) {
 	long id = 1001;
 	int rc;
 	long rcvlen;
-	int len;
 
 	sendbuf = tpalloc((char*)"BT_NBF", (char*)"employee", 0);
 	if(sendbuf == NULL) {
@@ -41,20 +40,36 @@ int main(int argc, char **argv) {
 	
 	strcpy(name, "zhfeng");
 	btaddattribute(&sendbuf, (char*)"name", (char*)name, 6);
-	btlogger((char*)"add name value is %s", name);
+	//btlogger((char*)"add name value is %s", name);
 
 	btaddattribute(&sendbuf, (char*)"id", (char*)&id, sizeof(id));
-	btlogger((char*)"add id value is %d", id);
+	//btlogger((char*)"add id value is %d", id);
 
-	rcvbuf = tpalloc((char*)"BT_NBF", (char*)"employee", 0);
+	rcvbuf = tpalloc((char*)"X_OCTET", 0, 16);
 	rcvlen = strlen(rcvbuf);
 
 	rc = tpcall((char*)"CBR_Request", (char*)sendbuf, strlen(sendbuf), (char**)&rcvbuf, &rcvlen, (long)0);
 
 	if(rc == 0 && tperrno == 0) {
-		btlogger((char*) "call CBR_Request service ok");
+		//btlogger((char*) "first call CBR_Request service ok");
+		printf( "%s", rcvbuf);
 	} else {
-		btlogger((char*) "call failed with rc = %d, tperrno = %d", rc, tperrno);
+		btlogger((char*) "first call failed with rc = %d, tperrno = %d", rc, tperrno);
+		toReturn = -1;
+		tpfree(sendbuf);
+		tpfree(rcvbuf);
+		return toReturn;
+	}
+
+	id = 999;
+	btsetattribute(&sendbuf, (char*)"id", 0, (char*)&id, sizeof(id));
+
+	rc = tpcall((char*)"CBR_Request", (char*)sendbuf, strlen(sendbuf), (char**)&rcvbuf, &rcvlen, (long)0);
+if(rc == 0 && tperrno == 0) {
+		//btlogger((char*) "second call CBR_Request service ok");
+		printf("%s\n", rcvbuf);
+	} else {
+		btlogger((char*) "second call failed with rc = %d, tperrno = %d", rc, tperrno);
 		toReturn = -1;
 	}
 
