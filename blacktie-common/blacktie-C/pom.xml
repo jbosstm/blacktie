@@ -210,10 +210,38 @@
       </plugin>
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <classifier>${bpa}</classifier>
-        </configuration>
+        <executions>
+          <execution>
+            <id>jar-without-classifier</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <excludes>
+                <exclude>**</exclude>
+              </excludes>
+              <forceCreation>true</forceCreation>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				 <executions>
+          <execution>
+            <id>jar-with-classifier</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+		    		<configuration>
+    					<classifier>${bpa}</classifier>
+              <forceCreation>true</forceCreation>
+		    		</configuration>
+          </execution>
+        </executions>
+			</plugin>
     </plugins>
   </build>
   <profiles>
