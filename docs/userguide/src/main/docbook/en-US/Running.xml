@@ -226,9 +226,19 @@
 				</listitem>
 				<listitem>
 					<para>update deployment.properties to point to JBossAS installation.</para>
+					<para>
+						<programlisting>
+							org.jboss.esb.server.home=/home/zhfeng/tools/jboss-5.1.0.GA
+							org.jboss.esb.server.config=all-with-hornetq
+						</programlisting>
+					</para>
 				</listitem>
 				<listitem>
-					<para>update build.xml and add hornetq.sar to the messaging providers to detect.</para>
+					<para>update build.xml and add hornetq.sar to the messaging providers to detect.
+					<programlisting>
+						 &lt;available property="hornetq.present" file="${deploy.dir}/hornetq.sar"/&gt;
+					</programlisting>
+					</para>
 				</listitem>
 				<listitem>
 					<para>ant deploy</para>
@@ -236,7 +246,52 @@
 			</orderedlist>
 		</section>
 		<section>
-			<title>Deploy User Defined Routing Rules</title>
+			<title>Running CBR Example</title>
+			<orderedlist>
+				<listitem>
+					<para>deploy esb to jbossas
+					<programlisting>
+						cd ${BLACKTIE_HOME}/example/cbr
+						mvn install
+					</programlisting>
+					</para>
+				</listitem>
+				<listitem>
+					<para>generate server and client
+						<programlisting>
+							# BUILD THE CBR TestOne SERVER
+							generate_server -Dservice.names=CBR_TestOne -Dserver.includes=TestOneService.c -Dserver.name=server_one
+							mv server server_one
+
+							# BUILD THE CBR TestTwo SERVER
+							generate_server -Dservice.names=CBR_TestTwo -Dserver.includes=TestTwoService.c -Dserver.name=server_two
+							mv server server_two
+
+							# BUILD CLIENT
+							generate_client -Dclient.includes=client.c
+						</programlisting>
+					</para>
+				</listitem>
+				<listitem>
+					<para>start server_one and server_two
+						<programlisting>
+							btadmin startup
+						</programlisting>
+					</para>
+				</listitem>
+				<listitem>
+					<para>running client</para>
+				</listitem>
+			</orderedlist>
+		</section>
+		<section>
+			<title>Content Routing Rulers</title>
+			<para>
+				This example has three services: CBR_Request, CBR_TestOne and CBRTestTwo. All tpcall messages that send to CBR_Rquest will been routed by xpath ruler.
+				<programlisting language="JAVA" role="JAVA"><xi:include
+					href="extras/rulers.drl" xmlns:xi="http://www.w3.org/2001/XInclude"
+					parse="text" /></programlisting>
+			</para>
 		</section>
 	</section>
 </chapter>
