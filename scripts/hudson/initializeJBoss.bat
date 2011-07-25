@@ -20,7 +20,7 @@ rem echo            ^</fileset^> >> build.xml
 rem echo        ^</move^> >> build.xml
 rem echo        ^<get src="http://albany/userContent/blacktie/jboss-5.1.0.GA.zip" dest="./jboss-5.1.0.GA.zip" verbose="true" usetimestamp="true"/^> >> build.xml
 rem echo        ^<get src="http://albany/userContent/blacktie/hornetq-2.1.2.Final.zip" dest="./hornetq-2.1.2.Final.zip" verbose="true" usetimestamp="true"/^> >> build.xml
-echo        ^<get src="http://albany/userContent/blacktie/jbossesb-4.9.zip" dest="./jbossesb-4.9.zip" verbose="true" usetimestamp="true"/^> >> build.xml
+rem echo        ^<get src="http://albany/userContent/blacktie/jbossesb-4.9.zip" dest="./jbossesb-4.9.zip" verbose="true" usetimestamp="true"/^> >> build.xml
 echo        ^<delete dir="jboss-5.1.0.GA"/^> >> build.xml
 echo        ^<unzip src="./jboss-5.1.0.GA.zip" dest="."/^> >> build.xml
 echo        ^<delete dir="hornetq-2.1.2.Final"/^> >> build.xml
@@ -81,6 +81,7 @@ IF %ERRORLEVEL% NEQ 0 exit -1
 rem INITIALZE JBOSSESB
 copy %WORKSPACE%\trunk\scripts\hudson\hornetq\jboss-as-hornetq-int.jar %WORKSPACE%\jboss-5.1.0.GA\common\lib
 copy %WORKSPACE%\trunk\scripts\hudson\hornetq\hornetq-deployers-jboss-beans.xml %WORKSPACE%\jboss-5.1.0.GA\server\all-with-hornetq\deployers
+copy %WORKSPACE%\jbossesb-4.9\install\deployment.properties-example %WORKSPACE%\jbossesb-4.9\install\deployment.properties
 call ant configureESB -DWORKSPACE=%WORKSPACE%
 IF %ERRORLEVEL% NEQ 0 exit -1
 cd %WORKSPACE%\jbossesb-4.9\install
