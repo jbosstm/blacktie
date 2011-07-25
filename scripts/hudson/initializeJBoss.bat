@@ -20,10 +20,13 @@ rem echo            ^</fileset^> >> build.xml
 rem echo        ^</move^> >> build.xml
 rem echo        ^<get src="http://albany/userContent/blacktie/jboss-5.1.0.GA.zip" dest="./jboss-5.1.0.GA.zip" verbose="true" usetimestamp="true"/^> >> build.xml
 rem echo        ^<get src="http://albany/userContent/blacktie/hornetq-2.1.2.Final.zip" dest="./hornetq-2.1.2.Final.zip" verbose="true" usetimestamp="true"/^> >> build.xml
+echo        ^<get src="http://albany/userContent/blacktie/jbossesb-4.9.zip" dest="./jbossesb-4.9.zip" verbose="true" usetimestamp="true"/^> >> build.xml
 echo        ^<delete dir="jboss-5.1.0.GA"/^> >> build.xml
 echo        ^<unzip src="./jboss-5.1.0.GA.zip" dest="."/^> >> build.xml
 echo        ^<delete dir="hornetq-2.1.2.Final"/^> >> build.xml
 echo        ^<unzip src="./hornetq-2.1.2.Final.zip" dest="."/^> >> build.xml
+echo        ^<delete dir="jbossesb-4.9"/^> >> build.xml
+echo        ^<unzip src="./jbossesb-4.9.zip" dest="."/^> >> build.xml
 echo    ^</target^> >> build.xml
 echo    ^<target name="replaceJBoss"^> >> build.xml
 echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all-with-hornetq/conf/jbossts-properties.xml" match="CONFIGURATION_FILE" replace="NAME_SERVICE"  /^> >> build.xml
@@ -40,6 +43,11 @@ echo	^</target^> >> build.xml
 
 echo	^<target name="initializeBlackTieSampleSecurity"^> >> build.xml
 echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all-with-hornetq/deploy/hornetq.sar/hornetq-configuration.xml" match="&lt;/security-settings&gt;" replace="v      &lt;security-setting match=&quot;jms.queue.BTR_SECURE&quot;&gt;&#10;         &lt;permission type=&quot;send&quot; roles=&quot;blacktie&quot;/&gt;&#10;         &lt;permission type=&quot;consume&quot; roles=&quot;blacktie&quot;/&gt;&#10;      &lt;/security-setting&gt;&#10;&lt;/security-settings&gt;"  /^> >> build.xml
+echo    ^<target name="configureESB"^> >> build.xml
+echo        ^<replaceregexp byline="true" file="jbossesb-4.9/install/deployment.properties" match="/jbossesb-server-4.5.GA" replace="${WORKSPACE}/jboss-5.1.0.GA" /^> >> build.xml
+echo        ^<replaceregexp byline="true" file="jbossesb-4.9/install/deployment.properties" match="=default" replace="=all-with-hornetq" /^> >> build.xml
+echo        ^<replaceregexp byline="true" file="jbossesb-4.9/install/deployment.properties" match="^(org.jboss.esb.tomcat.home)" replace="#\1" /^> >> build.xml
+echo        ^<replaceregexp byline="true" file="jbossesb-4.9/install/build.xml" match="(hornetq)" replace="\1.sar" /^> >> build.xml
 echo	^</target^> >> build.xml
 echo ^</project^> >> build.xml
 
@@ -68,3 +76,13 @@ copy %WORKSPACE%\trunk\jatmibroker-xatmi\src\test\resources\hornetq-jms.xml %WOR
 cd %WORKSPACE%
 call ant configureHornetQ
 IF %ERRORLEVEL% NEQ 0 exit -1
+
+rem INITIALZE JBOSSESB
+copy %WORKSPACE%\trunk\scripts\hudson\hornetq\jboss-as-hornetq-int.jar %WORKSPACE%\jboss-5.1.0.GA\common\lib
+copy %WORKSPACE%\trunk\scripts\hudson\hornetq\hornetq-deployers-jboss-beans.xml %WORKSPACE%\jboss-5.1.0.GA\server\all-with-hornetq\deployers
+call ant configureESB -DWORKSPACE=%WORKSPACE%
+IF %ERRORLEVEL% NEQ 0 exit -1
+cd %WORKSPACE%\jbossesb-4.9\install
+call ant deploy
+IF %ERRORLEVEL% NEQ 0 exit -1
+cd %WORKSPACE%
