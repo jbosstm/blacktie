@@ -43,6 +43,7 @@ echo	^</target^> >> build.xml
 
 echo	^<target name="initializeBlackTieSampleSecurity"^> >> build.xml
 echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all-with-hornetq/deploy/hornetq.sar/hornetq-configuration.xml" match="&lt;/security-settings&gt;" replace="v      &lt;security-setting match=&quot;jms.queue.BTR_SECURE&quot;&gt;&#10;         &lt;permission type=&quot;send&quot; roles=&quot;blacktie&quot;/&gt;&#10;         &lt;permission type=&quot;consume&quot; roles=&quot;blacktie&quot;/&gt;&#10;      &lt;/security-setting&gt;&#10;&lt;/security-settings&gt;"  /^> >> build.xml
+echo	^</target^> >> build.xml
 echo    ^<target name="configureESB"^> >> build.xml
 echo        ^<replaceregexp byline="true" file="jbossesb-4.9/install/deployment.properties" match="/jbossesb-server-4.5.GA" replace="${WORKSPACE}/jboss-5.1.0.GA" /^> >> build.xml
 echo        ^<replaceregexp byline="true" file="jbossesb-4.9/install/deployment.properties" match="=default" replace="=all-with-hornetq" /^> >> build.xml
