@@ -19,7 +19,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jboss.narayana.blacktie.examples</groupId>
   <artifactId>integration1-ejb-ear</artifactId>
-  <version>3.0.0.M4-SNAPSHOT</version>
+  <version>4.0.0.M1-SNAPSHOT</version>
   <name>Integration1 - Example EJB Ear</name>
   <packaging>ear</packaging>
   <description>A BlackTie component</description>
@@ -108,7 +108,7 @@
     <dependency>
       <groupId>org.jboss.narayana.blacktie.examples</groupId>
       <artifactId>integration1-ejb</artifactId>
-      <version>3.0.0.M4-SNAPSHOT</version>
+      <version>4.0.0.M1-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>

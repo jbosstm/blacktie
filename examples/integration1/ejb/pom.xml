@@ -24,7 +24,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jboss.narayana.blacktie.examples</groupId>
   <artifactId>integration1-ejb</artifactId>
-  <version>3.0.0.M4-SNAPSHOT</version>
+  <version>4.0.0.M1-SNAPSHOT</version>
   <packaging>ejb</packaging>
   <name>Integration 1 - Example EJB</name>
   <description>A BlackTie component</description>

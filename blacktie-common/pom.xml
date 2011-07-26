@@ -19,7 +19,7 @@
   <parent>
     <groupId>org.jboss.narayana.blacktie</groupId>
     <artifactId>blacktie-all</artifactId>
-    <version>3.0.0.M4-SNAPSHOT</version>
+    <version>4.0.0.M1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jboss.narayana.blacktie</groupId>
