@@ -48,7 +48,7 @@ echo    ^<target name="configureESB"^> >> build.xml
 echo        ^<replaceregexp byline="true" file="jbossesb-4.9/install/deployment.properties" match="/jbossesb-server-4.5.GA" replace="${WORKSPACE}/jboss-5.1.0.GA" /^> >> build.xml
 echo        ^<replaceregexp byline="true" file="jbossesb-4.9/install/deployment.properties" match="=default" replace="=all-with-hornetq" /^> >> build.xml
 echo        ^<replaceregexp byline="true" file="jbossesb-4.9/install/deployment.properties" match="^(org.jboss.esb.tomcat.home)" replace="#\1" /^> >> build.xml
-echo        ^<replaceregexp byline="true" file="jbossesb-4.9/install/build.xml" match="(hornetq)" replace="\1.sar" /^> >> build.xml
+echo        ^<replaceregexp byline="true" file="jbossesb-4.9/install/build.xml" match="(/hornetq)" replace="\1.sar" /^> >> build.xml
 echo	^</target^> >> build.xml
 echo ^</project^> >> build.xml
 
