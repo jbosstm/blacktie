@@ -288,7 +288,7 @@
 			<title>Content Routing Rulers</title>
 			<para>
 				This example has three services: CBR_Request, CBR_TestOne and CBRTestTwo. All tpcall messages that send to CBR_Rquest will been routed by xpath ruler.
-				<programlisting language="JAVA" role="JAVA"><xi:include
+				<programlisting><xi:include
 					href="extras/rulers.drl" xmlns:xi="http://www.w3.org/2001/XInclude"
 					parse="text" /></programlisting>
 			</para>
