@@ -28,6 +28,9 @@ if [ "$?" != "0" ]; then
     exit -1
 fi
 
+# WAIT
+sleep 10
+
 # RUN TestOne AND TestTwo SERVER
 btadmin startup
 if [ "$?" != "0" ]; then

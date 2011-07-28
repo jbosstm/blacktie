@@ -22,6 +22,8 @@ rem  BUILD ESB AND DEPLOY
 mvn install
 IF %ERRORLEVEL% NEQ 0 exit -1
 
+@ping 127.0.0.1 -n 5 -w 1000 > nul
+
 rem RUN TestOne AND TestTwo SERVER
 set BLACKTIE_CONFIGURATION=win32
 call btadmin startup
