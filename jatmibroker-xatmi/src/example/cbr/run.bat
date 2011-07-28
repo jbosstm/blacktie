@@ -19,7 +19,7 @@ call generate_client -Dclient.includes=client.c
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem  BUILD ESB AND DEPLOY
-call mvn install
+mvn install
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem RUN TestOne AND TestTwo SERVER
@@ -36,7 +36,7 @@ call btadmin shutdown
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem UNDEPLOY ESB
-call mvn jboss:undeploy
+mvn jboss:undeploy
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem CHECK RESULT
