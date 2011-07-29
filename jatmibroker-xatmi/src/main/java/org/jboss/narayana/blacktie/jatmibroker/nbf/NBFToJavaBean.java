@@ -50,7 +50,7 @@ public class NBFToJavaBean {
 			System.exit(1);
 		}
 
-		convert(args[1], false);
+		convert(args[0], false);
 	}
 	
 	public static void convert(String fname, boolean rewrite) throws Exception {
