@@ -125,6 +125,7 @@
       <groupId>org.jboss.narayana.blacktie</groupId>
       <artifactId>jatmibroker-xatmi</artifactId>
       <version>4.0.0.M1-SNAPSHOT</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.jboss.javaee</groupId>
