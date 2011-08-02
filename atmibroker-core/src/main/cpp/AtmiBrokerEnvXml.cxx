@@ -481,6 +481,7 @@ static void XMLCALL startElement
 			ACE_OS::strcpy(adm, ".");
 
 			service.serviceType = NULL;
+			service.coding_type = NULL;
 			service.transportLib = NULL;
 			service.advertised = false;
 			service.conversational = false;
@@ -536,6 +537,9 @@ static void XMLCALL startElement
 				} else if(strcmp(atts[i], "type") == 0) {
 					service.serviceType = copy_value(atts[i+1]);
 					LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "set type: " << service.serviceType);
+				} else if(strcmp(atts[i], "coding_type") == 0) {
+					service.coding_type = copy_value(atts[i+1]);
+					LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "set coding type: " << service.coding_type);
 				}
 			}
 

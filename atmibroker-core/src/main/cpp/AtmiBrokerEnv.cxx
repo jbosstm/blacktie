@@ -206,6 +206,9 @@ void AtmiBrokerEnv::destroy() {
         		if ((*i).library_name != NULL) {
 				    free((*i).library_name);
         		}
+				if ((*i).coding_type != NULL) {
+					free((*i).coding_type);
+				}
 			}
 			services->clear();
 

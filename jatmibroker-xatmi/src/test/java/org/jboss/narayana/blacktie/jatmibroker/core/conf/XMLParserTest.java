@@ -152,5 +152,6 @@ public class XMLParserTest extends TestCase {
 		assertTrue("queue".equals(prop.getProperty("blacktie.JAVA_Converse.type")));
 		assertTrue("queue".equals(prop.getProperty("blacktie.XMLParserTest.type")));
 		assertTrue("topic".equals(prop.getProperty("blacktie.JAVA_Topic.type")));
+		assertTrue("xml".equals(prop.getProperty("blacktie.XMLParserTest.coding_type")));
 	}
 }

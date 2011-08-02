@@ -75,6 +75,7 @@ typedef BLACKTIE_CORE_DLL struct _service_info {
 	char* transportLib;
 	char* function_name;
 	char* library_name;
+	char* coding_type;
 	int poolSize;
 	bool advertised;
 	bool conversational;

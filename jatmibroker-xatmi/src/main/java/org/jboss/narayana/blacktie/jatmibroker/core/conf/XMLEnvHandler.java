@@ -454,6 +454,10 @@ public class XMLEnvHandler extends DefaultHandler {
 					String type = atts.getValue(i);
 					String type_key = "blacktie." + serviceName + ".type";
 					prop.setProperty(type_key, type);
+				} else if (attsLocalName.equals("coding_type")) {
+					String coding_type = atts.getValue(i);
+					String coding_key = "blacktie." + serviceName + ".coding_type";
+					prop.setProperty(coding_key, coding_type);
 				}
 			}
 			

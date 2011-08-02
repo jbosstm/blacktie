@@ -33,7 +33,7 @@
 					<LIBRARY_NAME configuration="win32" value="win32.dll" />
 					<LIBRARY_NAME configuration="linux" value="linux.so" />
 				</SERVICE>
-				<SERVICE name='ECHO' type="topic"/>
+				<SERVICE name='ECHO' type="topic" coding_type="xml"/>
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>
