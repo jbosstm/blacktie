@@ -32,53 +32,53 @@
   </repositories>
   <build>
     <plugins>
-		<plugin>
-			<groupId>org.codehaus.mojo</groupId>
-			<artifactId>jboss-packaging-maven-plugin</artifactId>
-			<version>2.1.1</version>
-			<extensions>true</extensions>
-			<configuration>
-				<archiveName>${project.build.finalName}</archiveName>
-			</configuration>
-			<executions>
-				<execution>
-					<id>build-esb</id>
-					<goals>
-						<goal>esb</goal>
-					</goals>
-				</execution>
-			</executions>
-		</plugin>
-		<plugin>
-			<groupId>org.codehaus.mojo</groupId>
-			<artifactId>jboss-maven-plugin</artifactId>
-			<version>1.5.0</version>
-			<configuration>
-				<fileNames>
-					<fileName>${project.build.directory}/${project.build.finalName}.esb</fileName>
-				</fileNames>
-				<hostName>${env.JBOSSAS_IP_ADDR}</hostName>
-			</configuration>
-			<executions>
-				<execution>
-					<id>jboss-redeploy</id>
-					<phase>pre-integration-test</phase>
-					<goals>
-						<goal>redeploy</goal>
-					</goals>
-				</execution>
-			</executions>
-		</plugin>
-	</plugins>
-</build>
-<reporting>
-	<plugins>
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-javadoc-plugin</artifactId>
-		</plugin>
-	</plugins>
-</reporting>
-<dependencies>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jboss-packaging-maven-plugin</artifactId>
+        <version>2.1.1</version>
+        <extensions>true</extensions>
+        <configuration>
+          <archiveName>${project.build.finalName}</archiveName>
+        </configuration>
+        <executions>
+          <execution>
+            <id>build-esb</id>
+            <goals>
+              <goal>esb</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jboss-maven-plugin</artifactId>
+        <version>1.5.0</version>
+        <configuration>
+          <fileNames>
+            <fileName>${project.build.directory}/${project.build.finalName}.esb</fileName>
+          </fileNames>
+          <hostName>${env.JBOSSAS_IP_ADDR}</hostName>
+        </configuration>
+        <executions>
+          <execution>
+            <id>jboss-redeploy</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>redeploy</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </reporting>
+  <dependencies>
   </dependencies>
 </project>

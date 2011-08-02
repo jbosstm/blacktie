@@ -29,10 +29,6 @@
     <name>LogicBlaze, Inc.</name>
     <url>http://www.logicblaze.com/</url>
   </organization>
-  
-  
-  
-  
   <scm>
     <connection>scm:svn:https://svn.codehaus.org/stomp/tags/stompconnect-1.0</connection>
     <developerConnection>scm:svn:https://svn.codehaus.org/stomp/tags/stompconnect-1.0</developerConnection>

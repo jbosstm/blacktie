@@ -16,11 +16,6 @@
 		02110-1301, USA.
 	-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <parent>
-    <groupId>org.jboss.jbossas</groupId>
-    <artifactId>jboss-as-component-matrix</artifactId>
-    <version>5.1.0.GA</version>
-  </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jboss.narayana.blacktie</groupId>
   <artifactId>blacktie-all</artifactId>
@@ -132,6 +127,40 @@
     <developerConnection>scm:svn:https://svn.jboss.org/repos/blacktie/trunk/blacktie</developerConnection>
     <url>http://viewvc.jboss.org/cgi-bin/viewvc.cgi/blacktie/trunk/blacktie</url>
   </scm>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>jboss.jbossts</groupId>
+        <artifactId>jbossjts</artifactId>
+        <version>${version.jboss.jbossts}</version>
+      </dependency>
+      <dependency>
+        <groupId>jboss.jbossts</groupId>
+        <artifactId>jbossts-common</artifactId>
+        <version>${version.jboss.jbossts}</version>
+      </dependency>
+      <dependency>
+        <groupId>jboss.jbossts</groupId>
+        <artifactId>jbossjts-jacorb</artifactId>
+        <version>${version.jboss.jbossts}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.javaee</groupId>
+        <artifactId>jboss-javaee</artifactId>
+        <version>5.0.1${version.suffix.org.jboss.javaee}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.integration</groupId>
+        <artifactId>jboss-corba-ots-spi</artifactId>
+        <version>${version.org.jboss.integration}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  <properties>
+    <version.jboss.jbossts>4.6.1.GA</version.jboss.jbossts>
+    <version.suffix.org.jboss.javaee>.GA</version.suffix.org.jboss.javaee>
+    <version.org.jboss.integration>5.1.0.GA</version.org.jboss.integration>
+  </properties>
   <modules>
     <module>blacktie-utils/cpp-plugin</module>
     <module>blacktie-common</module>

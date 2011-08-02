@@ -226,22 +226,22 @@
           </execution>
         </executions>
       </plugin>
-			<plugin>
-				<artifactId>maven-jar-plugin</artifactId>
-				 <executions>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
           <execution>
             <id>jar-with-classifier</id>
             <phase>package</phase>
             <goals>
               <goal>jar</goal>
             </goals>
-		    		<configuration>
-    					<classifier>${bpa}</classifier>
+            <configuration>
+              <classifier>${bpa}</classifier>
               <forceCreation>true</forceCreation>
-		    		</configuration>
+            </configuration>
           </execution>
         </executions>
-			</plugin>
+      </plugin>
     </plugins>
   </build>
   <profiles>
