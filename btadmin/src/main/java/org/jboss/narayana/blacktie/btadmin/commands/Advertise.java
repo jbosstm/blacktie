@@ -61,7 +61,7 @@ public class Advertise implements Command {
 	/**
 	 * Show the usage of the command
 	 */
-	public String getExampleUsage() {
+	public String getQuickstartUsage() {
 		return "<serverName> <serviceName>";
 	}
 

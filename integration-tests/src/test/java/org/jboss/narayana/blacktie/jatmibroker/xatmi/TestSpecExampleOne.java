@@ -21,7 +21,7 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.TestSpecExampleOne;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.TestSpecQuickstartOne;
 import org.jboss.narayana.blacktie.jatmibroker.RunServer;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection;
@@ -30,9 +30,9 @@ import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionFactory;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.X_C_TYPE;
 
-public class TestSpecExampleOne extends TestCase {
+public class TestSpecQuickstartOne extends TestCase {
 	private static final Logger log = LogManager
-			.getLogger(TestSpecExampleOne.class);
+			.getLogger(TestSpecQuickstartOne.class);
 
 	public static final int OK = 1;
 
@@ -57,7 +57,7 @@ public class TestSpecExampleOne extends TestCase {
 	}
 
 	public void test() throws ConnectionException {
-		log.info("TestSpecExampleOne::test_specexampleone");
+		log.info("TestSpecQuickstartOne::test_specquickstartone");
 		long dlen = 0;
 		long clen = 0; /* contains a character array named input and an */
 		int cd; /* integer named output. */

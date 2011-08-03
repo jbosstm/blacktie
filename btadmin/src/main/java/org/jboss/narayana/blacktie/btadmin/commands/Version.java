@@ -40,7 +40,7 @@ public class Version implements Command {
 		return false;
 	}
 
-	public String getExampleUsage() {
+	public String getQuickstartUsage() {
 		return "";
 	}
 

@@ -22,7 +22,7 @@
 #include "tx.h"
 #include <string.h>
 
-#include "TestSpecExampleOne.h"
+#include "TestSpecQuickstartOne.h"
 
 #if defined(__cplusplus)
 extern "C" {
@@ -32,8 +32,8 @@ extern void debit_credit_svc(TPSVCINFO *svcinfo);
 }
 #endif
 
-void TestSpecExampleOne::setUp() {
-	btlogger((char*) "TestSpecExampleOne::setUp");
+void TestSpecQuickstartOne::setUp() {
+	btlogger((char*) "TestSpecQuickstartOne::setUp");
 	// Setup server
 	BaseServerTest::setUp();
 
@@ -47,8 +47,8 @@ void TestSpecExampleOne::setUp() {
 	BT_ASSERT(toCheck != -1);
 }
 
-void TestSpecExampleOne::tearDown() {
-	btlogger((char*) "TestSpecExampleOne::tearDown");
+void TestSpecQuickstartOne::tearDown() {
+	btlogger((char*) "TestSpecQuickstartOne::tearDown");
 	// Do local work
 	int toCheck = tpunadvertise((char*) "DEBIT");
 	BT_ASSERT(tperrno == 0);
@@ -64,9 +64,9 @@ void TestSpecExampleOne::tearDown() {
 
 /* this test is taken from the XATMI specification */
 
-void TestSpecExampleOne::test_specexampleone() {
+void TestSpecQuickstartOne::test_specquickstartone() {
 	init_ace();
-	btlogger((char*) "TestSpecExampleOne::test_specexampleone");
+	btlogger((char*) "TestSpecQuickstartOne::test_specquickstartone");
 	DATA_BUFFER *dptr; /* DATA_BUFFER is a typed buffer of type */
 	DATA_BUFFER *cptr; /* X_C_TYPE and subtype dc_buf. The structure */
 	long dlen = 0;

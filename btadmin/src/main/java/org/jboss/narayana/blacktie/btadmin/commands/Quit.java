@@ -34,7 +34,7 @@ public class Quit implements Command {
 		return false;
 	}
 
-	public String getExampleUsage() {
+	public String getQuickstartUsage() {
 		return "";
 	}
 

@@ -49,7 +49,7 @@ void ODBCTest::test() {
 	SQLHANDLE hdlEnv, hdlConn, hdlStmt, hdlDbc;
 	char* stmt = "SELECT * from NutHead"; //SQL statement? NutHead is the Table name
 
-	//for example
+	//for quickstart
 	char *dsnName = "COLLECTOR"; //name of your program or what ever�..
 	char* userID = "eXceed";
 	char* passwd = "hole";

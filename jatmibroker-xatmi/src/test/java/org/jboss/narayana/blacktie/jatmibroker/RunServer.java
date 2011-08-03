@@ -23,8 +23,8 @@ import org.jboss.narayana.blacktie.jatmibroker.tx.services.RollbackOnlyTpcallTPE
 import org.jboss.narayana.blacktie.jatmibroker.tx.services.RollbackOnlyTpcallTPETIMEService;
 import org.jboss.narayana.blacktie.jatmibroker.tx.services.RollbackOnlyTprecvTPEVDISCONIMMService;
 import org.jboss.narayana.blacktie.jatmibroker.tx.services.RollbackOnlyTprecvTPEVSVCFAILService;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.SpecExampleOneService;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.SpecExampleTwoService;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.SpecQuickstartOneService;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.SpecQuickstartTwoService;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPACallService;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPCallXCTypeService;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPCallXCommonService;
@@ -72,17 +72,17 @@ public class RunServer {
 
 	public void tpadvertiseDEBIT() throws ConnectionException {
 		this.server.tpadvertise("TestOne",
-				SpecExampleOneService.class.getName());
+				SpecQuickstartOneService.class.getName());
 	}
 
 	public void tpadvertiseCREDIT() throws ConnectionException {
 		this.server.tpadvertise("TestTwo",
-				SpecExampleOneService.class.getName());
+				SpecQuickstartOneService.class.getName());
 	}
 
 	public void tpadvertiseINQUIRY() throws ConnectionException {
 		this.server.tpadvertise(getServiceNameINQUIRY(),
-				SpecExampleTwoService.class.getName());
+				SpecQuickstartTwoService.class.getName());
 	}
 
 	public void tpadvertiseTestTPACall() throws ConnectionException {

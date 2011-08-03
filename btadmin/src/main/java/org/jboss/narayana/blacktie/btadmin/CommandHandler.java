@@ -72,12 +72,12 @@ public class CommandHandler {
 				System.arraycopy(args, 1, commandArgs, 0, commandArgs.length);
 			}
 
-			String exampleUsage = command.getExampleUsage();
-			char[] charArray = exampleUsage.toCharArray();
+			String quickstartUsage = command.getQuickstartUsage();
+			char[] charArray = quickstartUsage.toCharArray();
 			int expectedArgsLength = 0;
 			int optionalArgs = 0;
 			// Note this does assume that each word is a parameter
-			for (int i = 0; i < exampleUsage.length(); i++) {
+			for (int i = 0; i < quickstartUsage.length(); i++) {
 				if (charArray[i] == ' ') {
 					expectedArgsLength++;
 				} else if (charArray[i] == '[') {
@@ -101,7 +101,7 @@ public class CommandHandler {
 							+ expectedArgsLength + ", received: "
 							+ commandArgs.length);
 				}
-				log.error(("Expected Usage: " + args[0] + " " + exampleUsage)
+				log.error(("Expected Usage: " + args[0] + " " + quickstartUsage)
 						.trim());
 			} else {
 				if (command.requiresAdminConnection()) {
@@ -126,7 +126,7 @@ public class CommandHandler {
 					}
 				} catch (IncompatibleArgsException e) {
 					String usage = "Expected Usage: " + args[0] + " "
-							+ exampleUsage;
+							+ quickstartUsage;
 					log.error("Arguments invalid: " + e.getMessage());
 					log.error(usage.trim());
 					log.trace("Arguments invalid: " + e.getMessage(), e);

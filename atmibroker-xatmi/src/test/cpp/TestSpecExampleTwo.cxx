@@ -22,7 +22,7 @@
 #include "tx.h"
 #include <string.h>
 
-#include "TestSpecExampleTwo.h"
+#include "TestSpecQuickstartTwo.h"
 
 #if defined(__cplusplus)
 extern "C" {
@@ -32,8 +32,8 @@ extern void inquiry_svc(TPSVCINFO *svcinfo);
 }
 #endif
 
-void TestSpecExampleTwo::setUp() {
-	btlogger((char*) "TestSpecExampleTwo::setUp");
+void TestSpecQuickstartTwo::setUp() {
+	btlogger((char*) "TestSpecQuickstartTwo::setUp");
 	// Setup server
 	BaseServerTest::setUp();
 
@@ -43,8 +43,8 @@ void TestSpecExampleTwo::setUp() {
 	BT_ASSERT(toCheck != -1);
 }
 
-void TestSpecExampleTwo::tearDown() {
-	btlogger((char*) "TestSpecExampleTwo::tearDown");
+void TestSpecQuickstartTwo::tearDown() {
+	btlogger((char*) "TestSpecQuickstartTwo::tearDown");
 	// Do local work
 	int toCheck = tpunadvertise((char*) "INQUIRY");
 	BT_ASSERT(tperrno == 0);
@@ -54,8 +54,8 @@ void TestSpecExampleTwo::tearDown() {
 	BaseServerTest::tearDown();
 }
 
-void TestSpecExampleTwo::test_specexampletwo() {
-	btlogger((char*) "TestSpecExampleTwo::test_specexampletwo");
+void TestSpecQuickstartTwo::test_specquickstarttwo() {
+	btlogger((char*) "TestSpecQuickstartTwo::test_specquickstarttwo");
 	DATA_BUFFER *ptr; /* DATA_BUFFER is a typed buffer of type */
 	long len = 0;
 	long event = 0; /* X_C_TYPE and subtype inq_buf. The structure */

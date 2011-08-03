@@ -41,7 +41,7 @@ echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all-with-h
 echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all-with-hornetq/deploy/hornetq-ra.rar/META-INF/ra.xml" match="&lt;resourceadapter-class&gt;org.hornetq.ra.HornetQResourceAdapter&lt;/resourceadapter-class&gt;" replace="&lt;resourceadapter-class&gt;org.hornetq.ra.HornetQResourceAdapter&lt;/resourceadapter-class&gt;&#10;      &lt;config-property&gt;&#10;        &lt;description&gt;The connection TTL&lt;/description&gt;&#10;        &lt;config-property-name&gt;ConnectionTTL&lt;/config-property-name&gt;&#10;        &lt;config-property-type&gt;java.lang.Long&lt;/config-property-type&gt;&#10;        &lt;config-property-value&gt;-1&lt;/config-property-value&gt;&#10;      &lt;/config-property&gt;&#10;      &lt;config-property&gt;&#10;        &lt;description&gt;The client failure check period&lt;/description&gt;&#10;        &lt;config-property-name&gt;ClientFailureCheckPeriod&lt;/config-property-name&gt;&#10;        &lt;config-property-type&gt;java.lang.Long&lt;/config-property-type&gt;&#10;        &lt;config-property-value&gt;86400000&lt;/config-property-value&gt;&#10;      &lt;/config-property&gt;" /^> >> build.xml
 echo	^</target^> >> build.xml
 
-echo	^<target name="initializeBlackTieSampleSecurity"^> >> build.xml
+echo	^<target name="initializeBlackTieQuickstartSecurity"^> >> build.xml
 echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all-with-hornetq/deploy/hornetq.sar/hornetq-configuration.xml" match="&lt;/security-settings&gt;" replace="v      &lt;security-setting match=&quot;jms.queue.BTR_SECURE&quot;&gt;&#10;         &lt;permission type=&quot;send&quot; roles=&quot;blacktie&quot;/&gt;&#10;         &lt;permission type=&quot;consume&quot; roles=&quot;blacktie&quot;/&gt;&#10;      &lt;/security-setting&gt;&#10;&lt;/security-settings&gt;"  /^> >> build.xml
 echo	^</target^> >> build.xml
 echo    ^<target name="configureESB"^> >> build.xml
@@ -65,7 +65,7 @@ set JBOSS_HOME=
 cd %WORKSPACE
 
 rem INITIALIZE JBOSS
-cd %WORKSPACE%\jboss-5.1.0.GA\docs\examples\transactions
+cd %WORKSPACE%\jboss-5.1.0.GA\docs\quickstarts\transactions
 call ant jts -Dtarget.server.dir=../../../server/all-with-hornetq
 IF %ERRORLEVEL% NEQ 0 exit -1
 cd %WORKSPACE%
@@ -81,7 +81,7 @@ IF %ERRORLEVEL% NEQ 0 exit -1
 rem INITIALZE JBOSSESB
 copy %WORKSPACE%\trunk\scripts\hudson\hornetq\jboss-as-hornetq-int.jar %WORKSPACE%\jboss-5.1.0.GA\common\lib
 copy %WORKSPACE%\trunk\scripts\hudson\hornetq\hornetq-deployers-jboss-beans.xml %WORKSPACE%\jboss-5.1.0.GA\server\all-with-hornetq\deployers
-copy %WORKSPACE%\jbossesb-4.9\install\deployment.properties-example %WORKSPACE%\jbossesb-4.9\install\deployment.properties
+copy %WORKSPACE%\jbossesb-4.9\install\deployment.properties-quickstart %WORKSPACE%\jbossesb-4.9\install\deployment.properties
 call ant configureESB -DWORKSPACE=%WORKSPACE:\=/%
 IF %ERRORLEVEL% NEQ 0 exit -1
 cd %WORKSPACE%\jbossesb-4.9\install

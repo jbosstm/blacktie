@@ -151,7 +151,7 @@ int serverinit(int argc, char** argv) {
 			fprintf(stderr,
 					"you must specify a server name\n");
 			fprintf(stderr,
-					"example usage: ./server [-c config] -i id -s server\n");
+					"quickstart usage: ./server [-c config] -i id -s server\n");
 			toReturn = -1;
 			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		}

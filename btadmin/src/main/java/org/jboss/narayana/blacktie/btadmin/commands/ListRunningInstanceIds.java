@@ -58,7 +58,7 @@ public class ListRunningInstanceIds implements Command {
 	/**
 	 * Get the usage of the command.
 	 */
-	public String getExampleUsage() {
+	public String getQuickstartUsage() {
 		return "<serverName>";
 	}
 

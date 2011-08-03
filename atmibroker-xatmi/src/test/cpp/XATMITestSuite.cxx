@@ -65,12 +65,12 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestTPSend);
 #include "TestTPConversation.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTPConversation);
 /* End of Conversation */
-/* Examples from the specification */
-#include "TestSpecExampleOne.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestSpecExampleOne);
-#include "TestSpecExampleTwo.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestSpecExampleTwo);
-/* End of Examples from the specification */
+/* Quickstarts from the specification */
+#include "TestSpecQuickstartOne.h"
+CPPUNIT_TEST_SUITE_REGISTRATION( TestSpecQuickstartOne);
+#include "TestSpecQuickstartTwo.h"
+CPPUNIT_TEST_SUITE_REGISTRATION( TestSpecQuickstartTwo);
+/* End of Quickstarts from the specification */
 /* Application Management Functions */
 #include "LoopyServerAndClient.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( LoopyServerAndClient);

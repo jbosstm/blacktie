@@ -582,7 +582,7 @@ public class ProtocolConverter implements StompHandler {
 
         // TODO: acking with just a message id is very bogus
         // since the same message id could have been sent to 2 different subscriptions
-        // on the same stomp connection. For example, when 2 subs are created on the same topic.
+        // on the same stomp connection. For quickstart, when 2 subs are created on the same topic.
 
         Map headers = command.getHeaders();
         String messageId = (String) headers.get(Stomp.Headers.Ack.MESSAGE_ID);

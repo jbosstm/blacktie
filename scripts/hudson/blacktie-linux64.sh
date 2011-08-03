@@ -124,14 +124,14 @@ export DB2DIR=/opt/ibm/db2/V9.7
 export DB2_LIB=$DB2DIR/lib64
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DB2_LIB
 
-cp $WORKSPACE/trunk/dist/blacktie-4.0.0.M1-SNAPSHOT/examples/xatmi/security/hornetq-*.properties $WORKSPACE/jboss-5.1.0.GA/server/all-with-hornetq/conf/props
+cp $WORKSPACE/trunk/dist/blacktie-4.0.0.M1-SNAPSHOT/quickstarts/xatmi/security/hornetq-*.properties $WORKSPACE/jboss-5.1.0.GA/server/all-with-hornetq/conf/props
 sed -i 's?</security-settings>?      <security-setting match="jms.queue.BTR_SECURE">\
          <permission type="send" roles="blacktie"/>\
          <permission type="consume" roles="blacktie"/>\
       </security-setting>\
 </security-settings>?g' $WORKSPACE/jboss-5.1.0.GA/server/all-with-hornetq/deploy/hornetq.sar/hornetq-configuration.xml
 
-./run_all_samples.sh tx
+./run_all_quickstarts.sh tx
 if [ "$?" != "0" ]; then
 	ps -f
 	$WORKSPACE/jboss-5.1.0.GA/bin/shutdown.sh -S && cd .

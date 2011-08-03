@@ -82,7 +82,7 @@
 				indicated in
 				&lt;BLACKTIE_BIN_DIR&gt;/setenv.[sh|bat]</para>
 
-			<para>An example run
+			<para>An quickstart run
 				configuration for the code generation tool would
 				then
 				look like:</para>
@@ -379,9 +379,9 @@
 				the queued requests will be made available to its' service
 				routine.
 				The latest BlackTie release
-				(http://www.jboss.org/blacktie/downloads.html) includes an example
+				(http://www.jboss.org/blacktie/downloads.html) includes an quickstart
 				showing this feature in action. Unpack the release and look at the
-				REAME in the examples/xatmi/queues directory.</para>
+				REAME in the quickstarts/xatmi/queues directory.</para>
 
 
 			<para>There are two BlackTie specific config requirements to ensure
@@ -412,7 +412,7 @@
 
 
 
-			<para>So, for example, if the service name is TestOne then deploy a
+			<para>So, for quickstart, if the service name is TestOne then deploy a
 				queue called BTR_TestOne to the JBoss deploy directory using an XML
 				file containing the following:</para>
 
@@ -438,7 +438,7 @@
 
 
 		<para>
-			To config a SERVIECE use topics, you could set type to 'topic', for example:
+			To config a SERVIECE use topics, you could set type to 'topic', for quickstart:
 		</para>
 
 		<para>
@@ -465,7 +465,7 @@
 			</para>
 		</note>
 
-		<para>You can get more information about these in examples/xatmi/topics.
+		<para>You can get more information about these in quickstarts/xatmi/topics.
 		</para>
 	</section>
 </chapter>

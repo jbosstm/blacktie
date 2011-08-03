@@ -31,9 +31,9 @@ import org.jboss.narayana.blacktie.jatmibroker.xatmi.ResponseException;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.Session;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.X_C_TYPE;
 
-public class TestSpecExampleTwo extends TestCase {
+public class TestSpecQuickstartTwo extends TestCase {
 	private static final Logger log = LogManager
-			.getLogger(TestSpecExampleTwo.class);
+			.getLogger(TestSpecQuickstartTwo.class);
 	private RunServer server = new RunServer();
 	private Connection connection;
 
@@ -52,7 +52,7 @@ public class TestSpecExampleTwo extends TestCase {
 	}
 
 	public void test() throws ConnectionException {
-		log.info("TestSpecExampleTwo::test_specexampletwo");
+		log.info("TestSpecQuickstartTwo::test_specquickstarttwo");
 		long len = 0;
 		// TODO long event = 0; /* X_C_TYPE and subtype inq_buf. The structure
 		// */

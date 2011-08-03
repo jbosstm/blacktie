@@ -9,9 +9,9 @@ import org.jboss.narayana.blacktie.jatmibroker.xatmi.Service;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.TPSVCINFO;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.X_C_TYPE;
 
-public class SpecExampleTwoService implements Service {
+public class SpecQuickstartTwoService implements Service {
 	private static final Logger log = LogManager
-			.getLogger(SpecExampleTwoService.class);
+			.getLogger(SpecQuickstartTwoService.class);
 
 	public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException {
 		log.info("inquiry_svc");

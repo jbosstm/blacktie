@@ -81,12 +81,12 @@
 				specifying the comand line to start server. (Note that there is also
 				an option to start servers whenever the ImR is started).</para>
 
-			<para>For example, to start our examples:</para>
+			<para>For quickstart, to start our quickstarts:</para>
 			<para>
 				<literal>tao_imr -ORBInitRef ImplRepoService=file://locator.ior add
 					ATMI_RM_202 -c
 					"./server -c linux" -w
-					"/home/mmusgrov/blacktie/trunk/atmibroker-xatmi/src/example/txfooapp"
+					"/home/mmusgrov/blacktie/trunk/atmibroker-xatmi/src/quickstart/txfooapp"
 					-e
 					LD_LIBRARY_PATH="/home/mmusgrov/blacktie/releases/blacktie-1.0-MR6-SNAPSHOT/lib:.:/usr/local/product/11.1.0/db_1/lib:/home/mmusgrov/blacktie/trunk/atmibroker-tx/target/cxx/test/lib:/home/mmusgrov/blacktie/util/ACE+TAO-5.7.1/ACE_wrappers/lib"
 					-e
@@ -137,7 +137,7 @@
 
 			<para>
 				<literal>-ORBUseImR 1</literal>
-				to the ORBOPT environment variable. For example:
+				to the ORBOPT environment variable. For quickstart:
 			</para>
 
 			<para>
@@ -246,12 +246,12 @@
 			</orderedlist>
 		</section>
 		<section>
-			<title>Running CBR Example</title>
+			<title>Running CBR Quickstart</title>
 			<orderedlist>
 				<listitem>
 					<para>deploy esb to jbossas
 					<programlisting>
-						cd ${BLACKTIE_HOME}/example/cbr
+						cd ${BLACKTIE_HOME}/quickstart/cbr
 						mvn install
 					</programlisting>
 					</para>
@@ -287,7 +287,7 @@
 		<section>
 			<title>Content Routing Rulers</title>
 			<para>
-				This example has three services: CBR_Request, CBR_TestOne and CBRTestTwo. All tpcall messages that send to CBR_Rquest will been routed by xpath ruler.
+				This quickstart has three services: CBR_Request, CBR_TestOne and CBRTestTwo. All tpcall messages that send to CBR_Rquest will been routed by xpath ruler.
 				<programlisting><xi:include
 					href="extras/rulers.drl" xmlns:xi="http://www.w3.org/2001/XInclude"
 					parse="text" /></programlisting>

@@ -40,11 +40,11 @@ public interface Command {
 	public boolean requiresAdminConnection();
 
 	/**
-	 * Get an example of the usage of the command.
+	 * Get an quickstart of the usage of the command.
 	 * 
 	 * @return A string showing the usage of the command
 	 */
-	public String getExampleUsage();
+	public String getQuickstartUsage();
 
 	/**
 	 * This will initialize the arguments for the command, if the arguments are

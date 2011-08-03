@@ -65,7 +65,7 @@ import org.w3c.dom.Element;
  * the javadoc for {@link ResourceComponent} and all the facet interfaces to
  * learn what you can do in your resource component. This component has a lot of
  * methods in it because it implements all possible facets. If your resource
- * does not support, for example, configuration, you can remove the
+ * does not support, for quickstart, configuration, you can remove the
  * {@link ConfigurationFacet} from the <code>implements</code> clause and remove
  * all method implementations that that facet required.
  * 
@@ -243,7 +243,7 @@ public class DomainComponent implements ResourceComponent, MeasurementFacet,
 		// here we simulate the loading of the managed resource's configuration
 
 		if (resourceConfiguration == null) {
-			// for this example, we will create a simple dummy configuration to
+			// for this quickstart, we will create a simple dummy configuration to
 			// start with.
 			// note that it is empty, so we're assuming there are no required
 			// configs in the plugin descriptor.

@@ -36,7 +36,7 @@
 
 		<important>
 			<para>ipv6 note</para>
-			<para>It is important to note that if you are using the sample
+			<para>It is important to note that if you are using the quickstart
 				btconfig.xml files and you are using ipv6 you will most likely need
 				to change the word localhost to localhost4. Ways to check if this is
 				neccesary are:</para>

@@ -57,7 +57,7 @@ public class Help implements Command {
 		return false;
 	}
 
-	public String getExampleUsage() {
+	public String getQuickstartUsage() {
 		return "[command]";
 	}
 
@@ -76,7 +76,7 @@ public class Help implements Command {
 			Class cls = this.getClass();
 			ProtectionDomain pDomain = cls.getProtectionDomain();
 			CodeSource cSource = pDomain.getCodeSource();
-			URL loc = cSource.getLocation(); // file:/c:/almanac14/examples/
+			URL loc = cSource.getLocation(); // file:/c:/almanac14/quickstarts/
 
 			JarFile jar = new JarFile(new File(loc.toURI()));
 			Enumeration<JarEntry> entries = jar.entries();
@@ -122,8 +122,8 @@ public class Help implements Command {
 			}
 			try {
 				Command command = CommandHandler.loadCommand(commands.get(i));
-				log.info("Example usage: " + commands.get(i) + " "
-						+ command.getExampleUsage());
+				log.info("Quickstart usage: " + commands.get(i) + " "
+						+ command.getQuickstartUsage());
 			} catch (Exception e) {
 				log.error("Could not get help for command: " + commands.get(i),
 						e);

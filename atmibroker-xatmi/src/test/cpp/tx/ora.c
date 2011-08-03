@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-/* Based on the code samples in the Oracle Streams Advanced Queuing User's Guide and Reference */
+/* Based on the code quickstarts in the Oracle Streams Advanced Queuing User's Guide and Reference */
 
 #include "tx/request.h"
 

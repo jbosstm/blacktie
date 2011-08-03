@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="C:\app\BlackHat\product\11.1.0\db_1\OCI\include;&quot;..\..\atmibroker-xatmi\src\example\txfooapp&quot;;&quot;..\..\atmibroker-core\src\main\include&quot;;&quot;..\..\atmibroker-core\src\main\export&quot;;&quot;..\..\atmibroker-core\target\cxx\compile\include\expat&quot;;&quot;..\..\atmibroker-hybrid\src\main\include&quot;;&quot;..\..\atmibroker-hybrid\src\main\export&quot;;&quot;..\..\atmibroker-hybrid\target\cxx\compile\include\stomp&quot;;&quot;..\..\atmibroker-hybrid\target\cxx\compile\include\apr-1&quot;;&quot;..\..\atmibroker-tx\src\main\export&quot;;&quot;..\..\atmibroker-tx\src\main\include&quot;;&quot;..\..\atmibroker-xatmi\src\main\include&quot;;&quot;..\..\atmibroker-xatmi\src\main\export&quot;;&quot;..\..\atmibroker-xatmi\target\cxx\runtime\include&quot;;&quot;..\..\atmibroker-core\src\test\include&quot;;&quot;..\..\atmibroker-hybrid\src\test\include&quot;;&quot;..\..\atmibroker-tx\src\test\include&quot;;&quot;..\..\atmibroker-xatmi\src\test\include&quot;;&quot;..\..\atmibroker-core\target\cxx\test\include&quot;;&quot;..\..\atmibroker-hybrid\target\cxx\test\include&quot;;&quot;..\..\atmibroker-tx\target\cxx\test\include&quot;;&quot;..\..\atmibroker-xatmi\target\cxx\test\include&quot;"
+				AdditionalIncludeDirectories="C:\app\BlackHat\product\11.1.0\db_1\OCI\include;&quot;..\..\atmibroker-xatmi\src\quickstart\txfooapp&quot;;&quot;..\..\atmibroker-core\src\main\include&quot;;&quot;..\..\atmibroker-core\src\main\export&quot;;&quot;..\..\atmibroker-core\target\cxx\compile\include\expat&quot;;&quot;..\..\atmibroker-hybrid\src\main\include&quot;;&quot;..\..\atmibroker-hybrid\src\main\export&quot;;&quot;..\..\atmibroker-hybrid\target\cxx\compile\include\stomp&quot;;&quot;..\..\atmibroker-hybrid\target\cxx\compile\include\apr-1&quot;;&quot;..\..\atmibroker-tx\src\main\export&quot;;&quot;..\..\atmibroker-tx\src\main\include&quot;;&quot;..\..\atmibroker-xatmi\src\main\include&quot;;&quot;..\..\atmibroker-xatmi\src\main\export&quot;;&quot;..\..\atmibroker-xatmi\target\cxx\runtime\include&quot;;&quot;..\..\atmibroker-core\src\test\include&quot;;&quot;..\..\atmibroker-hybrid\src\test\include&quot;;&quot;..\..\atmibroker-tx\src\test\include&quot;;&quot;..\..\atmibroker-xatmi\src\test\include&quot;;&quot;..\..\atmibroker-core\target\cxx\test\include&quot;;&quot;..\..\atmibroker-hybrid\target\cxx\test\include&quot;;&quot;..\..\atmibroker-tx\target\cxx\test\include&quot;;&quot;..\..\atmibroker-xatmi\target\cxx\test\include&quot;"
 				PreprocessorDefinitions="WIN32;TAO_COMP;_CRT_SECURE_NO_WARNINGS;BLACKTIE_CORE_MACRO=;BLACKTIE_CORE_DLL=;BLACKTIE_XATMI_MACRO=;BLACKTIE_XATMI_DLL=;BLACKTIE_STOMP_MACRO=;BLACKTIE_STOMP_DLL=;BLACKTIE_TX_MACRO=;BLACKTIE_TX_DLL=;BLACKTIE_HYBRID_MACRO=;BLACKTIE_HYBRID_DLL=;UNITTEST"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -418,11 +418,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\src\test\cpp\TestSpecExampleOne.cxx"
+					RelativePath="..\src\test\cpp\TestSpecQuickstartOne.cxx"
 					>
 				</File>
 				<File
-					RelativePath="..\src\test\cpp\TestSpecExampleTwo.cxx"
+					RelativePath="..\src\test\cpp\TestSpecQuickstartTwo.cxx"
 					>
 				</File>
 				<File
@@ -800,11 +800,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\src\test\include\TestSpecExampleOne.h"
+					RelativePath="..\src\test\include\TestSpecQuickstartOne.h"
 					>
 				</File>
 				<File
-					RelativePath="..\src\test\include\TestSpecExampleTwo.h"
+					RelativePath="..\src\test\include\TestSpecQuickstartTwo.h"
 					>
 				</File>
 				<File

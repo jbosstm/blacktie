@@ -30,7 +30,7 @@ browsing, and office suite productivity  tools).  The use of
 Software in systems and  solutions  that  provide  dedicated
 functionality  (other than as  mentioned  above) or designed
 for   use  in   embedded   or   function-specific   software
-applications,  for  example  but not  limited  to:  Software
+applications,  for  quickstart  but not  limited  to:  Software
 embedded  in or bundled  with  industrial  control  systems,
 wireless  mobile  telephones,   wireless  handheld  devices,
 kiosks,  TV/STB,  Blu  -ray  Disc  devices,  telematics  and

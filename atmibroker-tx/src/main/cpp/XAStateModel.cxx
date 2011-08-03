@@ -77,7 +77,7 @@ int XAStateModel::transition(int allowable[], int *initial_state, int next_state
 	// output at DEBUG rather than WARN since maintaining a distributed view of XA state model
 	// is problematic
 	if (*initial_state == next_state)
-		return XA_OK;	// TODO when do we get called without a change in state (recovery is one such example)
+		return XA_OK;	// TODO when do we get called without a change in state (recovery is one such quickstart)
 
 	LOG4CXX_DEBUG(xasmlogger, (char*) "Unexpected XA transition 0x" << std::hex << *initial_state
 		<< " -> 0x" << std::hex << next_state);

@@ -105,15 +105,15 @@
 			<fileMode>0755</fileMode>
 		</file>
 		<file>
-			<source>../scripts/samples/run_all_samples.sh</source>
+			<source>../scripts/quickstarts/run_all_quickstarts.sh</source>
 			<fileMode>0755</fileMode>
 		</file>
 		<file>
-			<source>../scripts/samples/run_all_samples.bat</source>
+			<source>../scripts/quickstarts/run_all_quickstarts.bat</source>
 			<fileMode>0755</fileMode>
 		</file>
 		<file>
-			<source>../scripts/samples/README</source>
+			<source>../scripts/quickstarts/README</source>
 		</file>
 		<file>
 			<source>../blacktie-admin-services/ear/target/config/btconfig.xml</source>
@@ -147,45 +147,45 @@
 			<fileMode>0775</fileMode>
 		</fileSet>
 		<fileSet>
-			<directory>../atmibroker-xatmi/src/example/
+			<directory>../atmibroker-xatmi/src/quickstart/
 			</directory>
-			<outputDirectory>examples/xatmi/
+			<outputDirectory>quickstarts/xatmi/
 			</outputDirectory>
 			<includes>
 				<include>**/*</include>
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../jatmibroker-xatmi/src/example/
+			<directory>../jatmibroker-xatmi/src/quickstart/
 			</directory>
-			<outputDirectory>examples/
+			<outputDirectory>quickstarts/
 			</outputDirectory>
 			<includes>
 				<include>**/*</include>
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../blacktie-nbf/src/example/
+			<directory>../blacktie-nbf/src/quickstart/
 			</directory>
-			<outputDirectory>examples/
+			<outputDirectory>quickstarts/
 			</outputDirectory>
 			<includes>
 				<include>**/*</include>
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../blacktie-admin-services/src/example/
+			<directory>../blacktie-admin-services/src/quickstart/
 			</directory>
-			<outputDirectory>examples/admin/
+			<outputDirectory>quickstarts/admin/
 			</outputDirectory>
 			<excludes>
 				<exclude>target/**</exclude>
 			</excludes>
 		</fileSet>
 		<fileSet>
-			<directory>../examples/integration1
+			<directory>../quickstarts/integration1
 			</directory>
-			<outputDirectory>examples/integration1
+			<outputDirectory>quickstarts/integration1
 			</outputDirectory>
 			<excludes>
 				<exclude>**/target/**</exclude>

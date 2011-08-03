@@ -158,9 +158,9 @@
 		<antcall target="ace-lib-windows" />
 		<copy todir="${build.dist}/include/ace">
 			<fileset dir="${ace.include.dir}/ace">
-				<exclude name="**/*examples*/**" />
+				<exclude name="**/*quickstarts*/**" />
 				<exclude name="**/*tests*/**" />
-				<exclude name="**/DevGuideExamples/**" />
+				<exclude name="**/DevGuideQuickstarts/**" />
 
 				<include name="**/*.h" />
 				<include name="**/*.cpp" />
@@ -169,9 +169,9 @@
 		</copy>
 		<copy todir="${build.dist}/include/tao">
 			<fileset dir="${ace.include.dir}/TAO/tao">
-				<exclude name="**/*examples*/**" />
+				<exclude name="**/*quickstarts*/**" />
 				<exclude name="**/*tests*/**" />
-				<exclude name="**/DevGuideExamples/**" />
+				<exclude name="**/DevGuideQuickstarts/**" />
 
 				<include name="**/*.h" />
 				<include name="**/*.cpp" />
@@ -182,9 +182,9 @@
 		</copy>
 		<copy todir="${build.dist}/include/orbsvcs">
 			<fileset dir="${ace.include.dir}/TAO/orbsvcs/orbsvcs">
-				<exclude name="**/*examples*/**" />
+				<exclude name="**/*quickstarts*/**" />
 				<exclude name="**/*tests*/**" />
-				<exclude name="**/DevGuideExamples/**" />
+				<exclude name="**/DevGuideQuickstarts/**" />
 
 				<include name="**/*.h" />
 				<include name="**/*.inl" />

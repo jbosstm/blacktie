@@ -99,9 +99,9 @@ BT_NBF buffer = (BT_NBF) connection.tpalloc("BT_NBF", "&lt;buffer_name&gt;", 0);
 					href="extras/bufferedit.c" xmlns:xi="http://www.w3.org/2001/XInclude"
 					parse="text" /></programlisting>
 			</para>
-			<para>more examples can be founded under
-				&lt;BLACKTIE_HOME&gt;/example/nbf, and this example also runs as
-				part of the run_all_samples script.</para>
+			<para>more quickstarts can be founded under
+				&lt;BLACKTIE_HOME&gt;/quickstart/nbf, and this quickstart also runs as
+				part of the run_all_quickstarts script.</para>
 		</section>
 	</section>
 </chapter>

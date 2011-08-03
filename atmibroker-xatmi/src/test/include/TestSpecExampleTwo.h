@@ -15,24 +15,24 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef TestSpecExampleTwo_H
-#define TestSpecExampleTwo_H
+#ifndef TestSpecQuickstartTwo_H
+#define TestSpecQuickstartTwo_H
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/TestFixture.h>
 
 #include "BaseServerTest.h"
 
-class TestSpecExampleTwo: public BaseServerTest {
-	CPPUNIT_TEST_SUITE( TestSpecExampleTwo);
-	CPPUNIT_TEST( test_specexampletwo);
+class TestSpecQuickstartTwo: public BaseServerTest {
+	CPPUNIT_TEST_SUITE( TestSpecQuickstartTwo);
+	CPPUNIT_TEST( test_specquickstarttwo);
 CPPUNIT_TEST_SUITE_END();
 
 public:
-void test_specexampletwo();
+void test_specquickstarttwo();
 
 virtual void setUp();
 virtual void tearDown();
 };
 
-#endif // TestSpecExampleTwo_H
+#endif // TestSpecQuickstartTwo_H

@@ -30,7 +30,7 @@
 
 #else /* Non-win32 platform. Macros need to pre-process away */
 
-/* examples */
+/* quickstarts */
 
 #define BLACKTIE_HYBRID_DLL
 
