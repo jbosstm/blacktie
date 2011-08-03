@@ -81,7 +81,7 @@
 				specifying the comand line to start server. (Note that there is also
 				an option to start servers whenever the ImR is started).</para>
 
-			<para>For quickstart, to start our quickstarts:</para>
+			<para>For example, to start our quickstarts:</para>
 			<para>
 				<literal>tao_imr -ORBInitRef ImplRepoService=file://locator.ior add
 					ATMI_RM_202 -c
@@ -137,7 +137,7 @@
 
 			<para>
 				<literal>-ORBUseImR 1</literal>
-				to the ORBOPT environment variable. For quickstart:
+				to the ORBOPT environment variable. For example:
 			</para>
 
 			<para>

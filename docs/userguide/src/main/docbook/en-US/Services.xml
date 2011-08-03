@@ -82,7 +82,7 @@
 				indicated in
 				&lt;BLACKTIE_BIN_DIR&gt;/setenv.[sh|bat]</para>
 
-			<para>An quickstart run
+			<para>An example run
 				configuration for the code generation tool would
 				then
 				look like:</para>
@@ -412,7 +412,7 @@
 
 
 
-			<para>So, for quickstart, if the service name is TestOne then deploy a
+			<para>So, for example, if the service name is TestOne then deploy a
 				queue called BTR_TestOne to the JBoss deploy directory using an XML
 				file containing the following:</para>
 
@@ -438,7 +438,7 @@
 
 
 		<para>
-			To config a SERVIECE use topics, you could set type to 'topic', for quickstart:
+			To config a SERVIECE use topics, you could set type to 'topic', for example:
 		</para>
 
 		<para>

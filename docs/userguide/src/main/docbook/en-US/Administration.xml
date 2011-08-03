@@ -217,7 +217,7 @@
 				be running in the JBoss Application server where you installed the
 				stomp connect service. In such a setup basic transaction management
 				information is exposed by the native transaction service running in
-				the AS. For quickstart to enable statistics open the JBossTS property
+				the AS. For example to enable statistics open the JBossTS property
 				file located at:</para>
 
 
@@ -481,7 +481,7 @@
 					configured environment, the btadmin tool can be launched in either
 					interactive mode (by ommitting a command) or in non-interactive
 					mode
-					by issues a command, for quickstart: "btadmin startup". For the
+					by issues a command, for example: "btadmin startup". For the
 					list of
 					commands type: "help"
 			</para>
@@ -790,7 +790,7 @@
 				</table>
 			</section>
 			<section>
-				<title>Quickstart</title>
+				<title>Example</title>
 				<para>To link against the Oracle database</para>
 				<para>On Linux:</para>
 				<para>
@@ -927,7 +927,7 @@
 			</section>
 
 			<section>
-				<title>Quickstart</title>
+				<title>Example</title>
 
 				<para>To create a client which links against the Oracle database.
 				</para>
