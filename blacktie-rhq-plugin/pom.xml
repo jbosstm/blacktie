@@ -188,22 +188,6 @@
         <artifactId>rhq-plugin-validator</artifactId>
         <version>${rhq.version}</version>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <version>1.0-alpha-4</version>
-        <executions>
-          <execution>
-            <id>ban-bad-dependencies</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <skip>true</skip>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
   <profiles>
