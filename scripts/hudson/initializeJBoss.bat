@@ -65,7 +65,7 @@ set JBOSS_HOME=
 cd %WORKSPACE
 
 rem INITIALIZE JBOSS
-cd %WORKSPACE%\jboss-5.1.0.GA\docs\quickstarts\transactions
+cd %WORKSPACE%\jboss-5.1.0.GA\docs\examples\transactions
 call ant jts -Dtarget.server.dir=../../../server/all-with-hornetq
 IF %ERRORLEVEL% NEQ 0 exit -1
 cd %WORKSPACE%
@@ -81,7 +81,7 @@ IF %ERRORLEVEL% NEQ 0 exit -1
 rem INITIALZE JBOSSESB
 copy %WORKSPACE%\trunk\scripts\hudson\hornetq\jboss-as-hornetq-int.jar %WORKSPACE%\jboss-5.1.0.GA\common\lib
 copy %WORKSPACE%\trunk\scripts\hudson\hornetq\hornetq-deployers-jboss-beans.xml %WORKSPACE%\jboss-5.1.0.GA\server\all-with-hornetq\deployers
-copy %WORKSPACE%\jbossesb-4.9\install\deployment.properties-quickstart %WORKSPACE%\jbossesb-4.9\install\deployment.properties
+copy %WORKSPACE%\jbossesb-4.9\install\deployment.properties-example %WORKSPACE%\jbossesb-4.9\install\deployment.properties
 call ant configureESB -DWORKSPACE=%WORKSPACE:\=/%
 IF %ERRORLEVEL% NEQ 0 exit -1
 cd %WORKSPACE%\jbossesb-4.9\install
