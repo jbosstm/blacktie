@@ -160,6 +160,7 @@
     <version.jboss.jbossts>4.6.1.GA</version.jboss.jbossts>
     <version.suffix.org.jboss.javaee>.GA</version.suffix.org.jboss.javaee>
     <version.org.jboss.integration>5.1.0.GA</version.org.jboss.integration>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <modules>
     <module>blacktie-utils/cpp-plugin</module>

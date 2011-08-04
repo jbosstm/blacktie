@@ -188,14 +188,14 @@
         <copy todir="${downloads.dir}/${version}/binary">
             <fileset dir="${user.home}" includes="blacktie-${version}-bin.zip"/>
         </copy>
-        
+
         <copy todir="${downloads.dir}/${version}/xsd">
-            <fileset dir="${workdir}/${tag}/blacktie-xsd/src/main/xsd/btconfig.xsd">
+            <fileset dir="${workdir}/${tag}/blacktie-xsd/src/main/xsd/">
        				<include name="*.xsd"/>
         	 </fileset>
         </copy>
-        
-        <copy file="${workdir}/${tag}/jatmibroker-xatmi/target/jatmibroker-xatmi-$VERSION-javadoc.jar" todir="${downloads.dir}/${version}/api/jatmibroker-xatmi"/>
+       
+        <copy file="${workdir}/${tag}/jatmibroker-xatmi/target/jatmibroker-xatmi-${version}-javadoc.jar" todir="${downloads.dir}/${version}/api/jatmibroker-xatmi"/>
         
         <mkdir dir="${docs.dir}/${version}"/>
         
@@ -203,7 +203,7 @@
             <fileset dir="${workdir}/${tag}/docs/userguide/target/docbook/publish/en-US/html/"/>
         </copy>
         
-        <unzip src="${workdir}/${tag}/jatmibroker-xatmi/target/jatmibroker-xatmi-$VERSION-javadoc.jar" dest="${docs.dir}/${version}/api/jatmibroker"/>
+        <unzip src="${workdir}/${tag}/jatmibroker-xatmi/target/jatmibroker-xatmi-${version}-javadoc.jar" dest="${docs.dir}/${version}/api/jatmibroker"/>
     </target>
 
 
