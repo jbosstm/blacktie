@@ -8,5 +8,5 @@
    |
    | Default: ~/.m2/repository
   -->
-  <localRepository>${user.home}/blacktie/trunk/repository</localRepository>
+  <localRepository>./repository</localRepository>
 </settings>
