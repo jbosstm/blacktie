@@ -224,11 +224,6 @@
               <forceCreation>true</forceCreation>
             </configuration>
           </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-jar-plugin</artifactId>
-        <executions>
           <execution>
             <id>jar-with-classifier</id>
             <phase>package</phase>

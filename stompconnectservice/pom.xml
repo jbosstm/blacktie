@@ -106,14 +106,6 @@
   <properties>
     <test.skip>true</test.skip>
   </properties>
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </reporting>
   <dependencies>
     <dependency>
       <groupId>org.codehaus.stomp</groupId>
