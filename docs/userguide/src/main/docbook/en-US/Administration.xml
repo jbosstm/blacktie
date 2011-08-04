@@ -55,6 +55,7 @@
 		</listitem>
 	</orderedlist>
 
+<!--
 	<figure id="fig-administration">
 		<title>Administration</title>
 		<mediaobject>
@@ -63,7 +64,7 @@
 			</imageobject>
 		</mediaobject>
 	</figure>
-
+-->
 	<section id="sec-administration-operations">
 		<title>BlackTie Administration Functions</title>
 		<section>

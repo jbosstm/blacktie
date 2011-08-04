@@ -270,7 +270,7 @@
             <sourceDocumentName>${docname}.xml</sourceDocumentName>
             <masterTranslation>en-US</masterTranslation>
             <imageResource>
-              <directory>${project.basedir}/en-US</directory>
+              <directory>${project.basedir}/src/main/docbook/en-US</directory>
               <includes>
                 <include>images/*.png</include>
               </includes>
