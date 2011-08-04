@@ -267,7 +267,6 @@
             </dependency>
           </dependencies>
           <configuration>
-            <sourceDirectory>${project.basedir}</sourceDirectory>
             <sourceDocumentName>${docname}.xml</sourceDocumentName>
             <masterTranslation>en-US</masterTranslation>
             <imageResource>

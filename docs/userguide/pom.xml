@@ -28,42 +28,10 @@
       <plugin>
         <groupId>org.jboss.maven.plugins</groupId>
         <artifactId>maven-jdocbook-plugin</artifactId>
-        <version>2.3.5</version>
-        <extensions>true</extensions>
-        <dependencies>
-          <dependency>
-            <groupId>org.jboss.pressgang</groupId>
-            <!--Non-namespaced version for DocBook 4.5 compatibility. For XSD namespaced version, use pressgang-xslt-ns-->
-            <artifactId>pressgang-xslt</artifactId>
-            <version>2.0.0</version>
-          </dependency>
-          <dependency>
-            <groupId>org.jboss.pressgang</groupId>
-            <artifactId>pressgang-jdocbook-style</artifactId>
-            <type>jdocbook-style</type>
-            <version>2.0.0</version>
-          </dependency>
-        </dependencies>
-        <configuration>
-          <sourceDocumentName>User_Guide.xml</sourceDocumentName>
-          <formats>
-            <format>
-              <formatName>pdf</formatName>
-              <stylesheetResource>classpath:/xslt/org/jboss/pdf.xsl</stylesheetResource>
-            </format>
-            <format>
-              <formatName>html</formatName>
-              <stylesheetResource>classpath:/xslt/org/jboss/xhtml.xsl</stylesheetResource>
-            </format>
-          </formats>
-          <options>
-            <xmlTransformerType>saxon</xmlTransformerType>
-            <xincludeSupported>true</xincludeSupported>
-            <docbookVersion>1.72.0</docbookVersion>
-            <useRelativeImageUris>true</useRelativeImageUris>
-          </options>
-        </configuration>
       </plugin>
     </plugins>
   </build>
+  <properties>
+    <docname>User_Guide</docname>
+  </properties>
 </project>
