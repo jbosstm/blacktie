@@ -84,6 +84,22 @@
 			pathToExecutable="../cs"
 			workingDirectory="."
 			serverId="2" />
+		<MACHINE id="secure17" hostname="hoboken.buildnet.ncl.jboss.com"
+			pathToExecutable="../cs"
+			workingDirectory="."
+			serverId="1" />
+		<MACHINE id="secure18" hostname="hoboken.buildnet.ncl.jboss.com"
+			pathToExecutable="../cs"
+			workingDirectory="."
+			serverId="2" />
+		<MACHINE id="secure19" hostname="tenafly.buildnet.ncl.jboss.com"
+			pathToExecutable="../cs"
+			workingDirectory="."
+			serverId="1" />
+		<MACHINE id="secure20" hostname="tenafly.buildnet.ncl.jboss.com"
+			pathToExecutable="../cs"
+			workingDirectory="."
+			serverId="2" />
 	</MACHINES>
 	<SERVERS>
 		<SERVER name="testsui">
@@ -103,6 +119,10 @@
 			<MACHINE-REF id="secure14" />
 			<MACHINE-REF id="secure15" />
 			<MACHINE-REF id="secure16" />
+			<MACHINE-REF id="secure17" />
+			<MACHINE-REF id="secure18" />
+			<MACHINE-REF id="secure19" />
+			<MACHINE-REF id="secure20" />
 			<SERVICE_NAMES>
 				<SERVICE name='BAR' function_name='BAR' size="1">
 					<LIBRARY_NAME configuration="linux" value="../libtestsuite.so" />

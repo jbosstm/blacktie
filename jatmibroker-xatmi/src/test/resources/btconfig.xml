@@ -53,6 +53,14 @@
 			workingDirectory="." argLine="foo" serverId="1" />
 		<MACHINE id="myserv18" hostname="sol2" pathToExecutable="notExist"
 			workingDirectory="." argLine="foo" serverId="2" />
+		<MACHINE id="myserv19" hostname="hoboken.buildnet.ncl.jboss.com" pathToExecutable="notExist"
+			workingDirectory="." argLine="foo" serverId="1" />
+		<MACHINE id="myserv20" hostname="hoboken.buildnet.ncl.jboss.com" pathToExecutable="notExist"
+			workingDirectory="." argLine="foo" serverId="2" />
+		<MACHINE id="myserv21" hostname="tenafly.buildnet.ncl.jboss.com" pathToExecutable="notExist"
+			workingDirectory="." argLine="foo" serverId="1" />
+		<MACHINE id="myserv22" hostname="tenafly.buildnet.ncl.jboss.com" pathToExecutable="notExist"
+			workingDirectory="." argLine="foo" serverId="2" />
 	</MACHINES>
 	<SERVERS>
 		<SERVER name='myserv'>
@@ -74,6 +82,10 @@
 			<MACHINE-REF id="myserv16" />
 			<MACHINE-REF id="myserv17" />
 			<MACHINE-REF id="myserv18" />
+			<MACHINE-REF id="myserv19" />
+			<MACHINE-REF id="myserv20" />
+			<MACHINE-REF id="myserv21" />
+			<MACHINE-REF id="myserv22" />
 			<SERVICE_NAMES>
 				<SERVICE name='TestOne'  externally-managed-destination='true'/>
 				<SERVICE name='TestTwo'  externally-managed-destination='true'/>
