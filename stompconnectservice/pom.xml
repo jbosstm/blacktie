@@ -108,9 +108,9 @@
   </properties>
   <dependencies>
     <dependency>
-      <groupId>org.codehaus.stomp</groupId>
-      <artifactId>stompconnect</artifactId>
-      <version>1.0.6-BT-SNAPSHOT</version>
+    <groupId>org.codehaus.stomp</groupId>
+    <artifactId>stompconnect</artifactId>
+    <version>4.0.0.M1-SNAPSHOT</version>
       <exclusions>
         <exclusion>
           <groupId>org.apache.geronimo.specs</groupId>

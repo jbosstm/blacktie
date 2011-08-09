@@ -156,13 +156,15 @@
         <available file="${docs.dir}/${version}" type="dir"/>
       </condition>
     </fail>
+    
     <delete dir="tmp-downloads-dir"/>
     <mkdir dir="tmp-downloads-dir"/>
     <mkdir dir="tmp-downloads-dir/src"/>
     <mkdir dir="tmp-downloads-dir/binary"/>
-    <mkdir dir="tmp-downloads-dir/idl"/>
+    <mkdir dir="tmp-downloads-dir/xsd"/>
     <delete dir="tmp-docs-dir"/>
     <mkdir dir="tmp-docs-dir"/>
+    
     <copy todir="tmp-downloads-dir/src">
       <fileset dir="${workdir}" includes="blacktie-${version}-src.zip"/>
     </copy>
