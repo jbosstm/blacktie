@@ -29,7 +29,8 @@ if [ -e $WORKSPACE/jbossesb-4.9.zip ]; then
 else
 	wget http://albany/userContent/blacktie/jbossesb-4.9.zip
 fi
-unzip jbossesb-4.9.zip
+echo 'A
+' | unzip jbossesb-4.9.zip
 
 # INSTALL HORNETQ
 cd $WORKSPACE/hornetq-2.1.2.Final/config/jboss-as-5/
