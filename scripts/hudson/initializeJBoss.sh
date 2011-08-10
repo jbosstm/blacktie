@@ -6,7 +6,11 @@ fi
 # GET JBOSS AND INITIALIZE IT
 if [ -d $WORKSPACE/jboss-5.1.0.GA ]; then
   rm -rf $WORKSPACE/jboss-5.1.0.GA
+fi
+if [ -d $WORKSPACE/hornetq-2.1.2.Final ]; then
   rm -rf $WORKSPACE/hornetq-2.1.2.Final
+fi
+if [ -d $WORKSPACE/jbossesb-4.9 ]; then
   rm -rf $WORKSPACE/jbossesb-4.9
 fi
 
