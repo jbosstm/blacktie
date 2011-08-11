@@ -76,7 +76,7 @@
   <!-- The tag as it appears under svnbase -->
   <property name="tag" value="trunk"/>
   <!-- The file name base for the user downloadable files. Derive it from the tag -->
-  <property name="version" value="4.0.0.M1-SNAPSHOT"/>
+  <property name="version" value="5.0.0.M1-SNAPSHOT"/>
   <!-- the location the web site content is copied to -->
   <property name="downloads.dir" value="${user.home}/blacktie/filemgmt.jboss.org/downloads_htdocs/blacktie/"/>
   <property name="docs.dir" value="${user.home}/blacktie/filemgmt.jboss.org/docs_htdocs/blacktie/"/>

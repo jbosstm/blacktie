@@ -20,7 +20,7 @@
   <groupId>org.jboss.narayana.blacktie</groupId>
   <artifactId>blacktie-all</artifactId>
   <packaging>pom</packaging>
-  <version>4.0.0.M1-SNAPSHOT</version>
+  <version>5.0.0.M1-SNAPSHOT</version>
   <name>BlackTie all files</name>
   <description>BlackTie all files</description>
   <url>http://www.jboss.org/blacktie</url>

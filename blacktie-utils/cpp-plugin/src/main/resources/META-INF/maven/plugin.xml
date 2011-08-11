@@ -2,7 +2,7 @@
   <description></description>
   <groupId>org.jboss.narayana.blacktie.plugins</groupId>
   <artifactId>cpp-plugin</artifactId>
-  <version>4.0.0.M1-SNAPSHOT</version>
+  <version>5.0.0.M1-SNAPSHOT</version>
   <goalPrefix>cpp</goalPrefix>
   <isolatedRealm>false</isolatedRealm>
   <inheritedByDefault>true</inheritedByDefault>
