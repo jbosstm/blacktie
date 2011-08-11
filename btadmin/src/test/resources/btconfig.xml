@@ -100,6 +100,14 @@
 			pathToExecutable="../cs"
 			workingDirectory="."
 			serverId="2" />
+		<MACHINE id="secure21" hostname="tom-2cfd36gb7up"
+			pathToExecutable="../cs"
+			workingDirectory="."
+			serverId="1" />
+		<MACHINE id="secure22" hostname="tom-2cfd36gb7up"
+			pathToExecutable="../cs"
+			workingDirectory="."
+			serverId="2" />
 	</MACHINES>
 	<SERVERS>
 		<SERVER name="testsui">
@@ -123,6 +131,8 @@
 			<MACHINE-REF id="secure18" />
 			<MACHINE-REF id="secure19" />
 			<MACHINE-REF id="secure20" />
+			<MACHINE-REF id="secure21" />
+			<MACHINE-REF id="secure22" />
 			<SERVICE_NAMES>
 				<SERVICE name='BAR' function_name='BAR' size="1">
 					<LIBRARY_NAME configuration="linux" value="../libtestsuite.so" />
