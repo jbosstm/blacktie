@@ -181,10 +181,10 @@
       <fileset dir="${workdir}/${tag}/docs/userguide/target/docbook/publish/en-US/html/"/>
     </copy>
     <unzip src="${workdir}/${tag}/jatmibroker-xatmi/target/jatmibroker-xatmi-${version}-javadoc.jar" dest="tmp-docs-dir/api/jatmibroker"/>
-    <move todir="${downloads.dir}/${version}">
+    <move todir="${downloads.dir}/${version}" verbose="true">
       <fileset dir="tmp-downloads-dir"/>
     </move>
-    <move todir="${docs.dir}/${version}">
+    <move todir="${docs.dir}/${version}" verbose="true">
       <fileset dir="tmp-docs-dir"/>
     </move>
   </target>
