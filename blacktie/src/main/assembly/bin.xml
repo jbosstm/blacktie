@@ -23,6 +23,31 @@
 		<format>zip</format>
 	</formats>
 	<dependencySets>
+			<dependencySet>
+			<includes>
+				<include>org.jboss.narayana.blacktie*:jdocbook</include>
+			</includes>
+			<outputDirectory>docs/guides/${artifact.artifactId}</outputDirectory>
+			<useProjectAttachments>true</useProjectAttachments>
+			<unpack>true</unpack>
+			<unpackOptions>
+				<excludes>
+					<exclude>META-INF/</exclude>
+					<exclude>html/</exclude>
+				</excludes>
+			</unpackOptions>
+			<useProjectArtifact>false</useProjectArtifact>
+		</dependencySet>
+  	<dependencySet>
+			<useProjectArtifact>false</useProjectArtifact>
+			<includes>
+				<include>org.jboss.narayana.blacktie:jatmibroker-xatmi:*:javadoc</include>
+			</includes>
+			<outputDirectory>docs/api/jatmibroker-xatmi</outputDirectory>
+			<useProjectAttachments>true</useProjectAttachments>
+			<unpack>true</unpack>
+		</dependencySet>
+
 		<dependencySet>
 			<includes>
 				<include>org.jboss.narayana.blacktie:btadmin</include>
@@ -86,6 +111,8 @@
 				<exclude>org.jboss.narayana.blacktie:blacktie-rhq-plugin</exclude>
 				<exclude>org.jboss.narayana.blacktie:blacktie-admin-services-ear</exclude>
 				<exclude>org.jboss.narayana.blacktie:stompconnectservice-ear</exclude>
+				<exclude>*:javadoc</exclude>
+				<exclude>*:jdocbook</exclude>
 			</excludes>
 			<outputDirectory>lib/java</outputDirectory>
 			<unpack>false</unpack>
@@ -93,8 +120,20 @@
 	</dependencySets>
 	<files>
 		<file>
+			<source>readme.txt</source>
+			<fileMode>0644</fileMode>
+		</file>
+		<file>
 			<source>copyright.txt</source>
 			<fileMode>0644</fileMode>
+		</file>
+		<file>
+			<source>run_all_quickstarts.sh</source>
+			<fileMode>0755</fileMode>
+		</file>
+		<file>
+			<source>run_all_quickstarts.bat</source>
+			<fileMode>0755</fileMode>
 		</file>
 		<file>
 			<source>../scripts/setup/setenv.sh</source>
@@ -105,28 +144,11 @@
 			<fileMode>0755</fileMode>
 		</file>
 		<file>
-			<source>../scripts/quickstarts/run_all_quickstarts.sh</source>
-			<fileMode>0755</fileMode>
-		</file>
-		<file>
-			<source>../scripts/quickstarts/run_all_quickstarts.bat</source>
-			<fileMode>0755</fileMode>
-		</file>
-		<file>
-			<source>../scripts/quickstarts/README</source>
-		</file>
-		<file>
 			<source>../blacktie-admin-services/ear/target/config/btconfig.xml</source>
 			<outputDirectory>blacktie-admin-services</outputDirectory>
 		</file>
 	</files>
 	<fileSets>
-		<fileSet>
-			<directory>../docs/userguide/target/docbook/publish/en-US/pdf/
-			</directory>
-			<outputDirectory>docs</outputDirectory>
-		</fileSet>
-
 		<fileSet>
 			<directory>../blacktie/licence
 			</directory>
@@ -229,7 +251,7 @@
 		<fileSet>
 			<directory>../blacktie-xsd/src/main/xsd/
 			</directory>
-			<outputDirectory>schemas/xsd</outputDirectory>
+			<outputDirectory>xsd</outputDirectory>
 			<includes>
 				<include>*</include>
 			</includes>

@@ -3,12 +3,14 @@ set -m
 
 echo "Running all quickstarts"
 
-for i in `find $BLACKTIE_HOME/quickstarts/ -name run.sh`
+for i in `find quickstarts/ -name run.sh | sed 's#\(.*\)/.*#\1#' |sort -u`
 do
-    . $i
+    cd $i
+    ./run.sh
     if [ "$?" != "0" ]; then
 	    exit -1
     fi
+    cd -
 done
 
 echo "All quickstarts ran OK"

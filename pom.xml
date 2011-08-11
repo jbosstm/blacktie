@@ -196,6 +196,12 @@
       </dependency>
       <dependency>
         <groupId>org.jboss.narayana.blacktie</groupId>
+        <artifactId>jatmibroker-xatmi</artifactId>
+        <version>${project.version}</version>
+        <classifier>javadoc</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.narayana.blacktie</groupId>
         <artifactId>jatmibroker-xatmi-client</artifactId>
         <version>${project.version}</version>
       </dependency>
