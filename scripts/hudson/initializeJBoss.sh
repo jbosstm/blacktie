@@ -49,10 +49,10 @@ fi
 cd $WORKSPACE/jboss-5.1.0.GA/server/all-with-hornetq/conf
 sed -i 's/CONFIGURATION_FILE/NAME_SERVICE/g' jbossts-properties.xml
 sed -i 's\<root>\<category name="org.jboss.narayana.blacktie"><priority value="ALL"/></category><root>\g' jboss-log4j.xml
+
 # SET MAXIMUM
-#cd $WORKSPACE/jboss-5.1.0.GA/bin
-#sed -i 's=Xmx128=Xmx768=g' run.conf
-#sed -i 's=Xmx512=Xmx768=g' run.conf
+sed -i 's=Xms128=Xms768=g' $WORKSPACE/jboss-5.1.0.GA/run.conf
+sed -i 's=Xmx512=Xmx768=g' $WORKSPACE/jboss-5.1.0.GA/run.conf
 
 
 # INITIALIZE THE BLACKTIE JBOSS DEPENDENCIES
