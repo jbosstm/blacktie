@@ -147,9 +147,10 @@ public class QueueReaper implements Runnable {
 						Thread.sleep(this.interval);
 
 						// double check consumer is 0
-						if (isOlderThanReapCheck(serviceName, queueReapCheck)
+						if (BlacktieStompAdministrationService.isOlderThanReapCheck(serviceName, queueReapCheck)
 								&& consumerCount(serviceName) == 0) {
-							undeployQueue(serviceName);
+							BlacktieStompAdministrationService.undeployQueue(administrationProxy
+						.getBeanServerConnection(), prop, serviceName);
 							log.warn("undeploy service " + serviceName
 									+ " for consumer is 0");
 						} else {
@@ -207,52 +208,5 @@ public class QueueReaper implements Runnable {
 			log.debug("Instance not found: " + objName);
 			return -1;
 		}
-	}
-
-	private boolean isOlderThanReapCheck(String serviceName, long queueReapCheck) {
-		// TODO THIS WILL NOT CLUSTER AS IT ASSUMES THE QUEUE WAS CREATED BY
-		// THIS SERVER
-		synchronized (BlacktieStompAdministrationService.QUEUE_CREATION_TIMES) {
-			boolean toReturn = true;
-			Long creationTime = BlacktieStompAdministrationService.QUEUE_CREATION_TIMES
-					.get(serviceName);
-			if (creationTime != null) {
-				toReturn = creationTime < queueReapCheck;
-				if (!toReturn) {
-					log.warn("New queue will be ignored: " + serviceName);
-				}
-			}
-			return toReturn;
-		}
-	}
-
-	int undeployQueue(String serviceName) {
-		int result = 0;
-
-		try {
-			log.trace(serviceName);
-			boolean conversational = false;
-			if (!serviceName.startsWith(".")) {
-				conversational = (Boolean) prop.get("blacktie." + serviceName
-						+ ".conversational");
-			}
-			String prefix = null;
-			if (conversational) {
-				prefix = "BTC_";
-			} else {
-				prefix = "BTR_";
-			}
-
-			ObjectName objName = new ObjectName(
-					"org.hornetq:module=JMS,type=Server");
-			administrationProxy.getBeanServerConnection().invoke(objName,
-					"destroyQueue", new Object[] { prefix + serviceName },
-					new String[] { "java.lang.String" });
-			result = 1;
-		} catch (Throwable t) {
-			log.error("Could not undeploy queue of " + serviceName, t);
-		}
-
-		return result;
 	}
 }

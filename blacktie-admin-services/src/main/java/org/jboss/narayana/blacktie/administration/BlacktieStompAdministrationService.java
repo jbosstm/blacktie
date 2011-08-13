@@ -69,7 +69,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 	private MBeanServerConnection beanServerConnection;
 	private Properties prop = new Properties();
 
-	public static Hashtable<String, Long> QUEUE_CREATION_TIMES = new Hashtable<String, Long>();
+	private static Hashtable<String, Long> QUEUE_CREATION_TIMES = new Hashtable<String, Long>();
 
 	public BlacktieStompAdministrationService() throws IOException,
 			ConfigurationException {
@@ -78,7 +78,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 				.locateJBoss();
 	}
 
-	boolean isDeployQueue(String serviceName) throws Exception {
+	static boolean isDeployQueue(MBeanServerConnection beanServerConnection, Properties prop, String serviceName) throws Exception {
 		ObjectName objName = new ObjectName(
 				"org.hornetq:module=JMS,type=Server");
 		String[] queues = (String[]) beanServerConnection.getAttribute(objName,
@@ -86,7 +86,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		String[] topics = (String[]) beanServerConnection.getAttribute(objName,
 				"TopicNames");
 
-		log.trace(serviceName);
+		log.trace("Checking if queue is deployed: " + serviceName);
 		boolean conversational = false;
 		if (!serviceName.startsWith(".")) {
 			conversational = (Boolean) prop.get("blacktie." + serviceName
@@ -181,6 +181,25 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		}
 		return null;
 	}
+	
+
+	public static boolean isOlderThanReapCheck(String serviceName, long queueReapCheck) {
+		// TODO THIS WILL NOT CLUSTER AS IT ASSUMES THE QUEUE WAS CREATED BY
+		// THIS SERVER
+		log.trace("Locking for isOlderThanReapCheck: " + serviceName);
+		synchronized (QUEUE_CREATION_TIMES) {
+		log.trace("Locked for isOlderThanReapCheck: " + serviceName);
+			boolean toReturn = true;
+			Long creationTime = QUEUE_CREATION_TIMES.get(serviceName);
+			if (creationTime != null) {
+				toReturn = creationTime < queueReapCheck;
+				if (!toReturn) {
+					log.warn("New queue will be ignored: " + serviceName);
+				}
+			}
+			return toReturn;
+		}
+	}
 
 	int deployQueue(String serviceName, String version) {
 		log.trace("deployQueue: " + serviceName + " version: " + version);
@@ -198,13 +217,15 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 
 		try {
 			boolean queue = false;
-
-			queue = isDeployQueue(serviceName);
-			log.debug("Queue " + serviceName + " was created: " + queue);
-			boolean created = queue;
-			if (queue == false) {
-				synchronized (QUEUE_CREATION_TIMES) {
-					log.trace(serviceName);
+  	  log.debug("Locking for deployQueue: " + serviceName);
+      synchronized (QUEUE_CREATION_TIMES) {
+    	  log.debug("Locked for deployQueue: " + serviceName);
+			  queue = isDeployQueue(beanServerConnection, prop, serviceName);
+			  log.debug("Queue " + serviceName + " was deployed?: " + queue);
+			  boolean created = queue;
+			  if (queue == false) {
+    			log.debug("Creating " + serviceName);
+					log.trace("Lock acquired");
 					boolean conversational = false;
 					String type = "queue";
 					if (!serviceName.startsWith(".")) {
@@ -229,13 +250,15 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 					if(type.equals("topic")) {
 						op = "createTopic";
 					}
+					log.debug("Invoking the beanServerConnection for deploy queue");
 					created = (Boolean) beanServerConnection.invoke(objName,
 							op, new Object[] { prefix + serviceName,
 									"/" + type + "/" + prefix + serviceName },
 							new String[] { "java.lang.String",
 									"java.lang.String" });
+					log.debug("Invoked the beanServerConnection for deploy queue: " + created);
 				}
-			}
+				log.debug("Created: "+ serviceName);
 			// QUEUE_CREATION_TIMES.put(serviceName, currentTime);
 			if (!queue || !serviceName.contains(".")) {
 				result = 1;
@@ -253,6 +276,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			} else {
 				result = 1;
 			}
+			}
 		} catch (Throwable t) {
 			log.error("Could not deploy queue of " + serviceName, t);
 		}
@@ -260,11 +284,11 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		return result;
 	}
 
-	int undeployQueue(String serviceName) {
+	static int undeployQueue(MBeanServerConnection beanServerConnection, Properties prop, String serviceName) {
 		int result = 0;
 
 		try {
-			if (isDeployQueue(serviceName)) {
+			if (isDeployQueue(beanServerConnection, prop, serviceName)) {
 				log.trace(serviceName);
 				boolean conversational = false;
 				String type = "queue";
@@ -308,7 +332,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		try {
 			consumerCounts = consumerCount(serviceName);
 			if (consumerCounts < 1) {
-				result = undeployQueue(serviceName);
+				result = undeployQueue(beanServerConnection, prop, serviceName);
 				log.debug(serviceName + " undeployed");
 			} else {
 				// THERE ARE OTHER SERVERS STILL ALIVE
@@ -359,9 +383,11 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 					log.trace("Advertising: " + serviceName);
 					String version = st.nextToken();
 					success[0] = (byte) deployQueue(serviceName, version);
+					log.trace("Advertised: " + serviceName);
 				} else if (operation.equals("decrementconsumer")) {
 					log.trace("Decrement consumer: " + serviceName);
 					success[0] = (byte) decrementConsumer(serviceName);
+					log.trace("Decremented consumer: " + serviceName);
 				} else {
 					log.error("Unknown operation " + operation);
 					success[0] = 0;
