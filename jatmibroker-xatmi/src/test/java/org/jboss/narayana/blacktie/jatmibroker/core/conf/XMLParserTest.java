@@ -48,7 +48,7 @@ public class XMLParserTest extends TestCase {
 	public void testWrongEnvironmentXsd() {
 		Properties prop = new Properties();
 		try {
-			XMLParser.loadProperties("btconfigERROR.xsd", "btconfig.xml", prop);
+			XMLParser.loadProperties("btconfigERROR.xsd", "btconfigERROR.xml", prop);
 			fail("Should have thrown a parser exception or found the file");
 		} catch (ConfigurationException e) {
 			// THIS IS OK
