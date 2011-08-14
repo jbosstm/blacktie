@@ -13,8 +13,6 @@ if [ -d $WORKSPACE/jboss-5.1.0.GA ]; then
   for i in `ps -eaf | grep java | grep "run.sh" | grep -v grep | cut -c10-15`; do kill -9 $i; done
 fi
 
-exit
-
 ps -f
 
 # GET THE TNS NAMES
