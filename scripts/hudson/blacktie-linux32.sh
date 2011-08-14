@@ -36,23 +36,10 @@ export JBOSSAS_IP_ADDR=localhost
 $WORKSPACE/jboss-5.1.0.GA/bin/run.sh -c all-with-hornetq -b localhost&
 sleep 53
 
-# BUILD BLACKTIE CPP PLUGIN
-cd $WORKSPACE/trunk/blacktie-utils/cpp-plugin
-mvn clean install
-if [ "$?" != "0" ]; then
-	ps -f
-	$WORKSPACE/jboss-5.1.0.GA/bin/shutdown.sh -S && cd .
-	killall -9 testsuite
-	killall -9 server
-	killall -9 client
-	killall -9 cs
-	exit -1
-fi
-
 # BUILD BLACKTIE
 cd $WORKSPACE/trunk
 # THESE ARE SEPARATE SO WE DO NOT COPY THE OLD ARTIFACTS IF THE BUILD FAILS
-mvn clean
+mvn clean -gs tools/maven/conf/settings.xml
 if [ "$?" != "0" ]; then
 	ps -f
 	$WORKSPACE/jboss-5.1.0.GA/bin/shutdown.sh -S && cd .
@@ -63,7 +50,7 @@ if [ "$?" != "0" ]; then
 	exit -1
 fi
 export JBOSS_HOME=$WORKSPACE/jboss-5.1.0.GA
-mvn install -Dbpa=centos55x32 -Duse.valgrind=true
+mvn install -gs tools/maven/conf/settings.xml -Dbpa=centos55x32 -Duse.valgrind=true
 if [ "$?" != "0" ]; then
 	ps -f
 	$WORKSPACE/jboss-5.1.0.GA/bin/shutdown.sh -S && cd .
@@ -76,7 +63,7 @@ fi
 export JBOSS_HOME=
 # THIS IS TO RUN THE TESTS IN CODECOVERAGE
 cd $WORKSPACE/trunk/jatmibroker-xatmi
-mvn site
+mvn site -gs tools/maven/conf/settings.xml
 if [ "$?" != "0" ]; then
 	ps -f
 	$WORKSPACE/jboss-5.1.0.GA/bin/shutdown.sh -S && cd .
