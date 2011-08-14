@@ -12,8 +12,7 @@ set NOPAUSE=true
 
 # SHUTDOWN ANY RUNNING JBOSS
 if [ -d $WORKSPACE/jboss-5.1.0.GA ]; then
-  $WORKSPACE/jboss-5.1.0.GA/bin/shutdown.sh -S && cd .
-  sleep 30
+  for i in `ps -eaf | grep java | grep "run.sh" | grep -v grep | cut -c10-15`; do kill -9 $i; done
 fi
 
 ps -f
