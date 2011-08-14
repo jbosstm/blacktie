@@ -17,10 +17,10 @@ echo "Started server"
 
 rem BUILD BLACKTIE
 cd %WORKSPACE%\trunk
-call mvn clean -gs tools\maven\conf\settings.xml 
+call build.bat clean
 IF %ERRORLEVEL% NEQ 0 echo "Failing build" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
 set JBOSS_HOME=%WORKSPACE%\jboss-5.1.0.GA
-call mvn install -gs tools\maven\conf\settings.xml -Dbpa=vc9x32 -Djbossas.ip.addr=%JBOSSAS_IP_ADDR%
+call build.bat install -Dbpa=vc9x32 -Djbossas.ip.addr=%JBOSSAS_IP_ADDR%
 IF %ERRORLEVEL% NEQ 0 echo "Failing build" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
 set JBOSS_HOME=
 

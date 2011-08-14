@@ -40,7 +40,7 @@ sleep 53
 # BUILD BLACKTIE
 cd $WORKSPACE/trunk
 # THESE ARE SEPARATE SO WE DO NOT COPY THE OLD ARTIFACTS IF THE BUILD FAILS
-mvn clean -gs tools/maven/conf/settings.xml
+./build.sh clean
 if [ "$?" != "0" ]; then
 	ps -f
 	$WORKSPACE/jboss-5.1.0.GA/bin/shutdown.sh -S && cd .
@@ -51,7 +51,7 @@ if [ "$?" != "0" ]; then
 	exit -1
 fi
 export JBOSS_HOME=$WORKSPACE/jboss-5.1.0.GA
-mvn install -gs tools/maven/conf/settings.xml -Dbpa=centos54x64 -Duse.valgrind=false
+./build.sh install -Dbpa=centos54x64 -Duse.valgrind=false
 if [ "$?" != "0" ]; then
 	ps -f
 	$WORKSPACE/jboss-5.1.0.GA/bin/shutdown.sh -S && cd .
