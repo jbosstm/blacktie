@@ -23,10 +23,6 @@ set JBOSS_HOME=%WORKSPACE%\jboss-5.1.0.GA
 call mvn install -gs tools\maven\conf\settings.xml -Dbpa=vc9x32 -Djbossas.ip.addr=%JBOSSAS_IP_ADDR%
 IF %ERRORLEVEL% NEQ 0 echo "Failing build" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
 set JBOSS_HOME=
-rem THIS IS TO RUN THE TESTS IN CODECOVERAGE
-cd %WORKSPACE%\trunk\jatmibroker-xatmi
-call mvn site -gs tools\maven\conf\settings.xml -Djbossas.ip.addr=%JBOSSAS_IP_ADDR%
-IF %ERRORLEVEL% NEQ 0 echo "Failing build" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
 
 rem CREATE BLACKTIE DISTRIBUTION
 cd %WORKSPACE%\trunk\scripts\test

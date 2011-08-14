@@ -61,18 +61,6 @@ if [ "$?" != "0" ]; then
 	exit -1
 fi
 export JBOSS_HOME=
-# THIS IS TO RUN THE TESTS IN CODECOVERAGE
-cd $WORKSPACE/trunk/jatmibroker-xatmi
-mvn site -gs tools/maven/conf/settings.xml
-if [ "$?" != "0" ]; then
-	ps -f
-	$WORKSPACE/jboss-5.1.0.GA/bin/shutdown.sh -S && cd .
-	killall -9 testsuite
-	killall -9 server
-	killall -9 client
-	killall -9 cs
-	exit -1
-fi
 
 # INITIALIZE THE BLACKTIE DISTRIBUTION
 cd $WORKSPACE/trunk/scripts/test
