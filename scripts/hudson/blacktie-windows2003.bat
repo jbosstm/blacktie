@@ -38,6 +38,9 @@ IF %ERRORLEVEL% NEQ 0 echo "Failing build" & tasklist & call %WORKSPACE%\jboss-5
 set ORACLE_HOME=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2
 set TNS_ADMIN=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2\network\admin
 set PATH=%PATH%;%ORACLE_HOME%\bin;%ORACLE_HOME%\vc9
+
+set PATH=%PATH%;%WORKSPACE%\trunk\tools\maven\bin
+
 call setenv.bat
 IF %ERRORLEVEL% NEQ 0 echo "Failing build" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
 copy /Y %WORKSPACE%\trunk\dist\blacktie-5.0.0.M1-SNAPSHOT\quickstarts\xatmi\security\hornetq-*.properties %WORKSPACE%\jboss-5.1.0.GA\server\all-with-hornetq\conf\props
