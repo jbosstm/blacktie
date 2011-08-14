@@ -27,8 +27,7 @@ public class AtmiBrokerEnvXML {
 	}
 
 	public Properties getProperties() throws ConfigurationException {
-		XMLParser xmlenv = new XMLParser(prop, "btconfig.xsd");
-		xmlenv.parse("btconfig.xml");
+	  XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
 
 		// define BTStompAdmin and BTDomainAdmin
 		prop.put("blacktie.BTStompAdmin.server", "jboss");

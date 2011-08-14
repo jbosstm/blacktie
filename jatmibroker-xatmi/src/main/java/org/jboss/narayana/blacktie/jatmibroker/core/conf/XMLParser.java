@@ -47,8 +47,10 @@ public class XMLParser {
 	private DefaultHandler handler;
 	private SAXParser saxParser;
 	private Schema schema;
+	
+	private Properties properties = new Properties();
 
-	private static Map<String, Map<String, Map<String, Properties>>> loadedProperties = new HashMap<String, Map<String, Map<String, Properties>>>();
+	private static Map<String, XMLParser> parsedFiles = new HashMap<String, XMLParser>();
 
 	/**
 	 * Constructor
@@ -56,16 +58,9 @@ public class XMLParser {
 	 * @param handler
 	 *            - DefaultHandler for the SAX parser
 	 */
-	public XMLParser(Properties properties, String xsdFilename)
+	private XMLParser(String xsdFilename, String env)
 			throws ConfigurationException {
 		this.handler = new XMLEnvHandler(properties);
-		create(xsdFilename);
-	}
-
-	/**
-	 * Create the SAX parser
-	 */
-	private void create(String xsdFilename) throws ConfigurationException {
 		log.debug("Creating the parser: " + xsdFilename);
 		try {
 			String schemaDir = System.getenv("BLACKTIE_SCHEMA_DIR");
@@ -111,15 +106,6 @@ public class XMLParser {
 			throw new ConfigurationException("Could not parse configuration: "
 					+ e.getMessage(), e);
 		}
-	}
-
-	/**
-	 * Parser a File
-	 * 
-	 * @param envXML
-	 *            - File
-	 */
-	public void parse(String env) throws ConfigurationException {
 		String configDir = System.getenv("BLACKTIE_CONFIGURATION_DIR");
 		if (configDir != null && !configDir.equals("")) {
 			env = configDir + "/" + env;
@@ -146,10 +132,18 @@ public class XMLParser {
 							+ " please update your CLASSPATH");
 		}
 	}
+	
+	public Properties getLoadedProperties() {
+	  return properties;
+	}
 
 	public static void loadProperties(String schemaName, String configFile,
 			Properties prop) throws ConfigurationException {
-		XMLParser parser = new XMLParser(prop, schemaName);
-		parser.parse(configFile);
+		XMLParser parser = parsedFiles.get(configFile);
+		if (parser == null) {
+		  parser = new XMLParser(schemaName, configFile);
+		  parsedFiles.put(configFile, parser);
+		}
+		prop.putAll(parser.getLoadedProperties());
 	}
 }
