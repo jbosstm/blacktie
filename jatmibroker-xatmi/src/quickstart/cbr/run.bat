@@ -32,6 +32,7 @@ set BLACKTIE_CONFIGURATION=
 
 rem RUN THE CLIENT
 client > result.txt
+IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem SHUTDOWN
 call btadmin shutdown

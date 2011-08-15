@@ -41,6 +41,7 @@ fi
 # RUN THE C CLIENT
 result=`./client`
 if [ "$?" != "0" ]; then
+  echo "BUILD FAILED - CLIENT APPLICATION FAILED"
 	killall -9 server_one
 	killall -9 server_two
 	mvn jboss:undeploy
