@@ -1,7 +1,7 @@
 <project name="foo">
 
 	<target name="init">
-		<delete dir="${BT_HOME}${VERSION}"/>
+		<delete dir="${BT_HOME}"/>
 		<mkdir dir="${BT_HOME}"/>
 		<condition property="is-msvc">
 			<os family="windows" />
