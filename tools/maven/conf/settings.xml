@@ -8,5 +8,5 @@
    |
    | Default: ~/.m2/repository
   -->
-  <localRepository>./repository</localRepository>
+  <!--localRepository>./repository</localRepository-->
 </settings>
