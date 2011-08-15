@@ -47,10 +47,10 @@ public class XMLParser {
 	private DefaultHandler handler;
 	private SAXParser saxParser;
 	private Schema schema;
-	
+
 	private Properties properties = new Properties();
 
-	private static Map<String, XMLParser> parsedFiles = new HashMap<String, XMLParser>();
+	private static Map<URL, XMLParser> parsedFiles = new HashMap<URL, XMLParser>();
 
 	/**
 	 * Constructor
@@ -132,17 +132,24 @@ public class XMLParser {
 							+ " please update your CLASSPATH");
 		}
 	}
-	
+
 	public Properties getLoadedProperties() {
-	  return properties;
+		return properties;
 	}
 
 	public static void loadProperties(String schemaName, String configFile,
 			Properties prop) throws ConfigurationException {
-		XMLParser parser = parsedFiles.get(configFile);
+		log.trace("Detecting the filename");
+		URL resource = Thread.currentThread().getContextClassLoader()
+				.getResource("btconfig.xml");
+		log.trace("Detected the filename");
+		XMLParser parser = parsedFiles.get(resource);
 		if (parser == null) {
-		  parser = new XMLParser(schemaName, configFile);
-		  parsedFiles.put(configFile, parser);
+			log.debug("Configfile not loaded yet: " + resource.getFile());
+			parser = new XMLParser(schemaName, configFile);
+			parsedFiles.put(resource, parser);
+		} else {
+			log.debug("Configfile loaded before: " + resource.getFile());
 		}
 		prop.putAll(parser.getLoadedProperties());
 	}
