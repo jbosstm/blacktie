@@ -141,7 +141,10 @@ public class XMLParser {
 			Properties prop) throws ConfigurationException {
 		log.trace("Detecting the filename");
 		URL resource = Thread.currentThread().getContextClassLoader()
-				.getResource("btconfig.xml");
+				.getResource(configFile);
+		if (resource == null) {
+			throw new ConfigurationException("Could not find the file: " + configFile);
+		}
 		log.trace("Detected the filename");
 		XMLParser parser = parsedFiles.get(resource);
 		if (parser == null) {
