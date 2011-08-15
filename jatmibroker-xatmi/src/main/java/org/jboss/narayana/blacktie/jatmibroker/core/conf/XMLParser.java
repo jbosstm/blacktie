@@ -140,10 +140,15 @@ public class XMLParser {
 	public static void loadProperties(String schemaName, String configFile,
 			Properties prop) throws ConfigurationException {
 		log.trace("Detecting the filename");
+		String env = configFile;
+		String configDir = System.getenv("BLACKTIE_CONFIGURATION_DIR");
+		if (configDir != null && !configDir.equals("")) {
+			env = configDir + "/" + env;
+		}
 		URL resource = Thread.currentThread().getContextClassLoader()
-				.getResource(configFile);
+				.getResource(env);
 		if (resource == null) {
-			throw new ConfigurationException("Could not find the file: " + configFile);
+			throw new ConfigurationException("Could not find the file: " + env);
 		}
 		log.trace("Detected the filename");
 		XMLParser parser = parsedFiles.get(resource);
