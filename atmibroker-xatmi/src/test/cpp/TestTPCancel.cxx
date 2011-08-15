@@ -57,9 +57,6 @@ void TestTPCancel::tearDown() {
 	// Do local work
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);
-	int toCheck = tpunadvertise((char*) "TestTPCancel");
-	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toCheck != -1);
 
 	// Clean up server
 	BaseServerTest::tearDown();
