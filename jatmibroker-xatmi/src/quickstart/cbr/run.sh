@@ -29,7 +29,9 @@ if [ "$?" != "0" ]; then
 fi
 
 # WAIT
-sleep 10
+echo "Waiting for the CBR example to deploy"
+sleep 40
+echo "Waited for the CBR example to deploy"
 
 # RUN TestOne AND TestTwo SERVER
 btadmin startup
