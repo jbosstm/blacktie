@@ -111,6 +111,11 @@
       <classifier>${bpa}</classifier>
       <artifactId>atmibroker-hybrid</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.jboss.narayana.blacktie</groupId>
+      <classifier>${bpa}</classifier>
+      <artifactId>blacktie-codec</artifactId>
+    </dependency>
   </dependencies>
   <profiles>
     <profile>

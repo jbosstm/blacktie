@@ -264,6 +264,12 @@
       </dependency>
       <dependency>
         <groupId>org.jboss.narayana.blacktie</groupId>
+        <classifier>${bpa}</classifier>
+        <artifactId>blacktie-codec</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.narayana.blacktie</groupId>
         <artifactId>docs</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -336,6 +342,7 @@
     <module>atmibroker-hybrid</module>
     <module>atmibroker-xatmi</module>
     <module>blacktie-nbf</module>
+    <module>blacktie-codec</module>
     <module>btadmin</module>
     <module>codeGeneration</module>
     <module>integration-tests</module>

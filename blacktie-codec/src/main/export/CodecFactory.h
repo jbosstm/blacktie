@@ -15,22 +15,22 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef DefaultCodecImpl_H_
-#define DefaultCodecImpl_H_
+#ifndef CodecFactory_H_
+#define CodecFactory_H_
 
 #include "Codec.h"
 
 #include "log4cxx/logger.h"
 
-/**
- * The buffer converter is used to convert a portable buffer for network transfer
- */
-class DefaultCodecImpl : public virtual Codec {
+class CodecFactory {
 public:
-	char* encode(char* type, char* subtype, char* buffer, long* length);
-	char* decode(char* type, char* subtype, char* buffer, long* length);
+	CodecFactory();
+	~CodecFactory();
+
+	Codec* getCodec(char* name);
 private:
 	static log4cxx::LoggerPtr logger;
+	Codec* default_impl;
 };
 
 #endif

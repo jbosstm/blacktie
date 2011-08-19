@@ -15,22 +15,31 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef DefaultCodecImpl_H_
-#define DefaultCodecImpl_H_
 
-#include "Codec.h"
+#include "CodecFactory.h"
+#include "DefaultCodecImpl.h"
 
-#include "log4cxx/logger.h"
+#include <exception>
+#include "malloc.h"
 
-/**
- * The buffer converter is used to convert a portable buffer for network transfer
- */
-class DefaultCodecImpl : public virtual Codec {
-public:
-	char* encode(char* type, char* subtype, char* buffer, long* length);
-	char* decode(char* type, char* subtype, char* buffer, long* length);
-private:
-	static log4cxx::LoggerPtr logger;
-};
+#include "AtmiBrokerEnvXml.h"
 
-#endif
+log4cxx::LoggerPtr CodecFactory::logger(log4cxx::Logger::getLogger(
+		"CodecFactory"));
+
+CodecFactory::CodecFactory() {
+	LOG4CXX_DEBUG(logger, (char*) "CodecFactory");
+	default_impl = new DefaultCodecImpl();
+}
+
+CodecFactory::~CodecFactory() {
+	LOG4CXX_DEBUG(logger, (char*) "deconstruct CodecFactory");
+	if(default_impl != NULL) {
+		LOG4CXX_DEBUG(logger, (char*) "delete default_impl");
+		delete default_impl;
+	}
+}
+
+Codec* CodecFactory::getCodec(char* name) {
+	return default_impl;
+}
