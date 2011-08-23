@@ -96,6 +96,11 @@
       <artifactId>stompconnectservice</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.jboss.narayana.blacktie</groupId>
+      <classifier>${bpa}</classifier>
+      <artifactId>blacktie-codec</artifactId>
+    </dependency>
   </dependencies>
   <profiles>
     <profile>

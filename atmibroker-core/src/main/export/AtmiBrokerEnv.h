@@ -43,6 +43,7 @@ public:
 
 	char* getTransportLibrary(char* serviceName);
 	char* getServiceType(char* serviceName);
+	char* getCodingType(char* serviceName);
 
 	std::vector<envVar_t>& getEnvVariableInfoSeq();
 	AtmiBrokerSignalHandler& getSignalHandler() { return this->sigHandler; }

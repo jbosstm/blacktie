@@ -26,6 +26,7 @@
 #include "HybridConnectionImpl.h"
 #include "HybridCorbaEndpointQueue.h"
 #include "HybridStompEndpointQueue.h"
+#include "AtmiBrokerEnv.h"
 
 class HybridConnectionImpl;
 
@@ -60,6 +61,7 @@ private:
 	bool serviceInvokation;
 	char* serviceName;
 	const char* temporaryQueueName;
+	AtmiBrokerEnv* env;
 };
 
 #endif

@@ -548,7 +548,7 @@
 			<arg value="../testsuite" />
 		</exec>
 
-        <loadfile property="noValgrindIssues" srcfile="target/cpp-test-classes/${project.artifactId}-valgrind.log">
+        <loadfile property="noValgrindIssues1" srcfile="target/cpp-test-classes/${project.artifactId}-valgrind.log">
             <filterchain>
                 <striplinebreaks/>
                 <linecontainsregexp>
@@ -567,6 +567,20 @@
 -->
             </filterchain>
         </loadfile>
+        <loadfile property="noValgrindIssues2" srcfile="target/cpp-test-classes/${project.artifactId}-valgrind.log">
+            <filterchain>
+                <striplinebreaks/>
+                <linecontainsregexp>
+                    <regexp pattern="All heap blocks were freed -- no leaks are possible"/>
+                </linecontainsregexp>
+            </filterchain>
+        </loadfile>
+		<condition property="noValgrindIssues">
+			<or>
+				<isset property="noValgrindIssues1"/>
+				<isset property="noValgrindIssues2"/>
+			</or>
+		</condition>
         <fail message="Found memory issues in target/cpp-test-classes/${project.artifactId}-valgrind.log" unless="noValgrindIssues"/>
 	</target>
 	<target name="_test-unix-no-valgrind" depends="init" if="unix-no-valgrind">

@@ -15,26 +15,5 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-
-#include "CodecFactory.h"
-#include "DefaultCodecImpl.h"
-
-#include <exception>
-#include "malloc.h"
-
-#include "AtmiBrokerEnvXml.h"
-
-log4cxx::LoggerPtr CodecFactory::logger(log4cxx::Logger::getLogger(
-		"CodecFactory"));
-
-CodecFactory::CodecFactory() {
-	LOG4CXX_DEBUG(logger, (char*) "CodecFactory");
-}
-
-CodecFactory::~CodecFactory() {
-	LOG4CXX_DEBUG(logger, (char*) "deconstruct CodecFactory");
-}
-
-Codec* CodecFactory::getCodec(char* name) {
-	return new DefaultCodecImpl();
-}
+#include "TestDefaultCodecImpl.h"
+CPPUNIT_TEST_SUITE_REGISTRATION( TestDefaultCodecImpl );

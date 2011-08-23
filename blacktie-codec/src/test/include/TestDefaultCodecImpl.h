@@ -15,26 +15,30 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
+#ifndef TestDefaultCodecImpl_H
+#define TestDefaultCodecImpl_H
 
-#include "CodecFactory.h"
-#include "DefaultCodecImpl.h"
+#include <cppunit/extensions/HelperMacros.h>
+#include <cppunit/TestFixture.h>
 
-#include <exception>
-#include "malloc.h"
+struct deposit_t {
+	long acct_no;
+	short amount;
+	short balance;
+	char status[128];
+	short status_len;
+};
+typedef struct deposit_t DEPOSIT;
 
-#include "AtmiBrokerEnvXml.h"
+class TestDefaultCodecImpl: public CppUnit::TestFixture {
+	CPPUNIT_TEST_SUITE( TestDefaultCodecImpl);
+	CPPUNIT_TEST( test);
+	CPPUNIT_TEST_SUITE_END();
 
-log4cxx::LoggerPtr CodecFactory::logger(log4cxx::Logger::getLogger(
-		"CodecFactory"));
+public:
+	virtual void setUp();
+	virtual void tearDown();
+	void test();
+};
 
-CodecFactory::CodecFactory() {
-	LOG4CXX_DEBUG(logger, (char*) "CodecFactory");
-}
-
-CodecFactory::~CodecFactory() {
-	LOG4CXX_DEBUG(logger, (char*) "deconstruct CodecFactory");
-}
-
-Codec* CodecFactory::getCodec(char* name) {
-	return new DefaultCodecImpl();
-}
+#endif

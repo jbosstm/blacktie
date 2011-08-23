@@ -27,7 +27,7 @@ log4cxx::LoggerPtr DefaultCodecImpl::logger(log4cxx::Logger::getLogger(
 		"DefaultCodecImpl"));
 
 char* DefaultCodecImpl::encode(char* type,
-		char* subtype, char* buffer,
+		char* subtype, char* membuffer,
 		long* length) {
 	LOG4CXX_DEBUG(logger, (char*) "convertToWireFormat");
 	char* data_togo = NULL;
@@ -42,7 +42,7 @@ char* DefaultCodecImpl::encode(char* type,
 		
 		LOG4CXX_TRACE(logger, (char*) "allocated: " << *length);
 		if (*length != 0) {
-			memcpy(data_togo, buffer, *length);
+			memcpy(data_togo, membuffer, *length);
 			LOG4CXX_TRACE(logger, (char*) "copied: idata into: data_togo");
 		}
 	} else if (strncmp(type, "X_OCTET", 8) == 0) {
@@ -50,7 +50,7 @@ char* DefaultCodecImpl::encode(char* type,
 
 		LOG4CXX_TRACE(logger, (char*) "allocated: " << *length);
 		if (*length != 0) {
-			memcpy(data_togo, buffer, *length);
+			memcpy(data_togo, membuffer, *length);
 			LOG4CXX_TRACE(logger, (char*) "copied: idata into: data_togo");
 		}
 	} else {
@@ -66,7 +66,7 @@ char* DefaultCodecImpl::encode(char* type,
 		for (i = buffer->attributes.begin(); i != buffer->attributes.end(); ++i) {
 			Attribute* attribute = i->second;
 			memcpy(&data_togo[attribute->wirePosition],
-					&buffer[attribute->memPosition],
+					&membuffer[attribute->memPosition],
 					attribute->memSize);
 			copiedAmount = copiedAmount + attribute->memSize;
 			LOG4CXX_TRACE(logger, (char*) "copied: idata into: data_togo: "
@@ -83,7 +83,7 @@ char* DefaultCodecImpl::encode(char* type,
 }
 
 char* DefaultCodecImpl::decode(char* type,
-		char* subtype, char* buffer,
+		char* subtype, char* membuffer,
 		long* length) {
 	LOG4CXX_DEBUG(logger, (char*) "convertToMemoryFormat");
 	char* data_tostay = NULL;
@@ -98,7 +98,7 @@ char* DefaultCodecImpl::decode(char* type,
 		data_tostay = (char*) malloc(*length);
 		LOG4CXX_TRACE(logger, (char*) "Allocated");
 		if (*length > 0) {
-			memcpy(data_tostay, buffer, *length);
+			memcpy(data_tostay, membuffer, *length);
 			LOG4CXX_TRACE(logger, (char*) "Copied");
 		}
 	} else if (strncmp(type, "X_OCTET", 8) == 0) {
@@ -108,7 +108,7 @@ char* DefaultCodecImpl::decode(char* type,
 		data_tostay = (char*) malloc(*length);
 		LOG4CXX_TRACE(logger, (char*) "Allocated");
 		if (*length > 0) {
-			memcpy(data_tostay, buffer, *length);
+			memcpy(data_tostay, membuffer, *length);
 			LOG4CXX_TRACE(logger, (char*) "Copied");
 		}
 	} else {
@@ -140,7 +140,7 @@ char* DefaultCodecImpl::decode(char* type,
 		for (i = buffer->attributes.begin(); i != buffer->attributes.end(); ++i) {
 			Attribute* attribute = i->second;
 			memcpy(&data_tostay[attribute->memPosition],
-					&buffer[attribute->wirePosition],
+					&membuffer[attribute->wirePosition],
 					attribute->wireSize);
 			LOG4CXX_TRACE(logger, (char*) "copied: idata into: data_togo: "
 					<< attribute->wireSize);

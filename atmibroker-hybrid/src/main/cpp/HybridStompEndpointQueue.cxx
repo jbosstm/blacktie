@@ -24,7 +24,8 @@
 #include "HybridStompEndpointQueue.h"
 #include "HybridConnectionImpl.h"
 #include "AtmiBrokerEnv.h"
-#include "BufferConverterImpl.h"
+//#include "BufferConverterImpl.h"
+#include "CodecFactory.h"
 
 log4cxx::LoggerPtr HybridStompEndpointQueue::logger(log4cxx::Logger::getLogger(
 		"HybridStompEndpointQueue"));
@@ -42,6 +43,13 @@ HybridStompEndpointQueue::HybridStompEndpointQueue(apr_pool_t* pool,
 	readLock = new SynchronizableObject();
 	LOG4CXX_DEBUG(logger, "Created lock: " << readLock);
 	this->pool = pool;
+
+	AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
+	char* coding_type = env->getCodingType(serviceName);
+	CodecFactory factory;
+	this->codec = factory.getCodec(coding_type);
+	AtmiBrokerEnv::discard_instance();
+	LOG4CXX_DEBUG(logger, "Create codec: " << codec);
 
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
 	int XATMI_SERVICE_NAME_LENGTH = 128;
@@ -94,6 +102,11 @@ HybridStompEndpointQueue::~HybridStompEndpointQueue() {
 	free( name);
 	free( fullName);
 	LOG4CXX_TRACE(logger, (char*) "freed name");
+
+	if (codec) {
+		delete codec;
+		LOG4CXX_TRACE(logger, (char*) "deleting codec");
+	}
 
 	LOG4CXX_TRACE(logger, (char*) "destroyed");
 }
@@ -273,9 +286,11 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 				LOG4CXX_TRACE(logger, "Extracted servicename");
 
 				message.len = frame->body_length;
-				message.data = BufferConverterImpl::convertToMemoryFormat(
-						message.type, message.subtype, frame->body,
-						&message.len);
+				//message.data = BufferConverterImpl::convertToMemoryFormat(
+				//		message.type, message.subtype, frame->body,
+				//		&message.len);
+				message.data = codec->decode(message.type, message.subtype,
+						frame->body, &message.len);
 				LOG4CXX_TRACE(logger, "Set body and length: " << message.len);
 
 				message.replyto = (const char*) apr_hash_get(frame->headers,

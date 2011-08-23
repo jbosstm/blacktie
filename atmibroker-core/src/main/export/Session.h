@@ -19,6 +19,7 @@
 #define Session_H_
 
 #include "Message.h"
+#include "Codec.h"
 #include "AtmiBrokerSignalHandler.h"
 
 class Session {
@@ -131,6 +132,10 @@ public:
 		return isConv;
 	}
 
+	Codec* getCodec() {
+		return codec;
+	}
+
 protected:
 	bool canSend;
 	bool canRecv;
@@ -139,6 +144,7 @@ protected:
 	AtmiBrokerSignalHandler* sigHandler_;
 	std::vector<Session*> childSessions;
 	bool isConv;
+	Codec* codec;
 	int id;
 };
 

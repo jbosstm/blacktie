@@ -30,7 +30,6 @@ public:
 	Codec* getCodec(char* name);
 private:
 	static log4cxx::LoggerPtr logger;
-	Codec* default_impl;
 };
 
 #endif

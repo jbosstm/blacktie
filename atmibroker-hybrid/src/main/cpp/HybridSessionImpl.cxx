@@ -28,9 +28,10 @@
 #include "txx.h"
 
 #include "ThreadLocalStorage.h"
-#include "AtmiBrokerEnv.h"
+#include "Codec.h"
+#include "CodecFactory.h"
+//#include "BufferConverterImpl.h"
 
-#include "BufferConverterImpl.h"
 
 #include <time.h>
 
@@ -43,7 +44,7 @@ HybridSessionImpl::HybridSessionImpl(bool isConv, char* connectionName,
 		CORBA_CONNECTION* connection, apr_pool_t* pool, int id,
 		char* serviceName, void(*messagesAvailableCallback)(int, bool)) {
 	LOG4CXX_TRACE(logger, (char*) "constructor service");
-	AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
+	this->env = AtmiBrokerEnv::get_instance();
 	this->isConv = isConv;
 	long ttl;
 
@@ -106,6 +107,7 @@ HybridSessionImpl::HybridSessionImpl(bool isConv, char* connectionName,
 	this->lastEvent = 0;
 	this->lastRCode = 0;
 	this->serviceName = serviceName;
+	this->codec = NULL;
 	LOG4CXX_TRACE(logger, "OK service session created: " << id);
 }
 
@@ -114,7 +116,7 @@ HybridSessionImpl::HybridSessionImpl(bool isConv, char* connectionName,
 		const char* temporaryQueueName, void(*messagesAvailableCallback)(int,
 				bool)) {
 	LOG4CXX_DEBUG(logger, (char*) "constructor corba");
-	AtmiBrokerEnv::get_instance();
+	this->env = AtmiBrokerEnv::get_instance();
 	this->isConv = isConv;
 	this->id = id;
 	this->corbaConnection = connection;
@@ -143,6 +145,7 @@ HybridSessionImpl::HybridSessionImpl(bool isConv, char* connectionName,
 	this->lastEvent = 0;
 	this->lastRCode = 0;
 	this->serviceName = 0;
+	this->codec = NULL;
 	LOG4CXX_DEBUG(logger, (char*) "constructor corba done");
 }
 
@@ -170,6 +173,7 @@ HybridSessionImpl::HybridSessionImpl(apr_pool_t* pool) {
 	this->lastEvent = 0;
 	this->lastRCode = 0;
 	this->serviceName = serviceName;
+	this->codec = NULL;
 	LOG4CXX_TRACE(logger, "OK service session created: " << id);
 }
 
@@ -190,6 +194,11 @@ HybridSessionImpl::~HybridSessionImpl() {
 	if (temporaryQueueName != NULL) {
 		LOG4CXX_TRACE(logger, (char*) "TQ Disconnected: " << temporaryQueueName);
 		temporaryQueueName = NULL;
+	}
+
+	if (codec != NULL) {
+		delete codec;
+		LOG4CXX_TRACE(logger, (char*) "delete codec");
 	}
 	AtmiBrokerEnv::discard_instance();
 }
@@ -249,9 +258,21 @@ bool HybridSessionImpl::send(MESSAGE& message) {
 
 	char* data_togo = NULL;
 
-	if (message.len !=0)
-		data_togo = BufferConverterImpl::convertToWireFormat(message.type,
-			message.subtype, message.data, &message.len);
+	if (message.len !=0) {
+		//data_togo = BufferConverterImpl::convertToWireFormat(message.type,
+		//	message.subtype, message.data, &message.len);
+
+		if(this->codec == NULL) {
+			char* coding_type = NULL;
+			if(this->serviceName != NULL) {
+				coding_type = env->getCodingType(this->serviceName);
+			}
+			CodecFactory factory;
+			this->codec = factory.getCodec(coding_type);
+		}
+		data_togo = codec->encode(message.type, message.subtype, message.data,
+				&message.len);
+	}
 	else
 		LOG4CXX_TRACE(logger, "syncRcv: zero size message");
 

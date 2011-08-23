@@ -27,7 +27,9 @@
 #include "txx.h"
 #include "HybridCorbaEndpointQueue.h"
 #include "HybridSessionImpl.h"
-#include "BufferConverterImpl.h"
+//#include "BufferConverterImpl.h"
+#include "Codec.h"
+#include "CodecFactory.h"
 
 log4cxx::LoggerPtr HybridCorbaEndpointQueue::logger(log4cxx::Logger::getLogger(
 		"HybridCorbaEndpointQueue"));
@@ -148,9 +150,21 @@ void HybridCorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 			message.type = strdup(type);
 			message.subtype = strdup(subtype);
 			message.len = ilen;
-			message.data = BufferConverterImpl::convertToMemoryFormat(
-					message.type, message.subtype, (char*) idata.get_buffer(),
-					&message.len);
+			//message.data = BufferConverterImpl::convertToMemoryFormat(
+			//		message.type, message.subtype, (char*) idata.get_buffer(),
+			//		&message.len);
+
+			Codec* codec = this->session->getCodec();
+			if(codec == NULL) {
+				CodecFactory factory;
+				codec = factory.getCodec(NULL);
+			}
+			message.data = codec->decode(message.type, message.subtype,
+					(char*) idata.get_buffer(), &message.len);
+			// if codec not from session, delete it
+			if(codec != this->session->getCodec()) {
+				delete codec;
+			}
 
 			if (replyto_ior != NULL) {
 				LOG4CXX_TRACE(logger, (char*) "Duplicating the replyto");
