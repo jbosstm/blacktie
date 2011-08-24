@@ -43,3 +43,5 @@ mvn jboss:undeploy
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem CHECK RESULT
+fc /L result.txt expect.txt
+IF %ERRORLEVEL% NEQ 0 echo "Result is not expected" & exit -1
