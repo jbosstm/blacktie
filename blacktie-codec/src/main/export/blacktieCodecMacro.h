@@ -15,22 +15,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef CodecFactory_H_
-#define CodecFactory_H_
+/* Export/Include macros for Win32 compilation */
+#ifndef BLACKTIE_CODEC_MACRO
+#define BLACKTIE_CODEC_MACRO
 
-#include "blacktieCodecMacro.h"
-#include "Codec.h"
+/* Only do defines if we're compiling on Win32 */
+#ifdef WIN32
 
-#include "log4cxx/logger.h"
+#ifdef _BLACKTIE_CODEC_DLL
+#define BLACKTIE_CODEC_DLL __declspec(dllexport)
+#else
+#define BLACKTIE_CODEC_DLL __declspec(dllimport)
+#endif
 
-class BLACKTIE_CODEC_DLL CodecFactory {
-public:
-	CodecFactory();
-	~CodecFactory();
+#else /* Non-win32 platform. Macros need to pre-process away */
 
-	Codec* getCodec(char* name);
-private:
-	static log4cxx::LoggerPtr logger;
-};
+/* quickstarts */
+
+#define BLACKTIE_CODEC_DLL
+
+#endif
 
 #endif
