@@ -392,6 +392,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\atmibroker-core\src\main\export\Codec.h"
+					>
+				</File>
+				<File
 					RelativePath="..\atmibroker-core\src\main\export\Connection.h"
 					>
 				</File>
