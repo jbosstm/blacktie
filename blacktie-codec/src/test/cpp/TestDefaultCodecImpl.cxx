@@ -66,6 +66,7 @@ void TestDefaultCodecImpl::test() {
 			(DEPOSIT*) codec->decode(
 					(char*) "X_C_TYPE", (char*) "DEPOSIT", (char*) wireBuffer,
 					&memorySize);
+	btlogger((char*) "decode buffer OK");
 	BT_ASSERT(expectedMemorySize == memorySize);
 
 	// CHECK THE CONTENT OF THE CONVERTED BUFFER
@@ -76,8 +77,11 @@ void TestDefaultCodecImpl::test() {
 	BT_ASSERT(strcmp(deposit->status, memoryBuffer->status) == 0);
 	BT_ASSERT(deposit->status_len == memoryBuffer->status_len);
 
+	btlogger((char*) "check buffer OK");
 	delete[] wireBuffer;
 	delete codec;
 	free(deposit);
 	free(memoryBuffer);
+
+	btlogger((char*) "delete and free OK");
 }
