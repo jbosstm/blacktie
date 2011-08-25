@@ -25,7 +25,7 @@
 /**
  * The buffer converter is used to convert a portable buffer for network transfer
  */
-class DefaultCodecImpl : public virtual Codec {
+class DefaultCodecImpl : public Codec {
 public:
 	char* encode(char* type, char* subtype, char* buffer, long* length);
 	char* decode(char* type, char* subtype, char* buffer, long* length);
