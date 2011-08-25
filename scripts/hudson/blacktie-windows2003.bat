@@ -1,8 +1,14 @@
 set NOPAUSE=true
 
-rem SHUTDOWN JBOSS
+rem SHUTDOWN ANY PREVIOUS BUILD REMNANTS
 if exist jboss-5.1.0.GA call jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S && cd .
 if exist jboss-5.1.0.GA @ping 127.0.0.1 -n 60 -w 1000 > nul
+tasklist
+taskkill /F /IM mspdbsrv.exe
+taskkill /F /IM testsuite.exe
+taskkill /F /IM server.exe
+taskkill /F /IM client.exe
+taskkill /F /IM cs.exe
 tasklist
 
 rem INITIALIZE JBOSS
@@ -48,10 +54,14 @@ IF %ERRORLEVEL% NEQ 0 echo "Failing build" & tasklist & call %WORKSPACE%\jboss-5
 call run_all_quickstarts.bat tx
 IF %ERRORLEVEL% NEQ 0 echo "Failing build" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
 
-rem SHUTDOWN JBOSS
+rem SHUTDOWN ANY PREVIOUS BUILD REMNANTS
 tasklist
 call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S && cd .
 @ping 127.0.0.1 -n 60 -w 1000 > nul
 taskkill /F /IM mspdbsrv.exe
+taskkill /F /IM testsuite.exe
+taskkill /F /IM server.exe
+taskkill /F /IM client.exe
+taskkill /F /IM cs.exe
 tasklist
 echo "Finished build"
