@@ -1,7 +1,7 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual C++ Express 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xatmi", "xatmi.vcproj", "{7309B1A5-1640-454D-B8B1-A58158FE89FD}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "blacktie", "blacktie.vcproj", "{7309B1A5-1640-454D-B8B1-A58158FE89FD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
