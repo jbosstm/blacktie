@@ -79,7 +79,8 @@ void TestDefaultCodecImpl::test() {
 
 	btlogger((char*) "check buffer OK");
 	delete[] wireBuffer;
-	delete codec;
+	factory.release(codec);
+	btlogger((char*) "delete codec");
 	free(deposit);
 	free(memoryBuffer);
 

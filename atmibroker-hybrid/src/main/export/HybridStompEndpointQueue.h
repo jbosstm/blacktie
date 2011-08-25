@@ -34,6 +34,7 @@ extern "C" {
 #include "log4cxx/logger.h"
 #include "Destination.h"
 #include "Codec.h"
+#include "CodecFactory.h"
 #include "SynchronizableObject.h"
 
 class BLACKTIE_HYBRID_DLL HybridStompEndpointQueue: public virtual Destination {
@@ -72,6 +73,7 @@ private:
 	bool _connected;
 	bool requiresDisconnect;
 	int unackedMessages;
+	CodecFactory factory;
 	Codec* codec;
 };
 

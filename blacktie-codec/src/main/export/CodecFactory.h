@@ -29,6 +29,7 @@ public:
 	~CodecFactory();
 
 	Codec* getCodec(char* name);
+	void release(Codec* codec);
 private:
 	static log4cxx::LoggerPtr logger;
 };

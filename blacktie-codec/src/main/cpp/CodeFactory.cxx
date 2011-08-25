@@ -38,3 +38,8 @@ CodecFactory::~CodecFactory() {
 Codec* CodecFactory::getCodec(char* name) {
 	return new DefaultCodecImpl();
 }
+void CodecFactory::release(Codec* codec) {
+	if(codec) {
+		delete codec;
+	}
+}

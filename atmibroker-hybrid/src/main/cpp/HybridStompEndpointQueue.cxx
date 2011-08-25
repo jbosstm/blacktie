@@ -46,7 +46,6 @@ HybridStompEndpointQueue::HybridStompEndpointQueue(apr_pool_t* pool,
 
 	AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
 	char* coding_type = env->getCodingType(serviceName);
-	CodecFactory factory;
 	this->codec = factory.getCodec(coding_type);
 	AtmiBrokerEnv::discard_instance();
 	LOG4CXX_DEBUG(logger, "Create codec: " << codec);
@@ -104,7 +103,7 @@ HybridStompEndpointQueue::~HybridStompEndpointQueue() {
 	LOG4CXX_TRACE(logger, (char*) "freed name");
 
 	if (codec) {
-		delete codec;
+		factory.release(codec);
 		LOG4CXX_TRACE(logger, (char*) "deleting codec");
 	}
 

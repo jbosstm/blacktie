@@ -27,6 +27,7 @@
 #include "HybridCorbaEndpointQueue.h"
 #include "HybridStompEndpointQueue.h"
 #include "AtmiBrokerEnv.h"
+#include "CodecFactory.h"
 
 class HybridConnectionImpl;
 
@@ -62,6 +63,7 @@ private:
 	char* serviceName;
 	const char* temporaryQueueName;
 	AtmiBrokerEnv* env;
+	CodecFactory factory;
 };
 
 #endif

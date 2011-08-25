@@ -154,16 +154,16 @@ void HybridCorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 			//		message.type, message.subtype, (char*) idata.get_buffer(),
 			//		&message.len);
 
+			CodecFactory factory;
 			Codec* codec = this->session->getCodec();
 			if(codec == NULL) {
-				CodecFactory factory;
 				codec = factory.getCodec(NULL);
 			}
 			message.data = codec->decode(message.type, message.subtype,
 					(char*) idata.get_buffer(), &message.len);
 			// if codec not from session, delete it
 			if(codec != this->session->getCodec()) {
-				delete codec;
+				factory.release(codec);
 			}
 
 			if (replyto_ior != NULL) {

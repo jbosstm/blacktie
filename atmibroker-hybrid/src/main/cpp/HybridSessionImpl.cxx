@@ -197,7 +197,7 @@ HybridSessionImpl::~HybridSessionImpl() {
 	}
 
 	if (codec != NULL) {
-		delete codec;
+		factory.release(codec);
 		LOG4CXX_TRACE(logger, (char*) "delete codec");
 	}
 	AtmiBrokerEnv::discard_instance();
@@ -267,7 +267,7 @@ bool HybridSessionImpl::send(MESSAGE& message) {
 			if(this->serviceName != NULL) {
 				coding_type = env->getCodingType(this->serviceName);
 			}
-			CodecFactory factory;
+			//CodecFactory factory;
 			this->codec = factory.getCodec(coding_type);
 		}
 		data_togo = codec->encode(message.type, message.subtype, message.data,
