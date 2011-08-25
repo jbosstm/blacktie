@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="C:\app\BlackHat\product\11.1.0\db_1\OCI\include;&quot;..\atmibroker-xatmi\src\quickstart\txfooapp&quot;;&quot;..\atmibroker-core\src\main\include&quot;;&quot;..\atmibroker-core\src\main\export&quot;;&quot;..\atmibroker-core\target\cxx\compile\include\expat&quot;;&quot;..\atmibroker-hybrid\src\main\include&quot;;&quot;..\atmibroker-hybrid\src\main\export&quot;;&quot;..\atmibroker-hybrid\target\cxx\compile\include\stomp&quot;;&quot;..\atmibroker-hybrid\target\cxx\compile\include\apr-1&quot;;&quot;..\atmibroker-tx\src\main\export&quot;;&quot;..\atmibroker-tx\src\main\include&quot;;&quot;..\atmibroker-xatmi\src\main\include&quot;;&quot;..\atmibroker-xatmi\src\main\export&quot;;&quot;..\atmibroker-xatmi\target\cxx\runtime\include&quot;;&quot;..\atmibroker-core\src\test\include&quot;;&quot;..\atmibroker-hybrid\src\test\include&quot;;&quot;..\atmibroker-tx\src\test\include&quot;;&quot;..\atmibroker-xatmi\src\test\include&quot;;&quot;..\atmibroker-core\target\cxx\test\include&quot;;&quot;..\atmibroker-hybrid\target\cxx\test\include&quot;;&quot;..\atmibroker-tx\target\cxx\test\include&quot;;&quot;..\atmibroker-xatmi\target\cxx\test\include&quot;;&quot;..\blacktie-codec\target\cxx\test\include&quot;;&quot;..\blacktie-codec\src\test\include&quot;;&quot;..\blacktie-codec\src\main\include&quot;;&quot;..\blacktie-codec\target\cxx\compile\include&quot;;&quot;..\blacktie-codec\src\main\export&quot;"
-				PreprocessorDefinitions="WIN32;TAO_COMP;_CRT_SECURE_NO_WARNINGS;BLACKTIE_CORE_MACRO=;BLACKTIE_CORE_DLL=;BLACKTIE_XATMI_MACRO=;BLACKTIE_XATMI_DLL=;BLACKTIE_STOMP_MACRO=;BLACKTIE_STOMP_DLL=;BLACKTIE_TX_MACRO=;BLACKTIE_TX_DLL=;BLACKTIE_HYBRID_MACRO=;BLACKTIE_HYBRID_DLL=;UNITTEST"
+				PreprocessorDefinitions="WIN32;TAO_COMP;_CRT_SECURE_NO_WARNINGS;BLACKTIE_CORE_MACRO=;BLACKTIE_CORE_DLL=;BLACKTIE_XATMI_MACRO=;BLACKTIE_XATMI_DLL=;BLACKTIE_STOMP_MACRO=;BLACKTIE_STOMP_DLL=;BLACKTIE_TX_MACRO=;BLACKTIE_TX_DLL=;BLACKTIE_HYBRID_MACRO=;BLACKTIE_HYBRID_DLL=;BLACKTIE_CODEC_MACRO=;BLACKTIE_CODEC_DLL=;UNITTEST"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -194,6 +194,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\atmibroker-core\src\main\cpp\btlogger.cxx"
+					>
+				</File>
+				<File
 					RelativePath="..\atmibroker-core\src\main\cpp\OrbManagement.cxx"
 					>
 				</File>
@@ -207,10 +211,6 @@
 				</File>
 				<File
 					RelativePath="..\atmibroker-core\src\main\cpp\ThreadLocalStorage.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\atmibroker-core\src\main\cpp\userlogc.cxx"
 					>
 				</File>
 				<File
@@ -261,6 +261,34 @@
 			<Filter
 				Name="hybrid"
 				>
+				<File
+					RelativePath="..\atmibroker-hybrid\src\main\cpp\BufferConverterImpl.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\atmibroker-hybrid\src\main\cpp\ConnectionFactoryImpl.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\atmibroker-hybrid\src\main\cpp\HybridConnectionImpl.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\atmibroker-hybrid\src\main\cpp\HybridCorbaEndpointQueue.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\atmibroker-hybrid\src\main\cpp\HybridSessionImpl.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\atmibroker-hybrid\src\main\cpp\HybridStompEndpointQueue.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\atmibroker-hybrid\src\main\cpp\stomp.c"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="tx"
@@ -311,6 +339,10 @@
 				>
 				<File
 					RelativePath="..\blacktie-codec\src\test\cpp\TestDefaultCodecImpl.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\blacktie-codec\target\generated-sources\TestRunner.cxx"
 					>
 				</File>
 				<File
@@ -701,6 +733,18 @@
 				</File>
 				<File
 					RelativePath="..\atmibroker-xatmi\src\test\include\XATMITestSuite.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="blacktie-codec"
+				>
+				<File
+					RelativePath="..\blacktie-codec\src\main\export\blacktieCodecMacro.h"
+					>
+				</File>
+				<File
+					RelativePath="..\blacktie-codec\src\main\export\CodecFactory.h"
 					>
 				</File>
 			</Filter>
