@@ -70,13 +70,13 @@
     <property name="version" value="5.0.0.M2-SNAPSHOT"/>
 -->
   <!-- a working directory for the process. Can contain output from previous releases if you like to keep them archived locally. -->
-  <!--property name="workdir" location="/tmp/packaged_builds"/-->
+  <!--property name="workdir" location="/tmp/blacktie_releases"/-->
   <!-- where to get the source -->
-  <property name="svnbase" value="https://svn.jboss.org/repos/blacktie"/>
+  <property name="svnbase" value="https://svn.jboss.org/repos/blacktie/tags"/>
   <!-- The tag as it appears under svnbase -->
-  <property name="tag" value="trunk"/>
+  <property name="tag" value="5_0_0_M1"/>
   <!-- The file name base for the user downloadable files. Derive it from the tag -->
-  <property name="version" value="5.0.0.M2-SNAPSHOT"/>
+  <property name="version" value="5.0.0.M1"/>
   <!-- the location the web site content is copied to -->
   <property name="downloads.dir" value="${user.home}/blacktie/filemgmt.jboss.org/downloads_htdocs/blacktie/"/>
   <property name="docs.dir" value="${user.home}/blacktie/filemgmt.jboss.org/docs_htdocs/blacktie/"/>
@@ -119,14 +119,14 @@
   </target>
   <target name="dist" depends="dist-init" description="build the end-user release bundles (src and binary)">
     <!-- build the binary releases -->
-    <exec dir="${workdir}/${tag}" executable="mvn" failonerror="true">
+    <exec dir="${workdir}/${tag}" executable="tools/maven/bin/mvn" failonerror="true">
       <arg line="clean -gs tools/maven/conf/settings.xml -Dbpa=${bpa}"/>
     </exec>
     <!-- package the full source release (all src tree) -->
     <delete file="${workdir}/blacktie-${version}-src.zip"/>
     <zip basedir="${workdir}" destfile="${workdir}/blacktie-${version}-src.zip" includes="${tag}/**" excludes="${tag}/repository/**"/>
     <!-- build the binary releases -->
-    <exec dir="${workdir}/${tag}" executable="mvn" failonerror="true">
+    <exec dir="${workdir}/${tag}" executable="tools/maven/bin/mvn" failonerror="true">
       <arg line="install -DskipTests -gs tools/maven/conf/settings.xml -Dbpa=${bpa}"/>
     </exec>
   </target>
@@ -169,7 +169,7 @@
       <fileset dir="${workdir}" includes="blacktie-${version}-src.zip"/>
     </copy>
     <copy todir="tmp-downloads-dir/binary">
-      <fileset dir="${user.home}" includes="blacktie-${version}-bin.zip"/>
+      <fileset dir="${user.home}" includes="blacktie-${version}-bin.*"/>
     </copy>
     <copy todir="tmp-downloads-dir/xsd">
       <fileset dir="${workdir}/${tag}/blacktie-xsd/src/main/xsd/">
