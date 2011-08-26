@@ -24,7 +24,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jboss.narayana.blacktie</groupId>
   <artifactId>quickstart-jab</artifactId>
-  <version>5.0.0.M1-SNAPSHOT</version>
+  <version>5.0.0.M1</version>
   <packaging>jar</packaging>
   <description>A BlackTie component</description>
   <name>Blacktie JAB Quickstart</name>
@@ -61,7 +61,7 @@
     <dependency>
       <groupId>org.jboss.narayana.blacktie</groupId>
       <artifactId>jatmibroker-xatmi-client</artifactId>
-      <version>5.0.0.M1-SNAPSHOT</version>
+      <version>5.0.0.M1</version>
     </dependency>
     <!-- Override the logkit implementation required to work around missing artifact -->
     <dependency>

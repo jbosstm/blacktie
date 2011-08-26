@@ -19,7 +19,7 @@
   <parent>
     <groupId>org.jboss.narayana.blacktie</groupId>
     <artifactId>blacktie-all</artifactId>
-    <version>5.0.0.M1-SNAPSHOT</version>
+    <version>5.0.0.M1</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -110,7 +110,7 @@
     <dependency>
     <groupId>org.codehaus.stomp</groupId>
     <artifactId>stompconnect</artifactId>
-    <version>5.0.0.M1-SNAPSHOT</version>
+    <version>5.0.0.M1</version>
       <exclusions>
         <exclusion>
           <groupId>org.apache.geronimo.specs</groupId>

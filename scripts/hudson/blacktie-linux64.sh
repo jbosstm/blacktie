@@ -69,7 +69,7 @@ export JBOSS_HOME=
 
 # INITIALIZE THE BLACKTIE DISTRIBUTION
 cd $WORKSPACE/trunk/scripts/test
-ant dist -DBT_HOME=$WORKSPACE/trunk/dist/ -DVERSION=blacktie-5.0.0.M1-SNAPSHOT -DMACHINE_ADDR=`hostname` -DJBOSSAS_IP_ADDR=localhost -Dbpa=centos54x64
+ant dist -DBT_HOME=$WORKSPACE/trunk/dist/ -DVERSION=blacktie-5.0.0.M1 -DMACHINE_ADDR=`hostname` -DJBOSSAS_IP_ADDR=localhost -Dbpa=centos54x64
 if [ "$?" != "0" ]; then
 	ps -f
 	for i in `ps -eaf | grep java | grep "run.sh" | grep -v grep | cut -c10-15`; do kill -9 $i; done
@@ -82,7 +82,7 @@ if [ "$?" != "0" ]; then
 fi
 
 # RUN ALL THE SAMPLES
-cd $WORKSPACE/trunk/dist/blacktie-5.0.0.M1-SNAPSHOT/
+cd $WORKSPACE/trunk/dist/blacktie-5.0.0.M1/
 . setenv.sh
 if [ "$?" != "0" ]; then
 	ps -f
@@ -106,7 +106,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DB2_LIB
 
 export PATH=$PATH:$WORKSPACE/trunk/tools/maven/bin
 
-cp $WORKSPACE/trunk/dist/blacktie-5.0.0.M1-SNAPSHOT/quickstarts/xatmi/security/hornetq-*.properties $WORKSPACE/jboss-5.1.0.GA/server/all-with-hornetq/conf/props
+cp $WORKSPACE/trunk/dist/blacktie-5.0.0.M1/quickstarts/xatmi/security/hornetq-*.properties $WORKSPACE/jboss-5.1.0.GA/server/all-with-hornetq/conf/props
 sed -i 's?</security-settings>?      <security-setting match="jms.queue.BTR_SECURE">\
          <permission type="send" roles="blacktie"/>\
          <permission type="consume" roles="blacktie"/>\

@@ -20,7 +20,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jboss.narayana.blacktie</groupId>
   <artifactId>quickstart-mdb-xatmi-service</artifactId>
-  <version>5.0.0.M1-SNAPSHOT</version>
+  <version>5.0.0.M1</version>
   <packaging>jar</packaging>
   <description>A BlackTie component</description>
   <name>Blacktie XATMI MDB Quickstart</name>
@@ -124,7 +124,7 @@
     <dependency>
       <groupId>org.jboss.narayana.blacktie</groupId>
       <artifactId>jatmibroker-xatmi</artifactId>
-      <version>5.0.0.M1-SNAPSHOT</version>
+      <version>5.0.0.M1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

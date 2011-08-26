@@ -67,7 +67,7 @@
   <!--
     <property name="svnbase" value="https://svn.jboss.org/repos/blacktie"/>
     <property name="tag" value="trunk"/>
-    <property name="version" value="5.0.0.M1-SNAPSHOT"/>
+    <property name="version" value="5.0.0.M1"/>
 -->
   <!-- a working directory for the process. Can contain output from previous releases if you like to keep them archived locally. -->
   <!--property name="workdir" location="/tmp/packaged_builds"/-->
@@ -76,7 +76,7 @@
   <!-- The tag as it appears under svnbase -->
   <property name="tag" value="trunk"/>
   <!-- The file name base for the user downloadable files. Derive it from the tag -->
-  <property name="version" value="5.0.0.M1-SNAPSHOT"/>
+  <property name="version" value="5.0.0.M1"/>
   <!-- the location the web site content is copied to -->
   <property name="downloads.dir" value="${user.home}/blacktie/filemgmt.jboss.org/downloads_htdocs/blacktie/"/>
   <property name="docs.dir" value="${user.home}/blacktie/filemgmt.jboss.org/docs_htdocs/blacktie/"/>
