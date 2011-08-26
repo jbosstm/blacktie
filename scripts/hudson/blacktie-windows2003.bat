@@ -33,13 +33,13 @@ set JBOSS_HOME=
 rem CREATE BLACKTIE DISTRIBUTION
 cd %WORKSPACE%\trunk\scripts\test
 for /f "delims=" %%a in ('hostname') do @set MACHINE_ADDR=%%a
-call ant dist -DBT_HOME=%BT_HOME% -DVERSION=blacktie-5.0.0.M1 -DJBOSSAS_IP_ADDR=%JBOSSAS_IP_ADDR% -DMACHINE_ADDR=%MACHINE_ADDR%
+call ant dist -DBT_HOME=%BT_HOME% -DVERSION=blacktie-5.0.0.M2-SNAPSHOT -DJBOSSAS_IP_ADDR=%JBOSSAS_IP_ADDR% -DMACHINE_ADDR=%MACHINE_ADDR%
 IF %ERRORLEVEL% NEQ 0 echo "Failing build" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
 
 rem RUN THE SAMPLES
 cd %WORKSPACE%
 call ant initializeBlackTieQuickstartSecurity
-cd %WORKSPACE%\trunk\dist\blacktie-5.0.0.M1
+cd %WORKSPACE%\trunk\dist\blacktie-5.0.0.M2-SNAPSHOT
 IF %ERRORLEVEL% NEQ 0 echo "Failing build" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
 set ORACLE_HOME=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2
 set TNS_ADMIN=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2\network\admin
@@ -49,7 +49,7 @@ set PATH=%PATH%;%WORKSPACE%\trunk\tools\maven\bin
 
 call setenv.bat
 IF %ERRORLEVEL% NEQ 0 echo "Failing build" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
-copy /Y %WORKSPACE%\trunk\dist\blacktie-5.0.0.M1\quickstarts\xatmi\security\hornetq-*.properties %WORKSPACE%\jboss-5.1.0.GA\server\all-with-hornetq\conf\props
+copy /Y %WORKSPACE%\trunk\dist\blacktie-5.0.0.M2-SNAPSHOT\quickstarts\xatmi\security\hornetq-*.properties %WORKSPACE%\jboss-5.1.0.GA\server\all-with-hornetq\conf\props
 IF %ERRORLEVEL% NEQ 0 echo "Failing build" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
 call run_all_quickstarts.bat tx
 IF %ERRORLEVEL% NEQ 0 echo "Failing build" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
