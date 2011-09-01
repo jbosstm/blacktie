@@ -267,7 +267,7 @@ public abstract class Buffer implements Serializable {
 	 * @throws ConnectionException
 	 *             In case the data does not match the format defined.
 	 */
-	void deserialize(byte[] data) throws ConnectionException {
+	public void deserialize(byte[] data) throws ConnectionException {
 		currentPos = 0;
 		if (requiresSerialization) {
 			if (!deserialized && data != null) {
@@ -369,7 +369,7 @@ public abstract class Buffer implements Serializable {
 	 * @throws ConnectionException
 	 *             In case the data cannot be formatted correctly
 	 */
-	byte[] serialize() throws ConnectionException {
+	public byte[] serialize() throws ConnectionException {
 		currentPos = 0;
 		byte[] toReturn = null;
 		if (requiresSerialization) {

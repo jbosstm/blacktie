@@ -27,8 +27,10 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.narayana.blacktie.jatmibroker.codec.CodecFactory;
 import org.jboss.narayana.blacktie.jatmibroker.core.ResponseMonitor;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
+import org.jboss.narayana.blacktie.jatmibroker.core.transport.Codec;
 import org.jboss.narayana.blacktie.jatmibroker.core.transport.Message;
 import org.jboss.narayana.blacktie.jatmibroker.core.transport.Receiver;
 import org.jboss.narayana.blacktie.jatmibroker.core.transport.Transport;
@@ -272,7 +274,12 @@ public class Connection {
 		int len = 0;
 		byte[] data = null;
 		if (toSend != null) {
-			data = toSend.serialize();
+			CodecFactory factory = new CodecFactory(this);
+			String coding_type = properties.getProperty("blacktie." 
+					+ svc + ".coding_type");
+			Codec codec = factory.getCodec(coding_type);
+			data = codec.encode(toSend);
+			//data = toSend.serialize();
 			type = toSend.getType();
 			subtype = toSend.getSubtype();
 			len = toSend.getLen();
@@ -418,7 +425,12 @@ public class Connection {
 		int len = 0;
 		byte[] data = null;
 		if (toSend != null) {
-			data = toSend.serialize();
+			CodecFactory factory = new CodecFactory(this);
+			String coding_type = properties.getProperty("blacktie." 
+					+ svc + ".coding_type");
+			Codec codec = factory.getCodec(coding_type);
+			data = codec.encode(toSend);
+			//data = toSend.serialize();
 			type = toSend.getType();
 			subtype = toSend.getSubtype();
 			len = toSend.getLen();
@@ -550,8 +562,13 @@ public class Connection {
 		Message message = endpoint.receive(flags);
 		Buffer buffer = null;
 		if (message.type != null && !message.type.equals("")) {
-			buffer = tpalloc(message.type, message.subtype, message.len);
-			buffer.deserialize(message.data);
+			CodecFactory factory = new CodecFactory(this);
+			String coding_type = properties.getProperty("blacktie." 
+					+ message.serviceName + ".coding_type");
+			Codec codec = factory.getCodec(coding_type);
+			buffer = codec.decode(message.type, message.subtype, message.data, message.len);
+			//buffer = tpalloc(message.type, message.subtype, message.len);
+			//buffer.deserialize(message.data);
 		}
 		if (message.rval == Connection.TPFAIL) {
 			if (message.rcode == Connection.TPESVCERR) {
