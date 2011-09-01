@@ -81,18 +81,6 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
-    <!-- Needed for rest-tx -->
-    <repository>
-      <id>download-java-net</id>
-      <name>download-java-net</name>
-      <url>http://download.java.net/maven/2/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
