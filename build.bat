@@ -23,11 +23,18 @@ REM Ignore the users classpath, cause it might mess
 REM things up
 REM ******************************************************
 
+set PWD=%~dp0
+echo %PWD%
+
+
 SETLOCAL
 
 set CLASSPATH=
 set M2_HOME=
 set MAVEN_HOME=
+
+set MAVEN_OPTS=%MAVEN_OPTS% -Xms1024m -Xmx1024m -XX:PermSize=1024m -XX:MaxPermSize=1024m
+set MVN_OPTIONS=-gs tools\maven\conf\settings.xml
 
 REM ******************************************************
 REM - "for" loops have been unrolled for compatibility
@@ -84,7 +91,7 @@ REM ******************************************************
 echo Calling %1 %2 %3 %4 %5 %6 %7 %8
 set GOAL=%2
 if "%GOAL%"=="" set GOAL=install
-call %1 %GOAL% %3 %4 %5 %6 %7 %8
+call %1 %MVN_OPTIONS% %GOAL% %3 %4 %5 %6 %7 %8
 
 :end
 
