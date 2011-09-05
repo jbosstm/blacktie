@@ -15,29 +15,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include "btlogger.h"
-#include "TestAssert.h"
+#ifndef XMLCodecImpl_H_
+#define XMLCodecImpl_H_
 
-#include "TestNBFParser.h"
-#include "NBFParser.h"
-#include "btnbf.h"
-#include "xatmi.h"
+#include "Codec.h"
 
-void TestNBFParser::test_string_buf() {
-	btlogger((char*) "test_string_buf");
+#include "log4cxx/logger.h"
 
-	int rc;
-	char* buf = tpalloc((char*)"BT_NBF", (char*)"employee", 0);
-	BT_ASSERT(buf != NULL);
-	rc = btaddattribute(&buf, (char*)"name", (char*)"zhfeng", 6);	
-	BT_ASSERT(rc == 0);
+class XMLCodecImpl : public Codec {
+public:
+	char* encode(char* type, char* subtype, char* buffer, long* length);
+	char* decode(char* type, char* subtype, char* buffer, long* length);
+private:
+	static log4cxx::LoggerPtr logger;
+};
 
-	// Cant do this on WIN32 as the parser isn't in src/main/export
-#ifndef WIN32
-	NBFParser nbf;
-	NBFParserHandlers handler("name", 0);
-	BT_ASSERT(nbf.parse(buf, "employee", &handler));
 #endif
-
-	::tpfree(buf);
-}

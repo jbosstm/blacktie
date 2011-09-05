@@ -15,6 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
+#if 0
 #include "TestNBFParser.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestNBFParser );
 #include "TestBTNbf.h"
@@ -23,3 +24,6 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestBTNbf );
 CPPUNIT_TEST_SUITE_REGISTRATION( TestComplex );
 #include "TestNBFCall.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestNBFCall );
+#endif
+#include "TestCodecImpl.h"
+CPPUNIT_TEST_SUITE_REGISTRATION( TestCodecImpl );

@@ -15,29 +15,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include "btlogger.h"
-#include "TestAssert.h"
+#ifndef TestCodecImpl_H
+#define TestCodecImpl_H
 
-#include "TestNBFParser.h"
-#include "NBFParser.h"
-#include "btnbf.h"
-#include "xatmi.h"
+#include <cppunit/extensions/HelperMacros.h>
+#include <cppunit/TestFixture.h>
 
-void TestNBFParser::test_string_buf() {
-	btlogger((char*) "test_string_buf");
+class TestCodecImpl: public CppUnit::TestFixture {
+	CPPUNIT_TEST_SUITE( TestCodecImpl);
+	CPPUNIT_TEST( testXMLCodec );
+	CPPUNIT_TEST_SUITE_END();
 
-	int rc;
-	char* buf = tpalloc((char*)"BT_NBF", (char*)"employee", 0);
-	BT_ASSERT(buf != NULL);
-	rc = btaddattribute(&buf, (char*)"name", (char*)"zhfeng", 6);	
-	BT_ASSERT(rc == 0);
+public:
+	virtual void setUp();
+	virtual void tearDown();
+	void testXMLCodec();
+};
 
-	// Cant do this on WIN32 as the parser isn't in src/main/export
-#ifndef WIN32
-	NBFParser nbf;
-	NBFParserHandlers handler("name", 0);
-	BT_ASSERT(nbf.parse(buf, "employee", &handler));
 #endif
-
-	::tpfree(buf);
-}

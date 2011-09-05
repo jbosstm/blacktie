@@ -18,6 +18,7 @@
 
 #include "CodecFactory.h"
 #include "DefaultCodecImpl.h"
+#include "XMLCodecImpl.h"
 
 #include <exception>
 #include "malloc.h"
@@ -36,6 +37,9 @@ CodecFactory::~CodecFactory() {
 }
 
 Codec* CodecFactory::getCodec(char* name) {
+	if(name != NULL && strcmp(name, "xml") == 0) {
+		return new XMLCodecImpl();
+	}
 	return new DefaultCodecImpl();
 }
 void CodecFactory::release(Codec* codec) {
