@@ -15,7 +15,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include "TestDefaultCodecImpl.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestDefaultCodecImpl );
-#include "TestXMLCodecImpl.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestXMLCodecImpl );
+#ifndef XMLCODEC_PARSER_H
+#define XMLCODEC_PARSER_H
+#include <xercesc/util/PlatformUtils.hpp>
+#include <xercesc/parsers/SAXParser.hpp>
+#include <log4cxx/logger.h>
+
+#if defined(XERCES_NEW_IOSTREAMS)
+#include <iostream>
+#include <fstream>
+#else
+#include <iostream.h>
+#include <fstream.h>
+#endif
+
+#include <XMLCodecHandlers.h>
+
+class XMLCodecParser {
+public:
+	XMLCodecParser();
+	~XMLCodecParser();
+	bool parse(const char* buf, long bufferLength, XMLCodecHandlers* handler);
+
+private:
+	bool isInitial;
+	SAXParser* parser;
+	static log4cxx::LoggerPtr logger;
+};
+
+#endif

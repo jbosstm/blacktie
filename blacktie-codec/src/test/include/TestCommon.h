@@ -15,7 +15,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include "TestDefaultCodecImpl.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestDefaultCodecImpl );
-#include "TestXMLCodecImpl.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestXMLCodecImpl );
+#ifndef TestCommon_H
+#define TestCommon_H
+
+struct deposit_t {
+	long acct_no;
+	short amount;
+	short balance;
+	char status[128];
+	short status_len;
+};
+
+typedef struct deposit_t DEPOSIT;
+
+#endif

@@ -15,7 +15,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include "TestDefaultCodecImpl.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestDefaultCodecImpl );
-#include "TestXMLCodecImpl.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestXMLCodecImpl );
+#ifndef BASE64_H_
+#define BASE64_H_
+
+#include <xercesc/util/Base64.hpp>
+#include <xercesc/util/XMLString.hpp>
+
+XERCES_CPP_NAMESPACE_USE
+
+char* base64_encode(char* data, long* length);
+char* base64_decode(char* data, long* length);
+void  base64_release(char** data);
+
+#endif

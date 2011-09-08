@@ -15,7 +15,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include "TestDefaultCodecImpl.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestDefaultCodecImpl );
-#include "TestXMLCodecImpl.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestXMLCodecImpl );
+#ifndef TestXMLCodecImpl_H
+#define TestXMLCodecImpl_H
+
+#include <cppunit/extensions/HelperMacros.h>
+#include <cppunit/TestFixture.h>
+
+#include "TestCommon.h"
+
+class TestXMLCodecImpl: public CppUnit::TestFixture {
+	CPPUNIT_TEST_SUITE( TestXMLCodecImpl);
+	CPPUNIT_TEST( test_x_octet);
+	CPPUNIT_TEST_SUITE_END();
+
+public:
+	virtual void setUp();
+	virtual void tearDown();
+	void test_x_octet();
+};
+
+#endif

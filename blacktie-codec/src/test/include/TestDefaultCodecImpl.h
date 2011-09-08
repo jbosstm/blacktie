@@ -21,14 +21,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/TestFixture.h>
 
-struct deposit_t {
-	long acct_no;
-	short amount;
-	short balance;
-	char status[128];
-	short status_len;
-};
-typedef struct deposit_t DEPOSIT;
+#include "TestCommon.h"
 
 class TestDefaultCodecImpl: public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE( TestDefaultCodecImpl);

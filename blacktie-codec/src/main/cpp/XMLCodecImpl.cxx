@@ -16,6 +16,8 @@
  * MA  02110-1301, USA.
  */
 #include "XMLCodecImpl.h"
+#include "XMLCodecParser.h"
+#include "Base64.h"
 #include "AtmiBrokerEnv.h"
 
 log4cxx::LoggerPtr XMLCodecImpl::logger(log4cxx::Logger::getLogger(
@@ -34,10 +36,31 @@ char* XMLCodecImpl::encode(char* type, char* subtype,
 	} else if(strcmp(type, "BT_NBF") == 0) {
 		data_togo = new char[*length];
 		
-		LOG4CXX_TRACE(logger, (char*) "allocated: " << *length);
+		LOG4CXX_TRACE(logger, (char*) "BT_NBF allocated: " << *length);
 		if (*length != 0) {
 			memcpy(data_togo, membuffer, *length);
 			LOG4CXX_TRACE(logger, (char*) "copied: idata into: data_togo");
+		}
+	} else if(strcmp(type, "X_OCTET") == 0) {
+		char* content;
+		content = base64_encode(membuffer, length);
+		long len = *length;
+		if(content != NULL) {
+			*length += 256;
+			data_togo = new char[*length];
+			memset(data_togo, '\0', *length);
+
+			LOG4CXX_TRACE(logger, (char*) "X_OCTET allocated: " << *length);
+			strcpy(data_togo, "<?xml version='1.0'?>");
+			strcat(data_togo, "<bt:X_OCTET");
+			strcat(data_togo, " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"");
+			strcat(data_togo, " xmlns:bt=\"http://www.jboss.org/blacktie\"");
+			strcat(data_togo, " xsi:schemaLocation=\"http://www.jboss.org/blacktie buffers/X_OCTET.xsd\">");
+			strncat(data_togo, content, len-1);
+			strcat(data_togo,"</bt:X_OCTET>");
+			delete content;
+		} else {
+			LOG4CXX_ERROR(logger, (char*) "X_OCTET: base64 encode failed");
 		}
 	}
 	return data_togo;
@@ -60,6 +83,23 @@ char* XMLCodecImpl::decode(char* type, char* subtype,
 		if (*length > 0) {
 			memcpy(data_tostay, membuffer, *length);
 			LOG4CXX_TRACE(logger, (char*) "Copied");
+		}
+	} else if (strcmp(type, "X_OCTET") == 0) {
+		LOG4CXX_TRACE(logger, (char*) "Received an X_OCTET buffer");
+		XMLCodecParser parser;
+		XMLCodecHandlers handler(type, subtype);
+
+		parser.parse(membuffer, *length, &handler);
+		char* content = handler.getBuffer();
+		*length = handler.getLength();
+		LOG4CXX_TRACE(logger, (char*) "Allocating DATA");
+		data_tostay = (char*) malloc (*length);
+		LOG4CXX_TRACE(logger, (char*) "Allocated");
+		if (*length > 0) {
+			memcpy(data_tostay, content, *length);
+			LOG4CXX_TRACE(logger, (char*) "Copied");
+			delete content;
+			LOG4CXX_TRACE(logger, (char*) "Delete content");
 		}
 	}
 	return data_tostay;
