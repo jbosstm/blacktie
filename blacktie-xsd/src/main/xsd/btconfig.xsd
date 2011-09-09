@@ -236,6 +236,12 @@
 							use="required" />
 					</xsd:complexType>
 				</xsd:element>
+				<xsd:element name="TXN_CFG" minOccurs="0" maxOccurs="1">
+					<xsd:complexType>
+						<xsd:attribute name="MGR_URL" type="xsd:string" use="required" />
+						<xsd:attribute name="RES_EP" type="xsd:string" use="required" />
+					</xsd:complexType>
+				</xsd:element>
 				<xsd:element name="MQ" minOccurs="1" maxOccurs="1">
 					<xsd:complexType>
 						<xsd:attribute name="HOST" type="xsd:string" use="required" />

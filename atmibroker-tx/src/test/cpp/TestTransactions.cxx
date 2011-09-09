@@ -21,6 +21,7 @@
 
 #include "TestAssert.h"
 #include "TestTransactions.h"
+#include "XAResourceManager.h"
 #include "txi.h"
 #include "tx.h"
 #include "testrm.h"
@@ -48,9 +49,20 @@
     if ((long) (tt) >= 0l) BT_ASSERT_MESSAGE(msg, txi.transaction_timeout == (long) (tt));	\
     if ((long) (ts) >= 0l) BT_ASSERT_MESSAGE(msg, txi.transaction_state == (long) (ts));}
 
+extern struct xa_switch_t testxasw;
+
+#if 0
+    AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
+
+    char* txmUrl = (char *) env->getenv((char *) "TXN_MGR_URL");
+    char* resUrl = (char *) env->getenv((char *) "TXN_PARTICIPANT_EP");
+
+    AtmiBrokerEnv::discard_instance();
+#endif
 
 void TestTransactions::setUp()
 {
+	fault_t fault = {-1};
 	init_ace();
 
 	txx_stop();
@@ -60,7 +72,7 @@ void TestTransactions::setUp()
 
 	// previous tests may have left a txn on the thread
 	destroySpecific(TSS_KEY);
-	(void) dummy_rm_del_fault(-1);
+	(void) dummy_rm_del_fault(fault);
 }
 
 void TestTransactions::tearDown()
@@ -71,9 +83,12 @@ void TestTransactions::tearDown()
 	destroyEnv();
 }
 
+
 void TestTransactions::test_rclog()
 {
+	btlogger_debug("TestTransactions::test_rclog begin");
 	doOne();
+	btlogger_debug("TestTransactions::test_rclog pass");
 }
 
 void TestTransactions::test_basic()
@@ -89,8 +104,6 @@ void TestTransactions::test_transactions()
 	BT_ASSERT_EQUAL(TX_OK, tx_begin());
 	BT_ASSERT_EQUAL(TX_OK, tx_commit());
 	BT_ASSERT_EQUAL(TX_OK, tx_close());
-
-	
 	btlogger("TestTransactions::test_transactions pass");
 }
 
@@ -145,12 +158,12 @@ void TestTransactions::test_protocol()
 	BT_ASSERT_EQUAL(TX_OK, tx_open());
 	/* cause RM 102 start to fail */
 	fault_t fault = {0, 102, O_XA_START, XAER_RMERR, F_NONE};
-	(void) dummy_rm_add_fault(&fault);
+	(void) dummy_rm_add_fault(fault);
 	// tx_begin should return TX_ERROR if rm return errors, and the caller is not in transaction mode
 	BT_ASSERT_EQUAL(TX_ERROR, tx_begin());
 	BT_ASSERT_EQUAL(TX_PROTOCOL_ERROR, tx_commit());
 	/* cleanup */
-	(void) dummy_rm_del_fault(fault.id);
+	(void) dummy_rm_del_fault(fault);
 	BT_ASSERT_EQUAL(TX_OK, tx_close());
 	btlogger( (char*) "TestTransactions::test_protocol pass");
 }
@@ -230,8 +243,8 @@ void TestTransactions::test_timeout()
 	BT_ASSERT_EQUAL(TX_ROLLBACK, tx_commit());
 
 	// cause the RM to delay for delay seconds during commit processing
-	(void) dummy_rm_add_fault(&fault1);
-	(void) dummy_rm_add_fault(&fault2);
+	(void) dummy_rm_add_fault(fault1);
+	(void) dummy_rm_add_fault(fault2);
 	btlogger_debug("TestTransactions::test_timeout injecting delay after phase 1");
 	BT_ASSERT_EQUAL(TX_OK, tx_begin());
 	// once the transaction has started 2PC any further delays (beyond the timeout period) should have no effect
@@ -239,8 +252,8 @@ void TestTransactions::test_timeout()
 	BT_ASSERT_EQUAL(TX_OK, tx_commit());
 
 	/* cleanup */
-	(void) dummy_rm_del_fault(fault1.id);
-	(void) dummy_rm_del_fault(fault2.id);
+	(void) dummy_rm_del_fault(fault1);
+	(void) dummy_rm_del_fault(fault2);
 	BT_ASSERT_EQUAL(TX_OK, tx_close());
 	btlogger( (char*) "TestTransactions::test_timeout pass");
 }
@@ -250,7 +263,7 @@ void TestTransactions::test_rollback()
 	// TODO check the behaviour when a real RM is used.
 	btlogger_debug("TestTransactions::test_rollback begin");
 
-	fault_t fault1 = {0, 102, O_XA_COMMIT, XA_HEURHAZ, F_NONE};
+//	fault_t fault1 = {0, 102, O_XA_COMMIT, XA_HEURHAZ, F_NONE};
 	/* cause RM 102 start to fail */
 	fault_t fault2 = {0, 102, O_XA_START, XAER_RMERR, F_NONE};
 
@@ -262,21 +275,43 @@ void TestTransactions::test_rollback()
 
 	BT_ASSERT_EQUAL(TX_OK, tx_set_transaction_control(TX_CHAINED));
 	BT_ASSERT_EQUAL(TX_OK, tx_begin());
-	(void) dummy_rm_add_fault(&fault2);
+	(void) dummy_rm_add_fault(fault2);
 	doFour();
 	BT_ASSERT_EQUAL(TX_ROLLBACK_NO_BEGIN, tx_commit());
-	(void) dummy_rm_del_fault(fault2.id);
 
-	BT_ASSERT_EQUAL(TX_OK, tx_set_commit_return(TX_COMMIT_COMPLETED));
-	BT_ASSERT_EQUAL(TX_OK, tx_begin());
-	(void) dummy_rm_add_fault(&fault1);
-	(void) dummy_rm_add_fault(&fault2);
-	BT_ASSERT_EQUAL(TX_HAZARD_NO_BEGIN, tx_commit());
-
-	(void) dummy_rm_del_fault(fault1.id);
-	(void) dummy_rm_del_fault(fault2.id);
+//	(void) dummy_rm_del_fault(fault1);
+	(void) dummy_rm_del_fault(fault2);
 	BT_ASSERT_EQUAL(TX_OK, tx_close());
 	btlogger( (char*) "TestTransactions::test_rollback pass");
+}
+
+void TestTransactions::test_hhazard()
+{
+	// TODO check the behaviour when a real RM is used.
+	btlogger_debug("TestTransactions::test_hhazard begin");
+
+	fault_t fault1 = {0, 102, O_XA_COMMIT, XA_HEURHAZ, F_NONE};
+	/* cause RM 102 start to fail */
+	fault_t fault2 = {1, 100, O_XA_START, XAER_RMERR, F_NONE};
+
+	BT_ASSERT_EQUAL(TX_OK, tx_open());
+	BT_ASSERT_EQUAL(TX_OK, tx_set_commit_return(TX_COMMIT_COMPLETED));
+
+	/* inject a fault that will produce a heuristic hazard */
+	(void) dummy_rm_add_fault(fault1);
+	BT_ASSERT_EQUAL(TX_OK, tx_set_transaction_control(TX_UNCHAINED));
+	BT_ASSERT_EQUAL(TX_OK, tx_begin());
+	BT_ASSERT_EQUAL(TX_HAZARD, tx_commit());
+
+	BT_ASSERT_EQUAL(TX_OK, tx_set_transaction_control(TX_CHAINED));
+	BT_ASSERT_EQUAL(TX_OK, tx_begin());
+	/* inject a fault that will cause the chained tx_begin to fail */
+	(void) dummy_rm_add_fault(fault2);
+	btlogger( (char*) "TestTransactions::test_hhazard committing with TX_CHAINED set");
+	dummy_rm_dump();
+	BT_ASSERT_EQUAL(TX_HAZARD_NO_BEGIN, tx_commit());
+	BT_ASSERT_EQUAL(TX_OK, tx_close());
+	btlogger( (char*) "TestTransactions::test_hhazard pass");
 }
 
 void TestTransactions::test_RM()
@@ -284,11 +319,11 @@ void TestTransactions::test_RM()
 	/* cause RM 102 to generate a mixed heuristic */
 	fault_t fault1 = {0, 102, O_XA_COMMIT, XA_HEURMIX, F_NONE};
 	/* cause RM 102 start to fail */
-	fault_t fault2 = {0, 102, O_XA_START, XAER_RMERR, F_NONE};
+	fault_t fault2 = {1, 100, O_XA_START, XAER_RMERR, F_NONE};
 
 	btlogger_debug("TestTransactions::test_RM begin");
 	/* inject a commit fault in Resource Manager with rmid 102 */
-	(void) dummy_rm_add_fault(&fault1);
+	(void) dummy_rm_add_fault(fault1);
 
 	BT_ASSERT_EQUAL(TX_OK, tx_open());
 	/* turn on heuristic reporting (ie the commit does not return until 2PC is complete) */
@@ -296,6 +331,7 @@ void TestTransactions::test_RM()
 	BT_ASSERT_EQUAL(TX_OK, tx_begin());
 	/* since we have added a XA_HEURMIX fault tx_commit should return an mixed error */
 	btlogger_debug("TestTransactions::test_RM expecting TX_MIXED");
+	dummy_rm_dump();
 	BT_ASSERT_EQUAL(TX_MIXED, tx_commit());
 
 	/*
@@ -306,7 +342,7 @@ void TestTransactions::test_RM()
 	BT_ASSERT_EQUAL(TX_OK, tx_begin());
 
 	/* inject a fault that will cause the chained tx_begin to fail */
-	(void) dummy_rm_add_fault(&fault2);
+	(void) dummy_rm_add_fault(fault2);
 	/*
 	 * commit should fail with a heuristic and the attempt to start a chained transaction should fail
 	 * since we have just injected a start fault
@@ -314,8 +350,8 @@ void TestTransactions::test_RM()
 	BT_ASSERT_EQUAL(TX_MIXED_NO_BEGIN, tx_commit());
 
 	/* clean up */
-	(void) dummy_rm_del_fault(fault1.id);
-	(void) dummy_rm_del_fault(fault2.id);
+	(void) dummy_rm_del_fault(fault1);
+	(void) dummy_rm_del_fault(fault2);
 
 	/* should still be able to clean up after failing to commit a chained transaction */
 	BT_ASSERT_EQUAL(TX_OK, tx_close());
@@ -339,7 +375,7 @@ void TestTransactions::test_RM_recovery_scan()
 	btlogger_debug("TestTransactions::test_RM_recovery_scan begin");
 
 	/* tell the Resource Manager with rmid 102 to remember prepared XID's */
-	(void) dummy_rm_add_fault(&fault1);
+	(void) dummy_rm_add_fault(fault1);
 
 	/* tx_open() should trigger a recovery scan (see XAResourceManagerFactory::run_recovery() */
 	BT_ASSERT_EQUAL(TX_OK, tx_open());
@@ -352,7 +388,7 @@ void TestTransactions::test_RM_recovery_scan()
 //	atmibroker::tx::TxManager::get_instance()->getRMFac().run_recovery();
 
 	/* clean up */
-	(void) dummy_rm_del_fault(fault1.id);
+	(void) dummy_rm_del_fault(fault1);
 	BT_ASSERT_EQUAL(TX_OK, tx_close());
 	btlogger("TestTransactions::test_RM_recovery_scan pass");
 }
@@ -375,7 +411,14 @@ void TestTransactions::test_register_resource()
 
 	// commit the transaction
 	BT_ASSERT_EQUAL(TX_OK, tx_commit());
-	doSeven(ra);
+	if (ra == NULL) {
+// TODO  if (atmibroker::tx::TxManager::get_instance()->isOTS()) then doSeven else
+// do the equivalent for Http
+		btlogger("TestTransactions::test_register_resource TODO XXX add HTTP part of this test");
+	} else {
+		doSeven(ra);
+	}
+
 	// clean up
 	BT_ASSERT_EQUAL(TX_OK, tx_close());
 	btlogger("TestTransactions::test_register_resource pass");

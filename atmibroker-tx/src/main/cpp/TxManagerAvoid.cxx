@@ -20,33 +20,33 @@
 #include "txManagerAvoid.h"
 
 int txManager_open(void) {
-    return atmibroker::tx::TxManager::get_instance()->open();
+	return atmibroker::tx::TxManager::get_instance()->open();
 }
 
 int txManager_begin(void) {
-    return atmibroker::tx::TxManager::get_instance()->begin();
+	return atmibroker::tx::TxManager::get_instance()->begin();
 }
 
 int txManager_commit(void) {
-    return atmibroker::tx::TxManager::get_instance()->commit();
+	return atmibroker::tx::TxManager::get_instance()->commit();
 }
 
 int txManager_rollback(void) {
-    return atmibroker::tx::TxManager::get_instance()->rollback();
+	return atmibroker::tx::TxManager::get_instance()->rollback();
 }
 
 int txManager_close(void) {
-    return atmibroker::tx::TxManager::get_instance()->close();
+	return atmibroker::tx::TxManager::get_instance()->close();
 }
 
 int txManager_set_commit_return(long when_return) {
-    return atmibroker::tx::TxManager::get_instance()->set_commit_return(when_return);
+	return atmibroker::tx::TxManager::get_instance()->set_commit_return(when_return);
 }
 int txManager_set_transaction_control(long control) {
-    return atmibroker::tx::TxManager::get_instance()->set_transaction_control(control);
+	return atmibroker::tx::TxManager::get_instance()->set_transaction_control(control);
 }
 int txManager_set_transaction_timeout(long timeout) {
-    return atmibroker::tx::TxManager::get_instance()->set_transaction_timeout(timeout);
+	return atmibroker::tx::TxManager::get_instance()->set_transaction_timeout(timeout);
 }
 int txManager_info(void *info) {
 	return atmibroker::tx::TxManager::get_instance()->info(info);

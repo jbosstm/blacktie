@@ -54,7 +54,7 @@ static const char* DEF_LOG = "rclog";
 static char RCLOGPATH[1024];
 static SynchronizableObject lock_;
 
-log4cxx::LoggerPtr xarcllogger(log4cxx::Logger::getLogger("TxLogXARecoveryLog"));
+log4cxx::LoggerPtr xarcllogger(log4cxx::Logger::getLogger("TxXARecoveryLog"));
 
 using namespace std;
 
@@ -94,7 +94,7 @@ static void init_logpath(const char *fname)
 	} else {
 		// if fname is not passed see if the log name is set in the environent
 		AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
-		const char *rcLog    = env->getenv((char*) "BLACKTIE_RC_LOG_NAME", DEF_LOG);
+		const char *rcLog	= env->getenv((char*) "BLACKTIE_RC_LOG_NAME", DEF_LOG);
 		const char *servName = env->getenv((char*) "BLACKTIE_SERVER_NAME", rcLog);
 		ACE_OS::snprintf(RCLOGPATH, sizeof (RCLOGPATH), "%s", servName);
 		AtmiBrokerEnv::discard_instance();

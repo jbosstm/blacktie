@@ -18,7 +18,8 @@
 #include "ThreadLocalStorage.h"
 #include "XAResourceManagerFactory.h"
 #include "OrbManagement.h"
-#include "TxManager.h"
+#include "OTSTxManager.h"
+#include "HttpTxManager.h"
 #include "AtmiBrokerEnv.h"
 #include "ace/Thread.h"
 #include "txAvoid.h"
@@ -38,18 +39,34 @@
 namespace atmibroker {
 	namespace tx {
 
-log4cxx::LoggerPtr txmlogger(log4cxx::Logger::getLogger("TxLogManager"));
+log4cxx::LoggerPtr txmlogger(log4cxx::Logger::getLogger("TxManager"));
+
 TxManager *TxManager::_instance = NULL;
-SynchronizableObject lock_;
+SynchronizableObject globLock;
 
 TxManager *TxManager::get_instance()
 {
 	FTRACE(txmlogger, "ENTER");
 
-	lock_.lock();
-	if (_instance == NULL)
-		_instance = new TxManager();
-	lock_.unlock();
+	globLock.lock();
+	if (_instance == NULL) {
+		AtmiBrokerEnv::get_instance();
+
+		if (txnConfig.mgrEP != NULL) {
+			_instance = HttpTxManager::create(txnConfig.mgrEP, txnConfig.resourceEP);
+			LOG4CXX_INFO(txmlogger,
+				(char*) "Using RTS for transaction support with manager endpoint: " <<
+				txnConfig.mgrEP << " and participant endpoint: " << txnConfig.resourceEP);
+		} else if (orbConfig.transactionFactoryName == NULL) {
+			LOG4CXX_WARN(txmlogger, (char*) "Please make sure Transaction factory name is set in btconfig,xml");
+		} else {
+			_instance = OTSTxManager::create(orbConfig.transactionFactoryName);
+			LOG4CXX_INFO(txmlogger, (char*) "Using OTS for transaction support");
+		}
+
+		AtmiBrokerEnv::discard_instance();
+	}
+	globLock.unlock();
 
 	return _instance;
 }
@@ -57,20 +74,22 @@ TxManager *TxManager::get_instance()
 void TxManager::discard_instance()
 {
 	FTRACE(txmlogger, "ENTER");
-	lock_.lock();
+	globLock.lock();
 	if (_instance != NULL) {
+		_instance->dispose();
 		delete _instance;
 		_instance = NULL;
 	}
-	lock_.unlock();
+	globLock.unlock();
 
 }
 
-TxManager::TxManager() :
-	_whenReturn(TX_COMMIT_DECISION_LOGGED), _controlMode(TX_UNCHAINED), _timeout (0l), _isOpen(false), _connection(NULL)
+TxManager::TxManager() : _isOpen(false), _whenReturn(TX_COMMIT_DECISION_LOGGED),
+	_controlMode(TX_UNCHAINED), _timeout (0l), _lock(NULL), _connection(NULL)
 {
-	FTRACE(txmlogger, "ENTER");
-	AtmiBrokerEnv::get_instance();
+	FTRACE(txmlogger, "ENTER: " << this);
+//	AtmiBrokerEnv::get_instance();
+
 	try {
 		_connection = ::initOrb((char*) "ots");
 		LOG4CXX_DEBUG(txmlogger, (char*) "new CONNECTION: " << _connection);
@@ -79,23 +98,26 @@ TxManager::TxManager() :
 	} catch (...) {
 		LOG4CXX_WARN(txmlogger, (char*) "Unknown error looking up ORB for TM");
 	}
-	rmLock = new SynchronizableObject();
+	_lock = new SynchronizableObject();
 }
 
 TxManager::~TxManager()
 {
 	FTRACE(txmlogger, "ENTER");
-	if (_connection) {
+	dispose();
+}
+
+void TxManager::dispose()
+{
+	FTRACE(txmlogger, "ENTER");
+	if (_lock != NULL) {
 		(void) close();
 		LOG4CXX_DEBUG(txmlogger, (char*) "deleting CONNECTION: " << _connection);
 		shutdownBindings(_connection);
-		AtmiBrokerEnv::discard_instance();
+//		AtmiBrokerEnv::discard_instance();
+		delete _lock;
+		_lock = NULL;
 	}
-	delete rmLock;
-}
-
-CORBA::ORB_ptr TxManager::getOrb() {
-	return _connection->orbRef;
 }
 
 atmibroker::tx::TxControl *TxManager::currentTx(const char *msg)
@@ -111,65 +133,22 @@ atmibroker::tx::TxControl *TxManager::currentTx(const char *msg)
 	return tx;
 }
 
-CosTransactions::Control_ptr TxManager::create_tx(TRANSACTION_TIMEOUT timeout)
-{
-	CosTransactions::Control_ptr ctrl = NULL;
-
-	if (!CORBA::is_nil(_txfac)) {
-		try {
-			LOG4CXX_TRACE(txmlogger, (char*) "Creating an OTS transaction");
-			ctrl = _txfac->create((long) timeout);
-			LOG4CXX_TRACE(txmlogger, (char*) "Created OTS transaction - ctrl: " << ctrl);
-		} catch (CORBA::SystemException & e) {
-			LOG4CXX_DEBUG(txmlogger, (char*) "Could not create OTS transaction: "
-				<< e._name() << " minor code: " << e.minor());
-		} catch (...) {
-			LOG4CXX_WARN(txmlogger, (char*) "Could not new OTS transaction (generic exception)");
-		}
-	} else {
-		LOG4CXX_INFO(txmlogger, (char*) "Unable to create OTS transaction - factory is nill");
-	}
-
-	return ctrl;
-}
-
 int TxManager::begin(void)
 {
 	TX_GUARD((_isOpen && !getSpecific(TSS_KEY)));
 
 	// start a new transaction
 	TRANSACTION_TIMEOUT timeout = _timeout;	// take a copy since _timeout can change at any time
-	CosTransactions::Control_ptr ctrl = create_tx(timeout);
+	TxControl* tx = create_tx(timeout);
 
-	if (CORBA::is_nil(ctrl)) {
-		if (open_trans_factory() == TX_OK)
-			ctrl = create_tx(timeout);
+	if (tx == NULL)
+		return TX_ERROR;
 
-		if (CORBA::is_nil(ctrl)) {
-			LOG4CXX_WARN(txmlogger, (char*) "Unable to start a new transaction (nil control)");
-
-			return TX_ERROR;
-		}
-	}
-
-	TxControl *tx = new TxControl(ctrl, (long) timeout, ACE_OS::thr_self());
 	// associate the tx with the callers thread and enlist all open RMs with the tx
-	int rc = TxManager::tx_resume(tx, TMNOFLAGS);
+	int rc = tx_resume(tx, TMNOFLAGS);
 
 	if (rc != XA_OK) {
-		// one or more RMs failed to start - roll back the transaction
-		LOG4CXX_WARN(txmlogger, (char*) "begin: XA resume error: " << rc);
-		try {
-			CosTransactions::Terminator_var term = ctrl->get_terminator();
-
-			if (!CORBA::is_nil(term))
-				term->rollback();
-		} catch (CORBA::SystemException & e) {
-			LOG4CXX_DEBUG(txmlogger, (char*) "Could not terminate tx after tx_resume failure: "
-				<< e._name() << " minor code: " << e.minor());
-		} catch (...) {
-			LOG4CXX_DEBUG(txmlogger, (char*) "Could not terminate tx after tx_resume failure (generic exception)");
-		}
+		tx->rollback();
 
 		delete tx;
 
@@ -214,7 +193,9 @@ int TxManager::complete(bool commit)
 	std::map<int, int (*)(int)> &cds = tx->get_cds();
 
 	if (cds.size() != 0) {
-		LOG4CXX_WARN(txmlogger, (char*) "Ending a tx with outstanding xatmi descriptors is not allowed - rolling back");
+		LOG4CXX_WARN(txmlogger,
+			(char*) "Ending a tx with outstanding xatmi descriptors is not allowed - rolling back");
+
 		// invalidate the descriptors
 		for (std::map<int,  int (*)(int)>::iterator i = cds.begin() ; i != cds.end(); i++) {
 			int cd = (*i).first;
@@ -236,6 +217,8 @@ int TxManager::complete(bool commit)
 	outcome = (commit ? tx->commit(reportHeuristics()) : tx->rollback());
 
 	delete tx;
+
+ 	LOG4CXX_DEBUG(txmlogger, (char*) "complete: outcome=" << outcome << " isChained=" << isChained());
 
 	return (isChained() ? chainTransaction(outcome) : outcome);
 }
@@ -275,8 +258,11 @@ int TxManager::set_commit_return(COMMIT_RETURN when_return)
 	TX_GUARD(_isOpen);
 
 	if (when_return != TX_COMMIT_DECISION_LOGGED &&
-		when_return != TX_COMMIT_COMPLETED)
+		when_return != TX_COMMIT_COMPLETED) {
+		LOG4CXX_WARN(txmlogger, (char *) "set_commit_return: invalid arg: " <<
+			when_return);
 		return TX_EINVAL;
+	}
 
 	_whenReturn = when_return;
 
@@ -287,8 +273,12 @@ int TxManager::set_transaction_control(TRANSACTION_CONTROL mode)
 {
 	TX_GUARD(_isOpen);
 
-	if (mode != TX_UNCHAINED && mode != TX_CHAINED)
+ 	LOG4CXX_TRACE(txmlogger, (char*) "set_transaction_control " << mode);
+
+	if (mode != TX_UNCHAINED && mode != TX_CHAINED) {
+		LOG4CXX_WARN(txmlogger, (char *) "set_transaction_control: invalid mode: " << mode);
 		return TX_EINVAL;
+	}
 
 	_controlMode = mode;
 
@@ -299,8 +289,10 @@ int TxManager::set_transaction_timeout(TRANSACTION_TIMEOUT timeout)
 {
 	TX_GUARD(_isOpen);
 
-	if (timeout < 0l)
+	if (timeout < 0l) {
+		LOG4CXX_WARN(txmlogger, (char *) "set_transaction_timeout: invalid timeout: " << timeout);
 		return TX_EINVAL;
+	}
 
 	_timeout = timeout;
 
@@ -313,62 +305,32 @@ int TxManager::info(void *info)
 
 	atmibroker::tx::TxControl *tx = currentTx(NULL);
 
-    if (info != 0) {
-        long whenReturn = _whenReturn;
-        long controlMode = _controlMode;
+	if (info != 0) {
+		long whenReturn = _whenReturn;
+		long controlMode = _controlMode;
 		long status = -1l;
-        long timeout = _timeout;
-        if (tx != NULL) {
+		long timeout = _timeout;
+		if (tx != NULL) {
 			XAResourceManagerFactory::getXID(::getXid(info));
-            status = tx->get_status();
-        }
+			status = tx->get_status();
+		}
 		::updateInfo(info, whenReturn, controlMode, timeout, status);
-    }
-    LOG4CXX_DEBUG(txmlogger, (char*) "info tx=" << tx);
-    return (tx != NULL ? 1 : 0);
-}
-
-int TxManager::open_trans_factory(void)
-{
-	char *transFactoryId = orbConfig.transactionFactoryName;
-
-	if (transFactoryId == NULL || strlen(transFactoryId) == 0) {
-		LOG4CXX_ERROR(txmlogger, (char*) "Please set the TRANS_FACTORY_ID env variable");
-		return TX_ERROR;
 	}
-
-	try {
-		CosNaming::Name *name = _connection->default_ctx->to_name(transFactoryId);
-		LOG4CXX_DEBUG(txmlogger, (char*) "resolving Tx Fac Id: " << transFactoryId);
-		CORBA::Object_var obj = _connection->default_ctx->resolve(*name);
-		delete name;
-		LOG4CXX_DEBUG(txmlogger, (char*) "resolved OK: " << (void*) obj);
-		_txfac = CosTransactions::TransactionFactory::_narrow(obj);
-		LOG4CXX_DEBUG(txmlogger, (char*) "narrowed OK: " << (void*) _txfac);
-	} catch (CORBA::SystemException & e) {
-		LOG4CXX_ERROR(txmlogger, 
-			(char*) "Error resolving Tx Service: " << e._name() << " minor code: " << e.minor());
-		return TX_ERROR;
-	} catch (...) {
-		LOG4CXX_ERROR(txmlogger, 
-			(char*) "Unknown error resolving Tx Service did you run ant jts in the JBoss distribution and edit the jbossts properties to bind the service in the CORBA naming service: " << transFactoryId);
-		return TX_ERROR;
-	}
-
-	return TX_OK;
+	LOG4CXX_DEBUG(txmlogger, (char*) "info tx=" << tx);
+	return (tx != NULL ? 1 : 0);
 }
 
 int TxManager::open(void)
 {
 	TX_GUARD((true));
-	rmLock->lock();
+	_lock->lock();
 	if (_isOpen) {
-		rmLock->unlock();
+		_lock->unlock();
 		return TX_OK;
 	}
 
-	if (open_trans_factory() != TX_OK) {
-		rmLock->unlock();
+	if (do_open() != TX_OK) {
+		_lock->unlock();
 		return TX_ERROR;
 	}
 
@@ -376,7 +338,7 @@ int TxManager::open(void)
 		LOG4CXX_ERROR(txmlogger, (char*) "At least one resource manager failed");
 		(void) rm_close();
 
-		rmLock->unlock();
+		_lock->unlock();
 		return TX_ERROR;
 	}
 
@@ -386,29 +348,30 @@ int TxManager::open(void)
 
 	_isOpen = true;
 
-	rmLock->unlock();
+	_lock->unlock();
 	return TX_OK;
 }
 
 int TxManager::close(void)
 {
 	FTRACE(txmlogger, "ENTER");
-	rmLock->lock();
+	_lock->lock();
 	if (!_isOpen) {
-		rmLock->unlock();
+		_lock->unlock();
 		return TX_OK;
 	}
 
 	if (getSpecific(TSS_KEY) != NULL) {
 		LOG4CXX_WARN(txmlogger, (char*) "protocol error: open: " << _isOpen << " transaction: " << getSpecific(TSS_KEY));
-		rmLock->unlock();
+		_lock->unlock();
 		return TX_PROTOCOL_ERROR;
 	}
 
+	do_close();
 	_isOpen = false;
 	rm_close();
 
-	rmLock->unlock();
+	_lock->unlock();
 	return TX_OK;
 }
 
@@ -447,34 +410,21 @@ int TxManager::rm_start(int flags, int altflags)
 	return (tx ? _xaRMFac.startRMs(tx->isOriginator(), flags, altflags) : XA_OK);
 }
 
-CosTransactions::Control_ptr TxManager::get_ots_control(long* ttl)
+void* TxManager::get_control(long* ttl)
 {
 	FTRACE(txmlogger, "ENTER");
 	TxControl *tx = (TxControl *) getSpecific(TSS_KEY);
 
-	return (tx ? tx->get_ots_control(ttl) : 0);
-}
-
-int TxManager::tx_resume(CosTransactions::Control_ptr control, long ttl, int flags, int altflag)
-{
-	FTRACE(txmlogger, "ENTER");
-	TxControl *tx = new TxControl(control, ttl, 0);
-	int rc = TxManager::tx_resume(tx, flags);
-	if (rc != XA_OK) {
-		delete tx;
-	}
-
-	return rc;
+	return (tx ? tx->get_control(ttl) : 0);
 }
 
 int TxManager::tx_resume(TxControl *tx, int flags, int altflags)
 {
 	FTRACE(txmlogger, "ENTER " << tx << " - flags=" << std::hex << flags);
 	int rc = XAER_NOTA;
+	TxControl *pt = (TxControl *) getSpecific(TSS_KEY);
 
-	if (getSpecific(TSS_KEY)) {
-		TxControl *pt = (TxControl *) getSpecific(TSS_KEY);
-
+	if (pt) {
 		LOG4CXX_WARN(txmlogger, (char *) "Thread already bound to " << pt << " (deleting it)");
 		delete pt;
 	}
@@ -483,7 +433,7 @@ int TxManager::tx_resume(TxControl *tx, int flags, int altflags)
 		// TMJOIN TMRESUME TMNOFLAGS
 		// must associate the tx with the thread before calling start on each open RM
 		   setSpecific(TSS_KEY, tx);
-		if ((rc = TxManager::get_instance()->rm_start(flags, altflags)) == XA_OK) {
+		if ((rc = rm_start(flags, altflags)) == XA_OK) {
 			LOG4CXX_DEBUG(txmlogger, (char *) "Resume tx: ok");
 
 			return XA_OK;
@@ -503,35 +453,30 @@ int TxManager::tx_resume(TxControl *tx, int flags, int altflags)
 	return rc;
 }
 
-CosTransactions::Control_ptr TxManager::tx_suspend(int flags, int altflags)
-{
-	FTRACE(txmlogger, "ENTER");
-	return (tx_suspend((TxControl *) getSpecific(TSS_KEY), flags, altflags));
-}
-
 /**
  * Suspend the transaction and return the control.
  * The caller is responsible for releasing the returned control
  */
-CosTransactions::Control_ptr TxManager::tx_suspend(TxControl *tx, int flags, int altflags)
+void* TxManager::tx_suspend(int flags, int altflags)
 {
 	FTRACE(txmlogger, "ENTER");
+	TxControl *tx = (TxControl *) getSpecific(TSS_KEY);
 
 	if (tx && tx->isActive(NULL, true)) {
 		// increment the control reference count
-		CosTransactions::Control_ptr ctrl = tx->get_ots_control(NULL);
+		void* ctrl = tx->get_control(NULL);
+
 		// suspend all open Resource Managers (TMSUSPEND TMMIGRATE TMSUCCESS TMFAIL)
 		(void) rm_end(flags, altflags);
 		// disassociate the transaction from the callers thread
 		tx->suspend();
 		delete tx;
 
-		FTRACE(txmlogger, "< ctrl: " << ctrl);
 		return ctrl;
 	}
 
 	FTRACE(txmlogger, "< ctrl: 0x0");
-	 return NULL;
+	return NULL;
 }
 
 int TxManager::resume()
@@ -619,6 +564,19 @@ bool TxManager::isCdTransactional(int cd)
 	}
 
 	return false;
+}
+
+CORBA::ORB_ptr TxManager::getOrb() {
+	return _connection->orbRef;
+}
+
+char * TxManager::current_to_string(long* ttl) {
+	return TxManager::get_instance()->get_current(ttl);
+}
+
+int TxManager::guard(bool cond) {
+	TX_GUARD(cond);
+	return TX_OK;
 }
 
 #if defined (ACE_HAS_EXPLICIT_TEMPLATE_INSTANTIATION)

@@ -223,6 +223,14 @@ void AtmiBrokerEnv::destroy() {
 	orbConfig.opt = NULL;
 	orbConfig.transactionFactoryName = NULL;
 
+	LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "free txnConfig");
+	if (txnConfig.mgrEP != NULL) {
+		free(txnConfig.mgrEP);
+		free(txnConfig.resourceEP);
+		txnConfig.mgrEP = NULL;
+		txnConfig.resourceEP = NULL;
+	}
+
 	LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "free mqConfig");
 	free(mqConfig.host);
 	free(mqConfig.user);

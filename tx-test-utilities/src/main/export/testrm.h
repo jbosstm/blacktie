@@ -2,6 +2,13 @@
 #define _TESTRO_H
 
 #include "utilitiesMacro.h"
+#include "xa.h"
+
+struct xid_array {
+    int count;
+    int cursor;
+    XID xids[10];
+};
 
 enum XA_OP {
         O_XA_NONE,
@@ -28,6 +35,13 @@ enum X_FAULT {
  * a definition of a fault in the XA protocol for testing purposes
  */
 typedef struct UTILITIES_DLL fault {
+    bool operator==(const struct fault& rhs) const {
+        return (id == rhs.id);
+    }
+    bool operator!=(const struct fault& rhs) const {
+        return !operator==(rhs);
+    }
+
         int id;                 // unique id for this fault specification
         int rmid;               // RM id
         enum XA_OP op;          // the XA method that this fault applies to
@@ -38,16 +52,16 @@ typedef struct UTILITIES_DLL fault {
         int res2;               // another result field that the RM can use to pass back a status to the caller
 
 		/* fields private to the RM */
-        void *rmstate;          // state maintained by the dummy RM
+        struct xid_array rmstate;// state maintained by the dummy RM
         struct fault *orig;	    // a pointer to the original fault specification
-        struct fault *next;
 } fault_t;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern UTILITIES_DLL int dummy_rm_add_fault(fault_t *);
-extern UTILITIES_DLL int dummy_rm_del_fault(int);
+extern UTILITIES_DLL int dummy_rm_add_fault(fault_t&);
+extern UTILITIES_DLL int dummy_rm_del_fault(fault_t&);
+extern UTILITIES_DLL void dummy_rm_dump();
 extern UTILITIES_DLL struct xa_switch_t testxasw;
 #ifdef __cplusplus
 }

@@ -69,6 +69,11 @@ typedef BLACKTIE_CORE_DLL struct _orb_config {
 	char* transactionFactoryName;
 }OrbConfig;
 
+typedef BLACKTIE_CORE_DLL struct _txn_config {
+	char* mgrEP;
+	char* resourceEP;
+}TxnConfig;
+
 typedef BLACKTIE_CORE_DLL struct _service_info {
 	char* serviceName;
 	char* serviceType;
@@ -132,5 +137,6 @@ extern BLACKTIE_CORE_DLL xarm_config_t * xarmp;
 extern BLACKTIE_CORE_DLL ServersInfo servers;
 extern BLACKTIE_CORE_DLL char domain[30];
 extern BLACKTIE_CORE_DLL OrbConfig orbConfig;
+extern BLACKTIE_CORE_DLL TxnConfig txnConfig;
 extern BLACKTIE_CORE_DLL MqConfig mqConfig;
 #endif

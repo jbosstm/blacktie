@@ -140,6 +140,9 @@ void* doFive() {
 
 	// a side effect of starting a transaction is to start an orb
 	CORBA::ORB_var orb = atmibroker::tx::TxManager::get_instance()->getOrb();
+	if (CORBA::is_nil(orb))
+		return NULL;
+
 	BT_ASSERT_MESSAGE("orb is nil", !CORBA::is_nil(orb));
 	// get a handle on a poa
 	CORBA::Object_var obj = orb->resolve_initial_references("RootPOA");

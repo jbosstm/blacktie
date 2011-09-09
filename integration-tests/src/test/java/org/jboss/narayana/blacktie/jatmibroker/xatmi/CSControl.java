@@ -111,6 +111,7 @@ public abstract class CSControl extends TestCase {
 		} catch (IOException e) {
 			throw new RuntimeException("Server io exception: ", e);
 		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 			throw new RuntimeException("Server interrupted: ", e);
 		}
 	}
@@ -145,6 +146,7 @@ public abstract class CSControl extends TestCase {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 			throw new RuntimeException(e);
 		}
 	}

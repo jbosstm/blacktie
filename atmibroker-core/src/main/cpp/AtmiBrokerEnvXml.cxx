@@ -42,7 +42,8 @@ ServersInfo servers;
 ServiceInfo service;
 Buffers buffers;
 
-OrbConfig orbConfig;
+OrbConfig orbConfig = {NULL, NULL};
+TxnConfig txnConfig = {NULL, NULL};
 MqConfig mqConfig = {
     NULL,	// host
     0,	// port; 
@@ -203,6 +204,16 @@ static void XMLCALL startElement
 			} else if(strcmp(atts[i], "TRANS_FACTORY_ID") == 0) {
 				orbConfig.transactionFactoryName = copy_value(atts[i+1]);
 				LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "set tFN: " << orbConfig.transactionFactoryName);
+			}
+		}
+	} else if (strcmp(name, "TXN_CFG") == 0) {
+		for(int i = 0; atts[i]; i += 2) {
+			if(strcmp(atts[i], "MGR_URL") == 0) {
+				txnConfig.mgrEP = copy_value(atts[i+1]);
+				LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "txn manager URL: " << txnConfig.mgrEP);
+			} else if(strcmp(atts[i], "RES_EP") == 0) {
+				txnConfig.resourceEP = copy_value(atts[i+1]);
+				LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "resource host:port: " << txnConfig.resourceEP);
 			}
 		}
 	} else if (strcmp(name, "MQ") == 0) {
@@ -585,7 +596,6 @@ static void XMLCALL endElement
 (void *userData, const char *name) {
 	std::vector<envVar_t>* aEnvironmentStructPtr = (std::vector<envVar_t>*) userData;
 
-	bool storedElement = false;
 	strcpy(last_element, name);
 	strcpy(last_value, value);
 
@@ -593,7 +603,6 @@ static void XMLCALL endElement
 
 	if (strcmp(last_element, "DOMAIN") == 0) {
 		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "storing domain value: " << last_value);
-		storedElement = true;
 		strcpy(domain, last_value);
 	} else if (strcmp(last_element, "XA_RESOURCE") == 0) {
 		processingXaResource = false;

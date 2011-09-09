@@ -83,6 +83,8 @@ typedef long TRANSACTION_TIMEOUT;
 namespace atmibroker {
 	namespace tx {
 
+class OTSTxManager;
+
 class BLACKTIE_TX_DLL TxManager {
 public:
 	int open(void);
@@ -107,13 +109,17 @@ public:
 public:	// public static methods
 	static TxManager* get_instance();
 	static void discard_instance();
-	static CosTransactions::Control_ptr get_ots_control(long* ttl);	// ref count of ptr is incremented
+
+	char *current_to_string(long* ttl); // see header txx.h for documentation
 
 public:	// suspend and resume
-	int tx_resume(CosTransactions::Control_ptr control, long ttl, int flags, int altflags = -1);
-	CosTransactions::Control_ptr tx_suspend(int flags, int altflags = -1);
-	CosTransactions::Control_ptr tx_suspend(TxControl *, int flags, int altflags = -1);
+//	int tx_resume(CosTransactions::Control_ptr control, long ttl, int flags, int altflags = -1);
+	void* tx_suspend(int flags, int altflags);
+	virtual int associate_transaction(char* txn, long ttl) = 0; // see header txx.h for documentation
+	virtual char *enlist(XAWrapper* xaw, TxControl *tx, const char *xid) {return NULL;}
 
+	void* get_control(long* ttl);	// see header txx.h for documentation
+	virtual void release_control(void *) {}	// see header txx.h for documentation
 	int resume();
 	int suspend();
 
@@ -123,33 +129,44 @@ public:	// suspend and resume
 	CORBA::ORB_ptr getOrb();
 
 	int rm_end(int flags, int altflags = -1);
-private:
-	TxManager();
-	virtual ~TxManager();
+
+protected:
+	virtual char *get_current(long* ttl) = 0;
+	virtual TxControl* create_tx(TRANSACTION_TIMEOUT timeout) = 0;
+	virtual int do_open(void) = 0;
+	virtual int do_close(void) = 0;
 
 	int tx_resume(TxControl *, int flags, int altflags = -1);
+	int rm_start(int flags, int altflags = -1);
+	int guard(bool cond);
+
+	bool _isOpen;
+private:
+//	CosTransactions::Control_ptr tx_suspend(TxControl *, int flags, int altflags = -1);
 	int complete(bool commit);
 	int chainTransaction(int);
 
 	int rm_open(void);
 	void rm_close(void);
-	int rm_start(int flags, int altflags = -1);
 
-	int open_trans_factory(void);
-	CosTransactions::Control_ptr create_tx(TRANSACTION_TIMEOUT timeout);
+//	int open_trans_factory(void);
 
 private:
-	CosTransactions::TransactionFactory_var _txfac;
+	//CosTransactions::TransactionFactory_var _txfac;
 	XAResourceManagerFactory _xaRMFac;
 
 	COMMIT_RETURN _whenReturn;
 	TRANSACTION_CONTROL _controlMode;
 	TRANSACTION_TIMEOUT _timeout;
-	bool _isOpen;
-	CORBA_CONNECTION *_connection;
-	SynchronizableObject* rmLock;
+	SynchronizableObject* _lock;
 
-private:
+protected:
+	TxManager();
+	virtual ~TxManager();
+	void dispose();
+
+	CORBA_CONNECTION *_connection;
+
 	static TxManager *_instance;
 };
 }	//	namespace tx

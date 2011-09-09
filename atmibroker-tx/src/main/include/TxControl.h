@@ -19,7 +19,6 @@
 #define _TX_CONTROL_H
 
 #include <map>
-#include "CosTransactionsS.h"
 #include "txi.h"
 
 namespace atmibroker {
@@ -31,43 +30,46 @@ namespace atmibroker {
  */
 class BLACKTIE_TX_DLL TxControl {
 public:
-	TxControl(CosTransactions::Control_ptr ctrl, long timeout, int tid);
+	TxControl(long timeout, int tid);
 	virtual ~TxControl();
 
-	int commit(bool report_heuristics);
+	virtual int rollback_only() = 0;
+	virtual int get_status() = 0;
+	virtual bool isActive(const char *, bool) = 0;
+	virtual bool get_xid(XID& xid) = 0;
+	virtual char * enlist(const char *host, int port, const char *xid) {return NULL;};
+	virtual bool isOTS() {return false;}
+
+	void* get_control(long* ttlp);
+
+	int commit(bool reportHeuristics);
 	int rollback();
-	int rollback_only();
-	CosTransactions::Status get_ots_status();
-	CosTransactions::Control_ptr get_ots_control(long* ttlp);	// ref count of ptr is incremented
-	int get_status();
-	int get_timeout(CORBA::ULong *);
 	/**
 	 * Return the amount of time in seconds remaining before the txn is subject to rollback,
 	 * a value -1 means the txn is not subject to timeouts
 	 */
 	long ttl();
-
+	bool isOriginator();	
 	int thr_id() {return _tid;}
-	bool isActive(const char *, bool);
-	bool isOriginator();
-
-	// Note this op disassociates the tx and releases _ctrl:
-	// perhaps we should make it private and use
-	// friend TxManager;
-	void suspend();
 
 	// return a list of outstanding xatmi call descriptors associated with this tx
-//	std::vector<int> &get_cds() {return _cds;}
 	std::map<int, int (*)(int)> &get_cds() {return _cds;}
-private:
+	// Note this op disassociates the tx and releases _ctrl:
+	// perhaps we should make it private and use friend TxManager;
+	virtual void suspend() = 0;
 
-	int end(bool commit, bool report);
+protected:
+	virtual int do_end(bool commit, bool reportHeuristics) = 0;
+	virtual void* get_control() = 0;
 
 	bool _rbonly;	// txn marked rollback only after txn timeout
-	long _ctime;	// creation time in seconds (since 1970)
 	long _ttl;	// time left until the tx is subject to being rolled back
+
+private:
+	int end(bool commit, bool reportHeuristics);
+
+	long _ctime;	// creation time in seconds (since 1970)
 	int _tid;	// ACE thread id
-	CosTransactions::Control_ptr _ctrl;
 	std::map<int, int (*)(int)> _cds;  // xatmi outstanding tpacall descriptors
 };
 } //	namespace tx

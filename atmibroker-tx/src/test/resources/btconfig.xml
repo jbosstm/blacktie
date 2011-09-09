@@ -53,9 +53,15 @@
 			<XA_LIB_NAME>tx-test-utilities.dll</XA_LIB_NAME>
 		</XA_RESOURCE>
 	</XA_RESOURCES>
+
 	<ORB
 		OPT="-ORBInitRef NameService=corbaloc::${JBOSSAS_IP_ADDR}:3528/NameService"
 		TRANS_FACTORY_ID="TransactionManagerService.OTS" />
+	<!--
+	<TXN_CFG
+		MGR_URL="http://127.0.0.1:9090/rest-tx/tx/transaction-manager"
+		RES_EP="127.0.0.1:8888" />
+		-->
 	<MQ HOST="${JBOSSAS_IP_ADDR}" PORT="61613" USER="guest" PASSWORD="guest"
 		 RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10" />
 	<JMX url="service:jmx:rmi:///jndi/rmi://${JBOSSAS_IP_ADDR}:1090/jmxconnector" />

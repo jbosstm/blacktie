@@ -18,7 +18,7 @@
 #include "XAStateModel.h"
 #include "log4cxx/logger.h"
 
-log4cxx::LoggerPtr xasmlogger(log4cxx::Logger::getLogger("TxLogXASM"));
+log4cxx::LoggerPtr xasmlogger(log4cxx::Logger::getLogger("TxXAStateModel"));
 
 static std::string flag_dbg_str;
 
