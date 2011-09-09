@@ -220,7 +220,6 @@ static int recover(XID *xid, long l1, int rmid, long flags) {
 			
 	return rv;
 }
-#endif
 
 static int open(char *a, int rmid, long l) {
 	return apply_faults(NULL, O_XA_OPEN, rmid);
