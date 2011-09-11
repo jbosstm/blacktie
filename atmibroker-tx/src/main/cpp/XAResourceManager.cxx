@@ -17,15 +17,16 @@
  */
 #include <string.h>
 #include "XAResourceManager.h"
+#include "XAWrapper.h"
+#include "TxManager.h"
 #include "XAResourceAdaptorImpl.h"
-
 #include "ThreadLocalStorage.h"
 #include "AtmiBrokerEnv.h"
 
 #include "ace/OS_NS_time.h"
 #include "ace/OS_NS_sys_time.h"
 
-log4cxx::LoggerPtr xarmlogger(log4cxx::Logger::getLogger("TxLogXAManager"));
+log4cxx::LoggerPtr xarmlogger(log4cxx::Logger::getLogger("TxXAResourceManager"));
 
 SynchronizableObject* XAResourceManager::lock = new SynchronizableObject();
 long XAResourceManager::counter = 0l;
@@ -109,6 +110,18 @@ XAResourceManager::XAResourceManager(
 
 XAResourceManager::~XAResourceManager() {
 	FTRACE(xarmlogger, "ENTER");
+
+	XABranchMap::iterator iter;
+	for (iter = branches_.begin(); iter != branches_.end(); ++iter) {
+		// NB Corba objects are deleted by the ORB when it get's shut down
+		// TODO better is to explicitly tell the POA to release XAResources and
+		// check why the map still has branches
+		XAWrapper* xaw = (*iter).second;
+
+		if (!xaw->isOTS())
+			delete xaw;
+	}
+
 	int rv = xa_switch_->xa_close_entry((char *) closeString_, rmid_, TMNOFLAGS);
 
 	LOG4CXX_TRACE(xarmlogger, (char *) "xa_close: " << rv);
@@ -333,6 +346,36 @@ int XAResourceManager::recover()
 	return 0;
 }
 
+int XAResourceManager::createResourceAdapter(XID& xid)
+{
+	atmibroker::tx::TxControl *tx = (atmibroker::tx::TxControl *) getSpecific(TSS_KEY);
+
+	if (tx == NULL)
+		return XAER_PROTO;
+
+	if (tx->isOTS())
+		return createServant(xid);
+
+	XID bid = gen_xid(rmid_, sid_, xid);
+	XAWrapper *ra = new XAWrapper(this, xid, bid, rmid_, xa_switch_, rclog_);
+
+	char * recUrl = atmibroker::tx::TxManager::get_instance()->enlist(ra, tx, ra->get_name());
+
+	if (recUrl == NULL) {
+		LOG4CXX_WARN(xarmlogger, (char*) "resource enlistment failed: no recovery URL");
+		delete ra;
+		return XAER_PROTO;
+	} else {
+		ra->set_recovery_coordinator(recUrl);
+
+		branchLock->lock();
+		branches_[xid] = ra;
+		branchLock->unlock();
+
+		return XA_OK;
+	}
+}
+
 int XAResourceManager::createServant(XID& xid)
 {
 	FTRACE(xarmlogger, "ENTER");
@@ -353,18 +396,11 @@ int XAResourceManager::createServant(XID& xid)
 		XID bid = gen_xid(rmid_, sid_, xid);
 		// Create a servant to represent the new branch.
 		ra = new XAResourceAdaptorImpl(this, xid, bid, rmid_, xa_switch_, rclog_);
-#if 0
-		// and activate it
-		PortableServer::ObjectId_var objId = poa_->activate_object(ra);
-		// get a CORBA reference to the servant so that it can be enlisted in the OTS transaction
-		CORBA::Object_var ref = poa_->servant_to_reference(ra);
-#else
 		std::string s = (char *) (bid.data + bid.gtrid_length);
 		PortableServer::ObjectId_var objId = PortableServer::string_to_ObjectId(s.c_str());
 		poa_->activate_object_with_id(objId, ra);
 		// get a CORBA reference to the servant so that it can be enlisted in the OTS transaction
 		CORBA::Object_var ref = poa_->id_to_reference(objId.in());
-#endif
 
 		ra->_remove_ref();	// now only the POA has a reference to ra
 
@@ -437,13 +473,16 @@ void XAResourceManager::set_complete(XID * xid)
 	for (XABranchMap::iterator i = branches_.begin(); i != branches_.end(); ++i)
 	{
 		if (compareXids(i->first, (const XID&) (*xid)) == 0) {
-			XAResourceAdaptorImpl *r = i->second;
-			PortableServer::ObjectId_var id(poa_->servant_to_id(r));
+			XAWrapper *ra = i->second;
 
-			// Note: deactivate will delete r hence no call to r->_remove_ref();
-			poa_->deactivate_object(id.in());
-			branches_.erase(i->first);
+			if (ra->isOTS()) {
+				XAResourceAdaptorImpl *r = (XAResourceAdaptorImpl *) ra;
+				PortableServer::ObjectId_var id(poa_->servant_to_id(r));
 
+				// Note: deactivate will delete r hence no call to r->_remove_ref();
+				poa_->deactivate_object(id.in());
+				branches_.erase(i->first);
+			}
 			branchLock->unlock();
 			return;
 		}
@@ -456,12 +495,12 @@ void XAResourceManager::set_complete(XID * xid)
 int XAResourceManager::xa_start (XID * xid, long flags)
 {
 	FTRACE(xarmlogger, "ENTER " << rmid_ << (char *) ": flags=" << std::hex << flags << " lookup XID: " << *xid);
-	XAResourceAdaptorImpl * resource = locateBranch(xid);
+	XAWrapper * resource = locateBranch(xid);
 	int rv;
 
 	if (resource == NULL) {
 		FTRACE(xarmlogger, "creating branch " << *xid);
-		if ((rv = createServant(*xid)) != XA_OK)
+		if ((rv = createResourceAdapter(*xid)) != XA_OK)
 			return rv;
 
 		if ((resource = locateBranch(xid)) == NULL)	// cannot be NULL
@@ -478,7 +517,7 @@ int XAResourceManager::xa_start (XID * xid, long flags)
 int XAResourceManager::xa_end (XID * xid, long flags)
 {
 	FTRACE(xarmlogger, "ENTER end branch " << *xid << " rmid=" << rmid_ << " flags=" << std::hex << flags);
-	XAResourceAdaptorImpl * resource = locateBranch(xid);
+	XAWrapper * resource = locateBranch(xid);
 
 	if (resource == NULL) {
 		LOG4CXX_WARN(xarmlogger, (char *) " no such branch " << *xid);
@@ -488,7 +527,7 @@ int XAResourceManager::xa_end (XID * xid, long flags)
 	return resource->xa_end(flags);
 }
 
-XAResourceAdaptorImpl * XAResourceManager::locateBranch(XID * xid)
+XAWrapper * XAResourceManager::locateBranch(XID * xid)
 {
 	FTRACE(xarmlogger, "ENTER");
 	XABranchMap::iterator iter;

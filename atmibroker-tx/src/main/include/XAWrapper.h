@@ -43,7 +43,7 @@ public:
 	bool is_complete();	// has this resource finished 2PC - need for testing
 	void set_recovery_coordinator(char *rc) {rc_ = rc;}
 	void notify_error(int reason, bool forget);
-	bool isOTS() {return false;}
+	virtual bool isOTS() {return false;}
 
 	int xa_start (long);
 	int xa_end (long);

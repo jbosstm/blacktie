@@ -19,8 +19,6 @@
 #include "XAWrapper.h"
 #include "mongoose.h"
 
-//#include "ace/OS_NS_stdlib.h"	/* TODO delete when done testing TEST_BLACKTIE_209 */
-
 using namespace atmibroker::xa;
 
 log4cxx::LoggerPtr xarwlogger(log4cxx::Logger::getLogger("TxXAWrapper"));

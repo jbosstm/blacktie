@@ -19,6 +19,7 @@
 #define _XARESOURCEMANAGER_H
 
 #include "CorbaConnection.h"
+#include "XAWrapper.h"
 #include "XAResourceAdaptorImpl.h"
 #include "SynchronizableObject.h"
 
@@ -32,7 +33,7 @@ public:
 
 bool operator< (XID const& xid1, XID const& xid2);
 
-class BLACKTIE_TX_DLL XAResourceManager
+class BLACKTIE_TX_DLL XAResourceManager : public virtual XABranchNotification
 {
 public:
 	XAResourceManager(CORBA_CONNECTION *, const char *, const char *, const char *,
@@ -56,7 +57,7 @@ public:
 
 private:
 //	typedef std::map<XID, XAResourceAdaptorImpl *, xid_cmp> XABranchMap;
-	typedef std::map<XID, XAResourceAdaptorImpl *> XABranchMap;
+	typedef std::map<XID, XAWrapper *> XABranchMap;
 	XABranchMap branches_;
 	SynchronizableObject* branchLock;
 
@@ -72,7 +73,8 @@ private:
 
 	void createPOA();
 	int createServant(XID &);
-	XAResourceAdaptorImpl * locateBranch(XID *);
+	int createResourceAdapter(XID &);
+	XAWrapper * locateBranch(XID *);
 
 	void show_branches(const char *, XID *);
 	bool isRecoverable(XID &xid);
