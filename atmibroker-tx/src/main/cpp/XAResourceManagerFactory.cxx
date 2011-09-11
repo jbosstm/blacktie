@@ -19,7 +19,6 @@
 #include "ThreadLocalStorage.h"
 #include "SymbolLoader.h"
 #include "AtmiBrokerEnv.h"
-#include "TxControl.h"
 
 #include "ace/DLL.h"
 #include "ace/ACE.h"
@@ -32,7 +31,7 @@
 #include "ace/Null_Mutex.h"
 #include "ace/Based_Pointer_T.h"
 
-log4cxx::LoggerPtr xarflogger(log4cxx::Logger::getLogger("TxXAResourceManagerFactory"));
+log4cxx::LoggerPtr xarflogger(log4cxx::Logger::getLogger("TxLogXAFactory"));
 
 extern std::ostream& operator<<(std::ostream &os, const XID& xid);
 
@@ -53,14 +52,77 @@ extern std::ostream& operator<<(std::ostream &os, const XID& xid);
 bool XAResourceManagerFactory::getXID(XID& xid)
 {
 	FTRACE(xarflogger, "ENTER");
-	atmibroker::tx::TxControl *tx = (atmibroker::tx::TxControl *) getSpecific(TSS_KEY);
+	CosTransactions::Control_ptr cp = (CosTransactions::Control_ptr) txx_get_control();
+	bool ok = false;
 
-	if (tx == NULL) {
+	if (CORBA::is_nil(cp)) {
 		LOG4CXX_WARN(xarflogger,  (char *) "getXID: no tx associated with the callers thread");
 		return false;
 	}
 
-	return tx->get_xid(xid);
+	try {
+		CosTransactions::Coordinator_var cv = cp->get_coordinator();
+		CosTransactions::PropagationContext_var pcv = cv->get_txcontext();
+		CosTransactions::otid_t otid = pcv->current.otid;
+
+		int otidlen = (int) otid.tid.length();
+		char JBOSSTS_NODE_SEPARATOR = '-';
+		char *tid, *p; // copy of the ots tid
+		char *bq;   // the branch qualifier component
+
+		p = tid = (char*) malloc(otidlen);
+
+		if (tid == 0) {
+			LOG4CXX_WARN(xarflogger, (char*) "Out of memory whilst converting OTS tid");
+			return false;
+		}
+
+		memset(&xid, 0, sizeof (XID));
+		xid.formatID = otid.formatID;
+
+		for (int k = 0; k < otidlen; p++, k++)
+			*p = otid.tid[k];
+
+		LOG4CXX_TRACE(xarflogger,  (char *) "converting OTS tid " << tid);
+
+		bq = strchr(tid, JBOSSTS_NODE_SEPARATOR);
+
+		if (bq == 0) {
+			// fingers crossed JBTM-577 has been fixed - do it the OTS way
+			LOG4CXX_WARN(xarflogger, (char*) "no JBOSS separator in otid - assuming JBTM-577 is fixed");
+			xid.bqual_length = otid.bqual_length;
+			xid.gtrid_length = otidlen - otid.bqual_length;
+			memcpy(xid.data, tid, otidlen);
+		} else {
+			// TODO com.arjuna.ats.jts.utils.Utility.uidToOtid is not OTS compliant
+			// duplicate what JBossTS does - will be fixed in JBossTS 4.8.0 (see JBTM-577)
+			bq += 1;
+			xid.gtrid_length = (long) (bq - tid - 1);
+			xid.bqual_length = strlen(bq);
+			memset(xid.data, 0, XIDDATASIZE);
+			memcpy(xid.data, tid, xid.gtrid_length);
+			memcpy(xid.data + xid.gtrid_length, bq, xid.bqual_length);
+		}
+
+		free(tid);
+		LOG4CXX_TRACE(xarflogger,  (char *) "converted OTS tid len:" << otidlen << (char *) " XID: "
+			<< xid.formatID << ':' << xid.gtrid_length << ':' << xid.bqual_length << ':' << xid.data);
+
+        ok = true;
+    } catch (CosTransactions::Unavailable & e) {
+        LOG4CXX_ERROR(xarflogger,  (char *) "XA-compatible Transaction Service raised unavailable: " << e._name());
+    } catch (const CORBA::OBJECT_NOT_EXIST &e) {
+		// transaction has most likely timed out
+        LOG4CXX_DEBUG(xarflogger,  (char *) "Unexpected exception converting xid: " << e._name());
+    } catch  (CORBA::Exception& e) {
+        LOG4CXX_ERROR(xarflogger,  (char *) "Unexpected exception converting xid: " << e._name());
+    } catch  (...) {
+        LOG4CXX_ERROR(xarflogger,  (char *) "Unexpected generic exception converting xid");
+    }
+
+	txx_release_control(cp);
+
+	return ok;
 }
 
 static int _rm_start(XAResourceManager* rm, XID& xid, long flags)

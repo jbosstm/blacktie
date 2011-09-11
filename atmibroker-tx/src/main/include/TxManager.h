@@ -26,6 +26,8 @@
 #include "XAResourceManagerFactory.h"
 #include "SynchronizableObject.h"
 
+#include "XAWrapper.h"
+
 #define TX_NOT_SUPPORTED   1   /* normal execution */
 #define TX_OK              0   /* normal execution */
 #define TX_OUTSIDE        -1   /* application is in an RM local
