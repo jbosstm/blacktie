@@ -54,14 +54,14 @@ TxManager *TxManager::get_instance()
 
 		if (txnConfig.mgrEP != NULL) {
 			_instance = HttpTxManager::create(txnConfig.mgrEP, txnConfig.resourceEP);
-			LOG4CXX_INFO(txmlogger,
+			LOG4CXX_DEBUG(txmlogger,
 				(char*) "Using RTS for transaction support with manager endpoint: " <<
 				txnConfig.mgrEP << " and participant endpoint: " << txnConfig.resourceEP);
 		} else if (orbConfig.transactionFactoryName == NULL) {
 			LOG4CXX_WARN(txmlogger, (char*) "Please make sure Transaction factory name is set in btconfig,xml");
 		} else {
 			_instance = OTSTxManager::create(orbConfig.transactionFactoryName);
-			LOG4CXX_INFO(txmlogger, (char*) "Using OTS for transaction support");
+			LOG4CXX_DEBUG(txmlogger, (char*) "Using OTS for transaction support");
 		}
 
 		AtmiBrokerEnv::discard_instance();
