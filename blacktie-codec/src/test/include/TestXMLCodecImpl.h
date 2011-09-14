@@ -26,12 +26,14 @@
 class TestXMLCodecImpl: public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE( TestXMLCodecImpl);
 	CPPUNIT_TEST( test_x_octet);
+	CPPUNIT_TEST( test_x_c_type);
 	CPPUNIT_TEST_SUITE_END();
 
 public:
 	virtual void setUp();
 	virtual void tearDown();
 	void test_x_octet();
+	void test_x_c_type();
 };
 
 #endif

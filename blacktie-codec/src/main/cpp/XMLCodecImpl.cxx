@@ -62,6 +62,64 @@ char* XMLCodecImpl::encode(char* type, char* subtype,
 		} else {
 			LOG4CXX_ERROR(logger, (char*) "X_OCTET: base64 encode failed");
 		}
+	} else if(strcmp(type, "X_C_TYPE") == 0) {
+		Buffer* buffer = buffers[subtype];
+		*length += 256;
+		data_togo = new char[*length];
+		memset(data_togo, '\0', *length);
+
+		LOG4CXX_TRACE(logger, type << (char*) " allocated: " << *length);
+		strcpy(data_togo, "<?xml version='1.0'?>");
+		strcat(data_togo, "<bt:");
+		strcat(data_togo, type);
+		strcat(data_togo, " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"");
+		strcat(data_togo, " xmlns:bt=\"http://www.jboss.org/blacktie\"");
+		strcat(data_togo, " xsi:schemaLocation=\"http://www.jboss.org/blacktie buffers/");
+		strcat(data_togo, subtype);
+		strcat(data_togo, ".xsd\">");
+
+		Attributes::iterator i;
+		for (i = buffer->attributes.begin(); i != buffer->attributes.end(); ++i) {
+			Attribute* attribute = i->second;
+			strcat(data_togo, "<bt:");
+			strcat(data_togo, attribute->id);
+			strcat(data_togo, ">");
+			char* tmp = (char*)malloc(attribute->memSize);
+			strncpy(tmp, &membuffer[attribute->memPosition], attribute->memSize);
+			if(strcmp(attribute->type, "long") == 0) {
+				long lvalue = *((long*)tmp);
+				free(tmp);
+				tmp = (char*)malloc(32);
+				sprintf(tmp, "%ld", lvalue);
+			} else if(strcmp(attribute->type, "short") == 0) {
+				short svalue = *((short*)tmp);
+				free(tmp);
+				tmp = (char*)malloc(32);
+				sprintf(tmp, "%d", svalue);
+			} else if(strcmp(attribute->type, "char") == 0) {
+				char cvalue = *((char*)tmp);
+				free(tmp);
+				tmp = (char*)malloc(32);
+				sprintf(tmp, "%c", cvalue);
+			} else if(strcmp(attribute->type, "char[]") == 0) {
+				char* content;
+				long size = attribute->memSize;
+				content = base64_encode(tmp, &size);
+				free(tmp);
+				tmp = (char*)malloc(size + 1);
+				sprintf(tmp, "%s", content);
+				delete content;
+			}
+			strcat(data_togo, tmp);
+			free(tmp);
+			strcat(data_togo, "</bt:");
+			strcat(data_togo, attribute->id);
+			strcat(data_togo, ">");
+		}
+
+		strcat(data_togo, "</bt:");
+		strcat(data_togo, type);
+		strcat(data_togo, ">");
 	}
 	return data_togo;
 }
@@ -84,8 +142,8 @@ char* XMLCodecImpl::decode(char* type, char* subtype,
 			memcpy(data_tostay, membuffer, *length);
 			LOG4CXX_TRACE(logger, (char*) "Copied");
 		}
-	} else if (strcmp(type, "X_OCTET") == 0) {
-		LOG4CXX_TRACE(logger, (char*) "Received an X_OCTET buffer");
+	} else {
+		LOG4CXX_TRACE(logger, (char*) "Received an " << type << (char*)" buffer");
 		XMLCodecParser parser;
 		XMLCodecHandlers handler(type, subtype);
 

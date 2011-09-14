@@ -21,6 +21,8 @@
 #include <xercesc/sax/HandlerBase.hpp>
 #include <xercesc/framework/psvi/PSVIHandler.hpp>
 
+#include "AtmiBrokerEnvXml.h"
+
 XERCES_CPP_NAMESPACE_USE
 
 class StrX {
@@ -79,8 +81,12 @@ private:
 	static log4cxx::LoggerPtr logger;
 	char* type;
 	char* subtype;
-	char* buffer;
+	char* membuffer;
+	Buffer* buffer;
+	char* attrType;
+	char* attrName;
 	long  length;
 	bool  foundOctet;
+	bool  foundXCType;
 };
 #endif

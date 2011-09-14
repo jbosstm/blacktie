@@ -67,3 +67,40 @@ void TestXMLCodecImpl::test_x_octet() {
 	free(debuf);
 	factory.release(codec);
 }
+
+void TestXMLCodecImpl::test_x_c_type() {
+	btlogger("TestXMLCodecImpl::test_x_c_type");
+	CodecFactory factory;
+	Codec* codec = factory.getCodec((char*)"xml");
+	char* buf;
+	long length;
+
+	DEPOSIT* deposit = (DEPOSIT*) malloc(sizeof(DEPOSIT));
+	deposit->acct_no = 1234567889;
+	deposit->amount = 100;
+	deposit->balance = 20;
+	strcpy(
+			deposit->status,
+			"1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567");
+	deposit->status_len = 127;
+
+	buf = codec->encode((char*)"X_C_TYPE", (char*)"DEPOSIT", (char*)deposit, &length);
+	BT_ASSERT(buf != NULL);
+	btlogger("%s", buf);
+
+	DEPOSIT* memoryBuffer = (DEPOSIT*)codec->decode((char*)"X_C_TYPE", (char*)"DEPOSIT", buf, &length);
+
+	// CHECK THE CONTENT OF THE CONVERTED BUFFER
+	BT_ASSERT(memoryBuffer != NULL);
+	BT_ASSERT(deposit->acct_no == memoryBuffer->acct_no);
+	BT_ASSERT(deposit->amount == memoryBuffer->amount);
+	BT_ASSERT(deposit->balance == memoryBuffer->balance);
+	BT_ASSERT(deposit->acct_no == memoryBuffer->acct_no);
+	BT_ASSERT(strcmp(deposit->status, memoryBuffer->status) == 0);
+	BT_ASSERT(deposit->status_len == memoryBuffer->status_len);
+
+	delete[] buf;
+	free(memoryBuffer);
+	free(deposit);
+	factory.release(codec);
+}
