@@ -55,11 +55,11 @@ void TestXMLCodecImpl::test_x_octet() {
 	buf = codec->encode((char*)"X_OCTET", (char*)"", data, &length);
 	BT_ASSERT(buf != NULL);
 	btlogger("%s\n", buf);
-	btlogger("length = %ld", length);
+	//btlogger("length = %ld", length);
 
 	char* debuf= codec->decode((char*)"X_OCTET", (char*)"", buf, &length);
 	BT_ASSERT(debuf != NULL);
-	btlogger("length = %ld", length);
+	//btlogger("length = %ld", length);
 	BT_ASSERT(length == 4);
 	BT_ASSERT(memcmp(data, debuf, 4) == 0);
 
@@ -84,9 +84,11 @@ void TestXMLCodecImpl::test_x_c_type() {
 			"1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567");
 	deposit->status_len = 127;
 
+	length = -1;
 	buf = codec->encode((char*)"X_C_TYPE", (char*)"DEPOSIT", (char*)deposit, &length);
 	BT_ASSERT(buf != NULL);
 	btlogger("%s", buf);
+	//btlogger("strlen(buf) = %d, length = %ld\n", strlen(buf), length);
 
 	DEPOSIT* memoryBuffer = (DEPOSIT*)codec->decode((char*)"X_C_TYPE", (char*)"DEPOSIT", buf, &length);
 
@@ -102,5 +104,63 @@ void TestXMLCodecImpl::test_x_c_type() {
 	delete[] buf;
 	free(memoryBuffer);
 	free(deposit);
+	factory.release(codec);
+}
+
+void TestXMLCodecImpl::test_x_c_type_2() {
+	btlogger("TestXMLCodecImpl::test_x_c_type_2");
+	CodecFactory factory;
+	Codec* codec = factory.getCodec((char*)"xml");
+	char* buf;
+	long length;
+
+	EXAMPLE* example = (EXAMPLE*) malloc(sizeof(EXAMPLE));
+	example->id = 1001;
+	example->test1[0] = 10;
+	example->test1[1] = 11;
+	example->test2[0] = 2.0;
+	example->test2[1] = 2.1;
+	example->test3 = 'a';
+	example->test4 = 1.4;
+
+	length = -1;
+	buf = codec->encode((char*)"X_C_TYPE", (char*)"EXAMPLE", (char*)example, &length);
+	BT_ASSERT(buf != NULL);
+	btlogger("%s", buf);
+
+	EXAMPLE* memoryBuffer = (EXAMPLE*)codec->decode((char*)"X_C_TYPE", (char*)"EXAMPLE", buf, &length);
+
+	long size = sizeof(EXAMPLE);
+	BT_ASSERT(memoryBuffer != NULL);
+	BT_ASSERT(size == length);
+
+	BT_ASSERT(example->id == memoryBuffer->id);
+	BT_ASSERT(example->test1[0] == memoryBuffer->test1[0]);
+	BT_ASSERT(example->test1[1] == memoryBuffer->test1[1]);
+	BT_ASSERT(example->test2[0] == memoryBuffer->test2[0]);
+	BT_ASSERT(example->test2[1] == memoryBuffer->test2[1]);
+	BT_ASSERT(example->test3 == memoryBuffer->test3);
+	BT_ASSERT(example->test4 == memoryBuffer->test4);
+
+	/*
+	btlogger("example->id = %d, memoryBuffer->id = %d",
+			  example->id, memoryBuffer->id);
+	btlogger("example->test1[0] = %d, memoryBuffer->test1[0] = %d",
+			  example->test1[0], memoryBuffer->test1[0]);
+	btlogger("example->test1[1] = %d, memoryBuffer->test1[1] = %d",
+			  example->test1[1], memoryBuffer->test1[1]);
+	btlogger("example->test2[0] = %f, memoryBuffer->test2[0] = %f",
+			  example->test2[0], memoryBuffer->test2[0]);
+	btlogger("example->test2[1] = %f, memoryBuffer->test2[1] = %f",
+			  example->test2[1], memoryBuffer->test2[1]);
+	btlogger("example->test3 = %c, memoryBuffer->test3 = %c",
+			  example->test3, memoryBuffer->test3);
+	btlogger("example->test4 = %f, memoryBuffer->test4 = %f",
+			  example->test4, memoryBuffer->test4);
+	*/
+
+	delete[] buf;
+	free(memoryBuffer);
+	free(example);
 	factory.release(codec);
 }

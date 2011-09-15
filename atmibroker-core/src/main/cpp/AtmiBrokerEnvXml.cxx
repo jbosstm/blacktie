@@ -462,7 +462,9 @@ static void XMLCALL startElement
 					}
 
 					// advance to then next alignment boundary
-					buffer->memSize = buffer->memSize + (buffer->memSize % memTypeSize);
+					int memAlign = buffer->memSize % memTypeSize;
+
+					buffer->memSize = buffer->memSize + (memAlign == 0 ? 0 : (memTypeSize - memAlign));
 					attribute->memPosition = buffer->memSize;
 					attribute->wirePosition = buffer->wireSize;
 					buffer->wireSize = buffer->wireSize + attribute->wireSize;

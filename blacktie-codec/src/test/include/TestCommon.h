@@ -28,4 +28,13 @@ struct deposit_t {
 
 typedef struct deposit_t DEPOSIT;
 
+struct example_t {
+	int id;
+	int test1[2];
+	float test2[2];
+	char test3;
+	float test4;
+};
+
+typedef struct example_t EXAMPLE;
 #endif

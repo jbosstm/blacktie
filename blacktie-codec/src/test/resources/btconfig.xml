@@ -33,5 +33,12 @@
 			<ATTRIBUTE type="char[]" id="status" arrayLength="128" />
 			<ATTRIBUTE type="short" id="status_len" />
 		</BUFFER>
+		<BUFFER name="EXAMPLE">
+			<ATTRIBUTE type="int"  id="id" />
+			<ATTRIBUTE type="int[]"  id="test1" arrayLength="2"/>
+			<ATTRIBUTE type="float[]"  id="test2" arrayLength="2"/>
+			<ATTRIBUTE type="char"  id="test3" />
+			<ATTRIBUTE type="float" id="test4" />
+		</BUFFER>
 	</BUFFERS>
 </ENVIRONMENT>

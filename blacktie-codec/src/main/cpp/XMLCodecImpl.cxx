@@ -64,7 +64,8 @@ char* XMLCodecImpl::encode(char* type, char* subtype,
 		}
 	} else if(strcmp(type, "X_C_TYPE") == 0) {
 		Buffer* buffer = buffers[subtype];
-		*length += 256;
+		//TODO check memory size
+		*length = buffer->wireSize + 1024;
 		data_togo = new char[*length];
 		memset(data_togo, '\0', *length);
 
@@ -85,12 +86,17 @@ char* XMLCodecImpl::encode(char* type, char* subtype,
 			strcat(data_togo, attribute->id);
 			strcat(data_togo, ">");
 			char* tmp = (char*)malloc(attribute->memSize);
-			strncpy(tmp, &membuffer[attribute->memPosition], attribute->memSize);
+			memcpy(tmp, &membuffer[attribute->memPosition], attribute->memSize);
 			if(strcmp(attribute->type, "long") == 0) {
 				long lvalue = *((long*)tmp);
 				free(tmp);
 				tmp = (char*)malloc(32);
 				sprintf(tmp, "%ld", lvalue);
+			} else if(strcmp(attribute->type, "int") == 0) {
+				int ivalue = *((int*)tmp);
+				free(tmp);
+				tmp = (char*)malloc(32);
+				sprintf(tmp, "%d", ivalue);
 			} else if(strcmp(attribute->type, "short") == 0) {
 				short svalue = *((short*)tmp);
 				free(tmp);
@@ -101,17 +107,42 @@ char* XMLCodecImpl::encode(char* type, char* subtype,
 				free(tmp);
 				tmp = (char*)malloc(32);
 				sprintf(tmp, "%c", cvalue);
-			} else if(strcmp(attribute->type, "char[]") == 0) {
+			} else if(strcmp(attribute->type, "float") == 0) {
+				float fvalue = *((float*)tmp);
+				free(tmp);
+				tmp = (char*)malloc(32);
+				sprintf(tmp, "%f", fvalue);
+			} else if(strcmp(attribute->type, "double") == 0) {
+				double dvalue = *((double*)tmp);
+				free(tmp);
+				tmp = (char*)malloc(64);
+				sprintf(tmp, "%e", dvalue);
+			} else if(strcmp(attribute->type, "char[]") == 0 ||
+					  strcmp(attribute->type, "int[]") == 0 ||
+					  strcmp(attribute->type, "short[]") == 0 ||
+					  strcmp(attribute->type, "float[]") == 0 ||
+					  strcmp(attribute->type, "double[]") == 0 ||
+					  strcmp(attribute->type, "long[]") == 0 ||
+					  strcmp(attribute->type, "char[][]") == 0) {
 				char* content;
 				long size = attribute->memSize;
+
 				content = base64_encode(tmp, &size);
 				free(tmp);
-				tmp = (char*)malloc(size + 1);
-				sprintf(tmp, "%s", content);
+				tmp = (char*)malloc(size);
+				memset(tmp, '\0', size);
+				strncpy(tmp, content, size-1);
 				delete content;
+			} else {
+				LOG4CXX_WARN(logger, "can not encode type " << attribute->type);
+				free(tmp);
+				tmp = NULL;
 			}
-			strcat(data_togo, tmp);
-			free(tmp);
+
+			if(tmp != NULL) {
+				strcat(data_togo, tmp);
+				free(tmp);
+			}
 			strcat(data_togo, "</bt:");
 			strcat(data_togo, attribute->id);
 			strcat(data_togo, ">");
@@ -156,7 +187,7 @@ char* XMLCodecImpl::decode(char* type, char* subtype,
 		if (*length > 0) {
 			memcpy(data_tostay, content, *length);
 			LOG4CXX_TRACE(logger, (char*) "Copied");
-			delete content;
+			free(content);
 			LOG4CXX_TRACE(logger, (char*) "Delete content");
 		}
 	}

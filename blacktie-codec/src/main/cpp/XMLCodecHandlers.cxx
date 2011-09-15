@@ -115,7 +115,10 @@ void XMLCodecHandlers::characters(const XMLCh* const name,
 	const char* value = str.localForm();
 	LOG4CXX_DEBUG(logger, "value:" << value);
 	if(foundOctet) {
-		membuffer = base64_decode((char*)value, &this->length);
+		char* tmp = base64_decode((char*)value, &this->length);
+		membuffer = (char*) malloc (this->length);
+		memcpy(membuffer, tmp, this->length);
+		delete tmp;
 	} else if(foundXCType) {
 		if(attrType != NULL) {
 			LOG4CXX_DEBUG(logger, attrType << (char*)":" << value);
@@ -124,20 +127,35 @@ void XMLCodecHandlers::characters(const XMLCh* const name,
 			if(it != buffer->attributes.end()) {
 				Attribute* attribute = it->second;
 
-				if(strcmp(attrType, "base64Binary") != 0 && strcmp(attribute->type, attrType) != 0) {
-					LOG4CXX_WARN(logger, attrName << " buffer type: " << attribute->type << " and schema type:" << attrType);
+				if(strcmp(attrType, "string") != 0 &&
+				   strcmp(attrType, "base64Binary") != 0 && 
+				   !(strcmp(attrType, "integer") == 0 && strcmp(attribute->type, "int") == 0) &&
+				   strcmp(attribute->type, attrType) != 0) {
+					LOG4CXX_WARN(logger, attrName << " buffer type:" << attribute->type << " and schema type:" << attrType);
 				} else {
 					if(strcmp(attrType, "short") == 0) {
 						short svalue = atoi(value);
 						memcpy(&membuffer[attribute->memPosition], &svalue, attribute->memSize);
+					} else if(strcmp(attrType, "integer") == 0) {
+						int ivalue = atoi(value);
+						memcpy(&membuffer[attribute->memPosition], &ivalue, attribute->memSize);
 					} else if(strcmp(attrType, "long") == 0) {
 						long lvalue = atol(value);
 						memcpy(&membuffer[attribute->memPosition], &lvalue, attribute->memSize);
+					} else if(strcmp(attrType, "string") == 0) {
+						char cvalue = *value;
+						memcpy(&membuffer[attribute->memPosition], &cvalue, attribute->memSize);
+					} else if(strcmp(attrType, "float") == 0) {
+						float fvalue = atof(value);
+						memcpy(&membuffer[attribute->memPosition], &fvalue, attribute->memSize);
+					} else if(strcmp(attrType, "double") == 0) {
+						double dvalue = atof(value);	
+						memcpy(&membuffer[attribute->memPosition], &dvalue, attribute->memSize);
 					} else if(strcmp(attrType, "base64Binary") == 0) {
 						char* content;
 						long size = 0;
 						content = base64_decode((char*)value, &size);
-						memcpy(&membuffer[attribute->memPosition], content, attribute->memSize);
+						memcpy(&membuffer[attribute->memPosition], content, size);
 						delete content;
 					} else {
 						LOG4CXX_WARN(logger, "can not decode with type " << attrType);
@@ -200,6 +218,7 @@ void XMLCodecHandlers::handlePartialElementPSVI(const XMLCh* const localName,
 				strcmp(typeStr, "integer") == 0 ||
 				strcmp(typeStr, "short") == 0 ||
 				strcmp(typeStr, "float") == 0 ||
+				strcmp(typeStr, "double") == 0 ||
 				strcmp(typeStr, "base64Binary") == 0 ||
 				strcmp(typeStr, "anyType") == 0) {
 			if(strcmp(typeStr, "anyType") != 0) {

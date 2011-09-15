@@ -7,17 +7,18 @@
 	<xsd:element name="X_C_TYPE">
 		<xsd:complexType> 
 			<xsd:sequence minOccurs="0" maxOccurs="1">
-				<xsd:element name="acct_no" type="xsd:long" />
-				<xsd:element name="amount" type="xsd:short" />
-				<xsd:element name="balance" type="xsd:short" />
-				<xsd:element name="status">
+				<xsd:element name="id" type="xsd:integer" />
+				<xsd:element name="test1" type="xsd:base64Binary" />
+				<xsd:element name="test2" type="xsd:base64Binary" />
+				<xsd:element name="test3">
 					<xsd:simpleType>
-						<xsd:restriction base="xsd:base64Binary">
-							<xsd:maxLength value="128"/>
+						<xsd:restriction base="xsd:string">
+							<xsd:minLength value="1"/>
+							<xsd:maxLength value="1"/>
 						</xsd:restriction>
 					</xsd:simpleType>
 				</xsd:element>
-				<xsd:element name="status_len" type="xsd:short" />
+				<xsd:element name="test4" type="xsd:float" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
