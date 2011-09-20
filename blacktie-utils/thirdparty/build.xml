@@ -25,8 +25,8 @@
 	<property name="buildd.lib" value="${build.dir}/lib" />
 	<property name="lib.dir" value="lib" />
 
-	<property name="maven.ant.file" value="maven-ant-tasks-2.1.0.jar" />
-	<property name="maven.ant.dir" value="http://apache.inetbridge.net/maven/binaries" />
+	<property name="maven.ant.file" value="maven-ant-tasks-2.1.3.jar" />
+	<property name="maven.ant.dir" value="http://mirrors.ibiblio.org/apache//maven/binaries" />
 
 	<available file="${lib.dir}/${maven.ant.file}" type="file" property="mavend.lib.exists" />
 
@@ -80,7 +80,7 @@
 		<mkdir dir="${build.dist}/lib" />
 	</target>
 
-	<target name="thirdparty" depends="ace,log4cxx,cppunit,expat,apr-1,xercesc" />
+	<target name="thirdparty" depends="ace,log4cxx,cppunit,expat,apr-1,xercesc,protobuf" />
 	<target name="install" depends="thirdparty" />
 
 	<target name="ace-lib-linux" if="linux">
@@ -361,6 +361,43 @@
 		<install-zip-artifact groupId="apache-xercesc.contrib" artifactId="xercesc" name="xercesc" version="${xercesc.version}" description="a validating XML parser written in a portable subset of C++ "/>
 	</target>
 
+	<target name="protobuf-lib-linux" if="linux" unless="aix">
+		<copy file="${protobuf.lib.dir}/libprotobuf.so.7" tofile="${build.dist}/lib/libprotobuf.so.7" />
+		<copy file="${protobuf.lib.dir}/libprotoc.so.7" tofile="${build.dist}/lib/libprotoc.so.7" />
+	</target>
+
+	<target name="protobuf-lib-aix" if="aix">
+	</target>
+
+	<target name="protobuf-lib-windows" if="windows">
+	</target>
+
+	<target name="protobuf" depends="init">
+		<antcall target="purge"/>
+		<antcall target="protobuf-lib-linux" />
+		<antcall target="protobuf-lib-aix" />
+		<antcall target="protobuf-lib-windows" />
+
+		<copy todir="${build.dist}/include/google/protobuf">
+			<fileset dir="${protobuf.include.dir}/google/protobuf">
+				<include name="**/*.h" />
+			</fileset>
+		</copy>
+
+		<fail message="cannot find protobuf compiler: ${protobuf.compiler}">
+			<condition>
+				<not>
+					<available file="${protobuf.compiler}" type="file" />
+				</not>
+			</condition>
+		</fail>
+
+		<copy todir="${build.dist}/bin" file="${protobuf.compiler}" />
+
+		<copy file="../../blacktie/licence/protobuf.txt" tofile="${build.dist}/META-INF/LICENSE"/>
+		<install-zip-artifact groupId="com.google.protobuf" artifactId="protoc" name="protoc" version="${protobuf.version}" description="Protocol Buffers are a way of encoding structured data in an efficient yet extensible format"/>
+	</target>
+
 	<target name="zip-linux" if="linux">
 		<exec executable="/bin/sh" dir="${build.dist}">
 			<arg line="-c 'zip -y -q -r ../lib/${artifactId}-${version}-${bpa}.zip . -i \'*\''" />
@@ -423,6 +460,7 @@
 
 			<artifact:pom id="pom" file="${build.dir}/@{artifactId}.pom" />
 			<artifact:install>
+				<localRepository path="${user.home}/.m2/blacktie/repository" />
 				<pom refid="pom" />
 				<attach file="${build.dir}/@{artifactId}.pom" type="pom"/>
 				<attach file="${buildd.lib}/@{artifactId}-@{version}-${bpa}.zip" classifier="${bpa}" type="zip"/>

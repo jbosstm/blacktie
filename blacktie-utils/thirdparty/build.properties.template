@@ -26,3 +26,8 @@ cppunit.version=1.12
 xercesc.lib.dir=/home/hudson/blacktie/util/xerces-c-3.0.1/src/.libs
 xercesc.include.dir=/home/hudson/blacktie/util/xerces-c-3.0.1/src
 xercesc.version=3.0.1
+
+protobuf.lib.dir=/usr/local/lib
+protobuf.include.dir=/usr/local/include
+protobuf.compiler=/usr/local/bin/protoc
+protobuf.version=2.4.1
