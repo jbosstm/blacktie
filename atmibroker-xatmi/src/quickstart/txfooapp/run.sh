@@ -33,6 +33,8 @@ else
 fi
 
 export BLACKTIE_CONFIGURATION=linux
+# use a different config for server and client for different listen ports
+export BLACKTIE_CONFIGURATION_DIR=svr
 # use a different logfile for the server
 export LOG4CXXCONFIG=log4cxx.server.properties
 btadmin startup
@@ -46,6 +48,7 @@ fi
 # RUN THE C CLIENT
 # use the default logfile for the client
 unset LOG4CXXCONFIG
+export BLACKTIE_CONFIGURATION_DIR=cli
 ./client
 
 # SHUTDOWN THE SERVER RUNNING THE btadmin TOOL
@@ -54,7 +57,7 @@ btadmin shutdown
 if [ "$?" != "0" ]; then
 	exit -1
 fi
-unset BLACKTIE_CONFIGURATION
+unset BLACKTIE_CONFIGURATION BLACKTIE_CONFIGURATION_DIR
 
 fi
 fi

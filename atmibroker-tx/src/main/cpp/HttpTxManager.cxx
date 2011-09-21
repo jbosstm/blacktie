@@ -53,7 +53,9 @@ static char * parse_wid(const char *s) {
 }
 
 HttpTxManager::HttpTxManager(const char *txmUrl, const char *resUrl) :
-	TxManager(), _txmUrl(txmUrl), _resUrl(resUrl) {
+	TxManager() {
+	_txmUrl = mg_strdup(txmUrl);
+	_resUrl = mg_strdup(resUrl);
 	FTRACE(httptxlogger, "ENTER inst create " << this);
 }
 
@@ -63,6 +65,11 @@ HttpTxManager::~HttpTxManager() {
 		LOG4CXX_WARN(httptxlogger, "Close has not been called");
 		do_close();
 	}
+
+	if (_txmUrl != NULL)
+		free(_txmUrl);
+	if (_resUrl != NULL)
+		free(_resUrl);
 }
 
 TxManager* HttpTxManager::create(const char *txmUrl, const char *resUrl) {
@@ -188,6 +195,7 @@ bool HttpTxManager::handle_request(
 
 		if (branch) {
 			// ? TODO should this logic be moved into a subclass of XAWrapper
+			// TODO check that all possible XA codes are being mapped correctly
 			int res = XAER_INVAL;
 			int how = 0;
 
@@ -195,14 +203,17 @@ bool HttpTxManager::handle_request(
 				res = branch->do_prepare();
 				switch (res) {
 				case XA_OK:
-				case XA_RDONLY:
 					code = 200;
 					status = HttpControl::PREPARED;
+					break;
+				case XA_RDONLY:
+					code = 200;
+					status = HttpControl::READONLY;
 					break;
 				case XAER_PROTO:
 					code = 412;
 					codestr = HTTP_412;
-					status = HttpControl::PREPARED;
+					status = HttpControl::ABORTED;
 					break;
 				default:
 					status = HttpControl::ABORTED;
@@ -212,6 +223,10 @@ bool HttpTxManager::handle_request(
 				}
 			} else if (stat == HttpControl::COMMITTED_STATUS) {
 				res = branch->do_commit();
+				how = 1;
+				status = HttpControl::COMMITTED;
+			} else if (stat == HttpControl::COMMITTED_ONE_PHASE_STATUS) {
+				res = branch->do_commit_one_phase();
 				how = 1;
 				status = HttpControl::COMMITTED;
 			} else if (stat == HttpControl::ABORTED_STATUS) {
@@ -237,8 +252,16 @@ bool HttpTxManager::handle_request(
 			if (how != 0) {
 				switch (res) {
 				default:
-					LOG4CXX_DEBUG(httptxlogger, "Return 200 OK with body: " << status << " XA status: " << res);
+					LOG4CXX_DEBUG(httptxlogger, "Return 200 OK with body: " <<
+						status << " XA status: " << res);
 					code = 200;
+					break;
+				case XAER_PROTO:
+					// TODO Do all PROTO errors mean rollback for example (at least with ORACLE)
+					// committing without preparing generates XAER_PROTO and rolls back the branch
+					status = HttpControl::ABORTED;
+					code = 412;
+					codestr = HTTP_412;
 					break;
 				case XA_HEURHAZ:
 					status = HttpControl::H_HAZARD;

@@ -46,7 +46,7 @@ XAWrapper::XAWrapper(XABranchNotification* rm, XID& xid, XID& bid,
 	FTRACE(xarwlogger, "ENTER" << (char*) " new XA resource rmid:" << rmid_ <<
 		" xid: " << xid_ << " branch id: " << bid_);
 
-	_name = encode_xid(bid);
+	_name = encode_xid(bid_);
 
 	LOG4CXX_DEBUG(xarwlogger, (char*) "encoded name: " << _name);
 }
@@ -126,6 +126,7 @@ int XAWrapper::do_prepare()
 	case XA_OK:
 		return XA_OK;	// VoteCommit
 	case XA_RDONLY:
+		set_complete();
 		return XA_RDONLY;	// VoteReadOnly
 	case XA_RBROLLBACK:
 	case XA_RBCOMMFAIL:
@@ -159,12 +160,15 @@ int XAWrapper::do_terminate(int rv, bool commit)
 
 	switch (rv) {
 	default:
-		return XA_OK;
+		rv = XA_OK;
+		break;
 	case XA_HEURHAZ:
-		return XA_HEURHAZ;
+		rv = XA_HEURHAZ;
+		break;
 	case XA_HEURCOM:
 		// a heuristic descision to commit was made (we may have been lucky) 
-		return (commit ? XA_OK : XA_HEURRB);
+		rv = (commit ? XA_OK : XA_HEURRB);
+		break;
 	case XA_HEURRB:
 	case XA_RBROLLBACK:	// these codes may be returned only if the TMONEPHASE flag was set
 	case XA_RBCOMMFAIL:
@@ -174,27 +178,37 @@ int XAWrapper::do_terminate(int rv, bool commit)
 	case XA_RBPROTO:
 	case XA_RBTIMEOUT:
 	case XA_RBTRANSIENT:
-		return (commit ? XA_HEURRB : XA_OK);
+		rv = (commit ? XA_HEURRB : XA_OK);
+		break;
 	case XA_HEURMIX:
-		return XA_HEURMIX;
+		rv = XA_HEURMIX;
+		break;
 	}
+
+	if (rv == XA_OK)
+		set_complete();
+
+	return rv;
 }
 
 int XAWrapper::do_commit()
 {
 	FTRACE(xarwlogger, "ENTER");
-	if (tightly_coupled_) {
+	int rv;
+
+	if (!prepared_) {
+		LOG4CXX_WARN(xarwlogger, (char*) "commit called but resource hasn't been prepared");
+		rv = XAER_PROTO;	// SPEC doesn't say what happens to the txn but ORACLE rolls it back
+	} else if (tightly_coupled_) {
 		set_complete();
-		return XA_OK;
+		rv = XA_OK;
+	} else {
+		rv = xa_commit (TMNOFLAGS);	// no need for xa_end since prepare must have been called
+
+		LOG4CXX_TRACE(xarwlogger, (char*) "resource commit rv=" << rv);
+
+		rv = do_terminate(rv, true);
 	}
-	int rv = xa_commit (TMNOFLAGS);	// no need for xa_end since prepare must have been called
-
-	LOG4CXX_TRACE(xarwlogger, (char*) "resource commit rv=" << rv);
-
-	rv = do_terminate(rv, true);
-
-	if (rv == XA_OK)
-		set_complete();
 
 	return rv;
 }
@@ -224,17 +238,14 @@ int XAWrapper::do_rollback()
 
 	rv = xa_rollback (TMNOFLAGS);
 	LOG4CXX_DEBUG(xarwlogger, (char*) "resource rollback rv=" << rv);
-	rv = do_terminate(rv, false);
 
-	if (rv == XA_OK)
-		set_complete();
-
-	return rv;
+	return do_terminate(rv, false);
 }
 
 int XAWrapper::do_commit_one_phase()
 {
 	FTRACE(xarwlogger, "ENTER");
+
 	if (tightly_coupled_) {
 		set_complete();
 		return XA_OK;
@@ -252,12 +263,7 @@ int XAWrapper::do_commit_one_phase()
 	rv = xa_commit (TMONEPHASE);
 	LOG4CXX_DEBUG(xarwlogger, (char*) "1PC resource commit rv=" << rv);
 
-	rv = do_terminate(rv, true);
-
-	if (rv == XA_OK)
-		set_complete();
-
-	return rv;
+	return do_terminate(rv, true);
 }
 
 int XAWrapper::do_forget()
@@ -282,6 +288,10 @@ bool XAWrapper::is_complete()
 int XAWrapper::xa_start (long flags)
 {
 	FTRACE(xarwlogger, (char*) "ENTER astate=" << sm_.astate() << " bstate=" << sm_.bstate());
+
+	LOG4CXX_TRACE(xarwlogger, (char*) "xaostart: flags=" << flags << " XID format: " << bid_.formatID <<
+		" gtrid length="<< bid_.gtrid_length << ", bqual length=" << bid_.bqual_length <<
+		" data=" << bid_.data);
  
 	int rv = xa_switch_->xa_start_entry(&bid_, rmid_, flags);
 	return sm_.transition(bid_, XACALL_START, flags, rv);

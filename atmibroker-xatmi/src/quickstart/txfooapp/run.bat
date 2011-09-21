@@ -11,6 +11,7 @@ call generate_server -Dservice.names=TXFOOAPP -Dserver.includes="request.c ora.c
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 IF %ERRORLEVEL% NEQ 0 exit -1
+set BLACKTIE_CONFIGURATION_DIR=svr
 set BLACKTIE_CONFIGURATION=win32
 call btadmin startup
 IF %ERRORLEVEL% NEQ 0 exit -1
@@ -22,8 +23,10 @@ client
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem SHUTDOWN THE SERVER RUNNING THE btadmin TOOL
+set BLACKTIE_CONFIGURATION_DIR=cli
 set BLACKTIE_CONFIGURATION=win32
 call btadmin shutdown
 IF %ERRORLEVEL% NEQ 0 exit -1
 set BLACKTIE_CONFIGURATION=
+set BLACKTIE_CONFIGURATION_DIR=
 )

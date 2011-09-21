@@ -277,9 +277,43 @@ sqlplus ....
 SQL> select LOCAL_TRAN_ID, STATE from DBA_2PC_PENDING;
 SQL>  rollback force 'Oracle transaction id';
 
+APPENDIX 1: Using HTTP (INSTEAD OF CORBA OTS) TO CONTROL TRANSACTIONS)
+======================================================================
+By default, BlackTie access the JBoss Transaction Manager (TM) using CORBA OTS. We also support HTTP
+access to the TM. JBossTM supports HTTP by deploying a war into the application server running the TM.
+I have tested on the functionaliyt on AS7.
 
-APPENDIX: RECOVERY
-==================
+1. Check out the latest revision (-r37473 or greater) of trunk and build the the rest-tx module.
+2. Copy rest-tx/webservice/target/rest-tx-web-<version>.war to the deployments directory.
+3. Edit the btconfig files in the cli and svr directories. Uncomment the TXN_CFG element:
+   The MGR_URL attribute is the URL for starting transactions. The default,
+        MGR_URL="http://127.0.0.1:9090/rest-tx/tx/transaction-manager"
+   says that the application server is running on localhost on port 9090. I have used a non
+   standard port since you will most likely be running AS6 for the XATMI comms. In a future release
+   we will fully support AS7 so that you will be able to use the standard HTTP port.
+   Supporting HTTP means that clients and servers need to listen on an HTTP endpoint.
+   The RES_EP attribute lets clients and servers indicate which host and port to listen on
+   (you can choose any provided the client and server listen on different ports - hence the
+   need for different cofig files). Before starting the server export
+   BLACKTIE_CONFIGURATION_DIR=svr and similarly, before starting the client export
+   BLACKTIE_CONFIGURATION_DIR=cli
+4. Run the example as normal.
+
+
+APPENDIX 2: SIMPLE DEMO
+=======================
+
+The example runs a number of tests and then cleans up the target database afterwards (by deleting
+all database rows that were inserted). For demo purposes there is a test that simple inserts a
+single record into all configured databases. You can access this functionality by specifiy a key
+that will be used to insert a new record into target DB.
+
+export EMPNO=8000
+and then run the example as normal. Clearly, a second run with the same key will generate an
+SQL constraint violation.
+
+APPENDIX 3: RECOVERY
+====================
 To test recovery you will need to link against a library that is only available in the test suite (which you'll need to build
 from source - the library is called libtx-test-utilities.so).
 

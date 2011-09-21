@@ -105,6 +105,13 @@ static int _rmiter(ResourceManagerMap& rms, int (*func)(XAResourceManager *, XID
 XAResourceManagerFactory::XAResourceManagerFactory() : poa_(0)
 {
 	FTRACE(xarflogger, "ENTER");
+/*
+	AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
+	const char* serverId = env->getenv("BLACKTIE_SERVER_ID", "0");
+	const char* poaname = env->getenv("BLACKTIE_SERVER_NAME", "ATMI_RM_POA");
+	xarmp
+	AtmiBrokerEnv::discard_instance();
+*/
 }
 
 XAResourceManagerFactory::~XAResourceManagerFactory()
@@ -190,7 +197,12 @@ void XAResourceManagerFactory::createRMs(CORBA_CONNECTION * connection) throw (R
 		create_poa(connection);
 
 	if (rms_.size() == 0) {
+		AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
+
+		FTRACE(xarflogger, "ENTER rmsize: " << rms_.size() << "xarmp: " << xarmp);
 		xarm_config_t * rmp = (xarmp == 0 ? 0 : xarmp->head);
+
+		LOG4CXX_DEBUG(xarflogger, (char *) "rmp: " << rmp);
 
 		while (rmp != 0) {
 			LOG4CXX_TRACE(xarflogger,  (char*) "createRM:"
@@ -206,6 +218,8 @@ void XAResourceManagerFactory::createRMs(CORBA_CONNECTION * connection) throw (R
 
 			rmp = rmp->next;
 		}
+
+		AtmiBrokerEnv::discard_instance();
 	}
 
 	run_recovery();

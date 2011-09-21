@@ -31,6 +31,7 @@ char * HttpClient::send(struct mg_request_info* ri,
 	int port, is_ssl = 0, n;
 
 	(void) parse_url(uri, host, &port);
+	LOG4CXX_DEBUG(httpclientlog, "connected to TM on " << host << ":" << port << " URI=" << uri);
 
 	struct mg_connection *conn = get_connection(host, port, is_ssl);
 

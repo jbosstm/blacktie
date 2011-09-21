@@ -58,8 +58,8 @@ private:
 
     XAWrapper * locate_branch(const char * xid);
 
-	const char * _txmUrl;
-	const char * _resUrl;
+	char * _txmUrl;
+	char * _resUrl;
 };
 }	//	namespace tx
 }	//namespace atmibroker

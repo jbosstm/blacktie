@@ -28,6 +28,11 @@
 
 log4cxx::LoggerPtr xarmlogger(log4cxx::Logger::getLogger("TxXAResourceManager"));
 
+static const int RR_TYPE_UNK = 0;
+static const int RR_TYPE_IOR = 1;
+static const int RR_TYPE_RTS = 2;
+static const char HTTP_PREFIX[] = "http://";
+
 SynchronizableObject* XAResourceManager::lock = new SynchronizableObject();
 long XAResourceManager::counter = 0l;
 
@@ -113,10 +118,11 @@ XAResourceManager::~XAResourceManager() {
 
 	XABranchMap::iterator iter;
 	for (iter = branches_.begin(); iter != branches_.end(); ++iter) {
-		// NB Corba objects are deleted by the ORB when it get's shut down
-		// TODO better is to explicitly tell the POA to release XAResources and
-		// check why the map still has branches
 		XAWrapper* xaw = (*iter).second;
+
+		// When a txn completes each resource calls XAResourceManager::set_complete
+		// which should remove (and delete) the resource from branches_
+		LOG4CXX_WARN(xarmlogger, (char *) "There are still incomplete branches");
 
 		if (!xaw->isOTS())
 			delete xaw;
@@ -140,6 +146,32 @@ XAResourceManager::~XAResourceManager() {
  * return bool true if it is OK for the caller to delete the associated recovery record
  */
 bool XAResourceManager::recover(XID& bid, const char* rc)
+{
+	switch (getRRType(rc)) {
+	case RR_TYPE_IOR:
+		return recoverIOR(bid, rc);
+	case RR_TYPE_RTS:
+		return recoverRTS(bid, rc);
+	default:
+		return false;
+	}
+}
+
+int  XAResourceManager::getRRType(const char* rc)
+{
+	if (strncmp(HTTP_PREFIX, rc, sizeof (HTTP_PREFIX) - 1) == 0)
+		return RR_TYPE_RTS;
+
+	return RR_TYPE_IOR;
+}
+
+bool XAResourceManager::recoverRTS(XID& bid, const char* rc)
+{
+	// TODO
+	return false;
+}
+
+bool XAResourceManager::recoverIOR(XID& bid, const char* rc)
 {
 	bool delRecoveryRec = true;
 
@@ -171,11 +203,14 @@ bool XAResourceManager::recover(XID& bid, const char* rc)
 			// activate the servant
 			std::string s = (char *) (bid.data + bid.gtrid_length);
 			PortableServer::ObjectId_var objId = PortableServer::string_to_ObjectId(s.c_str());
-			poa_->activate_object_with_id(objId, ra);
+			poa_->activate_object_with_id(objId, ra); // POA should set ref count to 2
 			// get a CORBA reference to the servant so that it can be enlisted in the OTS transaction
 			CORBA::Object_var ref = poa_->id_to_reference(objId.in());
 
-			ra->_remove_ref();	// now only the POA has a reference to ra
+			// make sure only the POA has a reference to ra. When deactivate_object is
+			// invoked on the POA it will remove it from its active object map and drop the
+			// count back to zero which triggers delete on ra
+			ra->_remove_ref();
 
 			CosTransactions::Resource_var v = CosTransactions::Resource::_narrow(ref);
 
@@ -244,6 +279,8 @@ bool XAResourceManager::recover(XID& bid, const char* rc)
 					// the XAResourceAdapterImpl corresponding to the branch will remove the recovery record
 					LOG4CXX_INFO(xarmlogger,
 						(char *) "Recovery: replaying transaction (TM reports prepared/preparing or completing)");
+					LOG4CXX_TRACE(xarmlogger, (char*) "adding branch: " << bid);
+
 					branchLock->lock();
 					branches_[bid] = ra;
 					branchLock->unlock();
@@ -368,6 +405,8 @@ int XAResourceManager::createResourceAdapter(XID& xid)
 	} else {
 		ra->set_recovery_coordinator(recUrl);
 
+		LOG4CXX_TRACE(xarmlogger, (char*) "adding branch: " << xid);
+
 		branchLock->lock();
 		branches_[xid] = ra;
 		branchLock->unlock();
@@ -402,6 +441,8 @@ int XAResourceManager::createServant(XID& xid)
 		// get a CORBA reference to the servant so that it can be enlisted in the OTS transaction
 		CORBA::Object_var ref = poa_->id_to_reference(objId.in());
 
+		// See earlier comment in XAResourceManager::recover() as to why the servant
+		// is automatically deleted when it is later deactivated.
 		ra->_remove_ref();	// now only the POA has a reference to ra
 
 		CosTransactions::Resource_var v = CosTransactions::Resource::_narrow(ref);
@@ -420,6 +461,7 @@ int XAResourceManager::createServant(XID& xid)
 			ra->set_recovery_coordinator(ACE_OS::strdup(rcref));
 	   		CORBA::release(rc);
 
+			LOG4CXX_TRACE(xarmlogger, (char*) "adding branch: " << xid);
 			branchLock->lock();
 			branches_[xid] = ra;
 			branchLock->unlock();
@@ -462,7 +504,7 @@ void XAResourceManager::set_complete(XID * xid)
 	FTRACE(xarmlogger, "ENTER");
 	XABranchMap::iterator iter;
 
-	LOG4CXX_TRACE(xarmlogger, (char*) "removing branch: " << *xid);
+	LOG4CXX_TRACE(xarmlogger, (char*) "looking for branch: " << *xid);
 
 	if (rclog_.del_rec(*xid) != 0) {
 		// probably a readonly resource
@@ -472,17 +514,24 @@ void XAResourceManager::set_complete(XID * xid)
 	branchLock->lock();
 	for (XABranchMap::iterator i = branches_.begin(); i != branches_.end(); ++i)
 	{
+		LOG4CXX_TRACE(xarmlogger, (char*) "comparing with branch: " << i->first);
 		if (compareXids(i->first, (const XID&) (*xid)) == 0) {
 			XAWrapper *ra = i->second;
+
+			LOG4CXX_TRACE(xarmlogger, (char*) "removing branch: " << *xid);
 
 			if (ra->isOTS()) {
 				XAResourceAdaptorImpl *r = (XAResourceAdaptorImpl *) ra;
 				PortableServer::ObjectId_var id(poa_->servant_to_id(r));
 
-				// Note: deactivate will delete r hence no call to r->_remove_ref();
+				// Note: deactivate calls ra->_remove_ref() and ra's destructor
 				poa_->deactivate_object(id.in());
-				branches_.erase(i->first);
+			} else {
+				delete ra;
 			}
+
+			//branches_.erase(i->first);
+			branches_.erase(i);
 			branchLock->unlock();
 			return;
 		}

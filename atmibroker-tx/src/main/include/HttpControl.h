@@ -66,6 +66,7 @@ public:
 	static const char ABORTED[];
 	static const char COMMITTING[];
 	static const char COMMITTED[];
+	static const char COMMITTED_ONE_PHASE[];
 	static const char H_ROLLBACK[];
 	static const char H_COMMIT[];
 	static const char H_HAZARD[];
@@ -73,12 +74,14 @@ public:
 	static const char PREPARING[];
 	static const char PREPARED[];
 	static const char RUNNING[];
+	static const char READONLY[];
 
 	static const int ABORT_ONLY_STATUS;
 	static const int ABORTING_STATUS;
 	static const int ABORTED_STATUS;
 	static const int COMMITTING_STATUS;
 	static const int COMMITTED_STATUS;
+	static const int COMMITTED_ONE_PHASE_STATUS;
 	static const int H_ROLLBACK_STATUS;
 	static const int H_COMMIT_STATUS;
 	static const int H_HAZARD_STATUS;
@@ -86,6 +89,7 @@ public:
 	static const int PREPARING_STATUS;
 	static const int PREPARED_STATUS;
 	static const int RUNNING_STATUS;
+	static const int READONLY_STATUS;
 
 	static const char * STATUS_MEDIA_TYPE;
 	static const char * POST_MEDIA_TYPE;

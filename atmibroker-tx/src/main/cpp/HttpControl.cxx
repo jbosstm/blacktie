@@ -35,6 +35,7 @@ namespace atmibroker {
 	namespace tx {
 
 static int BUFSZ = 1024;
+static long BT_XID_FORMAT = 131077;
 
 static const char * DUR_PARTICIPANT = "rel=\"durableparticipant";
 static const char * TERMINATOR = "rel=\"terminator";
@@ -49,6 +50,7 @@ const char HttpControl::ABORTING[] = "TransactionRollingBack";
 const char HttpControl::ABORTED[] = "TransactionRolledBack";
 const char HttpControl::COMMITTING[] = "TransactionCommitting";
 const char HttpControl::COMMITTED[] = "TransactionCommitted";
+const char HttpControl::COMMITTED_ONE_PHASE[] = "TransactionCommittedOnePhase";
 const char HttpControl::H_ROLLBACK[] = "TransactionHeuristicRollback";
 const char HttpControl::H_COMMIT[] = "TransactionHeuristicCommit";
 const char HttpControl::H_HAZARD[] = "TransactionHeuristicHazard";
@@ -56,6 +58,7 @@ const char HttpControl::H_MIXED[] = "TransactionHeuristicMixed";
 const char HttpControl::PREPARING[] = "TransactionPreparing";
 const char HttpControl::PREPARED[] = "TransactionPrepared";
 const char HttpControl::RUNNING[] = "TransactionActive";
+const char HttpControl::READONLY[] = "TransactionReadOnly";
 
 // what about TransactionCommitOnePhase
 
@@ -66,13 +69,15 @@ const int HttpControl::ABORTING_STATUS = 1;
 const int HttpControl::ABORTED_STATUS = 2;
 const int HttpControl::COMMITTING_STATUS = 3;
 const int HttpControl::COMMITTED_STATUS = 4;
-const int HttpControl::H_ROLLBACK_STATUS = 5;
-const int HttpControl::H_COMMIT_STATUS = 6;
-const int HttpControl::H_HAZARD_STATUS = 7;
-const int HttpControl::H_MIXED_STATUS = 8;
-const int HttpControl::PREPARING_STATUS =9;
-const int HttpControl::PREPARED_STATUS = 10;
-const int HttpControl::RUNNING_STATUS = 11;
+const int HttpControl::COMMITTED_ONE_PHASE_STATUS = 5;
+const int HttpControl::H_ROLLBACK_STATUS = 6;
+const int HttpControl::H_COMMIT_STATUS = 7;
+const int HttpControl::H_HAZARD_STATUS = 8;
+const int HttpControl::H_MIXED_STATUS = 9;
+const int HttpControl::PREPARING_STATUS = 10;
+const int HttpControl::PREPARED_STATUS = 11;
+const int HttpControl::RUNNING_STATUS = 12;
+const int HttpControl::READONLY_STATUS = 13;
 
 
 typedef std::map<std::string, int> StatusMap;
@@ -83,6 +88,7 @@ const StatusMap::value_type status_entries[] = {
 	StatusMap::value_type(HttpControl::ABORTED, HttpControl::ABORTED_STATUS),
 	StatusMap::value_type(HttpControl::COMMITTING, HttpControl::COMMITTING_STATUS),
 	StatusMap::value_type(HttpControl::COMMITTED, HttpControl::COMMITTED_STATUS),
+	StatusMap::value_type(HttpControl::COMMITTED_ONE_PHASE, HttpControl::COMMITTED_ONE_PHASE_STATUS),
 	StatusMap::value_type(HttpControl::H_ROLLBACK, HttpControl::H_ROLLBACK_STATUS),
 	StatusMap::value_type(HttpControl::H_COMMIT, HttpControl::H_COMMIT_STATUS),
 	StatusMap::value_type(HttpControl::H_HAZARD, HttpControl::H_HAZARD_STATUS),
@@ -90,6 +96,7 @@ const StatusMap::value_type status_entries[] = {
 	StatusMap::value_type(HttpControl::PREPARING, HttpControl::PREPARING_STATUS),
 	StatusMap::value_type(HttpControl::PREPARED, HttpControl::PREPARED_STATUS),
 	StatusMap::value_type(HttpControl::RUNNING, HttpControl::RUNNING_STATUS),
+	StatusMap::value_type(HttpControl::READONLY, HttpControl::READONLY_STATUS),
 };
 
 static const int nelems = sizeof status_entries / sizeof status_entries[0];
@@ -296,6 +303,7 @@ int HttpControl::do_end(int how)
 			case PREPARING_STATUS:
 			case PREPARED_STATUS:
 			case RUNNING_STATUS:
+			case READONLY_STATUS:
 				rc = TX_PROTOCOL_ERROR; break;
 			default:
 				rc = TX_FAIL; break;
@@ -319,6 +327,7 @@ int HttpControl::do_end(int how)
 			case PREPARING_STATUS:
 			case PREPARED_STATUS:
 			case RUNNING_STATUS:
+			case READONLY_STATUS:
 				rc = TX_FAIL; break;
 			default:
 				rc = TX_FAIL; break;
@@ -367,18 +376,35 @@ void* HttpControl::get_control()
 }
 
 bool HttpControl::get_xid(XID& xid) {
+	memset(&xid, 0, sizeof (XID));
+	memset(xid.data, 0, XIDDATASIZE);
+	xid.formatID = BT_XID_FORMAT;
+	xid.bqual_length = 0;
+
+#if 1
+	// WARNING THIS CODE hardcodes knowledge of the REST txn URL by assuming
+	// the final path component is the string form of the global txn uid
+	// The assumption is safer than assuming that the full url fits in an XID
+    char* p = strrchr(_txnUrl, '/');
+
+    if (p != NULL && ++p != '\0' && (xid.gtrid_length = strlen(p)) < XIDDATASIZE) {
+		memcpy(xid.data, p, xid.gtrid_length);
+	} else {
+		LOG4CXX_WARN(httpclogger, (char*) "Transaction URL does not terminate with an uid: " << _txnUrl);
+		return false;
+	}
+#else
 	size_t len;
+
 	if (_txnUrl == NULL || (len = strlen(_txnUrl)) > XIDDATASIZE) {
 		LOG4CXX_WARN(httpclogger, (char*) "TODO get_xid: txn URL won't fit in an XID: " << _txnUrl);
 		return false;
 	}
 
-	memset(&xid, 0, sizeof (XID));
-	xid.formatID = 0;
 	xid.gtrid_length = len;
-	xid.bqual_length = 0;
 
 	memcpy(xid.data, _txnUrl, len);
+#endif
 
 	return true;
 }
@@ -397,8 +423,13 @@ bool HttpControl::isActive(const char *msg, bool expect)
 {
 	FTRACE(httpclogger, "ENTER");
 
-	// TODO
-	return true;
+    bool c = (_txnUrl != NULL);
+
+    if (c != expect && msg) {
+        LOG4CXX_WARN(httpclogger, (char*) "protocol violation: " << msg);
+    }
+
+    return c;
 }
 
 } //	namespace tx

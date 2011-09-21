@@ -79,6 +79,11 @@ private:
 	void show_branches(const char *, XID *);
 	bool isRecoverable(XID &xid);
 
+	int  getRRType(const char* rc);
+	bool recoverRTS(XID& bid, const char* rc);
+	bool recoverIOR(XID& bid, const char* rc);
+
+
 	static SynchronizableObject* lock;
 	static long counter;
 };

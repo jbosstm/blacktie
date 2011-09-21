@@ -16,6 +16,7 @@
  * MA  02110-1301, USA.
  */
 #include "tx/request.h"
+#include <stdlib.h>
 
 static product_t *prods;
 static char testid[16];
@@ -373,6 +374,21 @@ static int test5(int *cnt)
 }
 #endif
 
+static int demo()
+{
+	int rv;
+	char *emp = getenv("EMPNO");
+	char *abort = getenv("ABORT");
+	int how = (abort ? TX_TYPE_BEGIN_ABORT : TX_TYPE_BEGIN_COMMIT);
+	btlogger_debug( "TxLog IN %s:%d", __FUNCTION__, __LINE__);
+
+	/* ask the remote service to insert a record */
+	if ((rv = db_op("INSERT 1", emp, '0', how, 0, REMOTE_ACCESS, 0, -1)))
+		return rv;
+
+	return 0;
+}
+
 /* cause the program to halt during phase 2 of the transaction 2PC protocol */
 #if defined(TX_RC)
 static int testrc(int *cnt)
@@ -438,6 +454,9 @@ int run_tests(product_t *prod_array)
 	if (tx_open() != TX_OK)
 		return fatal("TxLog ERROR - Could not open RMs");
 
+if (getenv("EMPNO")) {
+	demo();
+} else {
 	set_test_id("setup");
 	if ((rv = setup()))
 		return rv;
@@ -455,7 +474,7 @@ int run_tests(product_t *prod_array)
 	set_test_id("teardown");
 	if ((rv = teardown(&cnt)))
 		return rv;
-
+}
 	if (tx_close() != TX_OK) {
 		btlogger_warn( (char*) "TxLog ERROR - Could not close transaction: ");
 		return fatal("ERROR - Could not close RMs");
