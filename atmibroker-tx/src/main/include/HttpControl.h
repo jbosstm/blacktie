@@ -32,12 +32,12 @@ public:
 	virtual ~HttpControl();
 
 	int start(const char* txnMgrUrl);
-	char * enlist(const char *host, int port, const char *xid);
     int rollback_only();
     int get_status();
 	bool get_xid(XID& xid);
 
 	const char* txnUrl() {return _txnUrl;}
+	const char* enlistUrl() {return _enlistUrl;}
 
 protected:
     void suspend();
@@ -93,6 +93,7 @@ public:
 
 	static const char * STATUS_MEDIA_TYPE;
 	static const char * POST_MEDIA_TYPE;
+	static const char * PLAIN_MEDIA_TYPE;
 };
 } //	namespace tx
 } //namespace atmibroker

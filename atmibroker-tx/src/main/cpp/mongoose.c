@@ -3713,6 +3713,10 @@ static void close_socket_gracefully(SOCKET sock) {
 }
 
 #if !defined(ORIG)
+//void force_close_connection(struct mg_connection *conn) {
+//	(void) closesocket(conn->client.sock);
+//}
+
 void close_connection(struct mg_connection *conn) {
 #else
 static void close_connection(struct mg_connection *conn) {
@@ -4083,7 +4087,7 @@ void mg_stop(struct mg_context *ctx) {
 
   // Wait until mg_fini() stops
   while (ctx->stop_flag != 2) {
-    (void) sleep(0);
+    (void) sleep(1);
   }
   free_context(ctx);
 

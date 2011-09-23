@@ -31,6 +31,7 @@ public:
 
 	int associate_transaction(char* txn, long ttl);
 	void release_control(void *);
+	bool recover(XAWrapper*);
 
 protected:
 	OTSTxManager(char *transFactoryId);

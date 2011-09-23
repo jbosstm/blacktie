@@ -122,7 +122,12 @@ static int apply_faults(XID *xid, enum XA_OP op, int rmid)
 
 			switch (f->xf) {
 			default:
-					printf("dummy_rm: default\n");
+				printf("dummy_rm: default\n");
+				break;
+			case F_CB:
+				btlogger_debug("dummy_rm: calling callback\n");
+				/* cast arg to a function pointer of type (void(*)(void) and call it */
+				((void(*)(void))(f->arg))();
 				break;
 			case F_HALT:
 				/* generate a SEGV fault */

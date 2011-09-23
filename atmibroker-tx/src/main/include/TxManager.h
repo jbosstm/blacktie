@@ -119,6 +119,8 @@ public:	// suspend and resume
 	void* tx_suspend(int flags, int altflags);
 	virtual int associate_transaction(char* txn, long ttl) = 0; // see header txx.h for documentation
 	virtual char *enlist(XAWrapper* xaw, TxControl *tx, const char *xid) {return NULL;}
+	// start recovering a resource (return true if its OK to delete the recovery record)
+	virtual bool recover(XAWrapper*) = 0;
 
 	void* get_control(long* ttl);	// see header txx.h for documentation
 	virtual void release_control(void *) {}	// see header txx.h for documentation

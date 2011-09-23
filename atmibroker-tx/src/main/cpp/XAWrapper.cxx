@@ -18,6 +18,7 @@
 
 #include "XAWrapper.h"
 #include "mongoose.h"
+#include <string.h>
 
 using namespace atmibroker::xa;
 
@@ -38,13 +39,18 @@ static char * encode_xid(XID& xid) {
 	return buf;
 }
 
-XAWrapper::XAWrapper(XABranchNotification* rm, XID& xid, XID& bid,
-		long rmid, struct xa_switch_t *xa_switch, XARecoveryLog& log) :
-			rm_(rm), xid_(xid), bid_(bid), complete_(false), rmid_(rmid), xa_switch_(xa_switch), rc_(0),
-			eflags_(0l), tightly_coupled_(0), rclog_(log), prepared_(false), _name(NULL)
+XAWrapper::XAWrapper(XABranchNotification* rm, XID& bid,
+		long rmid, struct xa_switch_t *xa_switch, XARecoveryLog& log, const char* rc) :
+			rm_(rm), bid_(bid), complete_(false), rmid_(rmid), xa_switch_(xa_switch),
+			_rc(NULL), eflags_(0l), tightly_coupled_(0), rclog_(log), _name(NULL)
 {
 	FTRACE(xarwlogger, "ENTER" << (char*) " new XA resource rmid:" << rmid_ <<
-		" xid: " << xid_ << " branch id: " << bid_);
+		" branch id: " << bid_);
+
+	if (rc != NULL) {
+		_rc = strdup(rc);
+		prepared_ = true;
+	}
 
 	_name = encode_xid(bid_);
 
@@ -54,8 +60,8 @@ XAWrapper::XAWrapper(XABranchNotification* rm, XID& xid, XID& bid,
 XAWrapper::~XAWrapper()
 {
 	FTRACE(xarwlogger, "ENTER");
-	if (rc_)
-		free(rc_);
+	if (_rc)
+		free(_rc);
 
 	if (_name)
 		free(_name);
@@ -65,7 +71,8 @@ void XAWrapper::notify_error(int reason, bool forget)
 {
 	FTRACE(xarwlogger, "ENTER");
 	if (rm_)
-		rm_->notify_error(&xid_, reason, forget);
+		rm_->notify_error(this, reason, forget);
+		//rm_->notify_error(&xid_, reason, forget);
 }
 
 void XAWrapper::set_complete()
@@ -74,7 +81,8 @@ void XAWrapper::set_complete()
 	complete_ = true;
 
 	if (rm_)
-		rm_->set_complete(&xid_);
+		rm_->set_complete(this);
+		//rm_->set_complete(xid_);
 }
 
 int XAWrapper::do_prepare()
@@ -104,7 +112,7 @@ int XAWrapper::do_prepare()
 			<< (char*) " rv1=" << rv1 << " rv2=" << rv2 << " bstate=" << sm_.bstate());
 	}
 
-	if (rc_ == NULL) {
+	if (_rc == NULL) {
 		rv2 = XA_RDONLY;
 		LOG4CXX_ERROR(xarwlogger, (char *) "prepare called but no recovery coordinator has been set - assuming RDONLY");
 	}
@@ -117,8 +125,9 @@ int XAWrapper::do_prepare()
 			*s = 0;
 		}
 #endif
+		LOG4CXX_DEBUG(xarwlogger, (char *) "Writing recovery record for branch " << bid_);
 		// about to vote commit - remember the descision
-		rclog_.add_rec(bid_, rc_);
+		rclog_.add_rec(bid_, _rc);
 		prepared_ = true;
 	}
 
@@ -152,15 +161,8 @@ int XAWrapper::do_terminate(int rv, bool commit)
 {
 	FTRACE(xarwlogger, "ENTER");
 
-	// remove the entry for this branch from the recovery log
-	if (prepared_ && rclog_.del_rec(bid_) != 0) {
-		LOG4CXX_DEBUG(xarwlogger, (char *) xa_switch_->name <<
-			": do_terminate - entry not found in recovery log rid=" << rmid_);
-	}
-
 	switch (rv) {
 	default:
-		rv = XA_OK;
 		break;
 	case XA_HEURHAZ:
 		rv = XA_HEURHAZ;
@@ -185,8 +187,19 @@ int XAWrapper::do_terminate(int rv, bool commit)
 		break;
 	}
 
-	if (rv == XA_OK)
+	if (rv == XA_OK) {
+		// remove the entry for this branch from the recovery log
+		LOG4CXX_DEBUG(xarwlogger, (char *) "Removing recovery record for branch " <<
+			bid_ << " prepared=" << prepared_);
+		if (prepared_ && rclog_.del_rec(bid_) != 0) {
+			LOG4CXX_DEBUG(xarwlogger, (char *) xa_switch_->name <<
+				": do_terminate - entry not found in recovery log rid=" << rmid_);
+		}
+
 		set_complete();
+	}
+
+	LOG4CXX_TRACE(xarwlogger, (char*) "resource XAWrapper::do_terminate rv=" << rv);
 
 	return rv;
 }

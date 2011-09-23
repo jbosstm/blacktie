@@ -228,7 +228,6 @@ struct mg_connection *get_connection(const char *host, int port, int use_ssl);
 void parse_http_headers(char **buf, struct mg_request_info *ri);
 int parse_url(const char *url, char *host, int *port);
 char *skip(char **buf, const char *delimiters);
-
 #endif
 
 #ifdef __cplusplus

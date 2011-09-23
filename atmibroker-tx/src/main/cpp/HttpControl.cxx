@@ -34,7 +34,6 @@
 namespace atmibroker {
 	namespace tx {
 
-static int BUFSZ = 1024;
 static long BT_XID_FORMAT = 131077;
 
 static const char * DUR_PARTICIPANT = "rel=\"durableparticipant";
@@ -42,6 +41,7 @@ static const char * TERMINATOR = "rel=\"terminator";
 
 const char * HttpControl::STATUS_MEDIA_TYPE = "application/txstatus";
 const char * HttpControl::POST_MEDIA_TYPE = "application/x-www-form-urlencoded";
+const char * HttpControl::PLAIN_MEDIA_TYPE = "text/plain";
 
 const char * HttpControl::TXSTATUS = "txStatus=";
 
@@ -186,27 +186,6 @@ int HttpControl::start(const char* txnMgrUrl) {
 		free(resp);
 
 	return rc;
-}
-
-char * HttpControl::enlist(const char *host, int port, const char *xid) {
-	FTRACE(httpclogger, "ENTER");
-	if (_enlistUrl == NULL && !headRequest())
-		return NULL;
-
-	char body[BUFSZ];
-	const char *fmt = "terminator=http://%s:%d/xid/%s/terminate;durableparticipant=http://%s:%d/xid/%s/status";
-	struct mg_request_info ri;
-	(void) snprintf(body, sizeof (body), fmt, host, port, xid, host, port, xid);
-	char *resp = _wc.send(&ri, "POST", _enlistUrl, POST_MEDIA_TYPE, body, NULL);
-	const char *recUrl = get_header(&ri, "Location");
-
-	LOG4CXX_DEBUG(httpclogger, "Enlisted with: " << body);
-	LOG4CXX_DEBUG(httpclogger, "Recovery url: " << recUrl);
-
-	if (resp)
-		free(resp);
-
-	return (recUrl == NULL ? NULL : mg_strdup(recUrl));
 }
 
 bool HttpControl::headRequest()

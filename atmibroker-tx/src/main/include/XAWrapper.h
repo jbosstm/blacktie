@@ -29,8 +29,8 @@
 class BLACKTIE_TX_DLL XAWrapper
 {
 public:
-	XAWrapper(XABranchNotification* rm, XID& xid, XID& bid,
-		long rmid, struct xa_switch_t *xa_switch, XARecoveryLog& log);
+	XAWrapper(XABranchNotification* rm, XID& bid,
+		long rmid, struct xa_switch_t *xa_switch, XARecoveryLog& log, const char* rc = NULL);
 	virtual ~XAWrapper();
 
 	// REST-AT resource methods
@@ -41,7 +41,8 @@ public:
 	int do_forget();
 
 	bool is_complete();	// has this resource finished 2PC - need for testing
-	void set_recovery_coordinator(char *rc) {rc_ = rc;}
+	void set_recovery_coordinator(char *rc) {_rc = rc;}
+	const char* get_recovery_coordinator() {return _rc;}
 	void notify_error(int reason, bool forget);
 	virtual bool isOTS() {return false;}
 
@@ -51,17 +52,16 @@ public:
 	const char* get_name() { return _name;}
 
 protected:
+	atmibroker::xa::XAStateModel sm_;
 	XABranchNotification * rm_;
-	XID xid_;
 	XID bid_;
 	bool complete_;
 	long rmid_;
 	struct xa_switch_t * xa_switch_;
-	char *rc_;
+	char *_rc;
 	int flags_;
 	long eflags_;
 	int tightly_coupled_;
-	atmibroker::xa::XAStateModel sm_;
 	XARecoveryLog& rclog_;
 	bool prepared_;
 	char *_name;

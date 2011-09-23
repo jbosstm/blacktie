@@ -26,6 +26,7 @@ enum XA_OP {
 
 enum X_FAULT {
         F_NONE,
+        F_CB,	// callback back into code supplied in fault_t arg
         F_HALT,	// generate a fatal error (that causes the process to terminate)
         F_DELAY,	// sleep for a given period
         F_ADD_XIDS	// used to tell the RM to simulate active XIDs

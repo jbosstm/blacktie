@@ -116,6 +116,7 @@ void HttpServer::remove(HttpRequestHandler* handler, const char *uri_pattern) {
 	}
 	unlock();
 
+	LOG4CXX_INFO(httpserverlog, "mongoose is stopped");
 	_handler = NULL;
 	_ctx = NULL;
 }

@@ -25,6 +25,7 @@
 namespace atmibroker {
 	namespace tx {
 
+static int BUFSZ = 1024;
 static const char* HTTP_400 = (char *) "Bad Request";
 static const char* HTTP_409 = (char *) "Conflict";
 static const char* HTTP_412 = (char *) "Precondition Failed";
@@ -117,12 +118,66 @@ char *HttpTxManager::enlist(XAWrapper* resource, TxControl *tx, const char * xid
 	if (guard(_isOpen) != TX_OK)
 		return NULL;
 
-	char *recUrl = tx->enlist(_ws->get_host(), _ws->get_port(), xid);
+	char *recUrl;
+	HttpControl *httpTx = dynamic_cast<HttpControl*>(tx);
+	const char *enlistUrl = httpTx->enlistUrl();	
+
+    if (enlistUrl != NULL) {
+		HttpClient wc;
+		const char *host = _ws->get_host();
+		int port = _ws->get_port();
+    	char body[BUFSZ];
+    	const char *fmt = "terminator=http://%s:%d/xid/%s/terminate;durableparticipant=http://%s:%d/xid/%s/status";
+    	struct mg_request_info ri;
+		(void) snprintf(body, sizeof (body), fmt, host, port, xid, host, port, xid);
+		char *resp = wc.send(&ri, "POST", enlistUrl, HttpControl::POST_MEDIA_TYPE, body, NULL);
+		const char *rurl = get_header(&ri, "Location");
+
+		LOG4CXX_DEBUG(httptxlogger, "Enlisted with: " << body);
+		LOG4CXX_DEBUG(httptxlogger, "Recovery url: " << rurl);
+
+		if (resp)
+			free(resp);
+
+		recUrl = (rurl == NULL ? NULL : mg_strdup(rurl));
+	}
 
 	if (recUrl != NULL)
 		_branches[resource->get_name()] = resource;
 
 	return recUrl;
+}
+
+bool HttpTxManager::recover(XAWrapper *resource)
+{
+	/*
+	 * Tell the TM to complete this participant resource on the current endpoint:
+	 */
+	HttpClient wc;
+	const char *host = _ws->get_host();
+	int port = _ws->get_port();
+	const char* xid = resource->get_name();
+   	char body[BUFSZ];
+   	const char *fmt = "terminator=http://%s:%d/xid/%s/terminate;durableparticipant=http://%s:%d/xid/%s/status";
+   	struct mg_request_info ri;
+	(void) snprintf(body, sizeof (body), fmt, host, port, xid, host, port, xid);
+	char *resp = wc.send(&ri, "PUT", resource->get_recovery_coordinator(),
+		HttpControl::PLAIN_MEDIA_TYPE, body, NULL);
+
+	if (resp)
+		free(resp);
+
+	if (ri.status_code == 200) {
+		LOG4CXX_TRACE(httptxlogger, "recovery: told TM about participant " << xid);
+		_branches[resource->get_name()] = resource;
+	} else {
+		// TODO what about the other HTTP codes
+		// For some codes we need to periodically retry the request
+		LOG4CXX_WARN(httptxlogger, "TM failed recovery request: " << ri.status_code <<
+			" for participant " << xid);
+	}
+
+	return false;
 }
 
 int HttpTxManager::do_open(void) {
@@ -170,7 +225,7 @@ bool HttpTxManager::handle_request(
 	const char *status = "";
 	size_t plen = strlen(HttpControl::TXSTATUS);
 
-	LOG4CXX_INFO(httptxlogger, "tm_request: method: " << ri->request_method << " uri: " << ri->uri <<
+	LOG4CXX_DEBUG(httptxlogger, "tm_request: method: " << ri->request_method << " uri: " << ri->uri <<
 		" status_code: " << ri->status_code << " num_headers: " << ri->num_headers <<
 		" qs: " << ri->query_string << " content: " << content);
 
@@ -293,6 +348,14 @@ bool HttpTxManager::handle_request(
 					code = 409;
 					codestr = HTTP_409;
 					break;
+				case -999:
+					LOG4CXX_INFO(httptxlogger, "closing connection to TM");
+					//force_close_connection(conn);
+					close_connection(conn);
+					status = "GARBAGE";
+					codestr = HTTP_409;
+					code = res;
+					break;
 				case XAER_INVAL:
 					status = "";
 					code = 400;
@@ -312,7 +375,9 @@ bool HttpTxManager::handle_request(
 	LOG4CXX_DEBUG(httptxlogger, "completion request returning " <<
 		" RTS status: " << status << " http status: " << code);
 
-	if (code == 200 || code == 409) {
+	if (code == -999) {
+		LOG4CXX_DEBUG(httptxlogger, "skipping response");
+	} else if (code == 200 || code == 409) {
 		mg_printf(conn, "HTTP/1.1 %d %s\r\n"
 			"Content-Length: %d\r\n"
 			"Content-Type: application/txstatus\r\n\r\n"

@@ -197,7 +197,7 @@ void XAResourceManagerFactory::createRMs(CORBA_CONNECTION * connection) throw (R
 		create_poa(connection);
 
 	if (rms_.size() == 0) {
-		AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
+		AtmiBrokerEnv::get_instance();
 
 		FTRACE(xarflogger, "ENTER rmsize: " << rms_.size() << "xarmp: " << xarmp);
 		xarm_config_t * rmp = (xarmp == 0 ? 0 : xarmp->head);

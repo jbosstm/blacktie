@@ -40,6 +40,7 @@ public:
 	char *enlist(XAWrapper* xaw, TxControl *tx, const char * xid);
 	bool handle_request(struct mg_connection *conn, const struct mg_request_info *ri,
 		const char *content, size_t len);
+	bool recover(XAWrapper*);
 
 protected:
 	HttpTxManager(const char *txmUrl, const char *resUrl);

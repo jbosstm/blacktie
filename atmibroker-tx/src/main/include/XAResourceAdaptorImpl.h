@@ -30,8 +30,8 @@ class BLACKTIE_TX_DLL XAResourceAdaptorImpl :
 	public virtual PortableServer::RefCountServantBase
 {
 public:
-	XAResourceAdaptorImpl(XABranchNotification* rm, XID& xid, XID& bid, long rmid,
-		struct xa_switch_t * xa_switch, XARecoveryLog& log);
+	XAResourceAdaptorImpl(XABranchNotification* rm, XID& bid, long rmid,
+		struct xa_switch_t * xa_switch, XARecoveryLog& log, const char *rc = NULL);
 	virtual ~XAResourceAdaptorImpl();
 
 	// OTS resource methods

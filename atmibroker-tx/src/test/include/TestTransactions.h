@@ -36,6 +36,8 @@ class TestTransactions: public CppUnit::TestFixture {
 	CPPUNIT_TEST(test_RM);
 	CPPUNIT_TEST(test_RM_recovery_scan);
 	CPPUNIT_TEST(test_tx_set);
+	// disable recovery test since it is only configured to work with the RTS txn interface
+//	CPPUNIT_TEST(test_recovery);
 	CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -54,6 +56,7 @@ public:
 	void test_hhazard();
 	void test_register_resource();
 	void test_tx_set();
+	void test_recovery();
 };
 
 #endif

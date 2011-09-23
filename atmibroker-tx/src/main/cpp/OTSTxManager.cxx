@@ -67,6 +67,11 @@ int OTSTxManager::associate_transaction(char* txn, long ttl) {
 	return TMER_INVAL;
 }
 
+bool OTSTxManager::recover(XAWrapper* resource)
+{
+	return true;
+}
+
 int OTSTxManager::tx_resume(CosTransactions::Control_ptr control, long ttl, int flags, int altflag)
 {
 	FTRACE(otstxlogger, "ENTER");

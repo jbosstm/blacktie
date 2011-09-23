@@ -138,6 +138,14 @@ XAResourceManager::~XAResourceManager() {
 	delete branchLock;
 }
 
+int  XAResourceManager::getRRType(const char* rc)
+{
+	if (strncmp(HTTP_PREFIX, rc, sizeof (HTTP_PREFIX) - 1) == 0)
+		return RR_TYPE_RTS;
+
+	return RR_TYPE_IOR;
+}
+
 /**
  * replay branch completion on an XID that needs recovering.
  * The rc parameter is the CORBA object reference of the
@@ -157,17 +165,34 @@ bool XAResourceManager::recover(XID& bid, const char* rc)
 	}
 }
 
-int  XAResourceManager::getRRType(const char* rc)
-{
-	if (strncmp(HTTP_PREFIX, rc, sizeof (HTTP_PREFIX) - 1) == 0)
-		return RR_TYPE_RTS;
-
-	return RR_TYPE_IOR;
-}
-
 bool XAResourceManager::recoverRTS(XID& bid, const char* rc)
 {
-	// TODO
+	XAWrapper *ra = new XAWrapper(this, bid, rmid_, xa_switch_, rclog_, rc);
+
+	LOG4CXX_TRACE(xarmlogger, (char *) "trying to recover branch: " << bid);
+
+	ra->set_recovery_coordinator(ACE_OS::strdup(rc));
+
+	branchLock->lock();
+	branches_[bid] = ra;
+	branchLock->unlock();
+
+
+	// TODO have we caught all race conditions - recover can cause ra to call back
+	// here via XAResourceManager::set_complete
+	// Note if the TM does not know about this participant then
+	// the next recover scan (XAResourceManager::recover()) will roll it back.
+	if (atmibroker::tx::TxManager::get_instance()->recover(ra)) {
+		LOG4CXX_TRACE(xarmlogger, (char *) "branch recovered: " << bid);
+
+		branchLock->lock();
+		branches_.erase(bid);
+		branchLock->unlock();
+		delete ra;
+
+		return true;
+	}
+
 	return false;
 }
 
@@ -191,14 +216,12 @@ bool XAResourceManager::recoverIOR(XID& bid, const char* rc)
 		} else {
 			int rv;
 
-			ra = new XAResourceAdaptorImpl(this, bid, bid, rmid_, xa_switch_, rclog_);
+			ra = new XAResourceAdaptorImpl(this, bid, rmid_, xa_switch_, rclog_, rc);
 
-			branchLock->lock();
-			if (branches_[bid] != NULL) {
+			if (branches_.find(bid) != branches_.end()) {
 				// log an error since we forgot to clean up the previous servant
 				LOG4CXX_ERROR(xarmlogger, (char *) "Recovery: branch already exists: " << bid);
 			}
-			branchLock->unlock();
 
 			// activate the servant
 			std::string s = (char *) (bid.data + bid.gtrid_length);
@@ -394,7 +417,7 @@ int XAResourceManager::createResourceAdapter(XID& xid)
 		return createServant(xid);
 
 	XID bid = gen_xid(rmid_, sid_, xid);
-	XAWrapper *ra = new XAWrapper(this, xid, bid, rmid_, xa_switch_, rclog_);
+	XAWrapper *ra = new XAWrapper(this, bid, rmid_, xa_switch_, rclog_);
 
 	char * recUrl = atmibroker::tx::TxManager::get_instance()->enlist(ra, tx, ra->get_name());
 
@@ -434,7 +457,7 @@ int XAResourceManager::createServant(XID& xid)
 		 */
 		XID bid = gen_xid(rmid_, sid_, xid);
 		// Create a servant to represent the new branch.
-		ra = new XAResourceAdaptorImpl(this, xid, bid, rmid_, xa_switch_, rclog_);
+		ra = new XAResourceAdaptorImpl(this, bid, rmid_, xa_switch_, rclog_);
 		std::string s = (char *) (bid.data + bid.gtrid_length);
 		PortableServer::ObjectId_var objId = PortableServer::string_to_ObjectId(s.c_str());
 		poa_->activate_object_with_id(objId, ra);
@@ -491,34 +514,29 @@ int XAResourceManager::createServant(XID& xid)
 	return res;
 }
 
-void XAResourceManager::notify_error(XID * xid, int xa_error, bool forget)
+void XAResourceManager::notify_error(XAWrapper* resource, int xa_error, bool forget)
 {
 	FTRACE(xarmlogger, "ENTER: reason: " << xa_error);
 
 	if (forget)
-		set_complete(xid);
+		set_complete(resource);
 }
 
-void XAResourceManager::set_complete(XID * xid)
+void XAResourceManager::set_complete(XAWrapper* resource)
 {
 	FTRACE(xarmlogger, "ENTER");
-	XABranchMap::iterator iter;
 
-	LOG4CXX_TRACE(xarmlogger, (char*) "looking for branch: " << *xid);
-
-	if (rclog_.del_rec(*xid) != 0) {
-		// probably a readonly resource
-		LOG4CXX_TRACE(xarmlogger, (char*) "branch completion notification with out a corresponding log entry: " << *xid);
-	}
+	LOG4CXX_TRACE(xarmlogger, (char*) "looking for branch: " << resource);
 
 	branchLock->lock();
 	for (XABranchMap::iterator i = branches_.begin(); i != branches_.end(); ++i)
 	{
-		LOG4CXX_TRACE(xarmlogger, (char*) "comparing with branch: " << i->first);
-		if (compareXids(i->first, (const XID&) (*xid)) == 0) {
-			XAWrapper *ra = i->second;
+		XAWrapper *ra = i->second;
 
-			LOG4CXX_TRACE(xarmlogger, (char*) "removing branch: " << *xid);
+		LOG4CXX_TRACE(xarmlogger, (char*) "comparing with " << ra);
+
+		if (ra == resource) {
+			LOG4CXX_TRACE(xarmlogger, (char*) "removing branch");
 
 			if (ra->isOTS()) {
 				XAResourceAdaptorImpl *r = (XAResourceAdaptorImpl *) ra;
@@ -530,14 +548,19 @@ void XAResourceManager::set_complete(XID * xid)
 				delete ra;
 			}
 
-			//branches_.erase(i->first);
+			XID xid = i->first;
+			if (rclog_.del_rec(xid) != 0) {
+				// probably a readonly resource
+				LOG4CXX_TRACE(xarmlogger,
+					(char*) "branch completion notification without a corresponding log entry: " <<
+					i->first);
+			}
+
 			branches_.erase(i);
-			branchLock->unlock();
-			return;
+			break;
 		}
 	}
 	branchLock->unlock();
-
 	LOG4CXX_TRACE(xarmlogger, (char*) "... unknown branch");
 }
 

@@ -255,6 +255,7 @@ int XARecoveryLog::del_rec(XID& xid) {
 	rrec_t* prev;
 	rrec_t* next;
 
+	LOG4CXX_TRACE(xarcllogger, (char *) "del_rec: deleteing " << xid_to_string(xid));
 	if (!log_.is_open())
 		return -1;
 
@@ -279,6 +280,7 @@ int XARecoveryLog::del_rec(XID& xid) {
 	sync_rec(&(prev->next), sizeof (prev->next));
 	lock_.unlock();
 
+	LOG4CXX_TRACE(xarcllogger, (char *) "del_rec: deleted ");
 	return 0;
 }
 

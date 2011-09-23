@@ -28,6 +28,6 @@ void doFour();
 void* doFive();
 void doSix(long delay);
 void doSeven(void* rad);
-
+int count_log_records();
 
 #endif

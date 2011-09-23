@@ -368,10 +368,13 @@ int TxManager::close(void)
 	}
 
 	do_close();
+	LOG4CXX_TRACE(txmlogger, (char *) "do_close finished");
 	_isOpen = false;
 	rm_close();
 
+	LOG4CXX_TRACE(txmlogger, (char *) "rm_close finished");
 	_lock->unlock();
+	LOG4CXX_TRACE(txmlogger, (char *) "close finished");
 	return TX_OK;
 }
 

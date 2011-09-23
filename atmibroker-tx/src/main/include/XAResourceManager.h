@@ -47,8 +47,10 @@ public:
 
 	// return the resource id
 	CORBA::Long rmid(void) {return rmid_;};
-	void notify_error(XID *, int, bool);
-	void set_complete(XID*);
+	//void notify_error(XID *, int, bool);
+	//void set_complete(XID*);
+	void notify_error(XAWrapper*, int, bool);
+	void set_complete(XAWrapper*);
 	const char * name() {return name_;}
 	int xa_flags();
 

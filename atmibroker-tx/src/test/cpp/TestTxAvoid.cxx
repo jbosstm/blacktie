@@ -46,36 +46,36 @@ try {
 
 		XID gid = {1L, 1L, 0L};
 		XID xid = XAResourceManager::gen_xid(200, 0L, gid);
-		XID xid2 = XAResourceManager::gen_xid(201, 0L, gid);
-		int rv, cnt = 0;
+		XID xid2 = XAResourceManager::gen_xid(202, 0L, gid);
+		XID xid3 = XAResourceManager::gen_xid(203, 0L, gid);
+		int cnt = 0;
 		char* ior = (char *) "IOR:1";
 
 		// add a record
-		rv = log.add_rec(xid, ior);
-		BT_ASSERT(rv == 0);
+		BT_ASSERT_EQUAL(log.add_rec(xid, ior), 0);
 
 		// delete it by XID
-		rv = log.del_rec(xid);
-		BT_ASSERT(rv == 0);
+		BT_ASSERT_EQUAL(log.del_rec(xid), 0);
 
-		// add a record
-		rv = log.add_rec(xid, ior);
-		BT_ASSERT(rv == 0);
+		// add it back again record
+		BT_ASSERT_EQUAL(log.add_rec(xid, ior), 0);
 
 		// find it by xid
-		ior = log.find_ior(xid);
-		BT_ASSERT(ior != 0);
+		char *iorv = log.find_ior(xid);
+		BT_ASSERT(iorv != NULL && strcmp(ior, iorv) == 0);
 
-		// add another record
-		BT_ASSERT(log.add_rec(xid2, (char *) "IOR:2") == 0);
+		// add two more records
+		BT_ASSERT_EQUAL(log.add_rec(xid2, (char *) "IOR:2"), 0);
+		BT_ASSERT_EQUAL(log.add_rec(xid3, (char *) "IOR:3"), 0);
 
-		// use an iterator to check that there are two records
+		// use an iterator to check that there are 3 records
 		for (rrec_t* rr = log.find_next(0); rr; rr = log.find_next(rr)) {
 			cnt += 1;
+			btlogger( (char*) "test_recovery_log deleting %s", (char *) (rr + 1));
 			log.del_rec(rr->xid);
 		}
 
-		BT_ASSERT(cnt >= 2);
+		BT_ASSERT(cnt >= 3);
 	} catch (RMException e) {
 		std::string s = "Error creating recovery log: ";
 		s += e.what();
@@ -154,7 +154,7 @@ void* doFive() {
 	// now for the real test:
 	// - create a CosTransactions::Resource ...
 	//XAResourceAdaptorImpl * ra = new XAResourceAdaptorImpl(findConnection("ots"), "Dummy", "", "", 123L, &real_resource, log);
-	XAResourceAdaptorImpl * ra = new XAResourceAdaptorImpl(NULL, xid, xid, 123L, &real_resource, log);
+	XAResourceAdaptorImpl * ra = new XAResourceAdaptorImpl(NULL, xid, 123L, &real_resource, log);
 	//XAResourceAdaptorImpl * ra = new XAResourceAdaptorImpl(123L, &real_resource, log);
 	CORBA::Object_ptr ref = poa->servant_to_reference(ra);
 	CosTransactions::Resource_var v = CosTransactions::Resource::_narrow(ref);
@@ -173,11 +173,21 @@ void* doFive() {
 }
 
 void doSix(long delay) {
-(void) ACE_OS::sleep(delay);
+	(void) ACE_OS::sleep(delay);
 }
 void doSeven(void* rad) {
 	XAResourceAdaptorImpl * ra = (XAResourceAdaptorImpl *) rad;
 	// the resource should have been committed
 	BT_ASSERT_MESSAGE("resource did not complete", ra->is_complete());
 
+}
+
+int count_log_records() {
+	XARecoveryLog log;
+	int cnt = 0;
+
+	for (rrec_t* rr = log.find_next(0); rr; rr = log.find_next(rr))
+		cnt += 1;
+
+	return cnt;
 }

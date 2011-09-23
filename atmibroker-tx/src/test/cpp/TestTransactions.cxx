@@ -442,3 +442,59 @@ void TestTransactions::test_tx_set()
 	BT_ASSERT_EQUAL(TX_OK, tx_close());
 	btlogger("TestTransactions::test_tx_set pass");
 }
+
+static int rcCnt = 0;
+void recovery_cb(void) {
+	rcCnt += 1;
+	btlogger_debug("TestTransactions recovery_cb called %d times", rcCnt);
+	//destroySpecific(TSS_KEY);
+	//tx_close();
+}
+
+void TestTransactions::test_recovery()
+{
+	fault_t fault1 = {0, 102, O_XA_COMMIT, -999, F_CB, (void *) recovery_cb};
+	fault_t fault2 = {0, 102, O_XA_COMMIT, XA_OK, F_CB, (void *) recovery_cb};
+	int nsecs = 0;
+	int nrecs1, nrecs2, nrecs3;
+
+	btlogger_debug("TestTransactions::test_recovery begin");
+	nrecs1 = count_log_records();
+	rcCnt = 0;
+	(void) dummy_rm_add_fault(fault1);
+
+	BT_ASSERT_EQUAL(TX_OK, tx_open());
+	BT_ASSERT_EQUAL(TX_OK, tx_begin());
+	// the callback should have caused the commit to fail
+	BT_ASSERT(tx_commit() == TX_OK);
+	nrecs2 = count_log_records();
+	btlogger_debug("TestTransactions::test_recovery %d records versus %d", nrecs2, nrecs1);
+	BT_ASSERT(nrecs2 > nrecs1);
+
+	(void) dummy_rm_del_fault(fault1);
+	BT_ASSERT_EQUAL(TX_OK, tx_close());
+
+	txx_stop();
+
+	rcCnt = 0;
+	nsecs = 140;
+	BT_ASSERT_EQUAL(TX_OK, tx_open());
+	btlogger_debug("TestTransactions::test_recovery waiting to recover at least %d records", nrecs2);
+	(void) dummy_rm_add_fault(fault2);
+
+	while (rcCnt == 0 && nsecs != 0) {
+		if (nsecs-- % 20 == 0) {
+			btlogger("TestTransactions::test_recovery sleeping for not more than %d seconds", nsecs);
+		}
+		doSix(1);
+	}
+
+	nrecs3 = count_log_records();
+	btlogger("TestTransactions::test_recovery finished sleeping rcCnt=%d nsecs=%d nrecs=%d vrs %d",
+		rcCnt, nsecs, nrecs1, nrecs3);
+	BT_ASSERT(nrecs3 <= nrecs1);
+	BT_ASSERT(rcCnt != 0);
+	BT_ASSERT_EQUAL(TX_OK, tx_close());
+	(void) dummy_rm_del_fault(fault2);
+	btlogger("TestTransactions::test_recovery pass");
+}

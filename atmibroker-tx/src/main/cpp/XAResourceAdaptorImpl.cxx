@@ -25,9 +25,9 @@ log4cxx::LoggerPtr xaralogger(log4cxx::Logger::getLogger("TxXAResourceAdaptorImp
 extern std::ostream& operator<<(std::ostream &os, const XID& xid);
 
 XAResourceAdaptorImpl::XAResourceAdaptorImpl(
-	XABranchNotification * rm, XID& xid, XID& bid, long rmid,
-	struct xa_switch_t * xa_switch, XARecoveryLog& log) :
-	XAWrapper(rm, xid, bid, rmid, xa_switch, log)
+	XABranchNotification * rm, XID& bid, long rmid,
+	struct xa_switch_t * xa_switch, XARecoveryLog& log, const char *rc) :
+	XAWrapper(rm, bid, rmid, xa_switch, log, rc)
 {
 }
 
