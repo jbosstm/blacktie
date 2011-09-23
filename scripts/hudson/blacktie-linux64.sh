@@ -83,6 +83,7 @@ fi
 
 # RUN ALL THE SAMPLES
 cd $WORKSPACE/trunk/dist/blacktie-5.0.0.M2-SNAPSHOT/
+chmod 775 setenv.sh
 . setenv.sh
 if [ "$?" != "0" ]; then
 	ps -f
