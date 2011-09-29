@@ -30,7 +30,7 @@ MAVEN_SEARCH_PATH="\
     maven"
 
 # the default arguments
-MVN_OPTIONS="-s tools/maven/conf/settings.xml"
+MVN_OPTIONS="-gs tools/maven/conf/settings.xml"
 
 # Use the maximum available, or set MAX_FD != -1 to use that
 MAX_FD="maximum"
