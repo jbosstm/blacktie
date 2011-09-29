@@ -45,6 +45,8 @@ public:
 	bool recover(XID& xid, const char* rc);	// recover a single XID (on a potentially remote RM)
 	int recover();	// initiate a recovery scan on this RM
 
+	void deactivate_objects(bool deactivate); //TODO #ifdef TEST
+
 	// return the resource id
 	CORBA::Long rmid(void) {return rmid_;};
 	//void notify_error(XID *, int, bool);

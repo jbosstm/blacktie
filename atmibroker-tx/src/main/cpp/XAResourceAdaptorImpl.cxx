@@ -29,11 +29,12 @@ XAResourceAdaptorImpl::XAResourceAdaptorImpl(
 	struct xa_switch_t * xa_switch, XARecoveryLog& log, const char *rc) :
 	XAWrapper(rm, bid, rmid, xa_switch, log, rc)
 {
+	FTRACE(xaralogger, "ENTER address=" << this);
 }
 
 XAResourceAdaptorImpl::~XAResourceAdaptorImpl()
 {
-	FTRACE(xaralogger, "ENTER");
+	FTRACE(xaralogger, "ENTER address=" << this);
 }
 
 Vote XAResourceAdaptorImpl::prepare()

@@ -350,7 +350,6 @@ bool HttpTxManager::handle_request(
 					break;
 				case -999:
 					LOG4CXX_INFO(httptxlogger, "closing connection to TM");
-					//force_close_connection(conn);
 					close_connection(conn);
 					status = "GARBAGE";
 					codestr = HTTP_409;

@@ -42,9 +42,9 @@ static char * encode_xid(XID& xid) {
 XAWrapper::XAWrapper(XABranchNotification* rm, XID& bid,
 		long rmid, struct xa_switch_t *xa_switch, XARecoveryLog& log, const char* rc) :
 			rm_(rm), bid_(bid), complete_(false), rmid_(rmid), xa_switch_(xa_switch),
-			_rc(NULL), eflags_(0l), tightly_coupled_(0), rclog_(log), _name(NULL)
+			_rc(NULL), eflags_(0l), tightly_coupled_(0), rclog_(log), prepared_(false), _name(NULL)
 {
-	FTRACE(xarwlogger, "ENTER" << (char*) " new XA resource rmid:" << rmid_ <<
+	FTRACE(xarwlogger, "ENTER address=" << this << (char*) " new XA resource rmid:" << rmid_ <<
 		" branch id: " << bid_);
 
 	if (rc != NULL) {
@@ -59,8 +59,10 @@ XAWrapper::XAWrapper(XABranchNotification* rm, XID& bid,
 
 XAWrapper::~XAWrapper()
 {
-	FTRACE(xarwlogger, "ENTER");
-	if (_rc)
+	FTRACE(xarwlogger, "ENTER address=" << this);
+	LOG4CXX_TRACE(xarwlogger, (char *) "Deleting branch " << bid_);
+
+	if (_rc != NULL)
 		free(_rc);
 
 	if (_name)

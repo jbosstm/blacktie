@@ -113,6 +113,7 @@ public:	// public static methods
 	static void discard_instance();
 
 	char *current_to_string(long* ttl); // see header txx.h for documentation
+	virtual bool isOTS() {return false;}
 
 public:	// suspend and resume
 //	int tx_resume(CosTransactions::Control_ptr control, long ttl, int flags, int altflags = -1);
@@ -133,6 +134,8 @@ public:	// suspend and resume
 	CORBA::ORB_ptr getOrb();
 
 	int rm_end(int flags, int altflags = -1);
+
+	XAResourceManager* find_rm(long rmid) {return _xaRMFac.findRM(rmid);} // TODO ifdef TEST
 
 protected:
 	virtual char *get_current(long* ttl) = 0;

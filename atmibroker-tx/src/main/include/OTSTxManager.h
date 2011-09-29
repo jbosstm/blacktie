@@ -32,6 +32,7 @@ public:
 	int associate_transaction(char* txn, long ttl);
 	void release_control(void *);
 	bool recover(XAWrapper*);
+	virtual bool isOTS() {return true;}
 
 protected:
 	OTSTxManager(char *transFactoryId);

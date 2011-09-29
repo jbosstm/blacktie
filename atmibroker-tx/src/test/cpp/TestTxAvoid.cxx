@@ -191,3 +191,31 @@ int count_log_records() {
 
 	return cnt;
 }
+
+int clear_log() {
+	XARecoveryLog log;
+	rrec_t* rr;
+	int nrecs = 0;
+
+	while ((rr = log.find_next(0))) {
+		nrecs += 1;
+		log.del_rec(rr->xid);
+	}
+
+	return nrecs;
+}
+
+bool isOTS() {
+	return atmibroker::tx::TxManager::get_instance()->isOTS();
+}
+
+bool deactivate_objects(long rmid, bool deactivate) {
+	XAResourceManager* rm = atmibroker::tx::TxManager::get_instance()->find_rm(rmid);
+
+	if (rm != NULL) {
+		rm->deactivate_objects(deactivate);
+		return true;
+	}
+
+	return false;
+}

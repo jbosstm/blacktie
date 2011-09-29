@@ -46,18 +46,18 @@
 		txi.transaction_state, (long) (ts));	\
 	if ((long) (cr) >= 0l) BT_ASSERT_MESSAGE(msg, txi.when_return == (long) (cr));	\
 	if ((long) (tc) >= 0l) BT_ASSERT_MESSAGE(msg, txi.transaction_control == (long) (tc));	\
-    if ((long) (tt) >= 0l) BT_ASSERT_MESSAGE(msg, txi.transaction_timeout == (long) (tt));	\
-    if ((long) (ts) >= 0l) BT_ASSERT_MESSAGE(msg, txi.transaction_state == (long) (ts));}
+	if ((long) (tt) >= 0l) BT_ASSERT_MESSAGE(msg, txi.transaction_timeout == (long) (tt));	\
+	if ((long) (ts) >= 0l) BT_ASSERT_MESSAGE(msg, txi.transaction_state == (long) (ts));}
 
 extern struct xa_switch_t testxasw;
 
 #if 0
-    AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
+	AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
 
-    char* txmUrl = (char *) env->getenv((char *) "TXN_MGR_URL");
-    char* resUrl = (char *) env->getenv((char *) "TXN_PARTICIPANT_EP");
+	char* txmUrl = (char *) env->getenv((char *) "TXN_MGR_URL");
+	char* resUrl = (char *) env->getenv((char *) "TXN_PARTICIPANT_EP");
 
-    AtmiBrokerEnv::discard_instance();
+	AtmiBrokerEnv::discard_instance();
 #endif
 
 void TestTransactions::setUp()
@@ -443,58 +443,95 @@ void TestTransactions::test_tx_set()
 	btlogger("TestTransactions::test_tx_set pass");
 }
 
-static int rcCnt = 0;
-void recovery_cb(void) {
-	rcCnt += 1;
-	btlogger_debug("TestTransactions recovery_cb called %d times", rcCnt);
-	//destroySpecific(TSS_KEY);
-	//tx_close();
+static int rcCnt1 = 0;
+static int rcCnt2 = 0;
+
+void recovery_cb1(void) {
+	rcCnt1 += 1;
+	btlogger_debug("TestTransactions recovery_cb1 called %d times", rcCnt1);
+}
+
+void recovery_cb2(void) {
+	rcCnt2 += 1;
+	btlogger_debug("TestTransactions recovery_cb2 called %d times", rcCnt2);
+
+	// the intent is to deactivate the CORBA resource object corresponding to
+	// the second RM after both RMs have prepared and after the first one has
+	// committed but before the second has commited.
+	// This will guarantee that the TM has something to ask us to recover.
+//	BT_ASSERT(deactivate_objects(102, true));
+}
+
+void generate_recovery_record()
+{
+	int nrecs1, nrecs2;
+
+	nrecs1 = count_log_records();
+	btlogger_debug("TestTransactions::test_recovery begin %d records", nrecs1);
+	rcCnt1 = 0;
+	BT_ASSERT_EQUAL(TX_OK, tx_begin());
+
+	btlogger_debug("TestTransactions::test_recovery commiting after generating a recovery condition");
+
+	BT_ASSERT_EQUAL(TX_OK, tx_commit());
+	nrecs2 = count_log_records();
+	btlogger_debug("TestTransactions::test_recovery committed %d records", nrecs2);
+	BT_ASSERT(nrecs2 > nrecs1);
 }
 
 void TestTransactions::test_recovery()
 {
-	fault_t fault1 = {0, 102, O_XA_COMMIT, -999, F_CB, (void *) recovery_cb};
-	fault_t fault2 = {0, 102, O_XA_COMMIT, XA_OK, F_CB, (void *) recovery_cb};
-	int nsecs = 0;
-	int nrecs1, nrecs2, nrecs3;
+	fault_t fault1 = {0, 102, O_XA_COMMIT, XA_HEURHAZ, F_CB, (void *) recovery_cb1};
+	fault_t fault2 = {0, 102, O_XA_COMMIT, -999, F_CB, (void *) recovery_cb1};
+	bool ots = isOTS();
 
-	btlogger_debug("TestTransactions::test_recovery begin");
-	nrecs1 = count_log_records();
-	rcCnt = 0;
-	(void) dummy_rm_add_fault(fault1);
+	int nrecs = clear_log();
+	btlogger_debug("TestTransactions::test_recovery begin (cleared %d records)", nrecs);
+	(void) dummy_rm_add_fault(ots ? fault1 : fault2);
 
 	BT_ASSERT_EQUAL(TX_OK, tx_open());
-	BT_ASSERT_EQUAL(TX_OK, tx_begin());
-	// the callback should have caused the commit to fail
-	BT_ASSERT(tx_commit() == TX_OK);
-	nrecs2 = count_log_records();
-	btlogger_debug("TestTransactions::test_recovery %d records versus %d", nrecs2, nrecs1);
-	BT_ASSERT(nrecs2 > nrecs1);
 
-	(void) dummy_rm_del_fault(fault1);
+	generate_recovery_record();
+
+	(void) dummy_rm_del_fault(ots ? fault1 : fault2);
 	BT_ASSERT_EQUAL(TX_OK, tx_close());
 
-	txx_stop();
+	btlogger_debug("TestTransactions::test_recovery passed");
 
-	rcCnt = 0;
-	nsecs = 140;
-	BT_ASSERT_EQUAL(TX_OK, tx_open());
-	btlogger_debug("TestTransactions::test_recovery waiting to recover at least %d records", nrecs2);
+	// recover the pending transactions
+	test_wait_for_recovery();
+}
+
+void TestTransactions::test_wait_for_recovery()
+{
+	int nsecs = 140;
+	int nrecs, nrecs1 = count_log_records();
+	fault_t fault2 = {0, 102, O_XA_COMMIT, XA_OK, F_CB, (void *) recovery_cb2};
+	fault_t fault3 = {0, 102, O_XA_ROLLBACK, XA_OK, F_CB, (void *) recovery_cb2};
+
+	btlogger("TestTransactions::test_run_recovery begin %d records", nrecs1);
+	if (nrecs1 == 0) {
+		btlogger("TestTransactions::test_run_recovery passed (nothing to do)");
+
+		return;
+	}
+
+	rcCnt2 = 0;
+
 	(void) dummy_rm_add_fault(fault2);
-
-	while (rcCnt == 0 && nsecs != 0) {
-		if (nsecs-- % 20 == 0) {
-			btlogger("TestTransactions::test_recovery sleeping for not more than %d seconds", nsecs);
+	(void) dummy_rm_add_fault(fault3);
+	BT_ASSERT_EQUAL(TX_OK, tx_open());
+	while (rcCnt2 == 0 && nsecs != 0) {
+		if (nsecs-- % 10 == 0) {
+			btlogger("TestTransactions::test_run_recovery sleeping for not more than %d seconds", nsecs);
 		}
 		doSix(1);
 	}
-
-	nrecs3 = count_log_records();
-	btlogger("TestTransactions::test_recovery finished sleeping rcCnt=%d nsecs=%d nrecs=%d vrs %d",
-		rcCnt, nsecs, nrecs1, nrecs3);
-	BT_ASSERT(nrecs3 <= nrecs1);
-	BT_ASSERT(rcCnt != 0);
-	BT_ASSERT_EQUAL(TX_OK, tx_close());
 	(void) dummy_rm_del_fault(fault2);
-	btlogger("TestTransactions::test_recovery pass");
+	(void) dummy_rm_del_fault(fault3);
+	nrecs = count_log_records();
+	btlogger_debug("TestTransactions::test_run_recovery %d recs after recovery", nrecs);
+	BT_ASSERT(nrecs < nrecs1);
+	BT_ASSERT_EQUAL(TX_OK, tx_close());
+	btlogger("TestTransactions::test_run_recovery passed");
 }

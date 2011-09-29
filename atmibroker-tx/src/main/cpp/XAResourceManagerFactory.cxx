@@ -193,6 +193,9 @@ void XAResourceManagerFactory::createRMs(CORBA_CONNECTION * connection) throw (R
 {
 	FTRACE(xarflogger, "ENTER rmsize: " << rms_.size());
 
+	if (!rclog_.isOpen())
+		throw new RMException("Could not load recovery log", EINVAL);
+
 	if (CORBA::is_nil(poa_))
 		create_poa(connection);
 

@@ -29,5 +29,8 @@ void* doFive();
 void doSix(long delay);
 void doSeven(void* rad);
 int count_log_records();
+int clear_log();
+bool deactivate_objects(long rmid, bool deactivate);
+bool isOTS();
 
 #endif

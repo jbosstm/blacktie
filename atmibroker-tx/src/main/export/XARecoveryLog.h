@@ -67,22 +67,23 @@ public:
 	// mechanism for iterating through the log
 	rrec_t* find_next(rrec_t* from);
 	const char *get_ior(rrec_t&);
+	bool isOpen() {return log_.is_open();}
 
 private:
 	std::fstream log_;
 	rrec_t* arena_;
 	size_t nblocks_;
 	size_t maxblocks_;	// limit the arena to this many blocks (configurable)
-//	SynchronizableObject lock_;
+//TODO	SynchronizableObject lock_;
 
-	bool morecore(size_t nblocks, bool dosync);
 	void sync_rec(void* p, size_t sz);
-	void check_log();
-	rrec_t* next_free(size_t nblocks);
-	int find(XID xid, rrec_t** prev, rrec_t** next);
+//	void check_log();
+	int find(XID& xid, rrec_t** prev, rrec_t** next);
 	bool load_log(const char* logname);
-	void debug_dump(rrec_t* from, rrec_t* to);
-	rrec_t* next_rec(rrec_t* p);
+	rrec_t* get_blocks(size_t nblocks, bool dosync);
+
+	bool lock();
+	bool unlock();
 };
 
 #endif //_XARECOVERYLOG_H

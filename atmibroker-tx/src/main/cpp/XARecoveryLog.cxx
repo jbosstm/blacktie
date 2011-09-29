@@ -21,37 +21,34 @@
 #include <stdio.h>
 #include <errno.h>
 
-#include "log4cxx/logger.h"
-
 #include "xa.h"
+
+#if 1
+#include "log4cxx/logger.h"
 #include "ace/OS_NS_string.h"
 #include "ace/OS_NS_stdio.h"
 #include "ace/OS_NS_stdlib.h"
-
-#include "XARecoveryLog.h"
 #include "AtmiBrokerEnv.h"
 #include "SynchronizableObject.h"
+#else
+#include <stdlib.h>
+#include <string.h>
+#endif
 
-#define INUSE 0xaf12L	// marker to indicate that the block is allocated
-#define NBLOCKS 0x100	// the minimum number of blocks to allocate when expanding the arena
+#include "XARecoveryLog.h"
+
+#define INUSE 0xaf12L   // marker to indicate that the block is allocated
+#define NBLOCKS 0x100   // the minimum number of blocks to allocate when expanding the arena
 #define MAXBLOCKS   "0x1000"	// limit the size of the arena to this many blocks
-#define IOR(rr) ((char *) (rr + 1))	// extract the IOR from a recovery record
+#define IOR(rr) ((char *) (rr + 1)) // extract the IOR from a recovery record
 
-#ifdef TESTSYNCDEL
-#define SEGVONDEL()	{char *p = 0; *p = 0;}
-#else
-#define SEGVONDEL()	{}
-#endif
-
-#ifdef TESTSYNCADD
-#define SEGVONADD(ior)	{if (strcmp(ior, "SEGV") == 0) {char *p = 0; *p = 0;}}
-#else
-#define SEGVONADD(ior)	{}
-#endif
+#define BSIZE	(sizeof (rrec_t))
+#define NEXT_REC(p)	(p + p->next)
 
 // the persistent store for recovery records
 static const char* DEF_LOG = "rclog";
 static char RCLOGPATH[1024];
+
 static SynchronizableObject lock_;
 
 log4cxx::LoggerPtr xarcllogger(log4cxx::Logger::getLogger("TxXARecoveryLog"));
@@ -73,31 +70,27 @@ static int compareXids(const XID& xid1, const XID& xid2)
 	return 0;
 }
 
-// convert an X/Open XID to a string (used as a key into the allocator to retrieve the rrec_t data type
-// associated with the key)
-static string xid_to_string(XID& xid)
-{
-	std::stringstream out;
-
-	out << xid.formatID << ':' << xid.gtrid_length << ':'<< xid.bqual_length << ':' << (char *) (xid.data + xid.gtrid_length);
-
-	return out.str();
-}
-
 /**
  * locate the path to the backing store for the recovery log
  */
 static void init_logpath(const char *fname)
 {
 	if (fname) {
-		ACE_OS::snprintf(RCLOGPATH, sizeof (RCLOGPATH), "%s", fname);
+		snprintf(RCLOGPATH, sizeof (RCLOGPATH), "%s", fname);
 	} else {
 		// if fname is not passed see if the log name is set in the environent
+#if 1
 		AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
-		const char *rcLog	= env->getenv((char*) "BLACKTIE_RC_LOG_NAME", DEF_LOG);
+		const char *rcLog   = env->getenv((char*) "BLACKTIE_RC_LOG_NAME", DEF_LOG);
 		const char *servName = env->getenv((char*) "BLACKTIE_SERVER_NAME", rcLog);
-		ACE_OS::snprintf(RCLOGPATH, sizeof (RCLOGPATH), "%s", servName);
+		snprintf(RCLOGPATH, sizeof (RCLOGPATH), "%s", servName);
 		AtmiBrokerEnv::discard_instance();
+#else
+		const char *rcLog   = DEF_LOG;
+		const char *servName = rcLog;
+		snprintf(RCLOGPATH, sizeof (RCLOGPATH), "%s", servName);
+
+#endif
 	}
 
 	LOG4CXX_TRACE(xarcllogger, (char *) "Using log file " << RCLOGPATH);
@@ -108,15 +101,12 @@ static void init_logpath(const char *fname)
  * The log is backed by a file.
  */
 XARecoveryLog::XARecoveryLog(const char* logfile) throw (RMException) :
-	arena_(0), nblocks_((size_t) 0), maxblocks_(0)
+	arena_(0), nblocks_((size_t) 0), maxblocks_((size_t) 0)
 {
-	bool isClient = false;
 	init_logpath(logfile);
 
-	if (!isClient && !load_log(RCLOGPATH)) {
-		LOG4CXX_ERROR(xarcllogger, (char *) "Error creating recovery log");
-		//throw new RMException("Error creating recovery log ", -1);
-		//TODO propagate the exception
+	if (!load_log(RCLOGPATH)) {
+		LOG4CXX_ERROR(xarcllogger, (char *) "ERROR: creating recovery log");
 	}
 }
 
@@ -127,21 +117,24 @@ XARecoveryLog::~XARecoveryLog()
 {
 	LOG4CXX_TRACE(xarcllogger, (char *) "destructor");
 	if (arena_)
-		ACE_OS::free(arena_);
+		free(arena_);
 
 	if (log_.is_open())
 		log_.close();
 }
-
 /**
  * Read a collection of recovery records from file and load them into memory
  */
 bool XARecoveryLog::load_log(const char* logname)
 {
 	LOG4CXX_TRACE(xarcllogger, (char *) "Loading log file: " << logname);
+#if 1
 	AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
 	const char* maxblk = env->getenv("BLACKTIE_MAX_RCLOG_SIZE", MAXBLOCKS);
 	AtmiBrokerEnv::discard_instance();
+#else
+	const char* maxblk = MAXBLOCKS;
+#endif
 
 	ios_base::openmode mode = ios::out | ios::in | ios::binary;
 
@@ -149,18 +142,16 @@ bool XARecoveryLog::load_log(const char* logname)
 	FILE *fp = fopen(logname, "a+");
 
 	if (fp == NULL) {
-		LOG4CXX_ERROR(xarcllogger, (char *) "log open failed: " << errno);
+		LOG4CXX_ERROR(xarcllogger, (char *) "ERROR: log open failed: " << errno);
 		return false;
 	}
 
 	(void) fclose(fp);
 
-	//log_.open (logname, mode | ios::app);
-	//log_.close();
 	log_.open (logname, mode);
 
 	if (!log_.is_open()) {
-		LOG4CXX_ERROR(xarcllogger, (char *) "log open failed for: " << logname);
+		LOG4CXX_ERROR(xarcllogger, (char *) "ERROR: log open failed for: " << logname);
 		return false;
 	}
 
@@ -171,69 +162,22 @@ bool XARecoveryLog::load_log(const char* logname)
 	log_.seekg (0, ios::end);
 	sz = (size_t) (log_.tellg() - s);
 
-	if ((maxblocks_ = ACE_OS::strtol(maxblk, NULL, 0)) == 0) {
-		LOG4CXX_ERROR(xarcllogger, (char *) "the env variable BLACKTIE_MAX_RCLOG_SIZE is invalid: " << (char *) maxblk);
-		return false;
-	}
-
-	LOG4CXX_TRACE(xarcllogger, (char *) "recovery log size: " << maxblocks_);
-
 	// allocate enough space into the arena for sz bytes
-	if (!morecore(sz / sizeof (rrec_t) + 1, false))
-		return false;
+	if ((maxblocks_ = strtol(maxblk, NULL, 0)) == 0) {
+		LOG4CXX_TRACE(xarcllogger, (char *)
+			"ERROR: the env variable BLACKTIE_MAX_RCLOG_SIZE is invalid: " <<
+			(char *) maxblk);
+	} else if (get_blocks(sz / BSIZE + 1, false) != NULL) {
+		LOG4CXX_DEBUG(xarcllogger, (char *) "initialized recovery log size: " << (sz / BSIZE + 1));
 
-	// read the bytes from the file into the arena
-	log_.seekg(0, ios::beg);
-	log_.read((char *) arena_, sz);
-
-//	debug_dump(arena_, arena_ + nblocks_);
-	// verify that the log is consistent (must be called
-	// at log creation time)
-	check_log();
-
-//	LOG4CXX_TRACE(xarcllogger, (char *) "load_log: contents:");
-//	for (rrec_t* rr = find_next(0); rr; rr = find_next(rr))
-//		LOG4CXX_TRACE(xarcllogger, (char *) "next: " << IOR(rr));
-
-	return true;
-}
-
-/**
- * Increase the size of the arena for storing more records.
- * The size of the storage area is increased on demand but is never
- * reduced. If the backing file ends up containing large amounts of
- * free space it may be beneficial to reduce its size periodically.
- */
-bool XARecoveryLog::morecore(size_t nblocks, bool dosync) {
-	size_t nsz;
-	rrec_t* ar;
-
-	if (!log_.is_open())
-		return false;
-
-	if (nblocks < NBLOCKS)
-		nblocks = NBLOCKS;
-
-	nsz = nblocks_ + nblocks;
-
-	if (nblocks_ > maxblocks_) {
-		LOG4CXX_WARN(xarcllogger, (char *) "recovery log has grown beyond its configurable limit\n");
-	} else if ((ar = (rrec_t*) ACE_OS::calloc(sizeof (rrec_t), nsz)) == 0) {
-		LOG4CXX_WARN(xarcllogger, (char *) "recovery log: out of memory");
-	} else {
-		LOG4CXX_TRACE(xarcllogger, (char *) "increasing rc log blocks from " << hex << nblocks_ << " to " << nsz);
-
-		ACE_OS::memcpy(ar, arena_, nblocks_);
-
-		if (dosync)
-			sync_rec(ar + nblocks_, nblocks * sizeof (rrec_t));
-
-		nblocks_ = nsz;
-		ACE_OS::free(arena_);
-		arena_ = ar;
+		// read the bytes from the file into the arena
+		log_.seekg(0, ios::beg);
+		log_.read((char *) arena_, sz);
 
 		return true;
 	}
+
+	log_.close();
 
 	return false;
 }
@@ -241,51 +185,110 @@ bool XARecoveryLog::morecore(size_t nblocks, bool dosync) {
 void XARecoveryLog::sync_rec(void* p, size_t sz) {
 	fstream::pos_type pos = (fstream::pos_type) ((char *) p - (char *) arena_);
 
-	LOG4CXX_TRACE(xarcllogger, (char *) "sync " << p << " p size " << sz << " at pos " << (long) pos);
 	log_.seekg(pos);
 	log_.write((char *) p, sz);
 	log_.sync();
 }
 
-rrec_t* XARecoveryLog::next_rec(rrec_t* p) {
-	return (p->next && p->next < nblocks_ ?  arena_ + p->next : 0);
+rrec_t* XARecoveryLog::get_blocks(size_t nblocks, bool dosync) {
+	size_t sz = 0;
+	rrec_t* e = arena_ + nblocks_;
+	rrec_t* p = arena_;
+
+	if (p) {
+		for ( ; p < e; ) {
+			if (p->magic == INUSE) {
+				sz = 0;
+				p = NEXT_REC(p);
+			} else if (++sz >= nblocks) {
+				return p - sz + 1;
+			} else {
+				p += 1;
+			}
+		}
+	}
+
+	// more blocks are required
+	if (nblocks < NBLOCKS)
+		nblocks = NBLOCKS;
+
+	size_t nsz = nblocks_ + nblocks;
+	rrec_t* ar;
+
+	LOG4CXX_DEBUG(xarcllogger, (char *) "alocating blocks: " << nsz);
+
+	if (nsz > maxblocks_) {
+		LOG4CXX_ERROR(xarcllogger, (char *)
+			"ERROR: recovery log has grown beyond its configurable limit");
+	} else if ((ar = (rrec_t*) calloc(BSIZE, nsz)) == 0) {
+		LOG4CXX_ERROR(xarcllogger, (char *) "ERROR: recovery log: out of memory");
+	} else {
+		LOG4CXX_DEBUG(xarcllogger, (char *)
+			"increasing rc log blocks from " << nblocks_ << " to " << nsz);
+
+		if (arena_)
+			memcpy(ar, arena_, nblocks_);
+
+		if (dosync)
+			sync_rec(ar + nblocks_, nblocks * BSIZE);
+
+		p = ar + nblocks_;
+
+		nblocks_ = nsz;
+
+		if (arena_)
+			free(arena_);
+
+		arena_ = ar;
+
+		LOG4CXX_DEBUG(xarcllogger, (char *) "ARENA: [" << arena_ << ", " <<  arena_ + (BSIZE * nsz));
+
+		return arena_;
+	}
+
+	return NULL;
+}
+
+/**
+ * Insert a recovery record into persistent storage.
+ */
+int XARecoveryLog::add_rec(XID& xid, char* ior) {
+	size_t len = strlen(ior) + 1;
+	size_t nblocks = len / BSIZE + 2;	// add 1 for header (and 1 to round up for ior))
+	rrec_t* fb; // next free block of the correct size
+	int rv = -1;
+
+	lock();
+	if ((fb = get_blocks(nblocks, true)) != NULL) {
+		fb->xid = xid;
+		fb->next = nblocks;
+		fb->magic = INUSE;
+		memcpy(fb + 1, ior, len);
+		sync_rec(fb, nblocks * BSIZE);
+		rv = 0;
+	}
+	unlock();
+
+	return rv;
 }
 
 int XARecoveryLog::del_rec(XID& xid) {
 	rrec_t* prev;
 	rrec_t* next;
+	int rv;
 
-	LOG4CXX_TRACE(xarcllogger, (char *) "del_rec: deleteing " << xid_to_string(xid));
-	if (!log_.is_open())
-		return -1;
+	lock();
+	if ((rv = find(xid, &prev, &next)) == 0) {
+		next->magic = 0l;
+		sync_rec(&(next->magic), sizeof (next->magic));
 
-	lock_.lock();
-	if (find(xid, &prev, &next) != 0) {
-		LOG4CXX_TRACE(xarcllogger, (char *) "del_rec: xid " << xid_to_string(xid).c_str() << " not found");
-		lock_.unlock();
-		return -1;
+		// TODO if we fail here remember to fix up the offset next time the log is loaded
+		prev->next = next->next;
+		sync_rec(&(prev->next), sizeof (prev->next));
 	}
+	unlock();
 
-	// mark the block as free and sync it
-	LOG4CXX_TRACE(xarcllogger, (char *) "deleting xid " << xid_to_string(xid).c_str() <<
-		" at offset " << next->next << " IOR: " << IOR(next));
-	next->magic = 0l;
-	sync_rec(&(next->magic), sizeof (next->magic));
-
-	// a failure here will leave prev pointing to a free block
-	// which will be fixed up when the log is re-read
-	SEGVONDEL();
-
-	prev->next = next->next;
-	sync_rec(&(prev->next), sizeof (prev->next));
-	lock_.unlock();
-
-	LOG4CXX_TRACE(xarcllogger, (char *) "del_rec: deleted ");
-	return 0;
-}
-
-const char* XARecoveryLog::get_ior(rrec_t& rr) {
-	return IOR(&rr);
+	return rv;
 }
 
 /**
@@ -297,48 +300,22 @@ const char* XARecoveryLog::get_ior(rrec_t& rr) {
  * the handle but not ones inserted before it.
  */
 rrec_t* XARecoveryLog::find_next(rrec_t* from) {
-	if (!log_.is_open())
-		return 0;
-
 	if (from == 0) {
 		if (arena_->magic == INUSE)
 			return arena_;
 		from = arena_;
+	} else {
+		from = NEXT_REC(from);
 	}
 
-	for (rrec_t* p = next_rec(from); p; p = next_rec(p))
-		if (p->magic == INUSE)
-			return p;
+	rrec_t* e = arena_ + nblocks_;
 
-	return 0;
+	while (from < e && from->magic != INUSE)
+		from += 1;
+
+	return from < e ? from : NULL;
 }
 
-/**
- * Locate the record keyed by xid. The returned record is passed
- * back to the caller in next (the record preceding it is returned
- * in prev - use for deleting records).
- */
-int XARecoveryLog::find(XID xid, rrec_t** prev, rrec_t** next) {
-	if (!log_.is_open())
-		return -1;
-
-	*prev = arena_;
-	*next = arena_;
-
-	while (*next) {
-		if (compareXids(xid, (*next)->xid) == 0)
-			return 0;
-
-		*prev = *next;
-		*next = next_rec(*next);
-	}
-
-	return -1;
-}
-
-/**
- * Lookup the IOR associated with the given XID
- */
 char* XARecoveryLog::find_ior(XID& xid) {
 	rrec_t* prev;
 	rrec_t* next;
@@ -347,108 +324,109 @@ char* XARecoveryLog::find_ior(XID& xid) {
 		return IOR(next);
 
 	return 0;
+
 }
 
-/**
- * Insert a recovery record into persistent storage.
- */
-int XARecoveryLog::add_rec(XID& xid, char* ior) {
-	size_t nblocks = ((sizeof (rrec_t) + strlen(ior)) / sizeof (rrec_t)) + 1;
-	rrec_t* fb; // next free block of the correct size
+const char *XARecoveryLog::get_ior(rrec_t& rr) {
+	return IOR(&rr);
+}
 
-	LOG4CXX_TRACE(xarcllogger, (char *) "looking for a block of size " << nblocks * sizeof (rrec_t));
+int XARecoveryLog::find(XID& xid, rrec_t** prev, rrec_t** next) {
+	*prev = *next = arena_;
 
-	if (!log_.is_open())
+	while (*next) {
+//		printf("comparing %d with %d\n", xid.formatID, ((*next)->xid).formatID);
+		if (compareXids(xid, (*next)->xid) == 0)
+			return 0;
+
+		*prev = *next;
+		*next = find_next(*next);
+	}
+
+	return -1;
+}
+
+bool XARecoveryLog::lock() {
+	return lock_.lock();
+}
+
+bool XARecoveryLog::unlock() {
+	return lock_.unlock();
+}
+
+#if 0
+int
+main(int argc, char* argv[])
+{
+	int nrecs = 0;
+	bool verbose = false;
+
+	if (argc <= 2) {
+		fprintf(stderr, "syntax %s <-i|-v> <recovery log file path>\n", argv[0]);
 		return -1;
+	}
 
-	lock_.lock();
-	if ((fb = next_free(nblocks)) == 0) {
-		LOG4CXX_TRACE(xarcllogger, (char *) "\tno space, increasing arena\n");
+	XARecoveryLog log(argv[2]);
+	bool prompt = (strcmp(argv[1], "-i") == 0 ? true : false);
 
-		if (!morecore(nblocks, true) || (fb = next_free(nblocks)) == 0) {
-			LOG4CXX_ERROR(xarcllogger, (char *) "\tno large enough free region (required " <<
-				nblocks << " blocks)");
-			lock_.unlock();
-			return -1;
+	if (strcmp(argv[1], "-a") == 0) {
+		long fid;
+		XID xid = {131072, 0, 26, "102:0:42:1317213340:392306"};
+		const char *ior = "010000003400000049444c3a6f6d672e6f72672f436f735472616e73616374696f6e732f5265636f76657279436f6f7264696e61746f723a312e3000010000000000000064010000010102000a0000003132372e302e302e3100c80d860000004a426f73732f526376436f2d526563436f536572766963655f646576317265636f766572795f636f6f7264696e61746f722f37663030303030313a336564323a34653832666333633a3766302a37663030303030313a336564323a34653832666333633a3765632a37663030303030313a336564323a34653832666333633a302a66616c73650000050000000000000008000000000000004a414300010000001c00000000000000050100010000000105010001000101090000000105010001210000006c000000000000000000000100000000000000240000001c0000007e00000000000000010000000a3132372e302e302e31000dc900400000000000080606678102010101000000170401000806066781020101010000000764656661756c7400000000000000000000000000000000002000000004000000000000001f0000000400000000000003";
+
+		nrecs = argc > 3 ? atoi(argv[3]) : 1;
+		fid = argc > 4 ? atol(argv[4]) : 131072L;
+		fprintf(stdout, "adding %d iors\n", nrecs);
+
+		for (int i = 0; i < nrecs; i++, fid++) {
+			xid.formatID = fid;
+			if (log.add_rec(xid, (char*) ior) != 0)
+				fprintf(stderr, "error adding ior number %d\n", i);
+			else
+				fprintf(stdout, "added ior %d\n", i);
+		}
+	} else if (strcmp(argv[1], "-d") == 0) {
+		long fid = argc > 2 ? atol(argv[3]) : 131072L;
+		XID xid = {fid, 0, 26, "102:0:42:1317213340:392306"};
+
+		fprintf(stdout, "deleting xid %d\n", xid.formatID);
+	   	if (log.del_rec(xid) != 0)
+			fprintf(stderr, "xid %d not found\n", xid.formatID);
+	} else if (strcmp(argv[1], "-f") == 0) {
+		long fid = argc > 2 ? atol(argv[3]) : 131072L;
+		XID xid = {fid, 0, 26, "102:0:42:1317213340:392306"};
+		char* ior = log.find_ior(xid);
+		fprintf(stdout, "%s\n", ior);
+	} else if (strcmp(argv[1], "-z") == 0) {
+		for (rrec_t* rrp = log.find_next(0); rrp; rrp = log.find_next(rrp))
+			printf("xid: %d ior: %s\n", (rrp->xid).formatID, log.get_ior(*rrp));
+	} else {
+		verbose = true;
+	}
+
+	nrecs = 0;
+	for (rrec_t* rr = log.find_next(0); rr; nrecs++, rr = log.find_next(rr)) {
+		XID &xid = rr->xid;
+
+		if (verbose) {
+			fprintf(stdout, "XID=%ld:%ld:%ld:%s IOR=%s\n",
+				xid.formatID, xid.gtrid_length, xid.bqual_length,
+				(char *) (xid.data + xid.gtrid_length), IOR(rr));
+
+			if (prompt) {
+				char ans[64];
+
+				fprintf(stdout, "Do you wish to delete this record [y/n]? ");
+
+				if (fgets(ans, sizeof (ans), stdin) != NULL && ans[0] == 'y') {
+					log.del_rec(rr->xid);
+				}
+			}
 		}
 	}
 
-	fb->xid = xid;
-	fb->next = (fb - arena_) + nblocks; // nblocks is in rrec_t units
-	fb->magic = INUSE;
-	ACE_OS::memcpy(IOR(fb), ior, strlen(ior) + 1);
-	LOG4CXX_TRACE(xarcllogger, (char *) "adding xid " << xid_to_string(xid).c_str() <<
-		" at offset " << fb->next << ": IOR: " << ior);
-	sync_rec(fb, nblocks * sizeof (rrec_t));
-
-
-	// to test that the allocator synced the block correctly generate
-	// a segmentation fault - the record should be available on restart.
-	SEGVONADD(ior);
-	lock_.unlock();
-
-	return 0; //fb;
-}
-
-/**
- * find the next free region of size greater than nblocks
- */
-rrec_t* XARecoveryLog::next_free(size_t nblocks) {
-	size_t sz = 0;
-
-	if (!log_.is_open())
-		return 0;
-
-	for (rrec_t* p = arena_; p; ) {
-		if (p->magic == INUSE) {
-			sz = 0;
-			p = next_rec(p);
-		} else if (++sz >= nblocks) {
-			return p - sz + 1;
-		} else {
-			p += 1;
-		}
-	}
+	fprintf(stdout, "%d records\n", nrecs);
 
 	return 0;
 }
-
-/**
- * there is a window during delete where a log record
- * can end up pointing to a free block. If that happened
- * it must have been the last action so provided check_log
- * is called when XARecoveryLog is constructed all will
- * be well.
- */
-void XARecoveryLog::check_log() {
-	for (rrec_t* rr = arena_; ;) {
-		rrec_t* next = next_rec(rr);
-
-		if (next == 0)
-			return;
-
-		if (rr->magic == INUSE && next->magic != INUSE) {
-			// must have previously failed whilst deleting next
-			LOG4CXX_INFO(xarcllogger, (char *) "fixing up recovery log");
-			rr->next = next->next;
-			sync_rec(&(rr->next), sizeof (rr->next));
-		}
-
-		rr = next;
-	}
-}
-
-void XARecoveryLog::debug_dump(rrec_t* p, rrec_t* end) {
-	LOG4CXX_TRACE(xarcllogger, (char *) "dumping from " << p << " to " << end);
-//	LOG4CXX_TRACE(xarcllogger, (char *) "dumping arena: next=0x%x magic=0x%x formatID=0x%x recsz=0x%x ior=%s\n",
-//		p->next, p->magic, p->xid.formatID, sizeof (rrec_t), IOR(p));
-
-	while (p && p < end) {
-		if (p->magic == INUSE) {
-			LOG4CXX_TRACE(xarcllogger, (char *) "addr: " << p << " ior: " << IOR(p));
-			p = next_rec(p);
-		} else {
-			p++;
-		}
-	}
-}
+#endif
