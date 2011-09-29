@@ -28,6 +28,11 @@
       <plugin>
         <groupId>org.jboss.maven.plugins</groupId>
         <artifactId>maven-jdocbook-plugin</artifactId>
+		<configuration>
+			<options>
+				<injectionDateFormat>dd/MM/yyy</injectionDateFormat>
+			</options>
+		</configuration>
       </plugin>
     </plugins>
   </build>
