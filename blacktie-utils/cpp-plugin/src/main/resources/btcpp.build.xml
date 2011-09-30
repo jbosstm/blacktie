@@ -66,6 +66,8 @@
 	<property name="runtime" value="dynamic" />
 	<property name="idl.output.dir" value="target/generated/tao_idl" />
 	<property name="src.idl.main" value="${idl.output.dir}" />
+	<property name="proto.output.dir" value="target/generated/proto" />
+	<property name="src.proto.test" value="${proto.output.dir}" />
 
 	<!--
           TODO fix it so that every goal doesn't need to define toolchain.compiler and configuration.type
@@ -184,6 +186,7 @@
 		</condition>
 		<available file="${src.dir}" property="src.dir.exists"/>
 		<available file="${idl.src.dir}" property="idl.src.dir.exists"/>
+		<available file="${proto.src.dir}" property="proto.src.dir.exists"/>
 		<available file="${src.main}" property="src.main.exists"/>
 		<available file="${src.test}" property="src.test.exists"/>
 	</target>
@@ -195,7 +198,57 @@
 		<delete dir="target/cpp-test-classes" failonerror="false"/>
 	</target>
 
-	<target name="generate-sources" depends="fileset.main.check" if="idl.src.dir.exists">
+	<target name="generate-proto-sources" depends="fileset.main.check" if="proto.src.dir.exists">
+		<condition property="exe" value=".exe">
+			<equals arg1="${toolchain.compiler}" arg2="msvc" />
+		</condition>
+		<condition property="exe" value="">
+			<not>
+				<equals arg1="${toolchain.compiler}" arg2="msvc" />
+			</not>
+		</condition>
+
+		<condition property="neutral.path.key" value="Path">
+			<equals arg1="${toolchain.compiler}" arg2="msvc" />
+		</condition>
+		<condition property="neutral.path.key" value="PATH">
+			<not>
+				<equals arg1="${toolchain.compiler}" arg2="msvc" />
+			</not>
+		</condition>
+		<condition property="neutral.path.value" value="${env.Path}">
+			<equals arg1="${toolchain.compiler}" arg2="msvc" />
+		</condition>
+		<condition property="neutral.path.value" value="${env.PATH}">
+			<not>
+				<equals arg1="${toolchain.compiler}" arg2="msvc" />
+			</not>
+		</condition>
+
+		<property name="proto.lroot" value="${project.build.directory}/cxx/compile" />
+		<property name="proto.iroot" value="${project.build.directory}/cxx/compile/include" />
+		<property name="proto.broot" value="${project.build.directory}/cxx/compile/bin" />
+		<property name="protoc" value="${proto.broot}/protoc${exe}" />
+
+		<available file="${protoc}" property="protoc.exe.exists"/>
+		<fail message="missing protoc compiler: ${protoc}" unless="protoc.exe.exists" />
+		<chmod file="${protoc}" perm="755"/>
+
+		<mkdir dir="${proto.output.dir}" />
+		<apply executable="${protoc}" parallel="false" failonerror="true" newenvironment="true" relative="true" dir="${proto.src.dir}">
+			<env key="LD_LIBRARY_PATH" path="${proto.lroot}/lib:${proto.broot}" />
+			<env key="${neutral.path.key}" path="${neutral.path.value};${proto.lroot}/lib;${proto.broot}" />
+			<env key="SystemRoot" path="${env.SystemRoot}" />
+			<arg line="--cpp_out=../../../${proto.output.dir}" />
+			<fileset dir="${proto.src.dir}" casesensitive="yes">
+				<patternset id="idl.sources">
+					<include name="**/*.proto" />
+				</patternset>
+			</fileset>
+		</apply>
+	</target>
+
+	<target name="generate-idl-sources" depends="fileset.main.check" if="idl.src.dir.exists">
 		<condition property="exe" value=".exe">
 			<equals arg1="${toolchain.compiler}" arg2="msvc" />
 		</condition>
@@ -346,6 +399,7 @@
 	<target name="gen-test-runner1" if="need-testrunner">
 		<mkdir dir="${project.build.directory}/generated-sources" />
 		<fileset id="fileset.gen.test" dir="${project.build.directory}/generated-sources" includes="**/*.cxx"/>
+		<fileset id="fileset.proto.test" dir="${project.build.directory}/generated/proto" includes="**/*.cc"/>
 		<taskdef name="add.common.src" classname="org.jboss.narayana.blacktie.plugins.AddCommonSources"/>
 		<!-- For includes see java.util.regex.Pattern for valid pattern syntax -->
 		<add.common.src mavenProject="gen-common-sources" includes=".*.cxx" outputDir="${project.build.directory}/generated-sources"/>
@@ -483,6 +537,7 @@
 
 			<fileset refid="fileset.test"/>
 			<fileset refid="fileset.gen.test"/>
+			<fileset refid="fileset.proto.test"/>
 
 			<defineset define="TAO_COMP, UNITTEST"/>
 			<defineset define="WIN32" if="is-msvc"/>
@@ -491,6 +546,7 @@
 			<includepath path="${src.export}" if="export.dir" />
 			<includepath path="src/main/include" />
 			<includepath path="${src.idl.main}/include" />
+			<includepath path="${src.proto.test}" />
 			<includepath path="target/cxx/compile/include" />
 			<includepath path="target/cxx/compile/include/apr-1" />
 			<includepath path="target/cxx/compile/include/stomp" />
@@ -605,6 +661,7 @@
 
 	<target name="copy-check">
 		<available property="have-idl" file="${idl.output.dir}" />
+		<available property="have-proto" file="${proto.output.dir}" />
 		<available property="have-exports" file="${src.export}" />
 		<available file="target/${configuration.type}/${lib.type}" property="have-target-lib-dir" />
 	</target>

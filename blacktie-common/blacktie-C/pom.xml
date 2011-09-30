@@ -175,7 +175,8 @@
             <id>generate-sources</id>
             <phase>generate-sources</phase>
             <goals>
-              <goal>generate-sources</goal>
+              <goal>generate-idl-sources</goal>
+              <goal>generate-proto-sources</goal>
             </goals>
           </execution>
           <execution>

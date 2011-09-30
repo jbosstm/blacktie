@@ -81,6 +81,13 @@
       <classifier>${bpa}</classifier>
       <artifactId>atmibroker-core</artifactId>
     </dependency>
+	<dependency>
+      <groupId>com.google.protobuf</groupId>
+      <classifier>${bpa}</classifier>
+      <artifactId>protoc</artifactId>
+	  <version>2.4.1</version>
+      <type>zip</type>
+	</dependency>
   </dependencies>
   <profiles>
     <profile>

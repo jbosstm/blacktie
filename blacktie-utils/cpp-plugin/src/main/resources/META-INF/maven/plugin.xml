@@ -102,7 +102,7 @@
       </configuration>
     </mojo>
     <mojo>
-      <goal>generate-sources</goal>
+      <goal>generate-idl-sources</goal>
       <description>generate sources prior to compilation</description>
       <requiresDirectInvocation>false</requiresDirectInvocation>
       <requiresProject>true</requiresProject>
@@ -111,7 +111,7 @@
       <requiresOnline>false</requiresOnline>
       <inheritedByDefault>false</inheritedByDefault>
       <phase>generate-sources</phase>
-      <implementation>/btcpp.build.xml:generate-sources</implementation>
+      <implementation>/btcpp.build.xml:generate-idl-sources</implementation>
       <language>ant-mojo</language>
       <configurator>map-oriented</configurator>
       <composer>map-oriented</composer>
@@ -188,6 +188,100 @@
         <project.version implementation="java.lang.String" default-value="${project.version}"/>
         <project.build.directory implementation="java.lang.String" default-value="${project.build.directory}"/>
         <idl.src.dir implementation="java.lang.String" default-value="src/main/idl"/>
+        <project.name implementation="java.lang.String" default-value="${project.name}"/>
+        <project.artifactId implementation="java.lang.String" default-value="${project.artifactId}"/>
+        <configuration.type implementation="java.lang.String" default-value="debug"/>
+        <basedir implementation="java.io.File" default-value="${basedir}">${antBasedir}</basedir>
+        <messageLevel implementation="java.lang.String" default-value="info">${antMessageLevel}</messageLevel>
+      </configuration>
+    </mojo>
+	<mojo>
+      <goal>generate-proto-sources</goal>
+      <description>generate sources prior to compilation</description>
+      <requiresDirectInvocation>false</requiresDirectInvocation>
+      <requiresProject>true</requiresProject>
+      <requiresReports>false</requiresReports>
+      <aggregator>false</aggregator>
+      <requiresOnline>false</requiresOnline>
+      <inheritedByDefault>false</inheritedByDefault>
+      <phase>generate-sources</phase>
+      <implementation>/btcpp.build.xml:generate-proto-sources</implementation>
+      <language>ant-mojo</language>
+      <configurator>map-oriented</configurator>
+      <composer>map-oriented</composer>
+      <instantiationStrategy>per-lookup</instantiationStrategy>
+      <executionStrategy>once-per-session</executionStrategy>
+      <parameters>
+        <parameter>
+          <name>export.dll</name>
+          <type>java.lang.String</type>
+          <required>false</required>
+          <editable>true</editable>
+          <description>export.dll</description>
+        </parameter>
+        <parameter>
+          <name>configuration.type</name>
+          <type>java.lang.String</type>
+          <required>true</required>
+          <editable>true</editable>
+          <description>Build type. Permissable values are debug|release</description>
+        </parameter>
+        <parameter>
+          <name>project.name</name>
+          <type>java.lang.String</type>
+          <required>true</required>
+          <editable>false</editable>
+          <description>Project name.</description>
+        </parameter>
+        <parameter>
+          <name>project.version</name>
+          <type>java.lang.String</type>
+          <required>true</required>
+          <editable>false</editable>
+          <description>The artifact version.</description>
+        </parameter>
+        <parameter>
+          <name>project.artifactId</name>
+          <type>java.lang.String</type>
+          <required>true</required>
+          <editable>false</editable>
+          <description>The artifact name.</description>
+        </parameter>
+		<parameter>
+		  <name>proto.src.dir</name>
+          <type>java.lang.String</type>
+          <required>true</required>
+          <editable>true</editable>
+          <description>The directory where the proto files live</description>
+        </parameter>
+        <parameter>
+          <name>project.build.directory</name>
+          <type>java.lang.String</type>
+          <required>true</required>
+          <editable>false</editable>
+          <description>Build directory.</description>
+        </parameter>
+        <parameter>
+          <name>basedir</name>
+          <alias>ant.basedir</alias>
+          <type>java.io.File</type>
+          <required>true</required>
+          <editable>true</editable>
+          <description>The base directory from which to execute the Ant script.</description>
+        </parameter>
+        <parameter>
+          <name>messageLevel</name>
+          <alias>ant.messageLevel</alias>
+          <type>java.lang.String</type>
+          <required>false</required>
+          <editable>true</editable>
+          <description>The message-level used to tune the verbosity of Ant logging.</description>
+        </parameter>
+      </parameters>
+      <configuration>
+        <project.version implementation="java.lang.String" default-value="${project.version}"/>
+        <project.build.directory implementation="java.lang.String" default-value="${project.build.directory}"/>
+        <proto.src.dir implementation="java.lang.String" default-value="src/test/proto"/>
         <project.name implementation="java.lang.String" default-value="${project.name}"/>
         <project.artifactId implementation="java.lang.String" default-value="${project.artifactId}"/>
         <configuration.type implementation="java.lang.String" default-value="debug"/>

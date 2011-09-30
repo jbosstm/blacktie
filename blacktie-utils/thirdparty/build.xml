@@ -362,8 +362,25 @@
 	</target>
 
 	<target name="protobuf-lib-linux" if="linux" unless="aix">
-		<copy file="${protobuf.lib.dir}/libprotobuf.so.7" tofile="${build.dist}/lib/libprotobuf.so.7" />
-		<copy file="${protobuf.lib.dir}/libprotoc.so.7" tofile="${build.dist}/lib/libprotoc.so.7" />
+		<sync todir="${build.dist}/lib">
+			<fileset dir="${protobuf.lib.dir}" id="protobuflibs">
+				<include name="libprotobuf.so.7" />
+				<include name="libprotobuf-lite.so.7" />
+				<include name="libprotoc.so.7" />
+			</fileset>
+		</sync>
+		<property name="libprotobuf" refid="protobuflibs"/> 
+		<echo message="${libprotobuf}" file="${build.dist}/lib/protobuflinks"/>
+		<replaceregexp file="${build.dist}/lib/protobuflinks"
+			match="(lib[^\.]+\.so)([\.0-9]+);?"
+			replace="\1 \1\2${line.separator}" 
+			flags="g"/>
+		<symlink action="record" linkfilename="${build.dist}/lib/protobuflinks">
+			<fileset dir="." includes="${build.dist}/lib/**"/>
+		</symlink>
+		<symlink action="recreate">
+			<fileset dir="." includes="${build.dist}/lib/protobuflinks"/>
+		</symlink>
 	</target>
 
 	<target name="protobuf-lib-aix" if="aix">
