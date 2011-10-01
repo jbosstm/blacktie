@@ -398,6 +398,7 @@
 
 	<target name="gen-test-runner1" if="need-testrunner">
 		<mkdir dir="${project.build.directory}/generated-sources" />
+		<mkdir dir="${project.build.directory}/generated/proto" />
 		<fileset id="fileset.gen.test" dir="${project.build.directory}/generated-sources" includes="**/*.cxx"/>
 		<fileset id="fileset.proto.test" dir="${project.build.directory}/generated/proto" includes="**/*.cc"/>
 		<taskdef name="add.common.src" classname="org.jboss.narayana.blacktie.plugins.AddCommonSources"/>
