@@ -95,6 +95,8 @@ int dummy_rm_del_fault(fault_t& f)
 		faults.clear();
 	else
 		faults.erase(std::remove(faults.begin(), faults.end(), f), faults.end());
+
+	return 0;
 }
 
 static int apply_faults(XID *xid, enum XA_OP op, int rmid)
