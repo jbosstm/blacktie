@@ -24,5 +24,6 @@ class Codec {
 public:
 	virtual char* encode(char* type, char* subtype, char* buffer, long* length) = 0;
 	virtual char* decode(char* type, char* subtype, char* buffer, long* length) = 0;
+	virtual ~Codec() {};
 };
 #endif
