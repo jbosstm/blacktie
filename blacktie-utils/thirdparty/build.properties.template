@@ -30,4 +30,4 @@ xercesc.version=3.0.1
 protobuf.lib.dir=/home/hudson/proto/protobuf-2.4.1/src/.libs
 protobuf.include.dir=/home/hudson/proto/protobuf-2.4.1/src/
 protobuf.compiler=/home/hudson/proto/protobuf-2.4.1/src/protoc
-protobuf.version=2.4.1
+protobuf.version=2.4.1.1
