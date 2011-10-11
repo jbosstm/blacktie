@@ -407,6 +407,7 @@
 	</target>
 	<target name="gen-test-runner2" unless="need-testrunner">
 		<fileset id="fileset.gen.test" dir="." excludes="**/*"/>
+		<fileset id="fileset.proto.test" dir="." excludes="**/*"/>
 	</target>
 	<target name="gen-test-runner" depends="gen-test-runner1,gen-test-runner2" />
 
