@@ -1,5 +1,5 @@
-mvn deploy:deploy-file -Durl=https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/ -DrepositoryId=jboss-releases-repository -Dfile=protoc-2.4.1.1-centos55x32.zip -DpomFile=poms/protoc-2.4.1.1.pom -Dpackaging=zip -Dclassifier=centos55x32
-mvn deploy:deploy-file -Durl=https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/ -DrepositoryId=jboss-releases-repository -Dfile=protoc-2.4.1.1-centos54x64.zip -DpomFile=poms/protoc-2.4.1.1.pom -Dpackaging=zip -Dclassifier=centos54x64
+mvn deploy:deploy-file -Durl=https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/ -DrepositoryId=jboss-releases-repository -Dfile=protoc-2.4.1.2-centos55x32.zip -DpomFile=poms/protoc-2.4.1.2.pom -Dpackaging=zip -Dclassifier=centos55x32
+mvn deploy:deploy-file -Durl=https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/ -DrepositoryId=jboss-releases-repository -Dfile=protoc-2.4.1.2-centos54x64.zip -DpomFile=poms/protoc-2.4.1.2.pom -Dpackaging=zip -Dclassifier=centos54x64
 
 #for i in apr-1-1.3.3 log4cxx-902683
 #do
