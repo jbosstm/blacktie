@@ -387,6 +387,12 @@
 	</target>
 
 	<target name="protobuf-lib-windows" if="windows">
+		<sync todir="${build.dist}/lib">
+			<fileset dir="${protobuf.lib.dir}">
+				<include name="**/*.lib"/>
+				<include name="**/*.dll"/>
+			</fileset>
+		</sync>
 	</target>
 
 	<target name="protobuf" depends="init">

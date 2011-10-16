@@ -543,6 +543,7 @@
 
 			<defineset define="TAO_COMP, UNITTEST"/>
 			<defineset define="WIN32" if="is-msvc"/>
+			<defineset define="PROTOBUF_USE_DLLS" if="is-msvc"/>
 
 			<includepath path="src/test/include" />
 			<includepath path="${src.export}" if="export.dir" />
