@@ -326,6 +326,7 @@
     <module>blacktie-admin-services/ear</module>
     <module>blacktie-rhq-plugin</module>
     <module>atmibroker-core</module>
+    <module>atmibroker-transport</module>
     <module>tx-test-utilities</module>
     <module>atmibroker-tx</module>
     <module>atmibroker-hybrid</module>
