@@ -349,6 +349,7 @@ bool HttpSessionImpl::send(MESSAGE &message) {
 
 	if (rc != 0 || ri.status_code != 201) {
 		btlogger_warn("Error %d sending message. Status: %d\n", rc, ri.status_code);
+		_wc.dispose(&ri);
 
 		return false;
 	}
@@ -373,6 +374,8 @@ void HttpSessionImpl::decode_headers(struct mg_request_info* ri) {
 //		btlogger_debug("decoded %s=%s\n", ri->http_headers[i].name, ri->http_headers[i].value);
 	}
 //	btlogger_debug("==================\n");
+
+	_wc.dispose(ri);
 }
 
 int HttpSessionImpl::qinfo(const char *qname) {
@@ -380,6 +383,7 @@ int HttpSessionImpl::qinfo(const char *qname) {
 
 	if ((_status = _wc.send(&ri, "HEAD", qname, "*/*", NULL, NULL, 0, NULL, NULL)) != 0) {
 		btlogger_warn("send failure %d\n", errno);
+		_wc.dispose(&ri);
 		return -1;
 	}
 
@@ -394,6 +398,7 @@ int HttpSessionImpl::remove_consumer() {
 
 	if (consumer.size() > 0) {
 		_wc.send(&ri, "DELETE", consumer.c_str(), "*/*", NULL, NULL, 0, NULL, NULL);
+		_wc.dispose(&ri);
 
 		switch (ri.status_code) {
 		case -1:
@@ -426,6 +431,8 @@ int HttpSessionImpl::create_consumer(bool autoack) {
 	consumer = _HEADERS[PULL_CONSUMERS];
 	if (_wc.send(&ri, "POST", consumer.c_str(), mt, NULL, body, bodysz, NULL, NULL) == 0)
 		decode_headers(&ri);
+	else
+		_wc.dispose(&ri);
 
 	return ri.status_code;
 }
@@ -433,21 +440,19 @@ int HttpSessionImpl::create_consumer(bool autoack) {
 char* HttpSessionImpl::try_get_message(struct mg_request_info* ri, long time, size_t *sz) {
 	std::string nm = _HEADERS[CONSUME_NEXT];
 	const char *mt = "application/x-www-form-urlencoded";
-	char* headers[] = {
-		new char[32],
-		NULL
-	};
+	char hdr[32];
+	char* headers[] = {hdr, NULL};
 	char *resp;
 
-	sprintf(headers[0], "Accept-Wait=%ld", time);
+	sprintf(hdr, "Accept-Wait=%ld", time);
 
 	btlogger_debug("consuming via resource: %s\n", nm.c_str());
-	if (_wc.send(ri, "POST", nm.c_str(), mt, (const char**) headers, NULL, 0, &resp, sz) == 0 &&
-		(ri->status_code == 200 || ri->status_code == 412)) {
-		decode_headers(ri);
+	if (_wc.send(ri, "POST", nm.c_str(), mt, (const char**) headers, NULL, 0, &resp, sz) == 0) {
+		if (ri->status_code == 200 || ri->status_code == 412)
+			decode_headers(ri);
+		else
+			_wc.dispose(ri);
 	}
-
-	delete headers[0];
 
 	return resp;
 }
@@ -529,4 +534,6 @@ void HttpSessionImpl::put_message(const char *msg) {
 				btlogger_debug("POST status: %d\n", ri.status_code);
 		}
 	}
+
+	_wc.dispose(&ri);
 }

@@ -150,5 +150,7 @@ void TestTransport::test_basic()
 			free_message(rmsgs[i]);
 		}
 
+	apr_terminate();
+
 	btlogger_debug("TestTransport::test_basic pass");
 }

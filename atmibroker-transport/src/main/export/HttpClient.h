@@ -28,7 +28,12 @@ public:
 	int send(struct mg_request_info* ri,
 		const char* method, const char* uri, const char* mediaType,
 		const char* headers[], const char *body, size_t blen, char **resp, size_t* rcnt);
+	void dispose(struct mg_request_info* ri);
 
 	const char *VERSION;
+
+private:
+	void dup_headers(struct mg_request_info* ri);
+
 };
 #endif //HTTPCLIENT_H

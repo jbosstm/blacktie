@@ -23,13 +23,30 @@
 
 #include "HttpClient.h"
 
+void HttpClient::dup_headers(struct mg_request_info* ri) {
+    for (int i = 0; i < ri->num_headers; i++) {
+        ri->http_headers[i].name = strdup(ri->http_headers[i].name);
+        ri->http_headers[i].value = strdup(ri->http_headers[i].value);
+    }
+}
+
+void HttpClient::dispose(struct mg_request_info* ri) {
+    for (int i = 0; i < ri->num_headers; i++) {
+        free(ri->http_headers[i].name);
+        free(ri->http_headers[i].value);
+    }
+
+	ri->num_headers = 0;
+}
+
 
 int HttpClient::send(struct mg_request_info* ri, const char* method, const char* uri,
 	const char* mediaType, const char* headers[], const char *body, size_t blen, char **resp, size_t *rcnt) {
 //	size_t blen = (body == NULL ? 0 : strlen(body));
 	char host[1025], buf[BUFSIZ];
-	int port, is_ssl = 0, n;
+	int port = 0, is_ssl = 0, n;
 
+	ri->num_headers = 0;
 	(void) parse_url(uri, host, &port);
 //	LOG4CXX_DEBUG(httpclientlog, "connected to TM on " << host << ":" << port << " URI=" << uri);
 
@@ -105,6 +122,8 @@ int HttpClient::send(struct mg_request_info* ri, const char* method, const char*
 	if (strncmp(ri->http_version, "HTTP/", 5) == 0) {
 		ri->http_version += 5;   /* Skip "HTTP/" */
 		parse_http_headers(&b, ri);
+
+		dup_headers(ri);
 
 		for (int i = 0; i < ri->num_headers; i++) {
 //			LOG4CXX_TRACE(httpclientlog, "Header:\t" << ri->http_headers[i].name <<
