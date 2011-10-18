@@ -179,28 +179,27 @@ int HttpControl::start(const char* txnMgrUrl) {
 	char content[32];
 	struct mg_request_info ri;
 	(void) sprintf(content, "timeout=%ld", _ttl * 1000);
-	char * resp = _wc.send(&ri, "POST", txnMgrUrl, POST_MEDIA_TYPE, content, NULL);
-	int rc = decode_headers(&ri);
 
-	if (resp)
-		free(resp);
+	if (_wc.send(&ri, "POST", txnMgrUrl, POST_MEDIA_TYPE, NULL, content, strlen(content), NULL, NULL) != 0) {
+		LOG4CXX_DEBUG(httpclogger, "transaction POST failure");
+		return -1;
+	}
 
-	return rc;
+	return decode_headers(&ri);
 }
 
 bool HttpControl::headRequest()
 {
 	FTRACE(httpclogger, "ENTER");
 	struct mg_request_info ri;
-	char * resp;
 
 	if (_txnUrl == NULL)
 		return false;
 
-	resp = _wc.send(&ri, "HEAD", _txnUrl, STATUS_MEDIA_TYPE, NULL, NULL);
-
-	if (resp)
-		free(resp);
+	if (_wc.send(&ri, "HEAD", _txnUrl, STATUS_MEDIA_TYPE, NULL, NULL, 0, NULL, NULL) != 0) {
+		LOG4CXX_DEBUG(httpclogger, "HTTP HEAD error");
+		return false;
+	}
 
 	return (decode_headers(&ri) == TX_OK);
 }
@@ -246,7 +245,11 @@ int HttpControl::do_end(int how)
 	}
 
 	(void) snprintf(p, sizeof (content), "%s%s", TXSTATUS, status);
-	resp = _wc.send(&ri, "PUT", _endUrl, STATUS_MEDIA_TYPE, p, &nread);
+	if (_wc.send(&ri, "PUT", _endUrl, STATUS_MEDIA_TYPE, NULL, p, strlen(p), &resp, &nread) != 0) {
+		LOG4CXX_DEBUG(httpclogger, "do_end: HTTP PUT error");
+
+		return TX_FAIL;
+	}
 
 	LOG4CXX_DEBUG(httpclogger, "do_end: HTTP status: " << ri.status_code <<
 		" resp: " << resp << " nread: " << nread);
@@ -319,6 +322,8 @@ int HttpControl::do_end(int how)
 	if (resp)
 		free(resp);
 
+	_wc.dispose(&ri);
+
 	return rc;
 }
 
@@ -338,12 +343,15 @@ int HttpControl::get_status()
 		return TX_ROLLBACK_ONLY;
 
 	struct mg_request_info ri;
-	char * resp = _wc.send(&ri, "GET", _txnUrl, STATUS_MEDIA_TYPE, NULL, NULL);
+	if (_wc.send(&ri, "GET", _txnUrl, STATUS_MEDIA_TYPE, NULL, NULL, 0, NULL, NULL) != 0) {
+		LOG4CXX_DEBUG(httpclogger, "HTTP GET status error");
 
-	LOG4CXX_DEBUG(httpclogger, "status: " << ri.status_code << "Txn Status: " << resp);
+		return TX_ERROR;
+	}
 
-	if (resp)
-		free(resp);
+	LOG4CXX_DEBUG(httpclogger, "status: " << ri.status_code); // << "Txn Status: " << resp);
+
+	_wc.dispose(&ri);
 
 	return TX_ACTIVE;
 }

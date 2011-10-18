@@ -51,6 +51,8 @@ static char RCLOGPATH[1024];
 
 static SynchronizableObject lock_;
 
+extern std::ostream& operator<<(std::ostream &os, const XID& xid);
+
 log4cxx::LoggerPtr xarcllogger(log4cxx::Logger::getLogger("TxXARecoveryLog"));
 
 using namespace std;
@@ -253,10 +255,19 @@ rrec_t* XARecoveryLog::get_blocks(size_t nblocks, bool dosync) {
  * Insert a recovery record into persistent storage.
  */
 int XARecoveryLog::add_rec(XID& xid, char* ior) {
-	size_t len = strlen(ior) + 1;
+	size_t len;
+
+	if (ior == NULL || (len = strlen(ior) + 1) == 1) {
+		LOG4CXX_WARN(xarcllogger, (char *) "Attempt to create a log record with no value. Xid: " << xid);
+
+		return -1;
+	}
+
 	size_t nblocks = len / BSIZE + 2;	// add 1 for header (and 1 to round up for ior))
 	rrec_t* fb; // next free block of the correct size
 	int rv = -1;
+
+	LOG4CXX_DEBUG(xarcllogger, (char *) "Adding log record key=" << xid << " value=" << ior);
 
 	lock();
 	if ((fb = get_blocks(nblocks, true)) != NULL) {
@@ -277,7 +288,9 @@ int XARecoveryLog::del_rec(XID& xid) {
 	rrec_t* next;
 	int rv;
 
+	LOG4CXX_DEBUG(xarcllogger, (char *) "Deleting log record key=" << xid);
 	lock();
+
 	if ((rv = find(xid, &prev, &next)) == 0) {
 		next->magic = 0l;
 		sync_rec(&(next->magic), sizeof (next->magic));

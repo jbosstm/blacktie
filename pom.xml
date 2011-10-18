@@ -229,6 +229,12 @@
       <dependency>
         <groupId>org.jboss.narayana.blacktie</groupId>
         <classifier>${bpa}</classifier>
+        <artifactId>atmibroker-transport</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.narayana.blacktie</groupId>
+        <classifier>${bpa}</classifier>
         <artifactId>atmibroker-tx</artifactId>
         <version>${project.version}</version>
       </dependency>

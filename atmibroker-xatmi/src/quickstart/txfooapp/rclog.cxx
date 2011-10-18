@@ -8,7 +8,7 @@
 /*
  * This quickstart shows how to dump the transaction recovery log. Compile as follows:
  *
- * g++ -I$BLACKTIE_HOME/include -L$BLACKTIE_HOME/lib -latmibroker-tx rclog.cxx
+ * g++ -I$BLACKTIE_HOME/include -L$BLACKTIE_HOME/lib/cxx -latmibroker-tx rclog.cxx
  *
  * There is also an interactive mode for deleting records. WARNING deleting a
  * recovery record means that its corresponding transaction branch will have

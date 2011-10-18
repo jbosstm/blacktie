@@ -130,16 +130,23 @@ char *HttpTxManager::enlist(XAWrapper* resource, TxControl *tx, const char * xid
     	const char *fmt = "terminator=http://%s:%d/xid/%s/terminate;durableparticipant=http://%s:%d/xid/%s/status";
     	struct mg_request_info ri;
 		(void) snprintf(body, sizeof (body), fmt, host, port, xid, host, port, xid);
-		char *resp = wc.send(&ri, "POST", enlistUrl, HttpControl::POST_MEDIA_TYPE, body, NULL);
+		if (wc.send(&ri, "POST", enlistUrl, HttpControl::POST_MEDIA_TYPE,
+			NULL, body, strlen(body), NULL, NULL) != 0) {
+			LOG4CXX_DEBUG(httptxlogger, "enlist POST error");
+			return NULL;
+		}
+
 		const char *rurl = get_header(&ri, "Location");
 
-		LOG4CXX_DEBUG(httptxlogger, "Enlisted with: " << body);
-		LOG4CXX_DEBUG(httptxlogger, "Recovery url: " << rurl);
-
-		if (resp)
-			free(resp);
-
 		recUrl = (rurl == NULL ? NULL : mg_strdup(rurl));
+
+//		for (int i = 0; i < ri.num_headers; i++)
+//			LOG4CXX_DEBUG(httptxlogger, "Header: " << ri.http_headers[i].name << "=" << ri.http_headers[i].value);
+	
+		wc.dispose(&ri);
+
+		LOG4CXX_DEBUG(httptxlogger, "Enlisted with: " << body);
+		LOG4CXX_DEBUG(httptxlogger, "Recovery url: " << recUrl);
 	}
 
 	if (recUrl != NULL)
@@ -161,11 +168,13 @@ bool HttpTxManager::recover(XAWrapper *resource)
    	const char *fmt = "terminator=http://%s:%d/xid/%s/terminate;durableparticipant=http://%s:%d/xid/%s/status";
    	struct mg_request_info ri;
 	(void) snprintf(body, sizeof (body), fmt, host, port, xid, host, port, xid);
-	char *resp = wc.send(&ri, "PUT", resource->get_recovery_coordinator(),
-		HttpControl::PLAIN_MEDIA_TYPE, body, NULL);
+	if (wc.send(&ri, "PUT", resource->get_recovery_coordinator(),
+		HttpControl::PLAIN_MEDIA_TYPE, NULL, body, strlen(body), NULL, NULL) != 0) {
+		LOG4CXX_INFO(httptxlogger, "recovery PUT error");
+		return false;
+	}
 
-	if (resp)
-		free(resp);
+	wc.dispose(&ri);
 
 	if (ri.status_code == 200) {
 		LOG4CXX_TRACE(httptxlogger, "recovery: told TM about participant " << xid);

@@ -84,6 +84,11 @@
     <dependency>
       <groupId>org.jboss.narayana.blacktie</groupId>
       <classifier>${bpa}</classifier>
+      <artifactId>atmibroker-transport</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.narayana.blacktie</groupId>
+      <classifier>${bpa}</classifier>
       <artifactId>tx-test-utilities</artifactId>
       <scope>test</scope>
     </dependency>

@@ -148,6 +148,8 @@ XAResourceManager::~XAResourceManager() {
 
 int  XAResourceManager::getRRType(const char* rc)
 {
+	LOG4CXX_TRACE(xarmlogger, (char *) "getRRType: " << rc);
+
 	if (strncmp(HTTP_PREFIX, rc, sizeof (HTTP_PREFIX) - 1) == 0)
 		return RR_TYPE_RTS;
 
@@ -208,6 +210,7 @@ bool XAResourceManager::recoverIOR(XID& bid, const char* rc)
 
 	FTRACE(xarmlogger, "ENTER");
 
+	try {
 	CORBA::Object_var ref = connection_->orbRef->string_to_object(rc);
 	XAResourceAdaptorImpl *ra = NULL;
 
@@ -345,6 +348,11 @@ bool XAResourceManager::recoverIOR(XID& bid, const char* rc)
 				}
 			}
 		}
+	}
+	} catch (const CORBA::SystemException& e) {
+		LOG4CXX_WARN(xarmlogger, (char *) "Cannot recover xid " << bid << " with recovery IOR " <<
+			rc << " reason " << e._name() << " minor: " << e.minor());
+		return false;
 	}
 
 	return delRecoveryRec;

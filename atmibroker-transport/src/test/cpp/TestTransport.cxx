@@ -101,7 +101,7 @@ void TestTransport::test_basic()
 	btlogger_debug("TestTransport::test_basic begin");
 	int i;
 	int cnt = 2;
-	const char *qname = "http://localhost:8080/bt-messaging-5.0.0.M2-SNAPSHOT/queues/jms.queue.testQueue";
+	const char *qname = "http://localhost:9090/bt-messaging-5.0.0.M2-SNAPSHOT/queues/jms.queue.testQueue";
 	apr_status_t rc = apr_initialize();
 	HttpSessionImpl s1(qname);
 
