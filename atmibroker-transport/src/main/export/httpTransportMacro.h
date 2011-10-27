@@ -22,7 +22,7 @@
 /* Only do defines if we're compiling on Win32 */
 #ifdef WIN32
 
-#ifdef HTTPTRANSPORT_DLL
+#ifdef _BLACKTIE_TRANSPORT_DLL
 #define HTTPTRANSPORT_DLL __declspec(dllexport)
 #else
 #define HTTPTRANSPORT_DLL __declspec(dllimport)
