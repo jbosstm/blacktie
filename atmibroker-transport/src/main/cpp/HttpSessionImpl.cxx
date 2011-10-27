@@ -30,6 +30,10 @@
 
 #include "HttpSessionImpl.h"
 
+#ifdef WIN32
+#define strtok_r(s,d,p) strtok_s(s,d,p)
+#endif
+
 static const char* PULL_CONSUMERS = "msg-pull-consumers";
 static const char* CREATE_WITH_ID = "msg-create-with-id";
 static const char* CREATE_HDR = "msg-create";

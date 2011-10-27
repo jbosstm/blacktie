@@ -15,12 +15,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef HTTPCLIENT_H
-#define HTTPCLIENT_H
+#ifndef _HTTPCLIENT_H
+#define _HTTPCLIENT_H
 
+#include "httpTransportMacro.h"
 #include "mongoose.h"
 
-class HttpClient {
+class HTTPTRANSPORT_DLL HttpClient {
 public:
 	HttpClient() : VERSION("1.1") {};
 	virtual ~HttpClient() {};
@@ -36,4 +37,4 @@ private:
 	void dup_headers(struct mg_request_info* ri);
 
 };
-#endif //HTTPCLIENT_H
+#endif //_HTTPCLIENT_H
