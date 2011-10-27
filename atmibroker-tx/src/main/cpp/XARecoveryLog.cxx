@@ -78,19 +78,19 @@ static int compareXids(const XID& xid1, const XID& xid2)
 static void init_logpath(const char *fname)
 {
 	if (fname) {
-		snprintf(RCLOGPATH, sizeof (RCLOGPATH), "%s", fname);
+		ACE_OS::snprintf(RCLOGPATH, sizeof (RCLOGPATH), "%s", fname);
 	} else {
 		// if fname is not passed see if the log name is set in the environent
 #if 1
 		AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
 		const char *rcLog   = env->getenv((char*) "BLACKTIE_RC_LOG_NAME", DEF_LOG);
 		const char *servName = env->getenv((char*) "BLACKTIE_SERVER_NAME", rcLog);
-		snprintf(RCLOGPATH, sizeof (RCLOGPATH), "%s", servName);
+		ACE_OS::snprintf(RCLOGPATH, sizeof (RCLOGPATH), "%s", servName);
 		AtmiBrokerEnv::discard_instance();
 #else
 		const char *rcLog   = DEF_LOG;
 		const char *servName = rcLog;
-		snprintf(RCLOGPATH, sizeof (RCLOGPATH), "%s", servName);
+		ACE_OS::snprintf(RCLOGPATH, sizeof (RCLOGPATH), "%s", servName);
 
 #endif
 	}
