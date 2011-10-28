@@ -4,11 +4,12 @@ echo ^<project name="blacktie-dependencies"^> >> build.xml
 echo    ^<target name="download"^> >> build.xml
 echo        ^<get src="http://albany/userContent/blacktie/instantclient-basiclite-win32-11.2.0.1.0.zip" dest="./instantclient-basiclite-win32-11.2.0.1.0.zip" verbose="true" usetimestamp="true" skipexisting="true"/^> >> build.xml
 echo        ^<get src="http://albany/userContent/blacktie/instantclient-sdk-win32-11.2.0.1.0.zip" dest="./instantclient-sdk-win32-11.2.0.1.0.zip" verbose="true" usetimestamp="true" skipexisting="true"/^> >> build.xml
+echo        ^<get src="http://albany/userContent/blacktie/tnsnames.ora" dest="./tnsnames.ora" verbose="true" usetimestamp="true" skipexisting="true"/^> >> build.xml
 echo        ^<delete dir="instantclient_11_2"/^> >> build.xml
 echo        ^<unzip src="./instantclient-basiclite-win32-11.2.0.1.0.zip" dest="."/^> >> build.xml
 echo        ^<unzip src="./instantclient-sdk-win32-11.2.0.1.0.zip" dest="."/^> >> build.xml
 echo        ^<mkdir dir="./instantclient_11_2/network/admin"/^> >> build.xml
-echo        ^<get src="http://albany/userContent/blacktie/tnsnames.ora" dest="./instantclient_11_2/network/admin/tnsnames.ora" verbose="true" usetimestamp="true" skipexisting="true"/^> >> build.xml
+echo        ^<copy file="./tnsnames.ora" tofile="./instantclient_11_2/network/admin/tnsnames.ora"/^> >> build.xml
 echo        ^<move tofile="./instantclient_11_2/OCI" file="./instantclient_11_2/sdk"/^> >> build.xml
 echo        ^<move tofile="./instantclient_11_2/OCI/lib/MSVC2" file="./instantclient_11_2/OCI/lib/msvc"/^> >> build.xml
 echo        ^<move tofile="./instantclient_11_2/OCI/lib/MSVC" file="./instantclient_11_2/OCI/lib/MSVC2"/^> >> build.xml
