@@ -33,7 +33,7 @@ set CLASSPATH=
 set M2_HOME=
 set MAVEN_HOME=
 
-set MAVEN_OPTS=%MAVEN_OPTS% -Xmx1280m -XX:MaxPermSize=300m
+set MAVEN_OPTS=%MAVEN_OPTS% -Xmx2560m -XX:MaxPermSize=300m
 set MVN_OPTIONS=-gs tools\maven\conf\settings.xml
 
 REM ******************************************************
