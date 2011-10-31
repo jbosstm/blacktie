@@ -154,14 +154,14 @@ int HttpControl::decode_headers(struct mg_request_info *ri) {
 		char *v = ri->http_headers[i].value;
 
 		LOG4CXX_DEBUG(httpclogger, "check header: " << n << " = " << v);
-		if (ACE_OS::strcasecmp(n, "Location") == 0) {
+		if (strcmp(n, "Location") == 0) {
 			LOG4CXX_TRACE(httpclogger, "_txnUrl=" << _txnUrl);
 			if (_txnUrl != NULL)
 				free (_txnUrl);
 			_txnUrl = strdup(v);
 			LOG4CXX_TRACE(httpclogger, "_txnUrl=" << _txnUrl);
 			_xid = last_path(_txnUrl);
-		} else if (ACE_OS::strcasecmp(n, "Link") == 0) {
+		} else if (strcmp(n, "Link") == 0) {
 			char *ep = strchr(v, ';');
 
 			if (ep != 0 && ++v < --ep) {
