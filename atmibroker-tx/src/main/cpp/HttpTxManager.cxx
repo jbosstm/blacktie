@@ -19,6 +19,8 @@
 #include "HttpControl.h"
 
 #include "ace/OS_NS_stdio.h"
+#include "ace/ACE.h"
+#include "ace/OS_NS_string.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -42,7 +44,7 @@ static char * parse_wid(HttpClient &wc, const char *s) {
 	char *wid = 0;
 
 	if (b && e && (b += sizeof (XIDPAT) - 1) < e) {
-		char *buf = strndup(b, e - b);
+		char *buf = ACE::strndup(b, e - b);
 
 		if (buf) {
 			wid = (char *) malloc(1024);

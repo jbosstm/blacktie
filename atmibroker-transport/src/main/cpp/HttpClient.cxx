@@ -21,6 +21,8 @@
 #include <ctype.h>
 #include <errno.h>
 
+#include "ace/ACE.h"
+
 #include "HttpClient.h"
 
 void HttpClient::dup_headers(struct mg_request_info* ri) {
@@ -97,7 +99,7 @@ int HttpClient::send(struct mg_request_info* ri, const char* method, const char*
 //	LOG4CXX_DEBUG(httpclientlog, "wrote header: body len: " << blen << " content: " << body);
 	int nread = 0;
 	n = read_bytes(conn, buf, sizeof(buf), &nread);
-	char *content = (nread > n ? strndup(buf + n, nread - n) : NULL);
+	char *content = (nread > n ? ACE::strndup(buf + n, nread - n) : NULL);
 	char *b = & buf[0];
 	char *scode;
 

@@ -23,7 +23,9 @@
 #include "TxManager.h"
 #include "mongoose.h"
 
+#include "ace/ACE.h"
 #include "ace/OS_NS_stdio.h"
+#include "ace/OS_NS_string.h"
 #include "ace/OS_NS_time.h"
 #include "ace/OS_NS_sys_time.h"
 
@@ -164,9 +166,9 @@ int HttpControl::decode_headers(struct mg_request_info *ri) {
 
 			if (ep != 0 && ++v < --ep) {
 				if (strstr(v, DUR_PARTICIPANT) != 0)
-					_enlistUrl = strndup(v, ep - v);
+					_enlistUrl = ACE::strndup(v, ep - v);
 				else if (strstr(v, TERMINATOR) != 0)
-					_endUrl = strndup(v, ep - v);
+					_endUrl = ACE::strndup(v, ep - v);
 			}
 		}
 	}

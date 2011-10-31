@@ -661,7 +661,7 @@ int XAResourceManager::createServant(XID& xid)
 			res = XAER_RMFAIL;
 		} else {
 			CORBA::String_var rcref = connection_->orbRef->object_to_string(rc);
-			ra->set_recovery_coordinator(ACE_OS::strdup(rcref));
+			ra->set_recovery_coordinator(strdup(rcref));
 	   		CORBA::release(rc);
 
 			LOG4CXX_TRACE(xarmlogger, (char*) "adding branch: " << xid);

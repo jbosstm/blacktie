@@ -93,7 +93,7 @@ char *OTSTxManager::get_current(long* ttl) {
 	if (!CORBA::is_nil(ctrl)) {
 		CORBA::ORB_ptr orb = _connection->orbRef;
 		CORBA::String_var cs = orb->object_to_string(ctrl);
-		toReturn = ACE_OS::strdup(cs);
+		toReturn = strdup(cs);
 	}
 
 	CORBA::release(ctrl);
