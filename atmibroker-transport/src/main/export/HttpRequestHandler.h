@@ -18,9 +18,11 @@
 #ifndef HTTPREQUESTHANDLER_H
 #define HTTPREQUESTHANDLER_H
 
+#include "httpTransportMacro.h"
+
 #include "mongoose.h"
 
-class HttpRequestHandler {
+class BLACKTIE_HTTP_TRANSPORT_DLL HttpRequestHandler {
 public:
     virtual ~HttpRequestHandler() {};
 	virtual void unregistering() {};

@@ -24,11 +24,7 @@
 #include "HttpSessionImpl.h"
 #include "SynchronizableObject.h"
 
-//TODO #include "log4cxx/logger.h"
-////TODO #include "Session.h"
-//#include "Message.h" // TODO defined in Session.h"
-
-class HTTPTRANSPORT_DLL HttpConnection: public virtual Connection {
+class BLACKTIE_HTTP_TRANSPORT_DLL HttpConnection: public virtual Connection {
 public:
     HttpConnection();
 	Session* createSessionImpl(bool isConv, int id, const char* temporaryQueueName);

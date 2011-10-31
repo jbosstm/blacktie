@@ -16,6 +16,7 @@
  * MA  02110-1301, USA.
  */
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 
 #include <sys/types.h>
@@ -73,7 +74,7 @@ static void *callback(enum mg_event event,
 HttpServer::HttpServer(const char* host, int port) :
 	SynchronizableObject(), _handler(NULL), _port(port), _ctx(NULL)
 {
-	_host = mg_strdup(host);
+	_host = strdup(host);
 }
 
 HttpServer::~HttpServer() {

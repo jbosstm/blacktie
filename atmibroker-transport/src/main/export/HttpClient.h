@@ -21,9 +21,9 @@
 #include "httpTransportMacro.h"
 #include "mongoose.h"
 
-class HTTPTRANSPORT_DLL HttpClient {
+class BLACKTIE_HTTP_TRANSPORT_DLL HttpClient {
 public:
-	HttpClient() : VERSION("1.1") {};
+	HttpClient() : HTTP_PROTO_VERSION("1.1") {};
 	virtual ~HttpClient() {};
 
 	int send(struct mg_request_info* ri,
@@ -31,7 +31,14 @@ public:
 		const char* headers[], const char *body, size_t blen, char **resp, size_t* rcnt);
 	void dispose(struct mg_request_info* ri);
 
-	const char *VERSION;
+	const char *get_header(const struct mg_request_info *ri, const char *name);
+	int parse_url(const char *url, char *host, int *port);
+	void url_encode(const char *src, char *dst, size_t dst_len);
+
+	int write(struct mg_connection *conn, const void *buf, size_t len);
+	void close_connection(struct mg_connection *conn);
+
+	const char *HTTP_PROTO_VERSION;
 
 private:
 	void dup_headers(struct mg_request_info* ri);

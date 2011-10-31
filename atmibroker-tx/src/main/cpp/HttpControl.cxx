@@ -16,6 +16,7 @@
  * MA  02110-1301, USA.
  */
 #include <string>
+#include <string.h>
 #include "log4cxx/logger.h"
 #include "ThreadLocalStorage.h"
 #include "HttpControl.h"
@@ -130,7 +131,7 @@ HttpControl::HttpControl(char* txn, long ttl, int tid) : TxControl(ttl, tid),
 	_txnUrl(NULL), _endUrl(NULL), _enlistUrl(NULL)
 {
 	FTRACE(httpclogger, "ENTER reassociate HTTPTXCONTROL: " << this << " txn=" << txn);
-	_txnUrl = mg_strdup(txn);
+	_txnUrl = strdup(txn);
 	_xid = last_path(_txnUrl);
 	LOG4CXX_TRACE(httpclogger, "_txnUrl=" << _txnUrl);
 }
@@ -151,21 +152,21 @@ int HttpControl::decode_headers(struct mg_request_info *ri) {
 		char *v = ri->http_headers[i].value;
 
 		LOG4CXX_DEBUG(httpclogger, "check header: " << n << " = " << v);
-		if (mg_strcasecmp(n, "Location") == 0) {
+		if (strcasecmp(n, "Location") == 0) {
 			LOG4CXX_TRACE(httpclogger, "_txnUrl=" << _txnUrl);
 			if (_txnUrl != NULL)
 				free (_txnUrl);
-			_txnUrl = mg_strdup(v);
+			_txnUrl = strdup(v);
 			LOG4CXX_TRACE(httpclogger, "_txnUrl=" << _txnUrl);
 			_xid = last_path(_txnUrl);
-		} else if (mg_strcasecmp(n, "Link") == 0) {
+		} else if (strcasecmp(n, "Link") == 0) {
 			char *ep = strchr(v, ';');
 
 			if (ep != 0 && ++v < --ep) {
 				if (strstr(v, DUR_PARTICIPANT) != 0)
-					_enlistUrl = mg_strndup(v, ep - v);
+					_enlistUrl = strndup(v, ep - v);
 				else if (strstr(v, TERMINATOR) != 0)
-					_endUrl = mg_strndup(v, ep - v);
+					_endUrl = strndup(v, ep - v);
 			}
 		}
 	}
@@ -360,7 +361,7 @@ int HttpControl::get_status()
 void* HttpControl::get_control()
 {
 	LOG4CXX_TRACE(httpclogger, "_txnUrl=" << _txnUrl);
-	return mg_strdup(_txnUrl);
+	return strdup(_txnUrl);
 }
 
 bool HttpControl::get_xid(XID& xid) {

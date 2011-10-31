@@ -23,7 +23,7 @@
 #include "Session.h"
 #include "HttpClient.h"
 
-class HTTPTRANSPORT_DLL HttpSessionImpl : public virtual Session {
+class BLACKTIE_HTTP_TRANSPORT_DLL HttpSessionImpl : public virtual Session {
 public:
     HttpSessionImpl(const char* qname);
     virtual ~HttpSessionImpl();

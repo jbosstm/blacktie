@@ -63,7 +63,7 @@ int HttpClient::send(struct mg_request_info* ri, const char* method, const char*
 	}
 
 //	LOG4CXX_DEBUG(httpclientlog, "connected to TM on " << host << ":" << port << " " << method << " " << uri);
-	mg_printf(conn, "%s %s HTTP/%s\r\n", method, uri, VERSION);
+	mg_printf(conn, "%s %s HTTP/%s\r\n", method, uri, HTTP_PROTO_VERSION);
 	mg_printf(conn, "Host: %s\r\n", host);
 	mg_printf(conn, "%s: %d\r\n", "Content-Length", blen);
 	mg_printf(conn, "%s: %s\r\n", "Content-Type", mediaType);
@@ -97,7 +97,7 @@ int HttpClient::send(struct mg_request_info* ri, const char* method, const char*
 //	LOG4CXX_DEBUG(httpclientlog, "wrote header: body len: " << blen << " content: " << body);
 	int nread = 0;
 	n = read_bytes(conn, buf, sizeof(buf), &nread);
-	char *content = (nread > n ? mg_strndup(buf + n, nread - n) : NULL);
+	char *content = (nread > n ? strndup(buf + n, nread - n) : NULL);
 	char *b = & buf[0];
 	char *scode;
 
@@ -156,4 +156,24 @@ int HttpClient::send(struct mg_request_info* ri, const char* method, const char*
 	}
 
 	return 0;
+}
+
+const char *HttpClient::get_header(const struct mg_request_info *ri, const char *name) {
+	return ::get_header(ri, name);
+}
+
+int HttpClient::parse_url(const char *url, char *host, int *port) {
+	return ::parse_url(url, host, port);
+}
+
+void HttpClient::url_encode(const char *src, char *dst, size_t dst_len) {
+	::url_encode(src, dst, dst_len);
+}
+
+int HttpClient::write(struct mg_connection *conn, const void *buf, size_t len) {
+	return mg_write(conn, buf, len);
+}
+
+void HttpClient::close_connection(struct mg_connection *conn) {
+	::close_connection(conn);
 }

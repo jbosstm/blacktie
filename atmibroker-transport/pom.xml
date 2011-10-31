@@ -101,7 +101,7 @@
         </os>
       </activation>
       <properties>
-        <export.dll>_BLACKTIE_TRANSPORT_DLL</export.dll>
+        <export.dll>_BLACKTIE_HTTP_TRANSPORT_DLL</export.dll>
       </properties>
     </profile>
   </profiles>

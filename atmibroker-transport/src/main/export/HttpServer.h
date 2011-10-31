@@ -21,7 +21,7 @@
 #include "HttpRequestHandler.h"
 #include "SynchronizableObject.h"
 
-class HttpServer : protected SynchronizableObject {
+class BLACKTIE_HTTP_TRANSPORT_DLL HttpServer : protected SynchronizableObject {
 public:
 	HttpServer(const char *host, int port);
 	virtual ~HttpServer();

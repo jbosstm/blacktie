@@ -36,17 +36,17 @@ static const char ENDPAT[] = "/terminate";
 
 log4cxx::LoggerPtr httptxlogger(log4cxx::Logger::getLogger("TxHttpTxManager"));
 
-static char * parse_wid(const char *s) {
+static char * parse_wid(HttpClient &wc, const char *s) {
 	const char *b = strstr(s, XIDPAT);
 	const char *e = strstr(s, ENDPAT);
 	char *wid = 0;
 
 	if (b && e && (b += sizeof (XIDPAT) - 1) < e) {
-		char *buf = mg_strndup(b, e - b);
+		char *buf = strndup(b, e - b);
 
 		if (buf) {
 			wid = (char *) malloc(1024);
-			url_encode(buf, wid, 1024);
+			wc.url_encode(buf, wid, 1024);
 			free(buf);
 		}
 	}
@@ -56,8 +56,8 @@ static char * parse_wid(const char *s) {
 
 HttpTxManager::HttpTxManager(const char *txmUrl, const char *resUrl) :
 	TxManager() {
-	_txmUrl = mg_strdup(txmUrl);
-	_resUrl = mg_strdup(resUrl);
+	_txmUrl = strdup(txmUrl);
+	_resUrl = strdup(resUrl);
 	FTRACE(httptxlogger, "ENTER inst create " << this);
 }
 
@@ -124,27 +124,26 @@ char *HttpTxManager::enlist(XAWrapper* resource, TxControl *tx, const char * xid
 	const char *enlistUrl = httpTx->enlistUrl();	
 
     if (enlistUrl != NULL) {
-		HttpClient wc;
 		const char *host = _ws->get_host();
 		int port = _ws->get_port();
     	char body[BUFSZ];
     	const char *fmt = "terminator=http://%s:%d/xid/%s/terminate;durableparticipant=http://%s:%d/xid/%s/status";
     	struct mg_request_info ri;
 		(void) ACE_OS::snprintf(body, sizeof (body), fmt, host, port, xid, host, port, xid);
-		if (wc.send(&ri, "POST", enlistUrl, HttpControl::POST_MEDIA_TYPE,
+		if (_wc.send(&ri, "POST", enlistUrl, HttpControl::POST_MEDIA_TYPE,
 			NULL, body, strlen(body), NULL, NULL) != 0) {
 			LOG4CXX_DEBUG(httptxlogger, "enlist POST error");
 			return NULL;
 		}
 
-		const char *rurl = get_header(&ri, "Location");
+		const char *rurl = _wc.get_header(&ri, "Location");
 
-		recUrl = (rurl == NULL ? NULL : mg_strdup(rurl));
+		recUrl = (rurl == NULL ? NULL : strdup(rurl));
 
 //		for (int i = 0; i < ri.num_headers; i++)
 //			LOG4CXX_DEBUG(httptxlogger, "Header: " << ri.http_headers[i].name << "=" << ri.http_headers[i].value);
 	
-		wc.dispose(&ri);
+		_wc.dispose(&ri);
 
 		LOG4CXX_DEBUG(httptxlogger, "Enlisted with: " << body);
 		LOG4CXX_DEBUG(httptxlogger, "Recovery url: " << recUrl);
@@ -161,7 +160,6 @@ bool HttpTxManager::recover(XAWrapper *resource)
 	/*
 	 * Tell the TM to complete this participant resource on the current endpoint:
 	 */
-	HttpClient wc;
 	const char *host = _ws->get_host();
 	int port = _ws->get_port();
 	const char* xid = resource->get_name();
@@ -169,13 +167,13 @@ bool HttpTxManager::recover(XAWrapper *resource)
    	const char *fmt = "terminator=http://%s:%d/xid/%s/terminate;durableparticipant=http://%s:%d/xid/%s/status";
    	struct mg_request_info ri;
 	(void) ACE_OS::snprintf(body, sizeof (body), fmt, host, port, xid, host, port, xid);
-	if (wc.send(&ri, "PUT", resource->get_recovery_coordinator(),
+	if (_wc.send(&ri, "PUT", resource->get_recovery_coordinator(),
 		HttpControl::PLAIN_MEDIA_TYPE, NULL, body, strlen(body), NULL, NULL) != 0) {
 		LOG4CXX_INFO(httptxlogger, "recovery PUT error");
 		return false;
 	}
 
-	wc.dispose(&ri);
+	_wc.dispose(&ri);
 
 	if (ri.status_code == 200) {
 		LOG4CXX_TRACE(httptxlogger, "recovery: told TM about participant " << xid);
@@ -194,7 +192,7 @@ int HttpTxManager::do_open(void) {
 	char host[1025];
 	int port;
 
-	(void) parse_url(_resUrl, host, &port);
+	(void) _wc.parse_url(_resUrl, host, &port);
 
 	FTRACE(httptxlogger, "ENTER: opening HTTP server: host: " <<
 		host << " port: " << port << " handler: " << this);
@@ -227,6 +225,18 @@ XAWrapper * HttpTxManager::locate_branch(const char * xid)
 	return NULL;
 }
 
+static int mongoose_printf(HttpClient &wc, struct mg_connection *conn, const char *fmt, ...) {
+	char buf[BUFSZ];
+	int len;
+	va_list ap;
+
+	va_start(ap, fmt);
+	len = ACE_OS::vsnprintf(buf, sizeof(buf), fmt, ap);
+	va_end(ap);
+
+	return wc.write(conn, buf, (size_t)len);
+}
+
 bool HttpTxManager::handle_request(
 	struct mg_connection *conn, const struct mg_request_info *ri, const char *content, size_t len)
 {
@@ -249,7 +259,7 @@ bool HttpTxManager::handle_request(
 	int stat = HttpControl::http_to_tx_status(content);
 
 	if (stat != -1) {
-		char* wid = parse_wid(ri->uri);
+		char* wid = parse_wid(_wc, ri->uri);
 		LOG4CXX_DEBUG(httptxlogger, "looking up branch " << wid);
 		XAWrapper* branch = locate_branch(wid);
 
@@ -360,7 +370,7 @@ bool HttpTxManager::handle_request(
 					break;
 				case -999:
 					LOG4CXX_INFO(httptxlogger, "closing connection to TM");
-					close_connection(conn);
+					_wc.close_connection(conn);
 					status = "GARBAGE";
 					codestr = HTTP_409;
 					code = res;
@@ -387,13 +397,13 @@ bool HttpTxManager::handle_request(
 	if (code == -999) {
 		LOG4CXX_DEBUG(httptxlogger, "skipping response");
 	} else if (code == 200 || code == 409) {
-		mg_printf(conn, "HTTP/1.1 %d %s\r\n"
+		mongoose_printf(_wc, conn, "HTTP/1.1 %d %s\r\n"
 			"Content-Length: %d\r\n"
 			"Content-Type: application/txstatus\r\n\r\n"
 			"%s%s",
 			200, "OK", strlen(status), HttpControl::TXSTATUS, status);
 	} else {
-		mg_printf(conn, "HTTP/1.1 %d %s\r\n"
+		mongoose_printf(_wc, conn, "HTTP/1.1 %d %s\r\n"
 			"Content-Length: %d\r\n"
 			"Content-Type: application/txstatus\r\n\r\n"
 //			"Connection: %s\r\n\r\n"	// "keep-alive" or "close"

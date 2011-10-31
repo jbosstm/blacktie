@@ -17,7 +17,7 @@
  */
 
 #include "XAWrapper.h"
-#include "mongoose.h"
+#include "HttpClient.h"
 #include <string.h>
 
 using namespace atmibroker::xa;
@@ -27,6 +27,7 @@ log4cxx::LoggerPtr xarwlogger(log4cxx::Logger::getLogger("TxXAWrapper"));
 extern std::ostream& operator<<(std::ostream &os, const XID& xid);
 
 static char * encode_xid(XID& xid) {
+	HttpClient wc;
 	char data[1024];
 	char *buf = (char *) malloc(1024);
 
@@ -34,7 +35,7 @@ static char * encode_xid(XID& xid) {
 
 	sprintf(data, "%ld:%s", xid.formatID, xid.data + xid.gtrid_length);
 
-	url_encode(data, buf, 1024);
+	wc.url_encode(data, buf, 1024);
 
 	return buf;
 }

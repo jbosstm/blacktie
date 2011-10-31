@@ -182,18 +182,6 @@ static int process() {
 
 int main(int argc, char* argv[])
 {
-#if 0
-	const char* xline = "p 3 5";
-	const char* line = "p hello world";
-	int cnt = 0, i;
-	char c;
-	int n = sscanf(line + 1, "%d %d", &cnt, &i);
-
-	printf("%d %d %d\n", n, cnt, i);
-	if (cnt == 0)
-		printf("%s\n", line);
-	return 0;
-#endif
 	int sc = qinfo(qname);
 
 //	printf("qinfo: %d\n", sc);

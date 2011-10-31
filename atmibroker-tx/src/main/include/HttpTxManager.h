@@ -56,6 +56,7 @@ private:
     typedef std::map<const char*, XAWrapper*> XABranchMap;
     XABranchMap _branches;
 	HttpServer *_ws;
+	HttpClient _wc;
 
     XAWrapper * locate_branch(const char * xid);
 

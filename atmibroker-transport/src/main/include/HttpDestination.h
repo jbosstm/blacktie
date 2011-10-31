@@ -22,7 +22,7 @@
 #include "httpTransportMacro.h"
 #include "Destination.h"
 
-class HTTPTRANSPORT_DLL HttpDestination: public virtual Destination {
+class BLACKTIE_HTTP_TRANSPORT_DLL HttpDestination: public virtual Destination {
 public:
 	HttpDestination(char* serviceName, bool conversational, char* type);
     virtual ~HttpDestination();

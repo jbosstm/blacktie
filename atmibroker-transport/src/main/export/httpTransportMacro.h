@@ -22,17 +22,17 @@
 /* Only do defines if we're compiling on Win32 */
 #ifdef WIN32
 
-#ifdef _BLACKTIE_TRANSPORT_DLL
-#define HTTPTRANSPORT_DLL __declspec(dllexport)
+#ifdef _BLACKTIE_HTTP_TRANSPORT_DLL
+#define BLACKTIE_HTTP_TRANSPORT_DLL __declspec(dllexport)
 #else
-#define HTTPTRANSPORT_DLL __declspec(dllimport)
+#define BLACKTIE_HTTP_TRANSPORT_DLL __declspec(dllimport)
 #endif
 
 #else /* Non-win32 platform. Macros need to pre-process away */
 
 /* quickstarts */
 
-#define HTTPTRANSPORT_DLL
+#define BLACKTIE_HTTP_TRANSPORT_DLL
 
 #endif
 
