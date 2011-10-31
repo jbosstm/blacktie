@@ -22,6 +22,7 @@
 #include "TxManager.h"
 #include "mongoose.h"
 
+#include "ace/OS_NS_stdio.h"
 #include "ace/OS_NS_time.h"
 #include "ace/OS_NS_sys_time.h"
 
@@ -244,7 +245,7 @@ int HttpControl::do_end(int how)
 			break;
 	}
 
-	(void) snprintf(p, sizeof (content), "%s%s", TXSTATUS, status);
+	(void) ACE_OS::snprintf(p, sizeof (content), "%s%s", TXSTATUS, status);
 	if (_wc.send(&ri, "PUT", _endUrl, STATUS_MEDIA_TYPE, NULL, p, strlen(p), &resp, &nread) != 0) {
 		LOG4CXX_DEBUG(httpclogger, "do_end: HTTP PUT error");
 

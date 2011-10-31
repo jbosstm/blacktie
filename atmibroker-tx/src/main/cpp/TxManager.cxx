@@ -91,6 +91,7 @@ TxManager::TxManager() : _isOpen(false), _whenReturn(TX_COMMIT_DECISION_LOGGED),
 //	AtmiBrokerEnv::get_instance();
 
 	try {
+		// TODO move _connection code to OTSTxManager
 		_connection = ::initOrb((char*) "ots");
 		LOG4CXX_DEBUG(txmlogger, (char*) "new CONNECTION: " << _connection);
 	} catch (CORBA::SystemException & e) {

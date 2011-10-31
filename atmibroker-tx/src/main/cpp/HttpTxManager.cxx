@@ -17,6 +17,8 @@
  */
 #include "HttpTxManager.h"
 #include "HttpControl.h"
+
+#include "ace/OS_NS_stdio.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,7 +26,7 @@
 namespace atmibroker {
 	namespace tx {
 
-static int BUFSZ = 1024;
+#define BUFSZ	1024
 static const char* HTTP_400 = (char *) "Bad Request";
 static const char* HTTP_409 = (char *) "Conflict";
 static const char* HTTP_412 = (char *) "Precondition Failed";
@@ -128,7 +130,7 @@ char *HttpTxManager::enlist(XAWrapper* resource, TxControl *tx, const char * xid
     	char body[BUFSZ];
     	const char *fmt = "terminator=http://%s:%d/xid/%s/terminate;durableparticipant=http://%s:%d/xid/%s/status";
     	struct mg_request_info ri;
-		(void) snprintf(body, sizeof (body), fmt, host, port, xid, host, port, xid);
+		(void) ACE_OS::snprintf(body, sizeof (body), fmt, host, port, xid, host, port, xid);
 		if (wc.send(&ri, "POST", enlistUrl, HttpControl::POST_MEDIA_TYPE,
 			NULL, body, strlen(body), NULL, NULL) != 0) {
 			LOG4CXX_DEBUG(httptxlogger, "enlist POST error");
@@ -166,7 +168,7 @@ bool HttpTxManager::recover(XAWrapper *resource)
    	char body[BUFSZ];
    	const char *fmt = "terminator=http://%s:%d/xid/%s/terminate;durableparticipant=http://%s:%d/xid/%s/status";
    	struct mg_request_info ri;
-	(void) snprintf(body, sizeof (body), fmt, host, port, xid, host, port, xid);
+	(void) ACE_OS::snprintf(body, sizeof (body), fmt, host, port, xid, host, port, xid);
 	if (wc.send(&ri, "PUT", resource->get_recovery_coordinator(),
 		HttpControl::PLAIN_MEDIA_TYPE, NULL, body, strlen(body), NULL, NULL) != 0) {
 		LOG4CXX_INFO(httptxlogger, "recovery PUT error");
