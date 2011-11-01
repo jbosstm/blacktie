@@ -443,6 +443,7 @@ void TestTransactions::test_tx_set()
 	btlogger("TestTransactions::test_tx_set pass");
 }
 
+#ifndef WIN32
 static int rcCnt1 = 0;
 static int rcCnt2 = 0;
 
@@ -535,3 +536,4 @@ void TestTransactions::test_wait_for_recovery()
 	BT_ASSERT_EQUAL(TX_OK, tx_close());
 	btlogger("TestTransactions::test_run_recovery passed");
 }
+#endif

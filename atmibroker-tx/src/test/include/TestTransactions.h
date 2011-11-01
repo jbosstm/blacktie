@@ -37,7 +37,9 @@ class TestTransactions: public CppUnit::TestFixture {
 	CPPUNIT_TEST(test_RM);
 	CPPUNIT_TEST(test_RM_recovery_scan);
 	CPPUNIT_TEST(test_tx_set);
+#ifndef WIN32
 	CPPUNIT_TEST(test_recovery);
+#endif
 
 	CPPUNIT_TEST_SUITE_END();
 
@@ -57,8 +59,10 @@ public:
 	void test_hhazard();
 	void test_register_resource();
 	void test_tx_set();
+#ifndef WIN32
 	void test_recovery();
 	void test_wait_for_recovery();
+#endif
 };
 
 #endif
