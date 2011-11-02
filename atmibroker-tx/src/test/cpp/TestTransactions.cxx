@@ -15,13 +15,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-
 #include <string>
 #include <sstream>
 
 #include "TestAssert.h"
 #include "TestTransactions.h"
-#include "XAResourceManager.h"
 #include "txi.h"
 #include "tx.h"
 #include "testrm.h"
@@ -29,13 +27,6 @@
 #include "btlogger.h"
 #include "testTxAvoid.h"
 
-#ifndef WIN32
-#include "ace/OS_NS_stdlib.h"
-#include "ace/OS_NS_stdio.h"
-#include "ace/OS_NS_string.h"
-#endif
-
-//check_info(const char *msg, int rv, COMMIT_RETURN cr, TRANSACTION_CONTROL tc, TRANSACTION_TIMEOUT tt, TRANSACTION_STATE ts)
 #define CHECKINFO(msg, rv, cr, tc, tt, ts)	{\
 	TXINFO txi;	\
 	BT_ASSERT_MESSAGE(msg, rv == tx_info(&txi));	\
@@ -49,16 +40,7 @@
 	if ((long) (tt) >= 0l) BT_ASSERT_MESSAGE(msg, txi.transaction_timeout == (long) (tt));	\
 	if ((long) (ts) >= 0l) BT_ASSERT_MESSAGE(msg, txi.transaction_state == (long) (ts));}
 
-extern struct xa_switch_t testxasw;
-
-#if 0
-	AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
-
-	char* txmUrl = (char *) env->getenv((char *) "TXN_MGR_URL");
-	char* resUrl = (char *) env->getenv((char *) "TXN_PARTICIPANT_EP");
-
-	AtmiBrokerEnv::discard_instance();
-#endif
+extern UTILITIES_DLL struct xa_switch_t testxasw;
 
 void TestTransactions::setUp()
 {
@@ -443,16 +425,15 @@ void TestTransactions::test_tx_set()
 	btlogger("TestTransactions::test_tx_set pass");
 }
 
-#ifndef WIN32
 static int rcCnt1 = 0;
 static int rcCnt2 = 0;
 
-void recovery_cb1(void) {
+static void recovery_cb1(void) {
 	rcCnt1 += 1;
 	btlogger_debug("TestTransactions recovery_cb1 called %d times", rcCnt1);
 }
 
-void recovery_cb2(void) {
+static void recovery_cb2(void) {
 	rcCnt2 += 1;
 	btlogger_debug("TestTransactions recovery_cb2 called %d times", rcCnt2);
 
@@ -463,7 +444,7 @@ void recovery_cb2(void) {
 //	BT_ASSERT(deactivate_objects(102, true));
 }
 
-void generate_recovery_record()
+static void generate_recovery_record()
 {
 	int nrecs1, nrecs2;
 
@@ -536,4 +517,3 @@ void TestTransactions::test_wait_for_recovery()
 	BT_ASSERT_EQUAL(TX_OK, tx_close());
 	btlogger("TestTransactions::test_run_recovery passed");
 }
-#endif

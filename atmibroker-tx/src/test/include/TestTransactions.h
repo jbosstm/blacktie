@@ -15,9 +15,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-
-#ifndef TestTransactions_H
-#define TestTransactions_H
+#ifndef _TESTTRANSACTIONS_H
+#define _TESTTRANSACTIONS_H
 
 #include <cppunit/extensions/HelperMacros.h>
 #include "cppunit/TestFixture.h"
@@ -37,9 +36,7 @@ class TestTransactions: public CppUnit::TestFixture {
 	CPPUNIT_TEST(test_RM);
 	CPPUNIT_TEST(test_RM_recovery_scan);
 	CPPUNIT_TEST(test_tx_set);
-#ifndef WIN32
 	CPPUNIT_TEST(test_recovery);
-#endif
 
 	CPPUNIT_TEST_SUITE_END();
 
@@ -59,10 +56,8 @@ public:
 	void test_hhazard();
 	void test_register_resource();
 	void test_tx_set();
-#ifndef WIN32
 	void test_recovery();
 	void test_wait_for_recovery();
-#endif
 };
 
 #endif
