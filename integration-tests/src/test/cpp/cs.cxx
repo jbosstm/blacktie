@@ -501,7 +501,9 @@ int run_client(int argc, char **argv) {
 		case 6:		res = t6(); break;
 		case 7:		res = t7(); break;
 		case 8:		res = t8(); break;
+#ifndef WIN32
 		case 9:		res = t9(); break;
+#endif
 		default: break;
 		}
 
