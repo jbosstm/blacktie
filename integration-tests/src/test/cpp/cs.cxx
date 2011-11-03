@@ -454,7 +454,12 @@ static int t9() {
 
 	thr_arg_t args = {1, large_buf, "large buffer test", "BAR", X_OCTET, X_OCTET, 0, 0, 99, 0};
 
+#ifndef WIN32
 	return lotsofwork(1, ACE_THR_FUNC(&work), &args);
+#else
+	btlogger((char*) "DISABLING TEST 9 for WIN32 build");
+	return 0;
+#endif
 }
 
 static int startTx(int enable) {
@@ -501,9 +506,7 @@ int run_client(int argc, char **argv) {
 		case 6:		res = t6(); break;
 		case 7:		res = t7(); break;
 		case 8:		res = t8(); break;
-#ifndef WIN32
 		case 9:		res = t9(); break;
-#endif
 		default: break;
 		}
 
