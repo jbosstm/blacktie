@@ -117,7 +117,7 @@ public abstract class CSControl extends TestCase {
 	}
 
 	public void runTest(String name) {
-		if ((isWinOS && ("2121".equals(name))) ||
+		if ((isWinOS && ("2121".equals(name) || "9".equals(name))) ||
 		    (isSunOS && ("213".equals(name) || "4".equals(name)))) {
 			log.info("skipping test " + name);
 			return;
