@@ -33,7 +33,7 @@ set JBOSS_HOME=
 rem CREATE BLACKTIE DISTRIBUTION
 cd %WORKSPACE%\trunk\scripts\test
 for /f "delims=" %%a in ('hostname') do @set MACHINE_ADDR=%%a
-call ant dist -DBT_HOME=%BT_HOME% -DVERSION=blacktie-5.0.0.M2-SNAPSHOT -DJBOSSAS_IP_ADDR=%JBOSSAS_IP_ADDR% -DMACHINE_ADDR=%MACHINE_ADDR%
+call ant dist -DBT_HOME=$WORKSPACE\trunk\dist\ -DVERSION=blacktie-5.0.0.M2-SNAPSHOT -DJBOSSAS_IP_ADDR=%JBOSSAS_IP_ADDR% -DMACHINE_ADDR=%MACHINE_ADDR% -Dbpa=vc9x32
 IF %ERRORLEVEL% NEQ 0 echo "Failing build" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
 
 rem RUN THE SAMPLES
