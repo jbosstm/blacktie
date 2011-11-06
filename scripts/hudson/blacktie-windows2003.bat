@@ -24,23 +24,23 @@ echo "Started server"
 rem BUILD BLACKTIE
 cd %WORKSPACE%\trunk
 call build.bat clean
-IF %ERRORLEVEL% NEQ 0 echo "Failing build" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
+IF %ERRORLEVEL% NEQ 0 echo "Failing build 1" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
 set JBOSS_HOME=%WORKSPACE%\jboss-5.1.0.GA
 call build.bat install "-Dbpa=vc9x32" "-Djbossas.ip.addr=%JBOSSAS_IP_ADDR%"
-IF %ERRORLEVEL% NEQ 0 echo "Failing build" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
+IF %ERRORLEVEL% NEQ 0 echo "Failing build 2" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
 set JBOSS_HOME=
 
 rem CREATE BLACKTIE DISTRIBUTION
 cd %WORKSPACE%\trunk\scripts\test
 for /f "delims=" %%a in ('hostname') do @set MACHINE_ADDR=%%a
 call ant dist -DBT_HOME=%WORKSPACE%\trunk\dist\ -DVERSION=blacktie-5.0.0.M2-SNAPSHOT -DJBOSSAS_IP_ADDR=%JBOSSAS_IP_ADDR% -DMACHINE_ADDR=%MACHINE_ADDR% -Dbpa=vc9x32
-IF %ERRORLEVEL% NEQ 0 echo "Failing build" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
+IF %ERRORLEVEL% NEQ 0 echo "Failing build 3" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
 
 rem RUN THE SAMPLES
 cd %WORKSPACE%
 call ant initializeBlackTieQuickstartSecurity
 cd %WORKSPACE%\trunk\dist\blacktie-5.0.0.M2-SNAPSHOT
-IF %ERRORLEVEL% NEQ 0 echo "Failing build" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
+IF %ERRORLEVEL% NEQ 0 echo "Failing build 4" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
 set ORACLE_HOME=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2
 set TNS_ADMIN=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2\network\admin
 set PATH=%PATH%;%ORACLE_HOME%\bin;%ORACLE_HOME%\vc9
@@ -48,11 +48,11 @@ set PATH=%PATH%;%ORACLE_HOME%\bin;%ORACLE_HOME%\vc9
 set PATH=%PATH%;%WORKSPACE%\trunk\tools\maven\bin
 
 call setenv.bat
-IF %ERRORLEVEL% NEQ 0 echo "Failing build" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
+IF %ERRORLEVEL% NEQ 0 echo "Failing build 5" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
 copy /Y %WORKSPACE%\trunk\dist\blacktie-5.0.0.M2-SNAPSHOT\quickstarts\xatmi\security\hornetq-*.properties %WORKSPACE%\jboss-5.1.0.GA\server\all-with-hornetq\conf\props
-IF %ERRORLEVEL% NEQ 0 echo "Failing build" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
+IF %ERRORLEVEL% NEQ 0 echo "Failing build 6" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
 call run_all_quickstarts.bat tx
-IF %ERRORLEVEL% NEQ 0 echo "Failing build" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
+IF %ERRORLEVEL% NEQ 0 echo "Failing build 7" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
 
 rem SHUTDOWN ANY PREVIOUS BUILD REMNANTS
 tasklist
