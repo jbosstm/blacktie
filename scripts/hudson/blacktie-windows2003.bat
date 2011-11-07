@@ -47,12 +47,14 @@ set PATH=%PATH%;%ORACLE_HOME%\bin;%ORACLE_HOME%\vc9
 
 set PATH=%PATH%;%WORKSPACE%\trunk\tools\maven\bin
 
+echo calling generated setenv - error %ERRORLEVEL%
+dir setenv.bat
 call setenv.bat
-IF %ERRORLEVEL% NEQ 0 echo "Failing build 5" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
+IF %ERRORLEVEL% NEQ 0 echo "Failing build 5 with error %ERRORLEVEL%" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
 copy /Y %WORKSPACE%\trunk\dist\blacktie-5.0.0.M2-SNAPSHOT\quickstarts\xatmi\security\hornetq-*.properties %WORKSPACE%\jboss-5.1.0.GA\server\all-with-hornetq\conf\props
-IF %ERRORLEVEL% NEQ 0 echo "Failing build 6" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
+IF %ERRORLEVEL% NEQ 0 echo "Failing build 6 with error %ERRORLEVEL%" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
 call run_all_quickstarts.bat tx
-IF %ERRORLEVEL% NEQ 0 echo "Failing build 7" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
+IF %ERRORLEVEL% NEQ 0 echo "Failing build 7 with error %ERRORLEVEL%" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
 
 rem SHUTDOWN ANY PREVIOUS BUILD REMNANTS
 tasklist
