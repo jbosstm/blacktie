@@ -65,7 +65,7 @@ cd %WORKSPACE%\hornetq-2.1.2.Final\config\jboss-as-5\
 set JBOSS_HOME=%WORKSPACE%\jboss-5.1.0.GA
 call build.bat
 set JBOSS_HOME=
-cd %WORKSPACE
+cd %WORKSPACE%
 
 rem INITIALIZE JBOSS
 cd %WORKSPACE%\jboss-5.1.0.GA\docs\examples\transactions
