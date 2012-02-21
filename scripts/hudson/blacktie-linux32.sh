@@ -27,7 +27,7 @@ else
 fi
 
 # INITIALIZE JBOSS
-. $WORKSPACE/trunk/scripts/hudson/initializeJBoss.sh
+. $WORKSPACE/scripts/hudson/initializeJBoss.sh
 if [ "$?" != "0" ]; then
 	exit -1
 fi
@@ -38,7 +38,7 @@ $WORKSPACE/jboss-5.1.0.GA/bin/run.sh -c all-with-hornetq -b localhost&
 sleep 53
 
 # BUILD BLACKTIE
-cd $WORKSPACE/trunk
+cd $WORKSPACE
 # THESE ARE SEPARATE SO WE DO NOT COPY THE OLD ARTIFACTS IF THE BUILD FAILS
 ./build.sh clean
 if [ "$?" != "0" ]; then
@@ -66,8 +66,8 @@ fi
 export JBOSS_HOME=
 
 # INITIALIZE THE BLACKTIE DISTRIBUTION
-cd $WORKSPACE/trunk/scripts/test
-ant dist -DBT_HOME=$WORKSPACE/trunk/dist/ -DVERSION=blacktie-5.0.0.M2-SNAPSHOT -DMACHINE_ADDR=`hostname` -DJBOSSAS_IP_ADDR=localhost -Dbpa=centos55x32
+cd $WORKSPACE/scripts/test
+ant dist -DBT_HOME=$WORKSPACE/dist/ -DVERSION=blacktie-5.0.0.M2-SNAPSHOT -DMACHINE_ADDR=`hostname` -DJBOSSAS_IP_ADDR=localhost -Dbpa=centos55x32
 if [ "$?" != "0" ]; then
 	ps -f
 	for i in `ps -eaf | grep java | grep "run.sh" | grep -v grep | cut -c10-15`; do kill -9 $i; done
@@ -80,7 +80,7 @@ if [ "$?" != "0" ]; then
 fi
 
 # RUN ALL THE SAMPLES
-cd $WORKSPACE/trunk/dist/blacktie-5.0.0.M2-SNAPSHOT/
+cd $WORKSPACE/dist/blacktie-5.0.0.M2-SNAPSHOT/
 chmod 775 setenv.sh
 . setenv.sh
 if [ "$?" != "0" ]; then
@@ -103,9 +103,9 @@ export DB2DIR=/opt/ibm/db2/V9.7
 export DB2_LIB=$DB2DIR/lib32
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DB2_LIB
 
-export PATH=$PATH:$WORKSPACE/trunk/tools/maven/bin
+export PATH=$PATH:$WORKSPACE/tools/maven/bin
 
-cp $WORKSPACE/trunk/dist/blacktie-5.0.0.M2-SNAPSHOT/quickstarts/xatmi/security/hornetq-*.properties $WORKSPACE/jboss-5.1.0.GA/server/all-with-hornetq/conf/props
+cp $WORKSPACE/dist/blacktie-5.0.0.M2-SNAPSHOT/quickstarts/xatmi/security/hornetq-*.properties $WORKSPACE/jboss-5.1.0.GA/server/all-with-hornetq/conf/props
 sed -i 's?</security-settings>?      <security-setting match="jms.queue.BTR_SECURE">\
          <permission type="send" roles="blacktie"/>\
          <permission type="consume" roles="blacktie"/>\

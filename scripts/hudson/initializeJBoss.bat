@@ -76,14 +76,14 @@ call ant replaceJBoss -DJBOSSAS_IP_ADDR=%JBOSSAS_IP_ADDR%
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem INITIALZE BLACKTIE JBOSS DEPENDENCIES
-copy %WORKSPACE%\trunk\jatmibroker-xatmi\src\test\resources\hornetq-jms.xml %WORKSPACE%\jboss-5.1.0.GA\server\all-with-hornetq\conf
+copy %WORKSPACE%\jatmibroker-xatmi\src\test\resources\hornetq-jms.xml %WORKSPACE%\jboss-5.1.0.GA\server\all-with-hornetq\conf
 cd %WORKSPACE%
 call ant configureHornetQ
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem INITIALZE JBOSSESB
-copy %WORKSPACE%\trunk\scripts\hudson\hornetq\jboss-as-hornetq-int.jar %WORKSPACE%\jboss-5.1.0.GA\common\lib
-copy %WORKSPACE%\trunk\scripts\hudson\hornetq\hornetq-deployers-jboss-beans.xml %WORKSPACE%\jboss-5.1.0.GA\server\all-with-hornetq\deployers
+copy %WORKSPACE%\scripts\hudson\hornetq\jboss-as-hornetq-int.jar %WORKSPACE%\jboss-5.1.0.GA\common\lib
+copy %WORKSPACE%\scripts\hudson\hornetq\hornetq-deployers-jboss-beans.xml %WORKSPACE%\jboss-5.1.0.GA\server\all-with-hornetq\deployers
 copy %WORKSPACE%\jbossesb-4.9\install\deployment.properties-example %WORKSPACE%\jbossesb-4.9\install\deployment.properties
 call ant configureESB -DWORKSPACE=%WORKSPACE:\=/%
 IF %ERRORLEVEL% NEQ 0 exit -1
