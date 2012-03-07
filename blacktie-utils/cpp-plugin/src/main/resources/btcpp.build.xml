@@ -290,7 +290,7 @@
 		<chmod file="${gperf}" perm="755"/>
 
 		<mkdir dir="${idl.output.dir}" />
-		<apply executable="${idl.compiler}" parallel="false" failonerror="true" newenvironment="true">
+		<apply executable="${idl.compiler}" parallel="false" failonerror="true" newenvironment="false">
 			<env key="ACE_ROOT" path="${ace.lroot}" />
 			<env key="TAO_ROOT" path="${ace.iroot}" />
 			<env key="LD_LIBRARY_PATH" path="${ace.lroot}/lib:${ace.broot}" />
