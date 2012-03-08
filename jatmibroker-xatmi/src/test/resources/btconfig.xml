@@ -37,33 +37,29 @@
 			workingDirectory="." argLine="foo" serverId="1" />
 		<MACHINE id="myserv10" hostname="winxp08" pathToExecutable="notExist"
 			workingDirectory="." argLine="foo" serverId="2" />
-		<MACHINE id="myserv11" hostname="WIN-J9AP1BU74SN" pathToExecutable="notExist"
+		<MACHINE id="myserv11" hostname="tarrytown" pathToExecutable="notExist"
 			workingDirectory="." argLine="foo" serverId="1" />
-		<MACHINE id="myserv12" hostname="WIN-J9AP1BU74SN" pathToExecutable="notExist"
+		<MACHINE id="myserv12" hostname="tarrytown" pathToExecutable="notExist"
 			workingDirectory="." argLine="foo" serverId="2" />
-		<MACHINE id="myserv13" hostname="tarrytown" pathToExecutable="notExist"
+		<MACHINE id="myserv13" hostname="sol2" pathToExecutable="notExist"
 			workingDirectory="." argLine="foo" serverId="1" />
-		<MACHINE id="myserv14" hostname="tarrytown" pathToExecutable="notExist"
+		<MACHINE id="myserv14" hostname="sol2" pathToExecutable="notExist"
 			workingDirectory="." argLine="foo" serverId="2" />
-		<MACHINE id="myserv15" hostname="clance" pathToExecutable="notExist"
+		<MACHINE id="myserv15" hostname="hoboken.buildnet.ncl.jboss.com" pathToExecutable="notExist"
 			workingDirectory="." argLine="foo" serverId="1" />
-		<MACHINE id="myserv16" hostname="clance" pathToExecutable="notExist"
+		<MACHINE id="myserv16" hostname="hoboken.buildnet.ncl.jboss.com" pathToExecutable="notExist"
 			workingDirectory="." argLine="foo" serverId="2" />
-		<MACHINE id="myserv17" hostname="sol2" pathToExecutable="notExist"
+		<MACHINE id="myserv17" hostname="tenafly.buildnet.ncl.jboss.com" pathToExecutable="notExist"
 			workingDirectory="." argLine="foo" serverId="1" />
-		<MACHINE id="myserv18" hostname="sol2" pathToExecutable="notExist"
+		<MACHINE id="myserv18" hostname="tenafly.buildnet.ncl.jboss.com" pathToExecutable="notExist"
 			workingDirectory="." argLine="foo" serverId="2" />
-		<MACHINE id="myserv19" hostname="hoboken.buildnet.ncl.jboss.com" pathToExecutable="notExist"
+		<MACHINE id="myserv19" hostname="tom-2cfd36gb7up" pathToExecutable="notExist"
 			workingDirectory="." argLine="foo" serverId="1" />
-		<MACHINE id="myserv20" hostname="hoboken.buildnet.ncl.jboss.com" pathToExecutable="notExist"
+		<MACHINE id="myserv20" hostname="tom-2cfd36gb7up" pathToExecutable="notExist"
 			workingDirectory="." argLine="foo" serverId="2" />
-		<MACHINE id="myserv21" hostname="tenafly.buildnet.ncl.jboss.com" pathToExecutable="notExist"
+		<MACHINE id="myserv21" hostname="WIN-5GKPEREVUOO" pathToExecutable="notExist"
 			workingDirectory="." argLine="foo" serverId="1" />
-		<MACHINE id="myserv22" hostname="tenafly.buildnet.ncl.jboss.com" pathToExecutable="notExist"
-			workingDirectory="." argLine="foo" serverId="2" />
-		<MACHINE id="myserv23" hostname="tom-2cfd36gb7up" pathToExecutable="notExist"
-			workingDirectory="." argLine="foo" serverId="1" />
-		<MACHINE id="myserv24" hostname="tom-2cfd36gb7up" pathToExecutable="notExist"
+		<MACHINE id="myserv22" hostname="WIN-5GKPEREVUOO" pathToExecutable="notExist"
 			workingDirectory="." argLine="foo" serverId="2" />
 	</MACHINES>
 	<SERVERS>
@@ -90,8 +86,6 @@
 			<MACHINE-REF id="myserv20" />
 			<MACHINE-REF id="myserv21" />
 			<MACHINE-REF id="myserv22" />
-			<MACHINE-REF id="myserv23" />
-			<MACHINE-REF id="myserv24" />
 			<SERVICE_NAMES>
 				<SERVICE name='TestOne'  externally-managed-destination='true'/>
 				<SERVICE name='TestTwo'  externally-managed-destination='true'/>

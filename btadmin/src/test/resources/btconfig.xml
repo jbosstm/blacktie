@@ -76,35 +76,35 @@
 			pathToExecutable="../cs"
 			workingDirectory="."
 			serverId="2" />
-		<MACHINE id="secure15" hostname="clance"
+		<MACHINE id="secure15" hostname="hoboken.buildnet.ncl.jboss.com"
 			pathToExecutable="../cs"
 			workingDirectory="."
 			serverId="1" />
-		<MACHINE id="secure16" hostname="clance"
+		<MACHINE id="secure16" hostname="hoboken.buildnet.ncl.jboss.com"
 			pathToExecutable="../cs"
 			workingDirectory="."
 			serverId="2" />
-		<MACHINE id="secure17" hostname="hoboken.buildnet.ncl.jboss.com"
+		<MACHINE id="secure17" hostname="tenafly.buildnet.ncl.jboss.com"
 			pathToExecutable="../cs"
 			workingDirectory="."
 			serverId="1" />
-		<MACHINE id="secure18" hostname="hoboken.buildnet.ncl.jboss.com"
+		<MACHINE id="secure18" hostname="tenafly.buildnet.ncl.jboss.com"
 			pathToExecutable="../cs"
 			workingDirectory="."
 			serverId="2" />
-		<MACHINE id="secure19" hostname="tenafly.buildnet.ncl.jboss.com"
+		<MACHINE id="secure19" hostname="tom-2cfd36gb7up"
 			pathToExecutable="../cs"
 			workingDirectory="."
 			serverId="1" />
-		<MACHINE id="secure20" hostname="tenafly.buildnet.ncl.jboss.com"
+		<MACHINE id="secure20" hostname="tom-2cfd36gb7up"
 			pathToExecutable="../cs"
 			workingDirectory="."
 			serverId="2" />
-		<MACHINE id="secure21" hostname="tom-2cfd36gb7up"
+		<MACHINE id="secure21" hostname="WIN-5GKPEREVUOO"
 			pathToExecutable="../cs"
 			workingDirectory="."
 			serverId="1" />
-		<MACHINE id="secure22" hostname="tom-2cfd36gb7up"
+		<MACHINE id="secure22" hostname="WIN-5GKPEREVUOO"
 			pathToExecutable="../cs"
 			workingDirectory="."
 			serverId="2" />
