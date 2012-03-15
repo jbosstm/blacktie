@@ -35,84 +35,82 @@ import com.sun.xml.xsom.XSType;
 import com.sun.xml.xsom.parser.XSOMParser;
 
 public class NBFSchemaParser {
-	private static final Logger log = LogManager.getLogger(NBFSchemaParser.class);
-	private String bufferName;
-	private Map<String, String> flds;
+    private static final Logger log = LogManager.getLogger(NBFSchemaParser.class);
+    private String bufferName;
+    private Map<String, String> flds;
 
-	public NBFSchemaParser() {
-		flds = new HashMap<String, String>();
-	}
+    public NBFSchemaParser() {
+        flds = new HashMap<String, String>();
+    }
 
-	private void findElementType(XSComplexType xtype) {
-		XSContentType xsContentType = xtype.getContentType();
-		XSParticle particle = xsContentType.asParticle();
+    private void findElementType(XSComplexType xtype) {
+        XSContentType xsContentType = xtype.getContentType();
+        XSParticle particle = xsContentType.asParticle();
 
-		if(particle != null){
-			XSTerm term = particle.getTerm();
-			if(term.isModelGroup()){
-				XSModelGroup xsModelGroup = term.asModelGroup();
-				XSParticle[] particles = xsModelGroup.getChildren();
-				for(XSParticle p : particles ){
-					XSTerm pterm = p.getTerm();
-					if(pterm.isElementDecl()){
-						XSElementDecl element = pterm.asElementDecl();
-						String name = element.getName();
-						log.debug(name);
-						XSType type = element.getType();
+        if (particle != null) {
+            XSTerm term = particle.getTerm();
+            if (term.isModelGroup()) {
+                XSModelGroup xsModelGroup = term.asModelGroup();
+                XSParticle[] particles = xsModelGroup.getChildren();
+                for (XSParticle p : particles) {
+                    XSTerm pterm = p.getTerm();
+                    if (pterm.isElementDecl()) {
+                        XSElementDecl element = pterm.asElementDecl();
+                        String name = element.getName();
+                        log.debug(name);
+                        XSType type = element.getType();
 
-						while(type != null) {
-							String typeName = type.getName();
-							if(typeName != null &&(typeName.equals("long") || 
-									typeName.equals("string") ||
-									typeName.equals("integer") ||
-									typeName.equals("float") ||
-									typeName.endsWith("_type"))) {
-								log.debug(typeName);
-								flds.put(name, typeName);
-								break;
-							}
-							type = type.getBaseType();
-						}
-					}
-				}
-			}
-		}
-	}
+                        while (type != null) {
+                            String typeName = type.getName();
+                            if (typeName != null
+                                    && (typeName.equals("long") || typeName.equals("string") || typeName.equals("integer")
+                                            || typeName.equals("float") || typeName.endsWith("_type"))) {
+                                log.debug(typeName);
+                                flds.put(name, typeName);
+                                break;
+                            }
+                            type = type.getBaseType();
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-	public boolean parse(String fname) {
-		boolean rc = false;
+    public boolean parse(String fname) {
+        boolean rc = false;
 
-		try {
-			flds.clear();
-			XSOMParser parser = new XSOMParser();
-			parser.parse(fname);
-			XSSchemaSet xsSchema = parser.getResult();
-			XSSchema schema = xsSchema.getSchema(1);
-			File file = new File(fname);
+        try {
+            flds.clear();
+            XSOMParser parser = new XSOMParser();
+            parser.parse(fname);
+            XSSchemaSet xsSchema = parser.getResult();
+            XSSchema schema = xsSchema.getSchema(1);
+            File file = new File(fname);
 
-			XSElementDecl element = schema.getElementDecl(file.getName().replace(".xsd", ""));
+            XSElementDecl element = schema.getElementDecl(file.getName().replace(".xsd", ""));
 
-			if(element != null) {
-				log.debug("element is " + element.getName());
-				bufferName = element.getName();
-				XSType xtype = element.getType();
-				if(xtype.isComplexType()) {
-					findElementType(xtype.asComplexType());
-					rc = true;
-				}
-			}
-		} catch (Exception e) {
-			log.error("parse " + fname + " failed with " + e.getMessage(), e);
-		}
+            if (element != null) {
+                log.debug("element is " + element.getName());
+                bufferName = element.getName();
+                XSType xtype = element.getType();
+                if (xtype.isComplexType()) {
+                    findElementType(xtype.asComplexType());
+                    rc = true;
+                }
+            }
+        } catch (Exception e) {
+            log.error("parse " + fname + " failed with " + e.getMessage(), e);
+        }
 
-		return rc;
-	}
+        return rc;
+    }
 
-	public String getBufferName() {
-		return bufferName;
-	}
+    public String getBufferName() {
+        return bufferName;
+    }
 
-	public Map<String, String> getFileds() {
-		return flds;
-	}
+    public Map<String, String> getFileds() {
+        return flds;
+    }
 }

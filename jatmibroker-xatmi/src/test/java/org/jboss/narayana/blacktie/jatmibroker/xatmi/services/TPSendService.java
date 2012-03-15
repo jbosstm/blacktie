@@ -7,10 +7,10 @@ import org.jboss.narayana.blacktie.jatmibroker.xatmi.Service;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.TPSVCINFO;
 
 public class TPSendService implements Service {
-	private static final Logger log = LogManager.getLogger(TPSendService.class);
+    private static final Logger log = LogManager.getLogger(TPSendService.class);
 
-	public Response tpservice(TPSVCINFO svcinfo) {
-		log.info("testtpsend_service");
-		return null;
-	}
+    public Response tpservice(TPSVCINFO svcinfo) {
+        log.info("testtpsend_service");
+        return null;
+    }
 }

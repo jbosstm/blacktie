@@ -21,91 +21,80 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.TestTPCancel;
 import org.jboss.narayana.blacktie.jatmibroker.RunServer;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionFactory;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.Response;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.X_OCTET;
 
 public class TestTPCancel extends TestCase {
-	private static final Logger log = LogManager.getLogger(TestTPCancel.class);
-	private RunServer server = new RunServer();
-	private Connection connection;
+    private static final Logger log = LogManager.getLogger(TestTPCancel.class);
+    private RunServer server = new RunServer();
+    private Connection connection;
 
-	public void setUp() throws ConnectionException, ConfigurationException {
-		server.serverinit();
-		server.tpadvertiseTestTPCancel();
+    public void setUp() throws ConnectionException, ConfigurationException {
+        server.serverinit();
+        server.tpadvertiseTestTPCancel();
 
-		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory();
-		connection = connectionFactory.getConnection();
-	}
+        ConnectionFactory connectionFactory = ConnectionFactory.getConnectionFactory();
+        connection = connectionFactory.getConnection();
+    }
 
-	public void tearDown() throws ConnectionException, ConfigurationException {
-		connection.close();
-		server.serverdone();
-	}
+    public void tearDown() throws ConnectionException, ConfigurationException {
+        connection.close();
+        server.serverdone();
+    }
 
-	public void test_tpcancel() throws ConnectionException {
-		log.info("test_tpcancel");
-		byte[] message = "cancel".getBytes();
-		int sendlen = message.length + 1;
-		X_OCTET sendbuf = (X_OCTET) connection
-				.tpalloc("X_OCTET", null, sendlen);
-		sendbuf.setByteArray(message);
+    public void test_tpcancel() throws ConnectionException, ConfigurationException {
+        log.info("test_tpcancel");
+        byte[] message = "cancel".getBytes();
+        int sendlen = message.length + 1;
+        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
+        sendbuf.setByteArray(message);
 
-		int cd = connection.tpacall(RunServer.getServiceNameTestTPCancel(),
-				sendbuf, 0);
-		assertTrue(cd != -1);
-		assertTrue(cd != 0);
+        int cd = connection.tpacall(RunServer.getServiceNameTestTPCancel(), sendbuf, 0);
+        assertTrue(cd != -1);
+        assertTrue(cd != 0);
 
-		// CANCEL THE REQUEST
-		int cancelled = connection.tpcancel(cd);
-		assertTrue(cancelled != -1);
+        // CANCEL THE REQUEST
+        int cancelled = connection.tpcancel(cd);
+        assertTrue(cancelled != -1);
 
-		// FAIL TO RETRIEVE THE RESPONSE
-		try {
-			Response valToTest = connection.tpgetrply(cd, 0);
-			assertNull("Could get a reply", valToTest);
-			fail("Method completed ok");
-		} catch (ConnectionException e) {
-			assertTrue(e.getTperrno() == Connection.TPEBADDESC);
-		}
-	}
+        // FAIL TO RETRIEVE THE RESPONSE
+        try {
+            Response valToTest = connection.tpgetrply(cd, 0);
+            assertNull("Could get a reply", valToTest);
+            fail("Method completed ok");
+        } catch (ConnectionException e) {
+            assertTrue(e.getTperrno() == Connection.TPEBADDESC);
+        }
+    }
 
-	public void test_tpcancel_noreply() throws ConnectionException {
-		log.info("test_tpcancel_noreply");
-		byte[] message = "cancel".getBytes();
-		int sendlen = message.length + 1;
-		X_OCTET sendbuf = (X_OCTET) connection
-				.tpalloc("X_OCTET", null, sendlen);
-		sendbuf.setByteArray(message);
+    public void test_tpcancel_noreply() throws ConnectionException, ConfigurationException {
+        log.info("test_tpcancel_noreply");
+        byte[] message = "cancel".getBytes();
+        int sendlen = message.length + 1;
+        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
+        sendbuf.setByteArray(message);
 
-		int cd = connection.tpacall(RunServer.getServiceNameTestTPCancel(),
-				sendbuf, Connection.TPNOREPLY);
-		assertTrue(cd == 0);
+        int cd = connection.tpacall(RunServer.getServiceNameTestTPCancel(), sendbuf, Connection.TPNOREPLY);
+        assertTrue(cd == 0);
 
-		// CANCEL THE REQUEST
-		try {
-			int cancelled = connection.tpcancel(cd);
-			fail("Could cancel a TPNOREPLY tpacall");
-		} catch (ConnectionException e) {
-			assertTrue(e.getTperrno() == Connection.TPEBADDESC);
-		}
-	}
+        // CANCEL THE REQUEST
+        try {
+            int cancelled = connection.tpcancel(cd);
+            fail("Could cancel a TPNOREPLY tpacall");
+        } catch (ConnectionException e) {
+            assertTrue(e.getTperrno() == Connection.TPEBADDESC);
+        }
+    }
 
-	// 8.5
-	public void test_tpcancel_baddesc() {
-		log.info("test_tpcancel_baddesc");
-		// CANCEL THE REQUEST
-		try {
-			int cancelled = connection.tpcancel(2);
-			fail("Could cancel a TPNOREPLY tpacall");
-		} catch (ConnectionException e) {
-			assertTrue(e.getTperrno() == Connection.TPEBADDESC);
-		}
-	}
+    // 8.5
+    public void test_tpcancel_baddesc() {
+        log.info("test_tpcancel_baddesc");
+        // CANCEL THE REQUEST
+        try {
+            int cancelled = connection.tpcancel(2);
+            fail("Could cancel a TPNOREPLY tpacall");
+        } catch (ConnectionException e) {
+            assertTrue(e.getTperrno() == Connection.TPEBADDESC);
+        }
+    }
 }

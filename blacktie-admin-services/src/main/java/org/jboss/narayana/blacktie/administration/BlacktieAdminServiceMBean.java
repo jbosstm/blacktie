@@ -21,17 +21,17 @@ package org.jboss.narayana.blacktie.administration;
  * This is the Admin service MBean
  */
 public interface BlacktieAdminServiceMBean extends BlacktieAdministration {
-	/**
-	 * Start the service
-	 * 
-	 * @throws Exception
-	 */
-	void start() throws Exception;
+    /**
+     * Start the service
+     * 
+     * @throws Exception
+     */
+    void start() throws Exception;
 
-	/**
-	 * Stop the service
-	 * 
-	 * @throws Exception
-	 */
-	void stop() throws Exception;
+    /**
+     * Stop the service
+     * 
+     * @throws Exception
+     */
+    void stop() throws Exception;
 }

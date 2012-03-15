@@ -23,45 +23,38 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.narayana.blacktie.jatmibroker.RunServer;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionFactory;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.X_OCTET;
 
 public class TestTPService extends TestCase {
-	private static final Logger log = LogManager.getLogger(TestTPService.class);
-	private RunServer server = new RunServer();
-	private Connection connection;
-	private int sendlen;
-	private X_OCTET sendbuf;
+    private static final Logger log = LogManager.getLogger(TestTPService.class);
+    private RunServer server = new RunServer();
+    private Connection connection;
+    private int sendlen;
+    private X_OCTET sendbuf;
 
-	public void setUp() throws ConnectionException, ConfigurationException {
-		server.serverinit();
-		server.tpadvertiseTestTPService();
+    public void setUp() throws ConnectionException, ConfigurationException {
+        server.serverinit();
+        server.tpadvertiseTestTPService();
 
-		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory();
-		connection = connectionFactory.getConnection();
+        ConnectionFactory connectionFactory = ConnectionFactory.getConnectionFactory();
+        connection = connectionFactory.getConnection();
 
-		sendlen = "TestTPService".length() + 1;
-		sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
-		sendbuf.setByteArray("TestTPService".getBytes());
-	}
+        sendlen = "TestTPService".length() + 1;
+        sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
+        sendbuf.setByteArray("TestTPService".getBytes());
+    }
 
-	public void tearDown() throws ConnectionException, ConfigurationException {
-		connection.close();
-		server.serverdone();
-	}
+    public void tearDown() throws ConnectionException, ConfigurationException {
+        connection.close();
+        server.serverdone();
+    }
 
-	public void test_tpservice_notpreturn() {
-		log.info("test_tpservice_notpreturn");
-		try {
-			connection.tpcall(RunServer.getServiceNameTestTPService(), sendbuf,
-					0);
-			fail("Managed call");
-		} catch (ConnectionException e) {
-			assertTrue("Error was: " + e.getTperrno(),
-					e.getTperrno() == Connection.TPESVCERR);
-		}
-	}
+    public void test_tpservice_notpreturn() throws ConfigurationException {
+        log.info("test_tpservice_notpreturn");
+        try {
+            connection.tpcall(RunServer.getServiceNameTestTPService(), sendbuf, 0);
+            fail("Managed call");
+        } catch (ConnectionException e) {
+            assertTrue("Error was: " + e.getTperrno(), e.getTperrno() == Connection.TPESVCERR);
+        }
+    }
 }

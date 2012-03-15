@@ -76,27 +76,27 @@
 			pathToExecutable="../cs"
 			workingDirectory="."
 			serverId="2" />
-		<MACHINE id="secure15" hostname="hoboken.buildnet.ncl.jboss.com"
+		<MACHINE id="secure15" hostname="wicket"
 			pathToExecutable="../cs"
 			workingDirectory="."
 			serverId="1" />
-		<MACHINE id="secure16" hostname="hoboken.buildnet.ncl.jboss.com"
+		<MACHINE id="secure16" hostname="wicket"
 			pathToExecutable="../cs"
 			workingDirectory="."
 			serverId="2" />
-		<MACHINE id="secure17" hostname="tenafly.buildnet.ncl.jboss.com"
+		<MACHINE id="secure17" hostname="hoboken.buildnet.ncl.jboss.com"
 			pathToExecutable="../cs"
 			workingDirectory="."
 			serverId="1" />
-		<MACHINE id="secure18" hostname="tenafly.buildnet.ncl.jboss.com"
+		<MACHINE id="secure18" hostname="hoboken.buildnet.ncl.jboss.com"
 			pathToExecutable="../cs"
 			workingDirectory="."
 			serverId="2" />
-		<MACHINE id="secure19" hostname="tom-2cfd36gb7up"
+		<MACHINE id="secure19" hostname="tenafly.buildnet.ncl.jboss.com"
 			pathToExecutable="../cs"
 			workingDirectory="."
 			serverId="1" />
-		<MACHINE id="secure20" hostname="tom-2cfd36gb7up"
+		<MACHINE id="secure20" hostname="tenafly.buildnet.ncl.jboss.com"
 			pathToExecutable="../cs"
 			workingDirectory="."
 			serverId="2" />
@@ -141,11 +141,10 @@
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>
-	<ORB OPT="-ORBInitRef NameService=corbaloc::${JBOSSAS_IP_ADDR}:3528/NameService"
+	<ORB OPT="-ORBInitRef NameService=corbaloc::${JBOSSAS_IP_ADDR}:3528/NameService -ORBListenEndpoints iiop://${JBOSSAS_IP_ADDR}:0"
 		TRANS_FACTORY_ID="TransactionManagerService.OTS" />
-	<MQ HOST="${JBOSSAS_IP_ADDR}" PORT="61613" USER="guest" PASSWORD="guest"
-		 RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10"
-		NAMING_URL="jnp://${JBOSSAS_IP_ADDR}:1099" />
-	<JMX url="service:jmx:rmi:///jndi/rmi://${JBOSSAS_IP_ADDR}:1090/jmxconnector" />
+	<MQ HOST="${JBOSSAS_IP_ADDR}" PORT="61613" USER="guest" PASSWORD="password"
+		 RECEIVE_TIMEOUT="10" TIME_TO_LIVE="40"
+		 />
+	
 </ENVIRONMENT>
-

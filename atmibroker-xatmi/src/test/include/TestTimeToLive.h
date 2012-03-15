@@ -31,9 +31,12 @@ class TestTimeToLive: public BaseServerTest {
 public:
 	void testTTL();
 	int  callTTL();
-	long getTTLCounter();
 	virtual void setUp();
 	virtual void tearDown();
+
+private:
+	char *sendbuf, *rcvbuf;
+	long rcvlen;
 };
 
 #endif

@@ -7,16 +7,15 @@ import org.jboss.narayana.blacktie.jatmibroker.xatmi.Service;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.TPSVCINFO;
 
 public class TPDisconService implements Service {
-	private static final Logger log = LogManager
-			.getLogger(TPDisconService.class);
+    private static final Logger log = LogManager.getLogger(TPDisconService.class);
 
-	public Response tpservice(TPSVCINFO svcinfo) {
-		log.info("testtpdiscon_service");
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			log.error("Was interrupted");
-		}
-		return null;
-	}
+    public Response tpservice(TPSVCINFO svcinfo) {
+        log.info("testtpdiscon_service");
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            log.error("Was interrupted");
+        }
+        return null;
+    }
 }

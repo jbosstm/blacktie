@@ -25,58 +25,50 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.narayana.blacktie.btadmin.CommandHandler;
 
 public class ListRunningServersTest extends TestCase {
-	private static final Logger log = LogManager
-			.getLogger(ListRunningServersTest.class);
+    private static final Logger log = LogManager.getLogger(ListRunningServersTest.class);
 
-	private CommandHandler commandHandler;
+    private CommandHandler commandHandler;
 
-	public void setUp() throws Exception {
-		this.commandHandler = new CommandHandler();
-	}
+    public void setUp() throws Exception {
+        this.commandHandler = new CommandHandler();
+    }
 
-	public void tearDown() throws Exception {
-	}
+    public void tearDown() throws Exception {
+    }
 
-	public void testListRunningServersWithAdditionalArgs() throws IOException,
-			MalformedObjectNameException, NullPointerException,
-			InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		log.info("ListRunningServersTest::testListRunningInstanceIdsWithRunningServer");
-		String command = "listRunningServers foo";
-		if (commandHandler.handleCommand(command.split(" ")) == 0) {
-			fail("Command was successful");
-		}
-	}
+    public void testListRunningServersWithAdditionalArgs() throws IOException, MalformedObjectNameException,
+            NullPointerException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+        log.info("ListRunningServersTest::testListRunningInstanceIdsWithRunningServer");
+        String command = "listRunningServers foo";
+        if (commandHandler.handleCommand(command.split(" ")) == 0) {
+            fail("Command was successful");
+        }
+    }
 
-	public void testListRunningServersWithoutServers() throws IOException,
-			MalformedObjectNameException, NullPointerException,
-			InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		log.info("ListRunningServersTest::testListRunningServersWithoutServers");
-		String command = "listRunningServers";
-		if (commandHandler.handleCommand(command.split(" ")) != 0) {
-			fail("Command was not successful");
-		}
-	}
+    public void testListRunningServersWithoutServers() throws IOException, MalformedObjectNameException, NullPointerException,
+            InstantiationException, IllegalAccessException, ClassNotFoundException {
+        log.info("ListRunningServersTest::testListRunningServersWithoutServers");
+        String command = "listRunningServers";
+        if (commandHandler.handleCommand(command.split(" ")) != 0) {
+            fail("Command was not successful");
+        }
+    }
 
-	public void testListRunningServersWithServers() throws IOException,
-			MalformedObjectNameException, NullPointerException,
-			InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		log.info("ListRunningServersTest::testListRunningServersWithServers");
-		if (commandHandler.handleCommand("startup testsui".split(" ")) != 0) {
-			fail("Could not start the server");
-		}
-		String command = "listRunningServers";
-		if (commandHandler.handleCommand(command.split(" ")) != 0) {
-			fail("Command was not successful");
-		}
+    public void testListRunningServersWithServers() throws IOException, MalformedObjectNameException, NullPointerException,
+            InstantiationException, IllegalAccessException, ClassNotFoundException {
+        log.info("ListRunningServersTest::testListRunningServersWithServers");
+        if (commandHandler.handleCommand("startup testsui".split(" ")) != 0) {
+            fail("Could not start the server");
+        }
+        String command = "listRunningServers";
+        if (commandHandler.handleCommand(command.split(" ")) != 0) {
+            fail("Command was not successful");
+        }
 
-		if (commandHandler.handleCommand("shutdown".split(" ")) != 0) {
-			fail("Could not stop the server");
-		}
-	}
+        if (commandHandler.handleCommand("shutdown".split(" ")) != 0) {
+            fail("Could not stop the server");
+        }
+    }
 }

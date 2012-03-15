@@ -95,31 +95,87 @@ void TestXAStompConnection::test() {
 		clientSend.replyto = client->getReplyTo();
 		clientSend.type = (char*) "X_OCTET";
 		clientSend.subtype = (char*) "";
-		clientSend.ttl = 10 * 1000;
+		clientSend.ttl = 120 * 1000;
 		clientSend.control = NULL;
 		long discardTxTTL = -1;
-		clientSend.xid = txx_serialize(&discardTxTTL);;
+		clientSend.xid = txx_serialize(&discardTxTTL);
 		clientSend.syncRcv = 0;
 		BT_ASSERT(client->send((char*) "JAVA_Converse", clientSend));
 		free (clientData);
-        free (clientSend.xid);
+        	free (clientSend.xid);
+		btlogger("TestXAStompConnection::test sent message");
 	}
 
 	tx_commit();
 	tx_close();
 
-	// THIS IS THE RECEIVE
-	Destination* destination = serverConnection->createDestination(
-			(char*) "JAVA_Converse", false, (char*) "queue");
-
+	btlogger("TestXAStompConnection::test starting to receive (rollback)");
+	tx_open();
+	tx_begin();
 	btlogger("Iterating");
 	for (int i = 0; i < msgCount; i++) {
-		MESSAGE serviceReceived = destination->receive(0);
-		BT_ASSERT(serviceReceived.received);
-		destination->ack(serviceReceived);
-		free(serviceReceived.data);
+		MESSAGE message;
+		message.replyto = NULL;
+		message.correlationId = -1;
+		message.data = NULL;
+		message.len = 0;
+		message.priority = 0;
+		message.flags = -1;
+		message.control = NULL;
+		message.rval = -1;
+		message.rcode = -1;
+		message.type = NULL;
+		message.subtype = NULL;
+		message.received = false;
+		message.ttl = -1;
+		message.serviceName = NULL;
+		message.messageId = NULL;
+		message.syncRcv = 1;
+		long discardTxTTL = -1;
+		message.xid = txx_serialize(&discardTxTTL);
+		BT_ASSERT(client->send((char*) "JAVA_Converse", message));
+		BT_ASSERT(message.received);
+		BT_ASSERT(strncmp(message.data, "hello", 5) == 0);
+		free(message.data);
+		btlogger("TestXAStompConnection::test received message");
 	}
+	tx_rollback();
+	tx_close();
+
+
+	btlogger("TestXAStompConnection::test starting to receive (commit)");
+	tx_open();
+	tx_begin();
+	btlogger("Iterating");
+	for (int i = 0; i < msgCount; i++) {
+		MESSAGE message;
+		message.replyto = NULL;
+		message.correlationId = -1;
+		message.data = NULL;
+		message.len = 0;
+		message.priority = 0;
+		message.flags = -1;
+		message.control = NULL;
+		message.rval = -1;
+		message.rcode = -1;
+		message.type = NULL;
+		message.subtype = NULL;
+		message.received = false;
+		message.ttl = -1;
+		message.serviceName = NULL;
+		message.messageId = NULL;
+		message.syncRcv = 1;
+		long discardTxTTL = -1;
+		message.xid = txx_serialize(&discardTxTTL);
+		message.control = NULL;
+		BT_ASSERT(client->send((char*) "JAVA_Converse", message));
+		BT_ASSERT(message.received);
+		BT_ASSERT(strncmp(message.data, "hello", 5) == 0);
+		free(message.data);
+		btlogger("TestXAStompConnection::test received message");
+	}
+	tx_commit();
+	tx_close();
 
 	btlogger("Iterated");
-	serverConnection->destroyDestination(destination);
 }

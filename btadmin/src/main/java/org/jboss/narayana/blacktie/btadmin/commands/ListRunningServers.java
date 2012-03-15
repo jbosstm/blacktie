@@ -17,60 +17,41 @@
  */
 package org.jboss.narayana.blacktie.btadmin.commands;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanException;
-import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
-import javax.management.ReflectionException;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.narayana.blacktie.administration.BlacktieAdministration;
 import org.jboss.narayana.blacktie.btadmin.Command;
 import org.jboss.narayana.blacktie.btadmin.CommandHandler;
 import org.jboss.narayana.blacktie.btadmin.IncompatibleArgsException;
 
 public class ListRunningServers implements Command {
-	/**
-	 * The logger to use for output
-	 */
-	private static Logger log = LogManager.getLogger(ListRunningServers.class);
+    /**
+     * The logger to use for output
+     */
+    private static Logger log = LogManager.getLogger(ListRunningServers.class);
 
-	/**
-	 * Does the command require the admin connection.
-	 */
-	public boolean requiresAdminConnection() {
-		return true;
-	}
+    /**
+     * Show the usage of the command
+     */
+    public String getQuickstartUsage() {
+        return "";
+    }
 
-	/**
-	 * Show the usage of the command
-	 */
-	public String getQuickstartUsage() {
-		return "";
-	}
+    /**
+     * This is a no-op for this command
+     */
+    public void initializeArgs(String[] args) throws IncompatibleArgsException {
+        // NO-OP as no arguments
+    }
 
-	/**
-	 * This is a no-op for this command
-	 */
-	public void initializeArgs(String[] args) throws IncompatibleArgsException {
-		// NO-OP as no arguments
-	}
-
-	/**
-	 * List the running servers to console and log file
-	 */
-	public void invoke(MBeanServerConnection beanServerConnection,
-			ObjectName blacktieAdmin, Properties configuration)
-			throws InstanceNotFoundException, MBeanException,
-			ReflectionException, IOException {
-		List<String> listRunningServers = (ArrayList<String>) beanServerConnection
-				.invoke(blacktieAdmin, "listRunningServers", null, null);
-		log.info(CommandHandler.convertList("listRunningServers",
-				listRunningServers));
-	}
+    /**
+     * List the running servers to console and log file
+     */
+    public void invoke(BlacktieAdministration connection, Properties configuration) {
+        List<String> listRunningServers = connection.listRunningServers();
+        log.info(CommandHandler.convertList("listRunningServers", listRunningServers));
+    }
 }

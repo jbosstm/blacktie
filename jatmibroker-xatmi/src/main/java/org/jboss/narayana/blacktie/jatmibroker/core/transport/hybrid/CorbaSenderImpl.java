@@ -27,71 +27,66 @@ import AtmiBroker.EndpointQueue;
 import AtmiBroker.EndpointQueueHelper;
 
 public class CorbaSenderImpl implements Sender {
-	private static final Logger log = LogManager
-			.getLogger(CorbaSenderImpl.class);
-	private EndpointQueue queue;
-	private String name;
-	private int pad = 0;
-	private boolean closed;
+    private static final Logger log = LogManager.getLogger(CorbaSenderImpl.class);
+    private EndpointQueue queue;
+    private String name;
+    private int pad = 0;
+    private boolean closed;
 
-	CorbaSenderImpl(org.omg.CORBA.Object serviceFactoryObject, String name) {
-		this.queue = EndpointQueueHelper.narrow(serviceFactoryObject);
-		this.name = name;
-		log.debug("Corba sender for: " + name + " created");
-	}
+    CorbaSenderImpl(org.omg.CORBA.Object serviceFactoryObject, String name) {
+        this.queue = EndpointQueueHelper.narrow(serviceFactoryObject);
+        this.name = name;
+        log.debug("Corba sender for: " + name + " created");
+    }
 
-	public void send(Object replyTo, short rval, int rcode, byte[] data,
-			int len, int correlationId, int flags, int ttl, String type,
-			String subtype) throws ConnectionException {
-		log.debug("Sending the message");
-		if (closed) {
-			log.error("Sender closed");
-			throw new ConnectionException(Connection.TPEPROTO, "Sender closed");
-		}
-		if (data == null) {
-			data = new byte[1];
-			len = 1;
-		}
-		String toReplyTo = (String) replyTo;
-		if (toReplyTo == null) {
-			log.trace("Reply to set as null");
-			toReplyTo = "";
-		}
-		if (type == null) {
-			log.trace("Type set as null");
-			type = "";
-		}
-		if (subtype == null) {
-			log.trace("Subtype set as null");
-			subtype = "";
-		}
-		if (len < 1) {
-			log.error("Length of buffer must be greater than 0");
-			throw new ConnectionException(Connection.TPEINVAL,
-					"Length of buffer must be greater than 0");
-		}
-		byte[] toSend = new byte[len + pad];
-		if (data != null) {
-			int min = Math.min(toSend.length, data.length);
-			System.arraycopy(data, 0, toSend, 0, min);
-		}
-		log.debug("Preparing to send the message");
-		queue.send(toReplyTo, rval, rcode, toSend, toSend.length,
-				correlationId, flags, type, subtype);
-		log.debug("Sent the message");
-	}
+    public void send(Object replyTo, short rval, int rcode, byte[] data, int len, int correlationId, int flags, int ttl,
+            String type, String subtype) throws ConnectionException {
+        log.debug("Sending the message");
+        if (closed) {
+            log.error("Sender closed");
+            throw new ConnectionException(Connection.TPEPROTO, "Sender closed");
+        }
+        if (data == null) {
+            data = new byte[1];
+            len = 1;
+        }
+        String toReplyTo = (String) replyTo;
+        if (toReplyTo == null) {
+            log.trace("Reply to set as null");
+            toReplyTo = "";
+        }
+        if (type == null) {
+            log.trace("Type set as null");
+            type = "";
+        }
+        if (subtype == null) {
+            log.trace("Subtype set as null");
+            subtype = "";
+        }
+        if (len < 1) {
+            log.error("Length of buffer must be greater than 0");
+            throw new ConnectionException(Connection.TPEINVAL, "Length of buffer must be greater than 0");
+        }
+        byte[] toSend = new byte[len + pad];
+        if (data != null) {
+            int min = Math.min(toSend.length, data.length);
+            System.arraycopy(data, 0, toSend, 0, min);
+        }
+        log.debug("Preparing to send the message");
+        queue.send(toReplyTo, rval, rcode, toSend, toSend.length, correlationId, flags, type, subtype);
+        log.debug("Sent the message");
+    }
 
-	public void close() throws ConnectionException {
-		log.debug("Close called");
-		if (closed) {
-			throw new ConnectionException(Connection.TPEPROTO,
-					"Sender already closed");
-		}
-		closed = true;
-		log.debug("Sender closed: " + name);
-	}
+    public void close() throws ConnectionException {
+        log.debug("Close called");
+        if (closed) {
+            throw new ConnectionException(Connection.TPEPROTO, "Sender already closed");
+        }
+        closed = true;
+        log.debug("Sender closed: " + name);
+    }
 
-	public Object getSendTo() {
-		return name;
-	}
+    public Object getSendTo() {
+        return name;
+    }
 }

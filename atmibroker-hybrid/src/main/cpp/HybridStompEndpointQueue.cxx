@@ -24,7 +24,6 @@
 #include "HybridStompEndpointQueue.h"
 #include "HybridConnectionImpl.h"
 #include "AtmiBrokerEnv.h"
-//#include "BufferConverterImpl.h"
 #include "CodecFactory.h"
 
 log4cxx::LoggerPtr HybridStompEndpointQueue::logger(log4cxx::Logger::getLogger(
@@ -285,9 +284,6 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 				LOG4CXX_TRACE(logger, "Extracted servicename");
 
 				message.len = frame->body_length;
-				//message.data = BufferConverterImpl::convertToMemoryFormat(
-				//		message.type, message.subtype, frame->body,
-				//		&message.len);
 				message.data = codec->decode(message.type, message.subtype,
 						frame->body, &message.len);
 				LOG4CXX_TRACE(logger, "Set body and length: " << message.len);

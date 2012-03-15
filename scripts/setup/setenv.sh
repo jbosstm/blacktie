@@ -37,5 +37,6 @@ for i in $BLACKTIE_HOME/lib/java/*.jar
 do
 CLASSPATH="$i:$CLASSPATH"
 done
+CLASSPATH=.:$CLASSPATH
 export CLASSPATH
 

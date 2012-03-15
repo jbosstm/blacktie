@@ -19,24 +19,17 @@
 package org.jboss.narayana.blacktie.administration.core;
 
 import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 import javax.management.MBeanServerConnection;
+import javax.management.ObjectInstance;
 import javax.management.ObjectName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.narayana.blacktie.administration.BlacktieAdministration;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.XMLParser;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection;
@@ -44,667 +37,613 @@ import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionFactory;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.X_OCTET;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
 
 /**
  * This is the core proxy to forward requests to the individual servers.
  */
-public class AdministrationProxy {
-	private static final Logger log = LogManager
-			.getLogger(AdministrationProxy.class);
-	private Properties prop = new Properties();
-	// private JMXConnector c;
-	private MBeanServerConnection beanServerConnection;
-	private Connection connection;
-	private List<String> servers;
+public class AdministrationProxy implements BlacktieAdministration {
+    private static final Logger log = LogManager.getLogger(AdministrationProxy.class);
+    private Properties prop = new Properties();
+    private MBeanServerConnection beanServerConnection;
+    private Connection connection;
+    private List<String> servers;
 
-	public static Boolean isDomainPause = false;
+    public static Boolean isDomainPause = false;
 
-	public AdministrationProxy() throws IOException, ConfigurationException {
-		log.debug("Administration Proxy");
-		XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
-		servers = (List<String>) prop.get("blacktie.domain.servers");
-		ConnectionFactory cf = ConnectionFactory.getConnectionFactory();
-		connection = cf.getConnection();
+    public AdministrationProxy() throws ConfigurationException {
+        log.debug("Administration Proxy");
+        XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
+        servers = (List<String>) prop.get("blacktie.domain.servers");
+        ConnectionFactory cf = ConnectionFactory.getConnectionFactory();
+        connection = cf.getConnection();
 
-		beanServerConnection = org.jboss.mx.util.MBeanServerLocator
-				.locateJBoss();
-		log.debug("Created Administration Proxy");
-	}
+        beanServerConnection = java.lang.management.ManagementFactory.getPlatformMBeanServer();
+        log.debug("Created Administration Proxy");
+    }
 
-	private Element stringToElement(String s) throws Exception {
-		StringReader sreader = new StringReader(s.trim());
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder parser = factory.newDocumentBuilder();
-		Document doc = parser.parse(new InputSource(sreader));
-		return doc.getDocumentElement();
-	}
+    private Response callAdminService(String serverName, int id, String command) throws ConnectionException,
+            ConfigurationException {
+        log.trace("callAdminService");
+        int sendlen = command.length() + 1;
+        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
+        sendbuf.setByteArray(command.getBytes());
 
-	private String elementToString(Element element) throws Exception {
-		// Set up the output transformer
-		TransformerFactory transfac = TransformerFactory.newInstance();
-		Transformer trans = transfac.newTransformer();
-		trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-		trans.setOutputProperty(OutputKeys.INDENT, "yes");
+        String service = "." + serverName + id;
 
-		StringWriter sw = new StringWriter();
-		StreamResult sr = new StreamResult(sw);
-		DOMSource source = new DOMSource(element);
-		trans.transform(source, sr);
-		return sw.toString();
-	}
+        Response rcvbuf = connection.tpcall(service, sendbuf, 0);
+        return rcvbuf;
+    }
 
-	private Response callAdminService(String serverName, int id, String command)
-			throws ConnectionException {
-		log.trace("callAdminService");
-		int sendlen = command.length() + 1;
-		X_OCTET sendbuf = (X_OCTET) connection
-				.tpalloc("X_OCTET", null, sendlen);
-		sendbuf.setByteArray(command.getBytes());
+    private Boolean callAdminCommand(String serverName, int id, String command) {
+        log.trace("callAdminCommand");
+        try {
+            Response buf = callAdminService(serverName, id, command);
+            if (buf != null) {
+                byte[] received = ((X_OCTET) buf.getBuffer()).getByteArray();
+                return (received[0] == '1');
+            }
+        } catch (ConnectionException e) {
+            log.error("call server " + serverName + " id " + id + " command " + command + " failed with " + e.getTperrno());
+        } catch (ConfigurationException e) {
+            log.error("call server " + serverName + " id " + id + " command " + command
+                    + " failed with configuration exception");
+        }
+        return false;
+    }
 
-		String service = "." + serverName + id;
+    private Boolean advertise(String serverName, int id, String serviceName) {
+        log.trace("advertise");
+        String command = "advertise," + serviceName + ",";
+        return callAdminCommand(serverName, id, command);
+    }
 
-		Response rcvbuf = connection.tpcall(service, sendbuf, 0);
-		return rcvbuf;
-	}
+    private Boolean unadvertise(String serverName, int id, String serviceName) {
+        log.trace("unadvertise");
+        String command = "unadvertise," + serviceName + ",";
+        return callAdminCommand(serverName, id, command);
+    }
 
-	private Boolean callAdminCommand(String serverName, int id, String command) {
-		log.trace("callAdminCommand");
-		try {
-			Response buf = callAdminService(serverName, id, command);
-			if (buf != null) {
-				byte[] received = ((X_OCTET) buf.getBuffer()).getByteArray();
-				return (received[0] == '1');
-			}
-		} catch (ConnectionException e) {
-			log.error("call server " + serverName + " id " + id + " command "
-					+ command + " failed with " + e.getTperrno());
-		}
-		return false;
-	}
+    public String getDomainName() {
+        log.trace("getDomainName");
+        return prop.getProperty("blacktie.domain.name");
+    }
 
-	private Boolean advertise(String serverName, int id, String serviceName) {
-		log.trace("advertise");
-		String command = "advertise," + serviceName + ",";
-		return callAdminCommand(serverName, id, command);
-	}
+    public String getSoftwareVersion() {
+        log.trace("getSoftwareVersion");
+        return prop.getProperty("blacktie.domain.version");
+    }
 
-	private Boolean unadvertise(String serverName, int id, String serviceName) {
-		log.trace("unadvertise");
-		String command = "unadvertise," + serviceName + ",";
-		return callAdminCommand(serverName, id, command);
-	}
+    public Boolean getDomainStatus() {
+        return isDomainPause;
+    }
 
-	public String getDomainName() {
-		log.trace("getDomainName");
-		return prop.getProperty("blacktie.domain.name");
-	}
+    public Boolean pauseDomain() {
+        log.trace("pauseDomain");
+        Boolean result = true;
+        List<String> servers = listRunningServers();
 
-	public String getSoftwareVersion() {
-		log.trace("getSoftwareVersion");
-		return prop.getProperty("blacktie.domain.version");
-	}
+        for (int i = 0; i < servers.size(); i++) {
+            result = pauseServer(servers.get(i)) && result;
+        }
 
-	public Boolean getDomainStatus() {
-		return isDomainPause;
-	}
+        if (result == true && isDomainPause == false) {
+            isDomainPause = true;
+            log.info("Domain pause");
+        }
 
-	public Boolean pauseDomain() {
-		log.trace("pauseDomain");
-		Boolean result = true;
-		List<String> servers = listRunningServers();
+        return result;
+    }
 
-		for (int i = 0; i < servers.size(); i++) {
-			result = pauseServer(servers.get(i)) && result;
-		}
+    public Boolean pauseServer(String serverName) {
+        log.trace("pauseServer");
+        Boolean result = true;
+        List<Integer> ids = listRunningInstanceIds(serverName);
 
-		if (result == true && isDomainPause == false) {
-			isDomainPause = true;
-			log.info("Domain pause");
-		}
+        for (int i = 0; i < ids.size(); i++) {
+            result = pauseServerById(serverName, ids.get(i)) && result;
+        }
+        return result;
+    }
 
-		return result;
-	}
+    public Boolean pauseServerById(String serverName, int id) {
+        log.trace("pauseServerById");
+        return callAdminCommand(serverName, id, "pause");
+    }
 
-	public Boolean pauseServer(String serverName) {
-		log.trace("pauseServer");
-		Boolean result = true;
-		List<Integer> ids = listRunningInstanceIds(serverName);
+    public Boolean resumeDomain() {
+        log.trace("resumeDomain");
+        Boolean result = true;
+        List<String> servers = listRunningServers();
 
-		for (int i = 0; i < ids.size(); i++) {
-			result = pauseServerById(serverName, ids.get(i)) && result;
-		}
-		return result;
-	}
+        for (int i = 0; i < servers.size(); i++) {
+            result = resumeServer(servers.get(i)) && result;
+        }
 
-	public Boolean pauseServerById(String serverName, int id) {
-		log.trace("pauseServerById");
-		return callAdminCommand(serverName, id, "pause");
-	}
+        if (result == true && isDomainPause == true) {
+            isDomainPause = false;
+            log.info("Domain resume");
+        }
 
-	public Boolean resumeDomain() {
-		log.trace("resumeDomain");
-		Boolean result = true;
-		List<String> servers = listRunningServers();
+        return result;
+    }
 
-		for (int i = 0; i < servers.size(); i++) {
-			result = resumeServer(servers.get(i)) && result;
-		}
+    public Boolean resumeServer(String serverName) {
+        log.trace("resumeServer");
+        Boolean result = true;
+        List<Integer> ids = listRunningInstanceIds(serverName);
 
-		if (result == true && isDomainPause == true) {
-			isDomainPause = false;
-			log.info("Domain resume");
-		}
+        for (int i = 0; i < ids.size(); i++) {
+            result = resumeServerById(serverName, ids.get(i)) && result;
+        }
+        return result;
+    }
 
-		return result;
-	}
+    public Boolean resumeServerById(String serverName, int id) {
+        log.trace("resumeServerById");
+        return callAdminCommand(serverName, id, "resume");
+    }
 
-	public Boolean resumeServer(String serverName) {
-		log.trace("resumeServer");
-		Boolean result = true;
-		List<Integer> ids = listRunningInstanceIds(serverName);
+    public List<String> getServerList() {
+        log.trace("getServerList");
+        ArrayList<String> serverList = new ArrayList<String>();
 
-		for (int i = 0; i < ids.size(); i++) {
-			result = resumeServerById(serverName, ids.get(i)) && result;
-		}
-		return result;
-	}
+        for (String server : servers) {
+            serverList.add(server);
+        }
+        return serverList;
+    }
 
-	public Boolean resumeServerById(String serverName, int id) {
-		log.trace("resumeServerById");
-		return callAdminCommand(serverName, id, "resume");
-	}
+    @SuppressWarnings("unchecked")
+    public List<String> listRunningServers() {
+        log.trace("listRunningServers");
+        List<String> runningServerList = new ArrayList<String>();
 
-	public List<String> getServerList() {
-		log.trace("getServerList");
-		ArrayList<String> serverList = new ArrayList<String>();
+        try {
+            ObjectName objName = new ObjectName("jboss.as:subsystem=messaging,hornetq-server=default,jms-queue=BTR_*");
+            ObjectInstance[] dests = beanServerConnection.queryMBeans(objName, null).toArray(new ObjectInstance[] {});
+            for (int i = 0; i < dests.length; i++) {
+                String serviceComponentOfObjectName = dests[i].getObjectName().getCanonicalName();
+                serviceComponentOfObjectName = serviceComponentOfObjectName.substring(
+                        serviceComponentOfObjectName.indexOf('_') + 1,
+                        serviceComponentOfObjectName.indexOf(",", serviceComponentOfObjectName.indexOf('_')));
+                log.debug("Service name component of ObjectName is: " + serviceComponentOfObjectName);
+                if (serviceComponentOfObjectName.startsWith(".")) {
+                    serviceComponentOfObjectName = serviceComponentOfObjectName.substring(1);
+                    serviceComponentOfObjectName = serviceComponentOfObjectName.replaceAll("[0-9]", "");
+                    log.trace("contains?: " + serviceComponentOfObjectName);
+                    if (servers.contains(serviceComponentOfObjectName)
+                            && !runningServerList.contains(serviceComponentOfObjectName)) {
+                        log.trace("contains!: " + serviceComponentOfObjectName);
+                        runningServerList.add(serviceComponentOfObjectName);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Caught an exception: " + e.getMessage(), e);
+        }
+        return runningServerList;
+    }
 
-		for (String server : servers) {
-			serverList.add(server);
-		}
-		return serverList;
-	}
+    @SuppressWarnings("unchecked")
+    public List<Integer> listRunningInstanceIds(String serverName) {
+        log.debug("listRunningInstanceIds: " + serverName);
+        ArrayList<Integer> ids = new ArrayList<Integer>();
 
-	@SuppressWarnings("unchecked")
-	public List<String> listRunningServers() {
-		log.trace("listRunningServers");
-		List<String> runningServerList = new ArrayList<String>();
+        try {
+            ObjectName objName = new ObjectName("jboss.as:subsystem=messaging,hornetq-server=default,jms-queue=BTR_*");
+            ObjectInstance[] dests = beanServerConnection.queryMBeans(objName, null).toArray(new ObjectInstance[] {});
+            for (int i = 0; i < dests.length; i++) {
+                String serviceComponentOfObjectName = dests[i].getObjectName().getCanonicalName();
+                serviceComponentOfObjectName = serviceComponentOfObjectName.substring(
+                        serviceComponentOfObjectName.indexOf('_') + 1,
+                        serviceComponentOfObjectName.indexOf(",", serviceComponentOfObjectName.indexOf('_')));
+                log.debug("Service name component of ObjectName is: " + serviceComponentOfObjectName);
 
-		try {
-			ObjectName objName = new ObjectName(
-					"org.hornetq:module=JMS,type=Server");
-			String[] dests = (String[]) beanServerConnection.getAttribute(
-					objName, "QueueNames");
-			for (int i = 0; i < dests.length; i++) {
-				String qname = dests[i];
-				log.trace(qname);
-				if (qname.startsWith("BTR_.")) {
-					String sname = qname.substring("BTR_.".length());
-					sname = sname.replaceAll("[0-9]", "");
-					log.trace("contains?: " + sname);
-					if (servers.contains(sname)
-							&& !runningServerList.contains(sname)) {
-						log.trace("contains!: " + sname);
-						runningServerList.add(sname);
-					}
-				}
-			}
-		} catch (Exception e) {
-			log.error("Caught an exception: " + e.getMessage(), e);
-		}
-		return runningServerList;
-	}
+                if (serviceComponentOfObjectName.startsWith(".")) {
+                    serviceComponentOfObjectName = serviceComponentOfObjectName.substring(1);
+                    String sname = serviceComponentOfObjectName.replaceAll("[0-9]", "");
+                    if (sname.equals(serverName)) {
+                        String id = serviceComponentOfObjectName.replaceAll("[A-Za-z]", "");
+                        log.debug(id);
+                        ids.add(new Integer(id));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Caught an exception: " + e.getMessage(), e);
+        }
 
-	@SuppressWarnings("unchecked")
-	public List<Integer> listRunningInstanceIds(String serverName) {
-		log.trace("listRunningInstanceIds");
-		ArrayList<Integer> ids = new ArrayList<Integer>();
+        return ids;
+    }
 
-		try {
-			ObjectName objName = new ObjectName(
-					"org.hornetq:module=JMS,type=Server");
-			String[] dests = (String[]) beanServerConnection.getAttribute(
-					objName, "QueueNames");
-			for (int i = 0; i < dests.length; i++) {
-				String qname = dests[i];
-				log.trace(qname);
-				if (qname.startsWith("BTR_.")) {
-					String server = qname.substring("BTR_.".length());
-					server = server.replaceAll("[0-9]", "");
-					if (server.equals(serverName)) {
-						qname = qname.substring("BTR_.".length());
-						qname = qname.replaceAll("[A-Za-z]", "");
-						ids.add(new Integer(qname));
-					}
-				}
-			}
-		} catch (Exception e) {
-			log.error("Caught an exception: " + e.getMessage(), e);
-		}
+    public String listServersStatus() {
+        log.trace("listServersStatus");
 
-		return ids;
-	}
+        String status = "<servers>\n";
 
-	public Element getServersStatus() {
-		log.trace("getServersStatus");
-		try {
-			String status = "<servers>\n";
+        for (String server : servers) {
+            status += "\t<server>\n";
+            status += "\t\t<name>" + server + "</name>\n";
+            List<Integer> ids = listRunningInstanceIds(server);
+            if (ids.size() > 0) {
+                status += "\t\t<instances>\n";
+                for (int i = 0; i < ids.size(); i++) {
+                    status += "\t\t\t<instance>\n";
+                    status += "\t\t\t\t<id>" + ids.get(i) + "</id>\n";
+                    status += "\t\t\t\t<status>1</status>\n";
+                    status += "\t\t\t</instance>\n";
+                }
+                status += "\t\t</instances>\n";
+            }
+            status += "\t</server>\n";
+        }
 
-			for (String server : servers) {
-				status += "\t<server>\n";
-				status += "\t\t<name>" + server + "</name>\n";
-				List<Integer> ids = listRunningInstanceIds(server);
-				if (ids.size() > 0) {
-					status += "\t\t<instances>\n";
-					for (int i = 0; i < ids.size(); i++) {
-						status += "\t\t\t<instance>\n";
-						status += "\t\t\t\t<id>" + ids.get(i) + "</id>\n";
-						status += "\t\t\t\t<status>1</status>\n";
-						status += "\t\t\t</instance>\n";
-					}
-					status += "\t\t</instances>\n";
-				}
-				status += "\t</server>\n";
-			}
+        status += "</servers>";
+        return status;
+    }
 
-			status += "</servers>";
-			return stringToElement(status);
-		} catch (Exception e) {
-			log.error("Caught an exception: " + e.getMessage(), e);
-			return null;
-		}
-	}
+    public String listServiceStatus(String serverName, String serviceName) {
+        log.trace("listServiceStatus");
+        String servers;
+        List<Integer> ids = listRunningInstanceIds(serverName);
 
-	public Element listServiceStatus(String serverName, String serviceName) {
-		log.trace("listServiceStatus");
-		String servers;
-		Element status = null;
-		List<Integer> ids = listRunningInstanceIds(serverName);
+        servers = "<servers>";
+        for (int i = 0; i < ids.size(); i++) {
+            String result = listServiceStatusById(serverName, ids.get(i), serviceName);
+            if (result != null) {
+                servers += "<instance><id>" + ids.get(i) + "</id>";
+                servers += result;
+                servers += "</instance>";
+            }
+        }
+        servers += "</servers>";
+        return servers;
+    }
 
-		if (ids.size() == 0) {
-			return null;
-		}
+    public Boolean advertise(String serverName, String serviceName) {
+        log.trace("advertise");
+        List<Integer> ids = listRunningInstanceIds(serverName);
+        Boolean result = true;
 
-		try {
-			servers = "<servers>";
-			for (int i = 0; i < ids.size(); i++) {
-				Element result = listServiceStatusById(serverName, ids.get(i),
-						serviceName);
-				if (result != null) {
-					servers += "<instance><id>" + ids.get(i) + "</id>";
-					servers += elementToString(result);
-					servers += "</instance>";
-				}
-			}
-			servers += "</servers>";
-			status = stringToElement(servers);
-		} catch (Exception e) {
-			log.error("Caught an exception: " + e.getMessage(), e);
-		}
+        if (ids.size() == 0) {
+            log.warn("Server was not running: " + serverName);
+            return false;
+        }
 
-		return status;
-	}
+        for (int i = 0; i < ids.size(); i++) {
+            boolean advertised = advertise(serverName, ids.get(i), serviceName);
+            result = advertised && result;
+            if (!advertised) {
+                log.warn("Failed to advertise service: " + serviceName + " at: " + serverName + ids.get(i));
+            }
+        }
 
-	public Boolean advertise(String serverName, String serviceName) {
-		log.trace("advertise");
-		List<Integer> ids = listRunningInstanceIds(serverName);
-		Boolean result = true;
+        return result;
+    }
 
-		if (ids.size() == 0) {
-			log.warn("Server was not running: " + serverName);
-			return false;
-		}
+    public Boolean unadvertise(String serverName, String serviceName) {
+        log.trace("unadvertise");
+        List<Integer> ids = listRunningInstanceIds(serverName);
+        Boolean result = true;
 
-		for (int i = 0; i < ids.size(); i++) {
-			boolean advertised = advertise(serverName, ids.get(i), serviceName);
-			result = advertised && result;
-			if (!advertised) {
-				log.warn("Failed to advertise service: " + serviceName
-						+ " at: " + serverName + ids.get(i));
-			}
-		}
+        if (ids.size() == 0) {
+            log.warn("Server was not running: " + serverName);
+            return false;
+        }
 
-		return result;
-	}
+        for (int i = 0; i < ids.size(); i++) {
+            boolean unadvertised = unadvertise(serverName, ids.get(i), serviceName);
+            result = unadvertised && result;
+            if (!unadvertised) {
+                log.warn("Failed to unadvertise service: " + serviceName + " at: " + serverName + ids.get(i));
+            }
+        }
 
-	public Boolean unadvertise(String serverName, String serviceName) {
-		log.trace("unadvertise");
-		List<Integer> ids = listRunningInstanceIds(serverName);
-		Boolean result = true;
+        return result;
+    }
 
-		if (ids.size() == 0) {
-			log.warn("Server was not running: " + serverName);
-			return false;
-		}
-
-		for (int i = 0; i < ids.size(); i++) {
-			boolean unadvertised = unadvertise(serverName, ids.get(i),
-					serviceName);
-			result = unadvertised && result;
-			if (!unadvertised) {
-				log.warn("Failed to unadvertise service: " + serviceName
-						+ " at: " + serverName + ids.get(i));
-			}
-		}
-
-		return result;
-	}
-
-	public Boolean shutdown(String serverName, int id) {
-		log.trace("shutdown");
-		if (servers.contains(serverName)) {
-			String command = "serverdone";
-			boolean shutdown = false;
-			try {
-				if (id == 0) {
-					List<Integer> ids = listRunningInstanceIds(serverName);
+    public Boolean shutdown(String serverName, int id) {
+        log.trace("shutdown");
+        if (servers.contains(serverName)) {
+            String command = "serverdone";
+            boolean shutdown = false;
+            try {
+                if (id == 0) {
+                    List<Integer> ids = listRunningInstanceIds(serverName);
                     ConnectionException toRethrow = null;
-					for (int i = 0; i < ids.size(); i++) {
+                    for (int i = 0; i < ids.size(); i++) {
                         try {
-    						callAdminService(serverName, ids.get(i), command);
-			            } catch (ConnectionException e) {
-            				log.error("call server " + serverName + " id " + id
-			        			+ " failed with " + e.getTperrno(), e);
+                            callAdminService(serverName, ids.get(i), command);
+                        } catch (ConnectionException e) {
+                            log.error("call server " + serverName + " id " + id + " failed with " + e.getTperrno(), e);
                             if (e.getTperrno() == org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection.TPETIME) {
-    						    callAdminService(serverName, ids.get(i), command);
+                                callAdminService(serverName, ids.get(i), command);
                             } else {
                                 toRethrow = e;
                             }
-            			}
-					}
+                        } catch (ConfigurationException e) {
+                            log.error("call server " + serverName + " id " + id + " failed with configuration exception", e);
+                            toRethrow = new ConnectionException(Connection.TPEOS, "Configuration issue: " + e.getMessage(), e);
+                        }
+                    }
                     if (toRethrow != null) {
                         throw toRethrow;
                     }
-				} else {
-					callAdminService(serverName, id, command);
-				}
-				int timeout = 40;
-				while (true) {
-					List<Integer> ids = listRunningInstanceIds(serverName);
-					if (id == 0 && ids.size() > 0 || ids.contains(id)) {
-						try {
-							Thread.sleep(3000);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-						timeout--;
-					} else {
-						shutdown = true;
-						break;
-					}
-					if (timeout == 0) {
-						log.warn("Server did not shutdown in time: "
-								+ serverName + ": " + id);
-						break;
-					}
-				}
-				return shutdown;
-			} catch (ConnectionException e) {
-				log.error("call server " + serverName + " id " + id
-						+ " failed with " + e.getTperrno(), e);
-				return false;
-			} catch (RuntimeException e) {
-				log.error("Could not shutdown server: " + e.getMessage(), e);
-				throw e;
-			}
-		} else {
-			log.error("Server not configured: " + serverName);
-			return false;
-		}
-	}
+                } else {
+                    callAdminService(serverName, id, command);
+                }
+                int timeout = 40;
+                while (true) {
+                    List<Integer> ids = listRunningInstanceIds(serverName);
+                    if (id == 0 && ids.size() > 0 || ids.contains(id)) {
+                        try {
+                            Thread.sleep(3000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        timeout--;
+                    } else {
+                        shutdown = true;
+                        break;
+                    }
+                    if (timeout == 0) {
+                        log.warn("Server did not shutdown in time: " + serverName + ": " + id);
+                        break;
+                    }
+                }
+                return shutdown;
+            } catch (ConnectionException e) {
+                log.error("call server " + serverName + " id " + id + " failed with " + e.getTperrno(), e);
+                return false;
+            } catch (RuntimeException e) {
+                log.error("Could not shutdown server: " + e.getMessage(), e);
+                throw e;
+            } catch (ConfigurationException e) {
+                log.error("call server " + serverName + " id " + id + " failed with configuration exception", e);
+                return false;
+            }
+        } else {
+            log.error("Server not configured: " + serverName);
+            return false;
+        }
+    }
 
-	public String getResponseTimeById(String serverName, int id,
-			String serviceName) {
-		log.trace("getResponseTimeById");
-		String command = "responsetime," + serviceName + ",";
-		log.trace("response command is " + command);
+    public String getResponseTimeById(String serverName, int id, String serviceName) {
+        log.trace("getResponseTimeById");
+        String command = "responsetime," + serviceName + ",";
+        log.trace("response command is " + command);
 
-		try {
-			Response buf = callAdminService(serverName, id, command);
-			if (buf != null) {
-				byte[] received = ((X_OCTET) buf.getBuffer()).getByteArray();
-				String result = new String(received, 1, received.length - 1);
-				log.trace("response result is " + result);
-				return result;
-			}
-		} catch (ConnectionException e) {
-			log.error("call server " + serverName + " id " + id
-					+ " failed with " + e.getTperrno(), e);
-		} catch (RuntimeException e) {
-			log.error(
-					"Could not get response time from server: "
-							+ e.getMessage(), e);
-			throw e;
-		}
-		return null;
-	}
+        try {
+            Response buf = callAdminService(serverName, id, command);
+            if (buf != null) {
+                byte[] received = ((X_OCTET) buf.getBuffer()).getByteArray();
+                String result = new String(received, 1, received.length - 1);
+                log.trace("response result is " + result);
+                return result;
+            }
+        } catch (ConnectionException e) {
+            log.error("call server " + serverName + " id " + id + " failed with " + e.getTperrno(), e);
+        } catch (RuntimeException e) {
+            log.error("Could not get response time from server: " + e.getMessage(), e);
+            throw e;
+        } catch (ConfigurationException e) {
+            log.error("call server " + serverName + " id " + id + " failed with configuration exception", e);
+        }
+        return null;
+    }
 
-	public String getResponseTime(String serverName, String serviceName) {
-		log.trace("getResponseTime");
+    public String getResponseTime(String serverName, String serviceName) {
+        log.trace("getResponseTime");
 
-		List<Integer> ids = listRunningInstanceIds(serverName);
-		String responseTime;
-		long min = 0;
-		long avg = 0;
-		long max = 0;
-		long total = 0;
+        List<Integer> ids = listRunningInstanceIds(serverName);
+        String responseTime;
+        long min = 0;
+        long avg = 0;
+        long max = 0;
+        long total = 0;
 
-		for (int i = 0; i < ids.size(); i++) {
-			responseTime = getResponseTimeById(serverName, ids.get(i),
-					serviceName);
-			String[] times = responseTime.split(",");
+        for (int i = 0; i < ids.size(); i++) {
+            responseTime = getResponseTimeById(serverName, ids.get(i), serviceName);
+            String[] times = responseTime.split(",");
 
-			if (times.length == 3) {
-				long t = Long.valueOf(times[0]);
-				if (min == 0 || t < min) {
-					min = t;
-				}
+            if (times.length == 3) {
+                long t = Long.valueOf(times[0]);
+                if (min == 0 || t < min) {
+                    min = t;
+                }
 
-				t = Long.valueOf(times[2]);
-				if (t > max) {
-					max = t;
-				}
+                t = Long.valueOf(times[2]);
+                if (t > max) {
+                    max = t;
+                }
 
-				long counter = getServiceCounterById(serverName, ids.get(i),
-						serviceName);
-				t = Long.valueOf(times[1]);
-				if (total != 0 || counter != 0) {
-					avg = (avg * total + t * counter) / (total + counter);
-				}
-			}
-		}
+                long counter = getServiceCounterById(serverName, ids.get(i), serviceName);
+                t = Long.valueOf(times[1]);
+                if (total != 0 || counter != 0) {
+                    avg = (avg * total + t * counter) / (total + counter);
+                }
+            }
+        }
 
-		return String.format("%d,%d,%d", min, avg, max);
-	}
+        return String.format("%d,%d,%d", min, avg, max);
+    }
 
-	public long getServiceCounterById(String serverName, int id,
-			String serviceName) {
-		log.trace("getServiceCounterById");
-		long counter = 0;
-		String command = "counter," + serviceName + ",";
+    public long getServiceCounterById(String serverName, int id, String serviceName) {
+        log.trace("getServiceCounterById");
+        long counter = 0;
+        String command = "counter," + serviceName + ",";
 
-		try {
-			Response buf = callAdminService(serverName, id, command);
-			if (buf != null) {
-				byte[] received = ((X_OCTET) buf.getBuffer()).getByteArray();
-				counter = Long.parseLong(new String(received, 1,
-						received.length - 1));
-			}
-		} catch (ConnectionException e) {
-			log.error("call server " + serverName + " id " + id
-					+ " failed with " + e.getTperrno());
-		}
+        try {
+            Response buf = callAdminService(serverName, id, command);
+            if (buf != null) {
+                byte[] received = ((X_OCTET) buf.getBuffer()).getByteArray();
+                counter = Long.parseLong(new String(received, 1, received.length - 1));
+            }
+        } catch (ConnectionException e) {
+            log.error("call server " + serverName + " id " + id + " failed with " + e.getTperrno());
+        } catch (ConfigurationException e) {
+            log.error("call server " + serverName + " id " + id + " failed with configuration exception", e);
+        }
 
-		return counter;
-	}
+        return counter;
+    }
 
-	public long getServiceCounter(String serverName, String serviceName) {
-		log.trace("getServiceCounter");
-		long counter = 0;
-		List<Integer> ids = listRunningInstanceIds(serverName);
+    public long getServiceCounter(String serverName, String serviceName) {
+        log.trace("getServiceCounter");
+        long counter = 0;
+        List<Integer> ids = listRunningInstanceIds(serverName);
 
-		for (int i = 0; i < ids.size(); i++) {
-			counter += getServiceCounterById(serverName, ids.get(i),
-					serviceName);
-		}
+        for (int i = 0; i < ids.size(); i++) {
+            counter += getServiceCounterById(serverName, ids.get(i), serviceName);
+        }
 
-		return counter;
-	}
+        return counter;
+    }
 
-	public long getErrorCounterById(String serverName, int id,
-			String serviceName) {
-		log.trace("getErrorCounterById");
-		long counter = 0;
-		String command = "error_counter," + serviceName + ",";
+    public long getErrorCounterById(String serverName, int id, String serviceName) {
+        log.trace("getErrorCounterById");
+        long counter = 0;
+        String command = "error_counter," + serviceName + ",";
 
-		try {
-			Response buf = callAdminService(serverName, id, command);
-			if (buf != null) {
-				byte[] received = ((X_OCTET) buf.getBuffer()).getByteArray();
-				counter = Long.parseLong(new String(received, 1,
-						received.length - 1));
-			}
-		} catch (ConnectionException e) {
-			log.error("call server " + serverName + " id " + id
-					+ " failed with " + e.getTperrno());
-		}
+        try {
+            Response buf = callAdminService(serverName, id, command);
+            if (buf != null) {
+                byte[] received = ((X_OCTET) buf.getBuffer()).getByteArray();
+                counter = Long.parseLong(new String(received, 1, received.length - 1));
+            }
+        } catch (ConnectionException e) {
+            log.error("call server " + serverName + " id " + id + " failed with " + e.getTperrno());
+        } catch (ConfigurationException e) {
+            log.error("call server " + serverName + " id " + id + " failed with configuration exception", e);
+        }
 
-		return counter;
-	}
+        return counter;
+    }
 
-	public long getErrorCounter(String serverName, String serviceName) {
-		log.trace("getErrorCounter");
-		long counter = 0;
-		List<Integer> ids = listRunningInstanceIds(serverName);
+    public long getErrorCounter(String serverName, String serviceName) {
+        log.trace("getErrorCounter");
+        long counter = 0;
+        List<Integer> ids = listRunningInstanceIds(serverName);
 
-		for (int i = 0; i < ids.size(); i++) {
-			counter += getErrorCounterById(serverName, ids.get(i), serviceName);
-		}
+        for (int i = 0; i < ids.size(); i++) {
+            counter += getErrorCounterById(serverName, ids.get(i), serviceName);
+        }
 
-		return counter;
-	}
+        return counter;
+    }
 
-	public Boolean reloadDomain() {
-		log.trace("reloadDomain");
-		Boolean result = true;
-		List<String> servers = listRunningServers();
+    public Boolean reloadDomain() {
+        log.trace("reloadDomain");
+        Boolean result = true;
+        List<String> servers = listRunningServers();
 
-		for (int i = 0; i < servers.size(); i++) {
-			result = reloadServer(servers.get(i)) && result;
-		}
-		return result;
-	}
+        for (int i = 0; i < servers.size(); i++) {
+            result = reloadServer(servers.get(i)) && result;
+        }
+        return result;
+    }
 
-	public Boolean reloadServer(String serverName) {
-		log.trace("reloadServer");
-		Boolean result = true;
-		List<Integer> ids = listRunningInstanceIds(serverName);
+    public Boolean reloadServer(String serverName) {
+        log.trace("reloadServer");
+        Boolean result = true;
+        List<Integer> ids = listRunningInstanceIds(serverName);
 
-		for (int i = 0; i < ids.size(); i++) {
-			result = reloadServerById(serverName, ids.get(i)) && result;
-		}
-		return result;
-	}
+        for (int i = 0; i < ids.size(); i++) {
+            result = reloadServerById(serverName, ids.get(i)) && result;
+        }
+        return result;
+    }
 
-	public Boolean reloadServerById(String serverName, int id) {
-		log.trace("reloadServerById");
-		return false;
+    public Boolean reloadServerById(String serverName, int id) {
+        log.trace("reloadServerById");
+        return false;
 
-	}
+    }
 
-	public Element listServiceStatusById(String serverName, int id,
-			String serviceName) {
-		log.trace("listServiceStatusById");
-		String command = "status";
-		Response buf = null;
-		String status = null;
+    public String listServiceStatusById(String serverName, int id, String serviceName) {
+        log.trace("listServiceStatusById");
+        String command = "status";
+        Response buf = null;
+        String status = null;
 
-		try {
-			if (serviceName != null) {
-				command = command + "," + serviceName + ",";
-			}
+        try {
+            if (serviceName != null) {
+                command = command + "," + serviceName + ",";
+            }
 
-			buf = callAdminService(serverName, id, command);
-			if (buf != null) {
-				byte[] received = ((X_OCTET) buf.getBuffer()).getByteArray();
-				if (received[0] == '1') {
-					status = new String(received, 1, received.length - 1);
-					log.info("status is " + status);
-					return stringToElement(status);
-				}
-			}
-		} catch (ConnectionException e) {
-			log.error("call server " + serverName + " id " + id
-					+ " failed with " + e.getTperrno());
-		} catch (Exception e) {
-			log.error("response " + status + " error with " + e);
-		}
-		return null;
-	}
+            buf = callAdminService(serverName, id, command);
+            if (buf != null) {
+                byte[] received = ((X_OCTET) buf.getBuffer()).getByteArray();
+                if (received[0] == '1') {
+                    status = new String(received, 1, received.length - 1);
+                    log.debug("status is " + status);
+                    return status;
+                }
+            }
+        } catch (ConnectionException e) {
+            log.error("call server " + serverName + " id " + id + " failed with " + e.getTperrno());
+        } catch (Exception e) {
+            log.error("response " + status + " error with " + e);
+        }
+        return null;
+    }
 
-	public MBeanServerConnection getBeanServerConnection() {
-		log.trace("getBeanServerConnection");
-		return beanServerConnection;
-	}
+    public void close() throws ConnectionException, IOException {
+        log.debug("Closed Administration Proxy");
+        connection.close();
+        // c.close();
+    }
 
-	public void close() throws ConnectionException, IOException {
-		log.info("Closed Administration Proxy");
-		connection.close();
-		// c.close();
-	}
+    public int getQueueDepth(String serverName, String serviceName) {
+        Integer depth;
+        try {
+            log.trace(serviceName);
+            boolean conversational = false;
+            String type = "queue";
+            if (!serviceName.startsWith(".")) {
+                conversational = (Boolean) prop.get("blacktie." + serviceName + ".conversational");
+                type = (String) prop.getProperty("blacktie." + serviceName + ".type");
+            }
+            String prefix = null;
+            if (conversational) {
+                prefix = "BTC_";
+            } else {
+                prefix = "BTR_";
+            }
+            ObjectName objName = new ObjectName("jboss.as:subsystem=messaging,hornetq-server=default,jms-" + type + "="
+                    + prefix + serviceName);
+            depth = (Integer) beanServerConnection.getAttribute(objName, "messageCount");
+        } catch (Exception e) {
+            log.error("getQueueDepth failed with " + e);
+            return -1;
+        }
+        return depth.intValue();
+    }
 
-	public int getQueueDepth(String serverName, String serviceName) {
-		Integer depth;
-		try {
-			log.trace(serviceName);
-			boolean conversational = false;
-			if (!serviceName.startsWith(".")) {
-				conversational = (Boolean) prop.get("blacktie." + serviceName
-						+ ".conversational");
-			}
-			String prefix = null;
-			if (conversational) {
-				prefix = "BTC_";
-			} else {
-				prefix = "BTR_";
-			}
-			ObjectName objName = new ObjectName(
-					"org.hornetq:module=JMS,name=\"" + prefix + serviceName
-							+ "\",type=Queue");
-			depth = (Integer) getBeanServerConnection().getAttribute(objName,
-					"MessageCount");
-		} catch (Exception e) {
-			log.error("getQueueDepth failed with " + e);
-			return -1;
-		}
-		return depth.intValue();
-	}
+    public String getServerName(String serviceName) {
+        return prop.getProperty("blacktie." + serviceName + ".server");
+    }
 
-	public String getServerName(String serviceName) {
-		return prop.getProperty("blacktie." + serviceName + ".server");
-	}
+    public String getServerVersionById(String serverName, int id) {
+        log.trace("getServerVersionById");
+        String command = "version";
+        Response buf = null;
+        String version = null;
 
-	public String getServerVersionById(String serverName, int id) {
-		log.trace("getServerVersionById");
-		String command = "version";
-		Response buf = null;
-		String version = null;
-
-		try {
-			buf = callAdminService(serverName, id, command);
-			if (buf != null) {
-				byte[] received = ((X_OCTET) buf.getBuffer()).getByteArray();
-				if (received[0] == '1') {
-					version = new String(received, 1, received.length - 1);
-					log.debug("version is " + version);
-				}
-			}
-		} catch (ConnectionException e) {
-			log.error("call server " + serverName + " id " + id
-					+ " failed with " + e.getTperrno(), e);
-		}
-		return version;
-	}
+        try {
+            buf = callAdminService(serverName, id, command);
+            if (buf != null) {
+                byte[] received = ((X_OCTET) buf.getBuffer()).getByteArray();
+                if (received[0] == '1') {
+                    version = new String(received, 1, received.length - 1);
+                    log.debug("version is " + version);
+                }
+            }
+        } catch (ConnectionException e) {
+            log.error("call server " + serverName + " id " + id + " failed with " + e.getTperrno(), e);
+        } catch (ConfigurationException e) {
+            log.error("call server " + serverName + " id " + id + " failed with configuration exception", e);
+        }
+        return version;
+    }
 }

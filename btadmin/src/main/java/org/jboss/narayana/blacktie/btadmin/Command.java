@@ -22,59 +22,41 @@ import java.util.Properties;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
-import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
 import javax.management.ReflectionException;
 
+import org.jboss.narayana.blacktie.administration.BlacktieAdministration;
+
 /**
- * All commands that can be invoked by the admin CLI tool must implement this
- * interface.
+ * All commands that can be invoked by the admin CLI tool must implement this interface.
  */
 public interface Command {
 
-	/**
-	 * If the commands requires an admin connection.
-	 * 
-	 * @return True, if a connection to JMX is required.
-	 */
-	public boolean requiresAdminConnection();
+    /**
+     * Get an quickstart of the usage of the command.
+     * 
+     * @return A string showing the usage of the command
+     */
+    public String getQuickstartUsage();
 
-	/**
-	 * Get an quickstart of the usage of the command.
-	 * 
-	 * @return A string showing the usage of the command
-	 */
-	public String getQuickstartUsage();
+    /**
+     * This will initialize the arguments for the command, if the arguments are not sufficient it will raise an exception.
+     * 
+     * @param args The arguments as received on the command line
+     * @throws IncompatibleArgsException If the arguments are invalid
+     */
+    public void initializeArgs(String[] args) throws IncompatibleArgsException;
 
-	/**
-	 * This will initialize the arguments for the command, if the arguments are
-	 * not sufficient it will raise an exception.
-	 * 
-	 * @param args
-	 *            The arguments as received on the command line
-	 * @throws IncompatibleArgsException
-	 *             If the arguments are invalid
-	 */
-	public void initializeArgs(String[] args) throws IncompatibleArgsException;
-
-	/**
-	 * Issue the command on the mbean server connection
-	 * 
-	 * @param beanServerConnection
-	 *            The connection to use
-	 * @param blacktieAdmin
-	 *            The mbean to user
-	 * @throws InstanceNotFoundException
-	 *             If the mbean does not exist
-	 * @throws MBeanException
-	 *             If there is an mbean error
-	 * @throws ReflectionException
-	 *             Reflective errors
-	 * @throws IOException
-	 *             IPC errors
-	 */
-	public void invoke(MBeanServerConnection beanServerConnection,
-			ObjectName blacktieAdmin, Properties configuration)
-			throws InstanceNotFoundException, MBeanException,
-			ReflectionException, IOException, CommandFailedException;
+    /**
+     * Issue the command on the mbean server connection
+     * 
+     * @param configuration TODO
+     * @param beanServerConnection The connection to use
+     * @param blacktieAdmin The mbean to user
+     * 
+     * @throws InstanceNotFoundException If the mbean does not exist
+     * @throws MBeanException If there is an mbean error
+     * @throws ReflectionException Reflective errors
+     * @throws IOException IPC errors
+     */
+    public void invoke(BlacktieAdministration connection, Properties configuration) throws CommandFailedException;
 }

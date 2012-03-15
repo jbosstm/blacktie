@@ -23,149 +23,125 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.TestTPCall;
 import org.jboss.narayana.blacktie.jatmibroker.RunServer;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionFactory;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.Response;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.X_COMMON;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.X_C_TYPE;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.X_OCTET;
 
 public class TestTPCall extends TestCase {
-	private static final Logger log = LogManager.getLogger(TestTPCall.class);
-	private RunServer server = new RunServer();
-	private Connection connection;
+    private static final Logger log = LogManager.getLogger(TestTPCall.class);
+    private RunServer server = new RunServer();
+    private Connection connection;
 
-	public void setUp() throws ConnectionException, ConfigurationException {
-		log.info("TestTPCall::setUp");
-		server.serverinit();
+    public void setUp() throws ConnectionException, ConfigurationException {
+        log.info("TestTPCall::setUp");
+        server.serverinit();
 
-		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory();
-		connection = connectionFactory.getConnection();
-	}
+        ConnectionFactory connectionFactory = ConnectionFactory.getConnectionFactory();
+        connection = connectionFactory.getConnection();
+    }
 
-	public void tearDown() throws ConnectionException, ConfigurationException {
-		log.info("TestTPCall::tearDown");
-		connection.close();
-		server.serverdone();
-	}
+    public void tearDown() throws ConnectionException, ConfigurationException {
+        log.info("TestTPCall::tearDown");
+        connection.close();
+        server.serverdone();
+    }
 
-	public void test_tpcall_unknown_service() throws ConnectionException {
-		log.info("TestTPCall::test_tpcall_unknown_service");
+    public void test_tpcall_unknown_service() throws ConnectionException, ConfigurationException {
+        log.info("TestTPCall::test_tpcall_unknown_service");
 
-		String message = "test_tpcall_unknown_service";
-		int sendlen = message.length() + 1;
-		X_OCTET sendbuf = (X_OCTET) connection
-				.tpalloc("X_OCTET", null, sendlen);
-		sendbuf.setByteArray("test_tpcall_unknown_service".getBytes());
+        String message = "test_tpcall_unknown_service";
+        int sendlen = message.length() + 1;
+        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
+        sendbuf.setByteArray("test_tpcall_unknown_service".getBytes());
 
-		try {
-			Response rcvbuf = connection.tpcall("UNKNOWN_SERVICE", sendbuf, 0);
-			fail("Expected TPENOENT, got a buffer with rval: "
-					+ rcvbuf.getRval());
-		} catch (ConnectionException e) {
-			if (e.getTperrno() != Connection.TPENOENT) {
-				fail("Expected TPENOENT, got: " + e.getTperrno());
-			}
-		}
-	}
+        try {
+            Response rcvbuf = connection.tpcall("UNKNOWN_SERVICE", sendbuf, 0);
+            fail("Expected TPENOENT, got a buffer with rval: " + rcvbuf.getRval());
+        } catch (ConnectionException e) {
+            if (e.getTperrno() != Connection.TPENOENT) {
+                fail("Expected TPENOENT, got: " + e.getTperrno());
+            }
+        }
+    }
 
-	public void test_tpcall_x_octet() throws ConnectionException {
-		log.info("TestTPCall::test_tpcall_x_octet");
-		server.tpadvertisetpcallXOctet();
+    public void test_tpcall_x_octet() throws ConnectionException, ConfigurationException {
+        log.info("TestTPCall::test_tpcall_x_octet");
+        server.tpadvertisetpcallXOctet();
 
-		String toSend = "test_tpcall_x_octet";
-		int sendlen = toSend.length() + 1;
-		X_OCTET sendbuf = (X_OCTET) connection
-				.tpalloc("X_OCTET", null, sendlen);
-		sendbuf.setByteArray(toSend.getBytes());
+        String toSend = "test_tpcall_x_octet";
+        int sendlen = toSend.length() + 1;
+        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
+        sendbuf.setByteArray(toSend.getBytes());
 
-		Response rcvbuf = connection.tpcall(
-				RunServer.getServiceNametpcallXOctet(), sendbuf, 0);
-		assertTrue(rcvbuf != null);
-		assertTrue(rcvbuf.getBuffer() != null);
-		assertTrue(((X_OCTET) rcvbuf.getBuffer()).getByteArray() != null);
-		byte[] received = ((X_OCTET) rcvbuf.getBuffer()).getByteArray();
-		byte[] expected = new byte[received.length];
-		System.arraycopy("tpcall_x_octet".getBytes(), 0, expected, 0,
-				"tpcall_x_octet".getBytes().length);
-		assertTrue(Arrays.equals(received, expected));
-	}
+        Response rcvbuf = connection.tpcall(RunServer.getServiceNametpcallXOctet(), sendbuf, 0);
+        assertTrue(rcvbuf != null);
+        assertTrue(rcvbuf.getBuffer() != null);
+        assertTrue(((X_OCTET) rcvbuf.getBuffer()).getByteArray() != null);
+        byte[] received = ((X_OCTET) rcvbuf.getBuffer()).getByteArray();
+        byte[] expected = new byte[received.length];
+        System.arraycopy("tpcall_x_octet".getBytes(), 0, expected, 0, "tpcall_x_octet".getBytes().length);
+        assertTrue(Arrays.equals(received, expected));
+    }
 
-	public void test_tpcall_x_octet_after_delay() throws ConnectionException,
-			InterruptedException {
-		log.info("TestTPCall::test_tpcall_x_octet_after_delay");
-		server.tpadvertisetpcallXOctet();
-		Thread.currentThread().sleep(3000);
-		String toSend = "test_tpcall_x_octet";
-		int sendlen = toSend.length() + 1;
-		X_OCTET sendbuf = (X_OCTET) connection
-				.tpalloc("X_OCTET", null, sendlen);
-		sendbuf.setByteArray(toSend.getBytes());
+    public void test_tpcall_x_octet_after_delay() throws ConnectionException, InterruptedException, ConfigurationException {
+        log.info("TestTPCall::test_tpcall_x_octet_after_delay");
+        server.tpadvertisetpcallXOctet();
+        Thread.currentThread().sleep(3000);
+        String toSend = "test_tpcall_x_octet";
+        int sendlen = toSend.length() + 1;
+        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
+        sendbuf.setByteArray(toSend.getBytes());
 
-		Response rcvbuf = connection.tpcall(
-				RunServer.getServiceNametpcallXOctet(), sendbuf, 0);
-		assertTrue(rcvbuf != null);
-		assertTrue(rcvbuf.getBuffer() != null);
-		assertTrue(((X_OCTET) rcvbuf.getBuffer()).getByteArray() != null);
-		byte[] received = ((X_OCTET) rcvbuf.getBuffer()).getByteArray();
-		byte[] expected = new byte[received.length];
-		System.arraycopy("tpcall_x_octet".getBytes(), 0, expected, 0,
-				"tpcall_x_octet".getBytes().length);
-		assertTrue(Arrays.equals(received, expected));
-	}
+        Response rcvbuf = connection.tpcall(RunServer.getServiceNametpcallXOctet(), sendbuf, 0);
+        assertTrue(rcvbuf != null);
+        assertTrue(rcvbuf.getBuffer() != null);
+        assertTrue(((X_OCTET) rcvbuf.getBuffer()).getByteArray() != null);
+        byte[] received = ((X_OCTET) rcvbuf.getBuffer()).getByteArray();
+        byte[] expected = new byte[received.length];
+        System.arraycopy("tpcall_x_octet".getBytes(), 0, expected, 0, "tpcall_x_octet".getBytes().length);
+        assertTrue(Arrays.equals(received, expected));
+    }
 
-	public void test_tpcall_x_common() throws ConnectionException {
-		log.info("TestTPCall::test_tpcall_x_common");
-		server.tpadvertisetpcallXCommon();
+    public void test_tpcall_x_common() throws ConnectionException, ConfigurationException {
+        log.info("TestTPCall::test_tpcall_x_common");
+        server.tpadvertisetpcallXCommon();
 
-		X_COMMON dptr = (X_COMMON) connection.tpalloc("X_COMMON", "deposit", 0);
+        X_COMMON dptr = (X_COMMON) connection.tpalloc("X_COMMON", "deposit", 0);
 
-		dptr.setLong("acct_no", 12345678);
-		dptr.setShort("amount", (short) 50);
+        dptr.setLong("acct_no", 12345678);
+        dptr.setShort("amount", (short) 50);
 
-		Response rcvbuf = connection.tpcall(
-				RunServer.getServiceNametpcallXCommon(), dptr, 0);
-		assertTrue(rcvbuf.getRcode() == 22);
-		byte[] received = ((X_OCTET) rcvbuf.getBuffer()).getByteArray();
-		byte[] expected = new byte[received.length];
-		System.arraycopy("tpcall_x_common".getBytes(), 0, expected, 0,
-				"tpcall_x_common".getBytes().length);
-		assertTrue(Arrays.equals(received, expected));
-	}
+        Response rcvbuf = connection.tpcall(RunServer.getServiceNametpcallXCommon(), dptr, 0);
+        assertTrue(rcvbuf.getRcode() == 22);
+        byte[] received = ((X_OCTET) rcvbuf.getBuffer()).getByteArray();
+        byte[] expected = new byte[received.length];
+        System.arraycopy("tpcall_x_common".getBytes(), 0, expected, 0, "tpcall_x_common".getBytes().length);
+        assertTrue(Arrays.equals(received, expected));
+    }
 
-	public void test_tpcall_x_c_type() throws ConnectionException {
-		log.info("TestTPCall::test_tpcall_x_c_type");
-		server.tpadvertisetpcallXCType();
+    public void test_tpcall_x_c_type() throws ConnectionException, ConfigurationException {
+        log.info("TestTPCall::test_tpcall_x_c_type");
+        server.tpadvertisetpcallXCType();
 
-		X_C_TYPE aptr = (X_C_TYPE) connection.tpalloc("X_C_TYPE", "acct_info",
-				0);
+        X_C_TYPE aptr = (X_C_TYPE) connection.tpalloc("X_C_TYPE", "acct_info", 0);
 
-		aptr.setLong("acct_no", 12345678);
-		aptr.setByteArray("name", "TOM".getBytes());
+        aptr.setLong("acct_no", 12345678);
+        aptr.setByteArray("name", "TOM".getBytes());
 
-		float[] foo = new float[2];
-		foo[0] = 1.1F;
-		foo[1] = 2.2F;
-		aptr.setFloatArray("foo", foo);
+        float[] foo = new float[2];
+        foo[0] = 1.1F;
+        foo[1] = 2.2F;
+        aptr.setFloatArray("foo", foo);
 
-		double[] balances = new double[2];
-		balances[0] = 1.1;
-		balances[1] = 2.2;
-		aptr.setDoubleArray("balances", balances);
+        double[] balances = new double[2];
+        balances[0] = 1.1;
+        balances[1] = 2.2;
+        aptr.setDoubleArray("balances", balances);
 
-		Response rcvbuf = connection.tpcall(
-				RunServer.getServiceNametpcallXCType(), aptr,
-				Connection.TPNOCHANGE);
-		assertTrue(rcvbuf.getRcode() == 23);
-		byte[] received = ((X_OCTET) rcvbuf.getBuffer()).getByteArray();
-		byte[] expected = new byte[received.length];
-		System.arraycopy("tpcall_x_c_type".getBytes(), 0, expected, 0,
-				"tpcall_x_c_type".getBytes().length);
-		assertTrue(Arrays.equals(received, expected));
-	}
+        Response rcvbuf = connection.tpcall(RunServer.getServiceNametpcallXCType(), aptr, Connection.TPNOCHANGE);
+        assertTrue(rcvbuf.getRcode() == 23);
+        byte[] received = ((X_OCTET) rcvbuf.getBuffer()).getByteArray();
+        byte[] expected = new byte[received.length];
+        System.arraycopy("tpcall_x_c_type".getBytes(), 0, expected, 0, "tpcall_x_c_type".getBytes().length);
+        assertTrue(Arrays.equals(received, expected));
+    }
 }

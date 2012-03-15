@@ -25,30 +25,28 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.narayana.blacktie.btadmin.CommandHandler;
 
 public class StartupTest extends TestCase {
-	private static final Logger log = LogManager.getLogger(StartupTest.class);
+    private static final Logger log = LogManager.getLogger(StartupTest.class);
 
-	private CommandHandler commandHandler;
+    private CommandHandler commandHandler;
 
-	public void setUp() throws Exception {
-		this.commandHandler = new CommandHandler();
-	}
+    public void setUp() throws Exception {
+        this.commandHandler = new CommandHandler();
+    }
 
-	public void tearDown() throws Exception {
-		log.info("StartupTest::tearDown");
-		if (commandHandler.handleCommand("shutdown".split(" ")) != 0) {
-			fail("Command was unsuccessful");
-		}
-	}
+    public void tearDown() throws Exception {
+        log.info("StartupTest::tearDown");
+        if (commandHandler.handleCommand("shutdown".split(" ")) != 0) {
+            fail("Command was unsuccessful");
+        }
+    }
 
-	public void testStartup() throws IOException, MalformedObjectNameException,
-			NullPointerException, InstantiationException,
-			IllegalAccessException, ClassNotFoundException {
-		log.info("StartupTest::testStartup");
-		if (commandHandler.handleCommand("startup".split(" ")) != 0) {
-			fail("Command was unsuccessful");
-		}
-	}
+    public void testStartup() throws IOException, MalformedObjectNameException, NullPointerException, InstantiationException,
+            IllegalAccessException, ClassNotFoundException {
+        log.info("StartupTest::testStartup");
+        if (commandHandler.handleCommand("startup".split(" ")) != 0) {
+            fail("Command was unsuccessful");
+        }
+    }
 }

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<server>   
-	<mbean code="org.jboss.narayana.blacktie.stompconnect.StompConnectService" 
-		name="jboss.blacktie:service=StompConnect">
-		<attribute name="ConnectionFactoryName">java:/XAConnectionFactory</attribute>
-		<attribute name="Uri">tcp://${jboss.bind.address}:61613</attribute>
-	</mbean>
-</server>

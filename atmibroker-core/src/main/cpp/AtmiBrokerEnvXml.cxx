@@ -42,7 +42,7 @@ ServersInfo servers;
 ServiceInfo service;
 Buffers buffers;
 
-OrbConfig orbConfig = {NULL, NULL};
+OrbConfig orbConfig = {NULL, NULL, NULL};
 TxnConfig txnConfig = {NULL, NULL};
 MqConfig mqConfig = {
     NULL,	// host
@@ -124,7 +124,15 @@ static void warn(const char * reason) {
  *
  * WARNING: only the first such occurence is expanded. TODO generalise the function
  */
+static char * copy_value_impl(char *value);
+
 static char * XMLCALL copy_value(const char *value) {
+    LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, "copy_value" << value);
+    return copy_value_impl(strdup(value));
+}
+
+static char * copy_value_impl(char *value) {
+    LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, "copy_value_impl" << value);
 	char *s = (char *) strchr(value, '$');
 	char *e;
 
@@ -147,6 +155,7 @@ static char * XMLCALL copy_value(const char *value) {
 		e += 1;
 		rsz = ACE_OS::strlen(pr) + ACE_OS::strlen(e) + ACE_OS::strlen(ev) + 1; /* add 1 for null terminator */
 		v = (char *) malloc(rsz);
+		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, "copy_value_impl malloc");
 
 		ACE_OS::snprintf(v, rsz, "%s%s%s", pr, ev, e);
 		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, value << (char*) " -> " << v);
@@ -154,11 +163,16 @@ static char * XMLCALL copy_value(const char *value) {
 		free(en);
 		free(pr);
 
-		return v;
+		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, "Freeing previous value" << value);
+		free(value);
+		return copy_value_impl(v);
 	}
 
-	return strdup(value);
+	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, "Returning value" << value);
+	return value;
 }
+
+
 
 static bool applicable_config(char *config, const char *attribute) {
 	if (config == NULL || ACE_OS::strlen(config) == 0) {
@@ -204,6 +218,9 @@ static void XMLCALL startElement
 			} else if(strcmp(atts[i], "TRANS_FACTORY_ID") == 0) {
 				orbConfig.transactionFactoryName = copy_value(atts[i+1]);
 				LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "set tFN: " << orbConfig.transactionFactoryName);
+			} else if(strcmp(atts[i], "INTERFACE") == 0) {
+				orbConfig.interface = copy_value(atts[i+1]);
+				LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "set tFN: " << orbConfig.interface);
 			}
 		}
 	} else if (strcmp(name, "TXN_CFG") == 0) {

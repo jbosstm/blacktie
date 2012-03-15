@@ -74,8 +74,8 @@ void TestExternManageDestination::test_tpcall_with_service() {
 	int cd = ::tpcall((char*) "TestOne", (char *) sendbuf, sendlen,
 			(char**) &recvbuf, &recvlen, 0);
 
+	BT_ASSERT(cd != -1);
 	sprintf(msg, "%d %d (%s)", tperrno, cd, recvbuf);
-	BT_ASSERT_MESSAGE(msg, cd != -1);
 	BT_ASSERT_MESSAGE(msg, recvlen == 8);
 	BT_ASSERT_MESSAGE(msg, strncmp(recvbuf, "testone", 7) == 0);
 
@@ -104,7 +104,7 @@ void TestExternManageDestination::test_tpcall_without_service() {
 }
 
 static void send_one(int id, int pri, const char *type, const char *subtype) {
-	msg_opts_t mopts = {0, 0L, 0};
+	msg_opts_t mopts = {0, 0L};
 	char msg[16];
 	char* buf;
 	long len;
@@ -134,15 +134,17 @@ static void recv_one(msg_opts_t *mopts, long len, long flags, int expect, int ex
 
 	BT_ASSERT(data != NULL);
 	toCheck = btdequeue((char*) "TestOne", mopts, &data, &len, 0L);
-	btlogger((char*) "recv_one: tperrno=%d expected_tperrno=%d toCheck=%d",
-		tperrno, expected_tperrno, toCheck);
-	BT_ASSERT(tperrno == expected_tperrno);
 
 	if (tperrno == 0) {
 		char tptype[9];
 		char tpsubtype[17];
 
 		BT_ASSERT(toCheck != -1);
+
+		btlogger((char*) "recv_one: tperrno=%d expected_tperrno=%d toCheck=%d data=%d",
+			tperrno, expected_tperrno, toCheck, atoi(data));
+		BT_ASSERT(tperrno == expected_tperrno);
+
 		if (expect >= 0)
 			BT_ASSERT(atoi(data) == expect);
 
@@ -157,19 +159,23 @@ static void recv_one(msg_opts_t *mopts, long len, long flags, int expect, int ex
 		if (subtype != NULL)
 			BT_ASSERT(strncmp(subtype, tpsubtype, 16) == 0);
 		tpfree(data);
+	} else {
+		btlogger((char*) "recv_one: tperrno=%d expected_tperrno=%d toCheck=%d",
+			tperrno, expected_tperrno, toCheck);
+		BT_ASSERT(tperrno == expected_tperrno);
 	}
 }
 
 void TestExternManageDestination::test_stored_messages() {
 	int i;
-	msg_opts_t mopts = {0, 0L, 0};
+	msg_opts_t mopts = {0, 0L};
 
 	btlogger((char*) "test_stored_messages");
-	for (i = 30; i < 40; i++)
+	for (i = 10; i < 20; i++)
 		send_one(i, 0, "X_OCTET", NULL);
 
 	// retrieve the messages in two goes:
-	for (i = 30; i < 40; i++) {
+	for (i = 10; i < 20; i++) {
 		btlogger((char*) "test_stored_messages: retrieving 5");
 
 		char* data = (char*) tpalloc((char*) "X_OCTET", NULL, 2);
@@ -195,8 +201,8 @@ void TestExternManageDestination::test_stored_messages() {
 void TestExternManageDestination::test_stored_message_priority() {
 	btlogger((char*) "test_stored_message_priority");
 	// send messages with out of order ids - the qservice should receive them in order
-	int prefix = 70;
-	msg_opts_t mopts = {0, 10L, 0};
+	int prefix = 20;
+	msg_opts_t mopts = {0, 10L};
 
 	send_one(prefix + 8, 1, "X_OCTET", NULL);
 	send_one(prefix + 6, 3, "X_OCTET", NULL);
@@ -237,14 +243,14 @@ void TestExternManageDestination::test_stored_message_priority() {
 
 void TestExternManageDestination::test_btenqueue_with_txn_abort() {
 	int i;
-	msg_opts_t mopts = {0, 500L, 1};
+	msg_opts_t mopts = {0, 500L};
 
 	btlogger((char*) "test_btenqueue_with_txn_abort");
 	BT_ASSERT(tx_open() == TX_OK);
 	BT_ASSERT(tx_begin() == TX_OK);
 
 	// enqueue messages within a transaction but then abort it
-	for (i = 30; i < 40; i++)
+	for (i = 40; i < 45; i++)
 		send_one(i, 0, "X_OCTET", NULL);
 
 	BT_ASSERT(tx_rollback() == TX_OK);
@@ -260,20 +266,20 @@ void TestExternManageDestination::test_btenqueue_with_txn_abort() {
 
 void TestExternManageDestination::test_btenqueue_with_txn_commit() {
 	int i;
-	msg_opts_t mopts = {0, 0L, 1};
+	msg_opts_t mopts = {0, 0L};
 
 	btlogger((char*) "test_btenqueue_with_txn_commit");
 	BT_ASSERT(tx_open() == TX_OK);
 	BT_ASSERT(tx_begin() == TX_OK);
 
 	// enqueue messages within a transaction and then commit it
-	for (i = 30; i < 40; i++)
+	for (i = 45; i < 50; i++)
 		send_one(i, 0, "X_OCTET", NULL);
 
 	BT_ASSERT(tx_commit() == TX_OK);
 
 	// since the txn commited btdequeue should retrieve them all
-	for (i = 30; i < 40; i++)
+	for (i = 45; i < 50; i++)
 		recv_one(&mopts, 2L, 0L, i, 0, "X_OCTET", NULL);
 
 	BT_ASSERT(tx_close() == TX_OK);
@@ -282,25 +288,25 @@ void TestExternManageDestination::test_btenqueue_with_txn_commit() {
 }
 
 void TestExternManageDestination::test_btdequeue_with_txn_abort() {
-	msg_opts_t mopts = {0, 0L, 1};
+	msg_opts_t mopts = {0, 0L};
 	int i;
 
 	btlogger((char*) "test_btdequeue_with_txn_abort");
 	BT_ASSERT(tx_open() == TX_OK);
 
 	// enqueue messages
-	for (i = 30; i < 40; i++)
+	for (i = 50; i < 55; i++)
 		send_one(i, 0, "X_OCTET", NULL);
 
 	// dequeue messages within a transaction and then abort it
 	BT_ASSERT(tx_begin() == TX_OK);
-	for (i = 30; i < 40; i++)
+	for (i = 50; i < 55; i++)
 		recv_one(&mopts, 2L, 0L, i, 0, "X_OCTET", NULL);
 
 	BT_ASSERT(tx_rollback() == TX_OK);
 
 	// since the txn was abort the queue will still contains the messages
-	for (i = 30; i < 40; i++)
+	for (i = 50; i < 55; i++)
 		recv_one(&mopts, 2L, 0L, i, 0, "X_OCTET", NULL);
 
 	BT_ASSERT(tx_close() == TX_OK);
@@ -309,19 +315,19 @@ void TestExternManageDestination::test_btdequeue_with_txn_abort() {
 }
 
 void TestExternManageDestination::test_btdequeue_with_txn_commit() {
-	msg_opts_t mopts = {0, 0L, 1};
+	msg_opts_t mopts = {0, 0L};
 	int i;
 
 	btlogger((char*) "test_btdequeue_with_txn_commit");
 	BT_ASSERT(tx_open() == TX_OK);
 
 	// enqueue messages
-	for (i = 30; i < 40; i++)
+	for (i = 55; i < 60; i++)
 		send_one(i, 0, "X_OCTET", NULL);
 
 	// and dequeue them within a transaction and then commit it
 	BT_ASSERT(tx_begin() == TX_OK);
-	for (i = 30; i < 40; i++)
+	for (i = 55; i < 60; i++)
 		recv_one(&mopts, 2L, 0L, i, 0, "X_OCTET", NULL);
 
 	BT_ASSERT(tx_commit() == TX_OK);
@@ -338,7 +344,7 @@ void TestExternManageDestination::test_btdequeue_with_txn_commit() {
 
 void TestExternManageDestination::test_btenqueue_with_tptypes() {
 	int id = 0;
-	msg_opts_t mopts = {0, 0L, 1};
+	msg_opts_t mopts = {0, 0L};
 
 	btlogger((char*) "test_btenqueue_with_tptypes");
 

@@ -18,76 +18,76 @@
 package org.jboss.narayana.blacktie.jatmibroker.core.conf;
 
 public class Machine {
-	private String id;
-	private String hostname;
-	private String ipAddress;
-	private String pathToExecutable;
-	private String workingDirectory;
-	private int serverId;
-	private String argLine;
-	private Server server;
+    private String id;
+    private String hostname;
+    private String ipAddress;
+    private String pathToExecutable;
+    private String workingDirectory;
+    private int serverId;
+    private String argLine;
+    private Server server;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public String getHostname() {
-		return hostname;
-	}
+    public String getHostname() {
+        return hostname;
+    }
 
-	public void setHostname(String hostname) {
-		this.hostname = hostname;
-	}
+    public void setHostname(String hostname) {
+        this.hostname = hostname;
+    }
 
-	public String getPathToExecutable() {
-		return pathToExecutable;
-	}
+    public String getPathToExecutable() {
+        return pathToExecutable;
+    }
 
-	public String getIpAddress() {
-		return ipAddress;
-	}
+    public String getIpAddress() {
+        return ipAddress;
+    }
 
-	public void setIpAddress(String ipAddress) {
-		this.ipAddress = ipAddress;
-	}
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
 
-	public void setPathToExecutable(String pathToExecutable) {
-		this.pathToExecutable = pathToExecutable;
-	}
+    public void setPathToExecutable(String pathToExecutable) {
+        this.pathToExecutable = pathToExecutable;
+    }
 
-	public String getWorkingDirectory() {
-		return workingDirectory;
-	}
+    public String getWorkingDirectory() {
+        return workingDirectory;
+    }
 
-	public void setWorkingDirectory(String workingDirectory) {
-		this.workingDirectory = workingDirectory;
-	}
+    public void setWorkingDirectory(String workingDirectory) {
+        this.workingDirectory = workingDirectory;
+    }
 
-	public int getServerId() {
-		return serverId;
-	}
+    public int getServerId() {
+        return serverId;
+    }
 
-	public void setServerId(int serverId) {
-		this.serverId = serverId;
-	}
+    public void setServerId(int serverId) {
+        this.serverId = serverId;
+    }
 
-	public String getArgLine() {
-		return argLine;
-	}
+    public String getArgLine() {
+        return argLine;
+    }
 
-	public void setArgLine(String argLine) {
-		this.argLine = argLine;
-	}
+    public void setArgLine(String argLine) {
+        this.argLine = argLine;
+    }
 
-	public void setServer(Server server) {
-		this.server = server;
-	}
+    public void setServer(Server server) {
+        this.server = server;
+    }
 
-	public Server getServer() {
-		return server;
-	}
+    public Server getServer() {
+        return server;
+    }
 }

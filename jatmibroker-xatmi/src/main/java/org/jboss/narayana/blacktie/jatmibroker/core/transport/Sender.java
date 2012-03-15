@@ -20,11 +20,10 @@ package org.jboss.narayana.blacktie.jatmibroker.core.transport;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
 
 public interface Sender {
-	public Object getSendTo();
+    public Object getSendTo();
 
-	public void send(Object replyTo, short rval, int rcode, byte[] data,
-			int len, int correlationId, int flags, int ttl, String type,
-			String subtype) throws ConnectionException;
+    public void send(Object replyTo, short rval, int rcode, byte[] data, int len, int correlationId, int flags, int ttl,
+            String type, String subtype) throws ConnectionException;
 
-	public void close() throws ConnectionException;
+    public void close() throws ConnectionException;
 }

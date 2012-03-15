@@ -25,27 +25,26 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.narayana.blacktie.btadmin.CommandHandler;
+import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
 
 public class HelpTest extends TestCase {
-	private static final Logger log = LogManager.getLogger(HelpTest.class);
+    private static final Logger log = LogManager.getLogger(HelpTest.class);
 
-	private CommandHandler commandHandler;
+    private CommandHandler commandHandler;
 
-	public void setUp() throws Exception {
-		this.commandHandler = new CommandHandler();
-	}
+    public void setUp() throws Exception {
+        this.commandHandler = new CommandHandler();
+    }
 
-	public void tearDown() {
-	}
+    public void tearDown() {
+    }
 
-	public void testVersion() throws IOException, MalformedObjectNameException,
-			NullPointerException, InstantiationException,
-			IllegalAccessException, ClassNotFoundException {
-		log.info("HelpTest::testVersion");
-		String command = "help";
-		if (commandHandler.handleCommand(command.split(" ")) != 0) {
-			fail("Command was unsuccessful");
-		}
-	}
+    public void testVersion() throws IOException, MalformedObjectNameException, NullPointerException, InstantiationException,
+            IllegalAccessException, ClassNotFoundException, ConfigurationException {
+        log.info("HelpTest::testVersion");
+        String command = "help";
+        if (commandHandler.handleCommand(command.split(" ")) != 0) {
+            fail("Command was unsuccessful");
+        }
+    }
 }

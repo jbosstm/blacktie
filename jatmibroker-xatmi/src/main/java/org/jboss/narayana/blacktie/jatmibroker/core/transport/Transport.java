@@ -23,56 +23,50 @@ import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
 
 public interface Transport {
 
-	/**
-	 * Get the sender
-	 * 
-	 * @param serviceName
-	 * @return
-	 * @throws ConfigurationException
-	 */
-	public Sender getSender(String serviceName, boolean conversational)
-			throws ConnectionException;
+    /**
+     * Get the sender
+     * 
+     * @param serviceName
+     * @return
+     * @throws ConfigurationException
+     */
+    public Sender getSender(String serviceName, boolean conversational) throws ConnectionException;
 
-	/**
-	 * Create a sender to a service queue
-	 * 
-	 * @param replyTo
-	 * @return
-	 * @throws ConfigurationException
-	 */
-	public Sender createSender(Object replyTo) throws ConnectionException;
+    /**
+     * Create a sender to a service queue
+     * 
+     * @param replyTo
+     * @return
+     * @throws ConfigurationException
+     */
+    public Sender createSender(Object replyTo) throws ConnectionException;
 
-	/**
-	 * Create a receiver on a service queue
-	 * 
-	 * @param serviceName
-	 * @return
-	 * @throws ConfigurationException
-	 */
-	public Receiver getReceiver(String serviceName, boolean conversational)
-			throws ConnectionException;
+    /**
+     * Create a receiver on a service queue
+     * 
+     * @param serviceName
+     * @return
+     * @throws ConfigurationException
+     */
+    public Receiver getReceiver(String serviceName, boolean conversational) throws ConnectionException;
 
-	/**
-	 * Create a receiver on a temporary queue.
-	 * 
-	 * @return The receiver
-	 * @throws ConfigurationException
-	 */
-	public Receiver createReceiver(int cd, ResponseMonitor responseMonitor)
-			throws ConnectionException;
+    /**
+     * Create a receiver on a temporary queue.
+     * 
+     * @return The receiver
+     * @throws ConfigurationException
+     */
+    public Receiver createReceiver(int cd, ResponseMonitor responseMonitor) throws ConnectionException;
 
-	/**
-	 * Create a receiver giving it the session to receive events upon.
-	 * 
-	 * @param session
-	 *            The session to receive events
-	 * @return The receiver
-	 * @throws ConnectionException
-	 *             Incase the received cannot be created
-	 */
-	public Receiver createReceiver(EventListener session)
-			throws ConnectionException;
+    /**
+     * Create a receiver giving it the session to receive events upon.
+     * 
+     * @param session The session to receive events
+     * @return The receiver
+     * @throws ConnectionException Incase the received cannot be created
+     */
+    public Receiver createReceiver(EventListener session) throws ConnectionException;
 
-	public void close() throws ConnectionException;
+    public void close() throws ConnectionException;
 
 }

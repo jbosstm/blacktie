@@ -32,41 +32,38 @@ import org.jboss.narayana.blacktie.jatmibroker.core.transport.Transport;
 import org.jboss.narayana.blacktie.jatmibroker.core.transport.TransportFactory;
 
 public class ConnectionImplTest extends TestCase {
-	private static final Logger log = LogManager
-			.getLogger(ConnectionImplTest.class);
-	private RunServer server = new RunServer();
+    private static final Logger log = LogManager.getLogger(ConnectionImplTest.class);
+    private RunServer server = new RunServer();
 
-	public void setUp() throws InterruptedException {
-		server.serverinit();
-	}
+    public void setUp() throws InterruptedException {
+        server.serverinit();
+    }
 
-	public void tearDown() {
-		server.serverdone();
-	}
+    public void tearDown() {
+        server.serverdone();
+    }
 
-	public void test() throws Exception {
-		AtmiBrokerEnvXML xml = new AtmiBrokerEnvXML();
-		Properties properties = xml.getProperties();
+    public void test() throws Exception {
+        AtmiBrokerEnvXML xml = new AtmiBrokerEnvXML();
+        Properties properties = xml.getProperties();
 
-		TransportFactory factory = new TransportFactory(properties);
-		Transport proxy = factory.createTransport();
-		Sender serviceFactory = proxy.getSender("BAR", false);
+        TransportFactory factory = new TransportFactory(properties);
+        Transport proxy = factory.createTransport();
+        Sender serviceFactory = proxy.getSender("BAR", false);
 
-		String aString = "Hello from Java Land";
-		Receiver endpoint = proxy.createReceiver(1, null);
-		serviceFactory.send(endpoint.getReplyTo(), (short) 0, 0,
-				aString.getBytes(), aString.getBytes().length, 0, 0, 0,
-				"X_OCTET", "");
-		Message receive = endpoint.receive(0);
+        String aString = "Hello from Java Land";
+        Receiver endpoint = proxy.createReceiver(1, null);
+        serviceFactory.send(endpoint.getReplyTo(), (short) 0, 0, aString.getBytes(), aString.getBytes().length, 0, 0, 0,
+                "X_OCTET", "");
+        Message receive = endpoint.receive(0);
 
-		assertNotNull(receive);
-		String string = new String(receive.data).intern();
-		String expectedResponse = "BAR SAYS HELLO";
-		log.debug("Bar ServiceManager service_request response is " + string);
-		log.debug("Bar ServiceManager service_request size of response is "
-				+ receive.len);
-		assertEquals(string, expectedResponse);
-		proxy.close();
-		factory.close();
-	}
+        assertNotNull(receive);
+        String string = new String(receive.data).intern();
+        String expectedResponse = "BAR SAYS HELLO";
+        log.debug("Bar ServiceManager service_request response is " + string);
+        log.debug("Bar ServiceManager service_request size of response is " + receive.len);
+        assertEquals(string, expectedResponse);
+        proxy.close();
+        factory.close();
+    }
 }

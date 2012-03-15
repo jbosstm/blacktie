@@ -25,22 +25,19 @@ import org.jboss.narayana.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.X_OCTET;
 
 public class JavaClient {
-	private static final Logger log = LogManager.getLogger(JavaClient.class);
+    private static final Logger log = LogManager.getLogger(JavaClient.class);
 
-	public static void main(String[] args) throws Exception {
-		log.info("JavaClient");
-		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory();
-		Connection connection = connectionFactory.getConnection();
-		X_OCTET sbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, 29);
-		sbuf.setByteArray("THIS IS YOUR CLIENT SPEAKING".getBytes());
-		log.info("Calling tpcall with input: %s"
-				+ new String(sbuf.getByteArray()));
-		int cd = connection.tpacall("JAVASERV", sbuf, 0);
-		Response retbuf = connection.tpgetrply(cd, 0);
-		log.info("Called tpcall with length: %d output: %s"
-				+ retbuf.getBuffer().getLen() + " "
-				+ new String(((X_OCTET) retbuf.getBuffer()).getByteArray()));
-		connection.close();
-	}
+    public static void main(String[] args) throws Exception {
+        log.info("JavaClient");
+        ConnectionFactory connectionFactory = ConnectionFactory.getConnectionFactory();
+        Connection connection = connectionFactory.getConnection();
+        X_OCTET sbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, 29);
+        sbuf.setByteArray("THIS IS YOUR CLIENT SPEAKING".getBytes());
+        log.info("Calling tpcall with input: %s" + new String(sbuf.getByteArray()));
+        int cd = connection.tpacall("JAVASERV", sbuf, 0);
+        Response retbuf = connection.tpgetrply(cd, 0);
+        log.info("Called tpcall with length: %d output: %s" + retbuf.getBuffer().getLen() + " "
+                + new String(((X_OCTET) retbuf.getBuffer()).getByteArray()));
+        connection.close();
+    }
 }

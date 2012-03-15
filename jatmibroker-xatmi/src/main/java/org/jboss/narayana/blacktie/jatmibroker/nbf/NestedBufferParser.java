@@ -29,89 +29,79 @@ import javax.xml.validation.SchemaFactory;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
+import org.apache.xerces.xs.PSVIProvider;
+import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.xml.sax.SAXException;
 
-import org.apache.xerces.xs.PSVIProvider;
-
 public class NestedBufferParser {
-	private NestedBufferHandlers handler;
-	private SAXParser saxParser;
-	private Schema schema;
+    private NestedBufferHandlers handler;
+    private SAXParser saxParser;
+    private Schema schema;
 
-	private static final Logger log = LogManager.getLogger(NestedBufferParser.class);
-	
-	public NestedBufferParser(String xsdFilename) throws ConnectionException {
-		try {
-			// Obtain a new instance of a SAXParserFactory.
-			SAXParserFactory factory = SAXParserFactory.newInstance();
-			factory.setNamespaceAware(true);
-			factory.setValidating(true);
-			SchemaFactory schemaFactory = SchemaFactory
-			.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			factory.setFeature("http://apache.org/xml/features/validation/schema",
-					true);
+    private static final Logger log = LogManager.getLogger(NestedBufferParser.class);
 
-			File file = new File(xsdFilename);
-			if (file.exists()) {
-				schema = schemaFactory.newSchema(file);
-			} else {
-				throw new ConnectionException(Connection.TPEOS, 
-							"Could not find " + xsdFilename);
-			}
-			
-			factory.setSchema(schema);
-			saxParser = factory.newSAXParser();
-			PSVIProvider p = (PSVIProvider) saxParser.getXMLReader();
-			
-			handler = new NestedBufferHandlers(p);
+    public NestedBufferParser(String xsdFilename) throws ConfigurationException {
+        try {
+            // Obtain a new instance of a SAXParserFactory.
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(true);
+            factory.setValidating(true);
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            factory.setFeature("http://apache.org/xml/features/validation/schema", true);
 
-		}catch (SAXException e) {
-			log.error("Could not create a SAXParser: " + e.getMessage(), e);
-			throw new ConnectionException(Connection.TPEOS, 
-						"Could not create a SAXParser: " + e.getMessage());
-		} catch (ParserConfigurationException e) {
-			log.error("Could not create a SAXParser: " + e.getMessage(), e);
-			throw new ConnectionException(Connection.TPEOS, 
-						"Could not create a SAXParser: " + e.getMessage());
-		} catch (Throwable e) {
-			log.error("Could not create a SAXParser: " + e.getMessage(), e);
-			throw new ConnectionException(Connection.TPEOS, 
-						"Could not create a SAXParser: " + e.getMessage());
-		}
-	}
-	
-	public void setId(String id) {
-		handler.setId(id);
-	}
-	
-	public void setIndex(int index) {
-		handler.setIndex(index);
-	}
-	
-	public String getType() {
-		return handler.getType();
-	}
-	
-	public String getValue() {
-		return handler.getValue();
-	}
-	
-	public boolean parse(byte[] buffer) throws ConnectionException {
-		boolean result = false;
-		
-		try {	
-			schema.newValidator().validate(new StreamSource(
-					new ByteArrayInputStream(buffer)));
-			saxParser.parse(new ByteArrayInputStream(buffer), handler);
-			result = true;
-		} catch (Throwable e) {
-			log.error("Parser buffer failed with " + e.getMessage(), e);
-			throw new ConnectionException(Connection.TPEOS, 
-					"Parser buffer failed with " + e.getMessage());
-		}
-		
-		return result;
-	}
+            File file = new File(xsdFilename);
+            if (file.exists()) {
+                schema = schemaFactory.newSchema(file);
+            } else {
+                throw new ConfigurationException("Could not find " + xsdFilename);
+            }
+
+            factory.setSchema(schema);
+            saxParser = factory.newSAXParser();
+            PSVIProvider p = (PSVIProvider) saxParser.getXMLReader();
+
+            handler = new NestedBufferHandlers(p);
+
+        } catch (SAXException e) {
+            log.error("Could not create a SAXParser: " + e.getMessage(), e);
+            throw new ConfigurationException("Could not create a SAXParser: " + e.getMessage());
+        } catch (ParserConfigurationException e) {
+            log.error("Could not create a SAXParser: " + e.getMessage(), e);
+            throw new ConfigurationException("Could not create a SAXParser: " + e.getMessage());
+        } catch (Throwable e) {
+            log.error("Could not create a SAXParser: " + e.getMessage(), e);
+            throw new ConfigurationException("Could not create a SAXParser: " + e.getMessage());
+        }
+    }
+
+    public void setId(String id) {
+        handler.setId(id);
+    }
+
+    public void setIndex(int index) {
+        handler.setIndex(index);
+    }
+
+    public String getType() {
+        return handler.getType();
+    }
+
+    public String getValue() {
+        return handler.getValue();
+    }
+
+    public boolean parse(byte[] buffer) throws ConfigurationException {
+        boolean result = false;
+
+        try {
+            schema.newValidator().validate(new StreamSource(new ByteArrayInputStream(buffer)));
+            saxParser.parse(new ByteArrayInputStream(buffer), handler);
+            result = true;
+        } catch (Throwable e) {
+            log.error("Parser buffer failed with " + e.getMessage(), e);
+            throw new ConfigurationException("Parser buffer failed with " + e.getMessage());
+        }
+
+        return result;
+    }
 }

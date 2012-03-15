@@ -22,13 +22,16 @@
 			</fileset>
 		</unzip>
 		<property environment="env"/>
-		<echo message="${env.BT_HOME}" file="bthome.tmp.file"/>
+		<echo message="${BT_HOME}"/>
+		<echo message="${BT_HOME}" file="bthome.tmp.file"/>
 		<replace file="bthome.tmp.file" token="\" value="\\\\"/>
 		<loadfile srcfile="bthome.tmp.file" property="ESC_BT_HOME"/>
+		<echo message="${ESC_BT_HOME}"/>
 		<delete file="bthome.tmp.file"/>
 	</target>
 
 	<target name="dist" depends="_extract-msvc,_extract-gcc">
+		<echo message="${ESC_BT_HOME}"/>
 		<replaceregexp byline="true" match="REPLACE_WITH_INSTALL_LOCATION" replace="${ESC_BT_HOME}${VERSION}">
 			<fileset dir="${BT_HOME}/">
 				<include name="*/setenv.*"/>

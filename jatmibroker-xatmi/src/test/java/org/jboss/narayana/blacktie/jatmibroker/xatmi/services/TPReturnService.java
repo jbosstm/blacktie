@@ -7,11 +7,10 @@ import org.jboss.narayana.blacktie.jatmibroker.xatmi.Service;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.TPSVCINFO;
 
 public class TPReturnService implements Service {
-	private static final Logger log = LogManager
-			.getLogger(TPReturnService.class);
+    private static final Logger log = LogManager.getLogger(TPReturnService.class);
 
-	public Response tpservice(TPSVCINFO svcinfo) {
-		log.info("testtpreturn_service");
-		throw new RuntimeException("tpreturn exception");
-	}
+    public Response tpservice(TPSVCINFO svcinfo) {
+        log.info("testtpreturn_service");
+        throw new RuntimeException("tpreturn exception");
+    }
 }

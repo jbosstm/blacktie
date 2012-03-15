@@ -28,21 +28,18 @@ import org.jboss.narayana.blacktie.jatmibroker.xatmi.TPSVCINFO;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.X_OCTET;
 
 public class BarService implements Service {
-	private static final Logger log = LogManager.getLogger(BarService.class);
+    private static final Logger log = LogManager.getLogger(BarService.class);
 
-	public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException,
-			ConfigurationException {
-		int sendlen;
+    public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException, ConfigurationException {
+        int sendlen;
 
-		log.info("bar called  - svc: %s data %s len: %d flags: %d"
-				+ svcinfo.getName() + " " + svcinfo.getBuffer() + " "
-				+ svcinfo.getLen() + " " + svcinfo.getFlags());
+        log.info("bar called  - svc: %s data %s len: %d flags: %d" + svcinfo.getName() + " " + svcinfo.getBuffer() + " "
+                + svcinfo.getLen() + " " + svcinfo.getFlags());
 
-		sendlen = 15;
-		X_OCTET buffer = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET",
-				null, sendlen);
-		buffer.setByteArray("BAR SAYS HELLO".getBytes());
+        sendlen = 15;
+        X_OCTET buffer = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null, sendlen);
+        buffer.setByteArray("BAR SAYS HELLO".getBytes());
 
-		return new Response(Connection.TPSUCCESS, 0, buffer, 0);
-	}
+        return new Response(Connection.TPSUCCESS, 0, buffer, 0);
+    }
 }

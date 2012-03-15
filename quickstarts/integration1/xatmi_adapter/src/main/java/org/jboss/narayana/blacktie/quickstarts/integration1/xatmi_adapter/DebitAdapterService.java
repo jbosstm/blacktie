@@ -25,8 +25,6 @@ import javax.naming.NamingException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.ejb3.annotation.ResourceAdapter;
-import org.jboss.narayana.blacktie.quickstarts.integration1.ejb.DebitRemote;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
@@ -35,41 +33,38 @@ import org.jboss.narayana.blacktie.jatmibroker.xatmi.TPSVCINFO;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.X_COMMON;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.X_OCTET;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.mdb.MDBBlacktieService;
+import org.jboss.narayana.blacktie.quickstarts.integration1.ejb.DebitRemote;
 
-@javax.ejb.TransactionAttribute(javax.ejb.TransactionAttributeType.NOT_SUPPORTED)
 @MessageDriven(activationConfig = {
-		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
-		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BTR_DEBITEXAMPLE") })
-// @Depends("org.hornetq:module=JMS,name=\"BTR_DEBITEXAMPLE\",type=Queue")
-@ResourceAdapter("hornetq-ra.rar")
-public class DebitAdapterService extends MDBBlacktieService implements
-		javax.jms.MessageListener {
+        @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
+        @ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BTR_DEBITEXAMPLE") })
+@javax.ejb.TransactionAttribute(javax.ejb.TransactionAttributeType.NEVER)
+public class DebitAdapterService extends MDBBlacktieService implements javax.jms.MessageListener {
 
-	private static final Logger log = LogManager
-			.getLogger(DebitAdapterService.class);
+    private static final Logger log = LogManager.getLogger(DebitAdapterService.class);
 
-	public DebitAdapterService() throws ConfigurationException {
-		super();
-	}
+    public DebitAdapterService() throws ConfigurationException {
+        super("DebitAdapterService");
+    }
 
-	public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException {
-		X_COMMON rcv = (X_COMMON) svcinfo.getBuffer();
-		long acct_no = rcv.getLong("acct_no");
-		short amount = rcv.getShort("amount");
+    public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException, ConfigurationException {
+        X_COMMON rcv = (X_COMMON) svcinfo.getBuffer();
+        long acct_no = rcv.getLong("acct_no");
+        short amount = rcv.getShort("amount");
 
-		String resp = "NAMINGERROR";
-		try {
-			Context ctx = new InitialContext();
-			DebitRemote bean = (DebitRemote) ctx.lookup("DebitBean/remote");
-			log.debug("resolved DebitBean");
-			resp = bean.debit(acct_no, amount);
-		} catch (NamingException e) {
-			log.error("Got a naming error: " + e.getMessage(), e);
-		}
-		log.trace("Returning: " + resp);
-		X_OCTET buffer = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET",
-				null, resp.length() + 1);
-		buffer.setByteArray(resp.getBytes());
-		return new Response(Connection.TPSUCCESS, 0, buffer, 0);
-	}
+        String resp = "NAMINGERROR";
+        try {
+            Context ctx = new InitialContext();
+            DebitRemote bean = (DebitRemote) ctx
+                    .lookup("java:global/integration1-ejb-ear-5.0.0.M2-SNAPSHOT/integration1-ejb-5.0.0.M2-SNAPSHOT/DebitBean!org.jboss.narayana.blacktie.quickstarts.integration1.ejb.DebitRemote");
+            log.debug("resolved DebitBean");
+            resp = bean.debit(acct_no, amount);
+        } catch (NamingException e) {
+            log.error("Got a naming error: " + e.getMessage(), e);
+        }
+        log.trace("Returning: " + resp);
+        X_OCTET buffer = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null, resp.length() + 1);
+        buffer.setByteArray(resp.getBytes());
+        return new Response(Connection.TPSUCCESS, 0, buffer, 0);
+    }
 }

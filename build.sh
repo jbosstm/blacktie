@@ -10,6 +10,19 @@
 
 # $Id: build.sh 105735 2010-06-04 19:45:13Z pgier $
 
+# Create the bpa if you can
+BPA=
+
+uname | grep Linux >> /dev/null
+if [ "$?" -ne "1" ]; then
+	uname -a | grep x86_64 >> /dev/null
+	if [ "$?" -ne "1" ]; then
+		BPA="-Dbpa=centos54x64"
+	else
+		BPA="-Dbpa=centos55x32"
+	fi
+fi
+
 PROGNAME=`basename $0`
 DIRNAME=`dirname $0`
 GREP="grep"
@@ -30,7 +43,7 @@ MAVEN_SEARCH_PATH="\
     maven"
 
 # the default arguments
-MVN_OPTIONS="-gs tools/maven/conf/settings.xml"
+MVN_OPTIONS="$BPA -gs tools/maven/conf/settings.xml"
 
 # Use the maximum available, or set MAX_FD != -1 to use that
 MAX_FD="maximum"

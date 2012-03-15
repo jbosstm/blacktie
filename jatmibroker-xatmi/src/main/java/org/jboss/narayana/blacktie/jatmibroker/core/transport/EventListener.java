@@ -19,7 +19,7 @@ package org.jboss.narayana.blacktie.jatmibroker.core.transport;
 
 public interface EventListener {
 
-	public static final short DISCON_CODE = 0x00000003;
+    public static final short DISCON_CODE = 0x00000003;
 
-	public void setLastEvent(long lastEvent, int rcode);
+    public void setLastEvent(long lastEvent, int rcode);
 }

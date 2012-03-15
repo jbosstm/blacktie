@@ -21,10 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BufferStructure {
-	String name;
-	public List<String> attributeNames = new ArrayList<String>();
-	public List<AttributeStructure> attributes = new ArrayList<AttributeStructure>();
-	public int wireSize;
-	long memSize;
-	int lastPad;
+    String name;
+    public List<String> attributeNames = new ArrayList<String>();
+    public List<AttributeStructure> attributes = new ArrayList<AttributeStructure>();
+    public int wireSize;
+    long memSize;
+    int lastPad;
 }

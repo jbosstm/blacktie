@@ -18,9 +18,9 @@
 package org.jboss.narayana.blacktie.jatmibroker.xatmi;
 
 public class CSTPBuffer extends CSControl {
-	// tpalloc with X_C_TYPE and non-zero len: tperrno=%d (spec says size is
-	// optional)
-	public void test_9001() {
-		runTest("9001");
-	}
+    // tpalloc with X_C_TYPE and non-zero len: tperrno=%d (spec says size is
+    // optional)
+    public void test_9001() {
+        runTest("9001");
+    }
 }

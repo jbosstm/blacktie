@@ -7,11 +7,10 @@ import org.jboss.narayana.blacktie.jatmibroker.xatmi.Service;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.TPSVCINFO;
 
 public class RollbackOnlyNoTpreturnService implements Service {
-	private static final Logger log = LogManager
-			.getLogger(RollbackOnlyNoTpreturnService.class);
+    private static final Logger log = LogManager.getLogger(RollbackOnlyNoTpreturnService.class);
 
-	public Response tpservice(TPSVCINFO svcinfo) {
-		log.info("test_no_tpreturn_service");
-		return null;
-	}
+    public Response tpservice(TPSVCINFO svcinfo) {
+        log.info("test_no_tpreturn_service");
+        return null;
+    }
 }

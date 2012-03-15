@@ -19,7 +19,7 @@ package org.codehaus.stomp;
 
 /**
  * Command indicating that an invalid Stomp Frame was received.
- *
+ * 
  * @author <a href="http://hiramchirino.com">chirino</a>
  */
 public class StompFrameError extends StompFrame {

@@ -16,82 +16,82 @@
 		02110-1301, USA.
 	-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <parent>
-    <groupId>org.jboss.narayana.blacktie</groupId>
-    <artifactId>blacktie-C</artifactId>
-    <version>5.0.0.M2-SNAPSHOT</version>
-    <relativePath>../../blacktie-common/blacktie-C/pom.xml</relativePath>
-  </parent>
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>atmibroker-idl-cxx</artifactId>
-  <name>Blacktie CORBA Transport C++ Bindings</name>
-  <packaging>jar</packaging>
-  <description>A BlackTie component</description>
-  <developers>
-    <developer>
-      <id>tomjenkinson</id>
-      <name>Thomas Jenkinson</name>
-      <email>tom.jenkinson@redhat.com</email>
-      <organization>JBoss</organization>
-      <organizationUrl>http://www.jboss.org/</organizationUrl>
-      <roles>
-        <role>Project Lead</role>
-      </roles>
-      <timezone>0</timezone>
-    </developer>
-    <developer>
-      <id>mmusgrov</id>
-      <name>Michael Musgrove</name>
-      <email>mmusgrov@redhat.com</email>
-      <organization>JBoss</organization>
-      <organizationUrl>http://www.jboss.org/</organizationUrl>
-      <roles>
-        <role>Core Developer</role>
-      </roles>
-      <timezone>0</timezone>
-    </developer>
-    <developer>
-      <id>zfeng</id>
-      <name>Amos Feng</name>
-      <email>zfeng@redhat.com</email>
-      <organization>JBoss</organization>
-      <organizationUrl>http://www.jboss.org/</organizationUrl>
-      <roles>
-        <role>Core Developer</role>
-      </roles>
-      <timezone>0</timezone>
-    </developer>
-  </developers>
-  <licenses>
-    <license>
-      <name>LGPL 2.1</name>
-      <url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
-    </license>
-  </licenses>
-  <profiles>
-    <profile>
-      <id>windows</id>
-      <activation>
-        <os>
-          <family>windows</family>
-        </os>
-      </activation>
-      <properties>
-        <export.dll>_BLACKTIE_IDL_DLL</export.dll>
-      </properties>
-    </profile>
-  </profiles>
-  <build>
-    <plugins>
-      <plugin>
-        <inherited>true</inherited>
-        <groupId>org.jboss.narayana.blacktie.plugins</groupId>
-        <artifactId>cpp-plugin</artifactId>
-        <configuration>
-          <idl.src.dir>../src/main/idl</idl.src.dir>
-        </configuration>
-      </plugin>
-      <!--
+    <parent>
+        <groupId>org.jboss.narayana.blacktie</groupId>
+        <artifactId>blacktie-C</artifactId>
+        <version>5.0.0.M2-SNAPSHOT</version>
+        <relativePath>../../blacktie-common/blacktie-C/pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>atmibroker-idl-cxx</artifactId>
+    <name>Blacktie CORBA Transport C++ Bindings</name>
+    <packaging>jar</packaging>
+    <description>A BlackTie component</description>
+    <developers>
+        <developer>
+            <id>tomjenkinson</id>
+            <name>Thomas Jenkinson</name>
+            <email>tom.jenkinson@redhat.com</email>
+            <organization>JBoss</organization>
+            <organizationUrl>http://www.jboss.org/</organizationUrl>
+            <roles>
+                <role>Project Lead</role>
+            </roles>
+            <timezone>0</timezone>
+        </developer>
+        <developer>
+            <id>mmusgrov</id>
+            <name>Michael Musgrove</name>
+            <email>mmusgrov@redhat.com</email>
+            <organization>JBoss</organization>
+            <organizationUrl>http://www.jboss.org/</organizationUrl>
+            <roles>
+                <role>Core Developer</role>
+            </roles>
+            <timezone>0</timezone>
+        </developer>
+        <developer>
+            <id>zfeng</id>
+            <name>Amos Feng</name>
+            <email>zfeng@redhat.com</email>
+            <organization>JBoss</organization>
+            <organizationUrl>http://www.jboss.org/</organizationUrl>
+            <roles>
+                <role>Core Developer</role>
+            </roles>
+            <timezone>0</timezone>
+        </developer>
+    </developers>
+    <licenses>
+        <license>
+            <name>LGPL 2.1</name>
+            <url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
+        </license>
+    </licenses>
+    <profiles>
+        <profile>
+            <id>windows</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <properties>
+                <export.dll>_BLACKTIE_IDL_DLL</export.dll>
+            </properties>
+        </profile>
+    </profiles>
+    <build>
+        <plugins>
+            <plugin>
+                <inherited>true</inherited>
+                <groupId>org.jboss.narayana.blacktie.plugins</groupId>
+                <artifactId>cpp-plugin</artifactId>
+                <configuration>
+                    <idl.src.dir>../src/main/idl</idl.src.dir>
+                </configuration>
+            </plugin>
+            <!--
 			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>2.3.1</version>
@@ -100,9 +100,9 @@
 				</configuration>
 			</plugin>
 -->
-    </plugins>
-  </build>
-  <properties>
-    <src.main>target/generated/tao_idl</src.main>
-  </properties>
+        </plugins>
+    </build>
+    <properties>
+        <src.main>target/generated/tao_idl</src.main>
+    </properties>
 </project>

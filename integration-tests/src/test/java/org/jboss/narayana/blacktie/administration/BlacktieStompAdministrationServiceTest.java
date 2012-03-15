@@ -27,82 +27,75 @@ import org.jboss.narayana.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.X_OCTET;
 
 public class BlacktieStompAdministrationServiceTest extends TestCase {
-	private Connection connection;
+    private Connection connection;
 
-	public void setUp() throws ConnectionException, ConfigurationException {
-		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory();
-		connection = connectionFactory.getConnection();
-	}
+    public void setUp() throws ConnectionException, ConfigurationException {
+        ConnectionFactory connectionFactory = ConnectionFactory.getConnectionFactory();
+        connection = connectionFactory.getConnection();
+    }
 
-	public void tearDown() throws ConnectionException, ConfigurationException {
-		connection.close();
-	}
+    public void tearDown() throws ConnectionException, ConfigurationException {
+        connection.close();
+    }
 
-	/**
-	 * Cannot test this without using a C server as unadvertise checks for a
-	 * running server
-	 * 
-	 * @throws ConnectionException
-	 */
-	public void xtest() throws ConnectionException {
-		processStompCommand("tpadvertise,foo,FOOTest,5.0.0.M2-SNAPSHOT,", 1);
-		try {
-			connection.tpacall("FOOTest", null, Connection.TPNOREPLY);
-		} catch (ConnectionException e) {
-			fail("Was not able to send the request : " + e.getMessage());
-		}
+    /**
+     * Cannot test this without using a C server as unadvertise checks for a running server
+     * 
+     * @throws ConnectionException
+     */
+    public void xtest() throws ConnectionException, ConfigurationException {
+        processStompCommand("tpadvertise,foo,FOOTest,5.0.0.M2-SNAPSHOT,", 1);
+        try {
+            connection.tpacall("FOOTest", null, Connection.TPNOREPLY);
+        } catch (ConnectionException e) {
+            fail("Was not able to send the request : " + e.getMessage());
+        }
 
-		processDomainCommand("unadvertise,foo,FOOTest,", 1);
-		try {
-			connection.tpcall("FOOTest", null, Connection.TPNOREPLY);
-			fail("Was able to send the request");
-		} catch (ConnectionException e) {
-			// EXPECTED
-		}
+        processDomainCommand("unadvertise,foo,FOOTest,", 1);
+        try {
+            connection.tpcall("FOOTest", null, Connection.TPNOREPLY);
+            fail("Was able to send the request");
+        } catch (ConnectionException e) {
+            // EXPECTED
+        }
 
-		processStompCommand("tpadvertise,foo,FOOTest,5.0.0.M2-SNAPSHOT,", 1);
+        processStompCommand("tpadvertise,foo,FOOTest,5.0.0.M2-SNAPSHOT,", 1);
 
-		try {
-			connection.tpacall("FOOTest", null, Connection.TPNOREPLY);
-		} catch (ConnectionException e) {
-			fail("Was not able to send the request : " + e.getMessage());
-		}
-		processDomainCommand("unadvertise,foo,FOOTest,", 1);
-	}
+        try {
+            connection.tpacall("FOOTest", null, Connection.TPNOREPLY);
+        } catch (ConnectionException e) {
+            fail("Was not able to send the request : " + e.getMessage());
+        }
+        processDomainCommand("unadvertise,foo,FOOTest,", 1);
+    }
 
-	public void testUnknownService() throws ConnectionException {
-		processStompCommand(
-				"tpadvertise,foo,UNKNOWN_SERVICE,5.0.0.M2-SNAPSHOT,", 0);
-	}
+    public void testUnknownService() throws ConnectionException, ConfigurationException {
+        processStompCommand("tpadvertise,foo,UNKNOWN_SERVICE,5.0.0.M2-SNAPSHOT,", 0);
+    }
 
-	public void testWrongVersionService() throws ConnectionException {
-		processStompCommand("tpadvertise,foo,FOOTest,WrongVersion,", 4);
-	}
+    public void testWrongVersionService() throws ConnectionException, ConfigurationException {
+        processStompCommand("tpadvertise,foo,FOOTest,WrongVersion,", 4);
+    }
 
-	private void processStompCommand(String command, int expectation)
-			throws ConnectionException {
-		byte[] toSend = command.getBytes();
-		X_OCTET buffer = (X_OCTET) connection.tpalloc("X_OCTET", null,
-				toSend.length);
-		buffer.setByteArray(toSend);
+    private void processStompCommand(String command, int expectation) throws ConnectionException, ConfigurationException {
+        byte[] toSend = command.getBytes();
+        X_OCTET buffer = (X_OCTET) connection.tpalloc("X_OCTET", null, toSend.length);
+        buffer.setByteArray(toSend);
 
-		Response response = connection.tpcall("BTStompAdmin", buffer, 0);
+        Response response = connection.tpcall("BTStompAdmin", buffer, 0);
 
-		byte[] responseData = ((X_OCTET) response.getBuffer()).getByteArray();
-		assertEquals(expectation, responseData[0]);
-	}
+        byte[] responseData = ((X_OCTET) response.getBuffer()).getByteArray();
+        assertEquals(expectation, responseData[0]);
+    }
 
-	private void processDomainCommand(String command, int expectation)
-			throws ConnectionException {
-		byte[] toSend = command.getBytes();
-		X_OCTET buffer = (X_OCTET) connection.tpalloc("X_OCTET", null,
-				toSend.length);
-		buffer.setByteArray(toSend);
+    private void processDomainCommand(String command, int expectation) throws ConnectionException, ConfigurationException {
+        byte[] toSend = command.getBytes();
+        X_OCTET buffer = (X_OCTET) connection.tpalloc("X_OCTET", null, toSend.length);
+        buffer.setByteArray(toSend);
 
-		Response response = connection.tpcall("BTDomainAdmin", buffer, 0);
+        Response response = connection.tpcall("BTDomainAdmin", buffer, 0);
 
-		byte[] responseData = ((X_OCTET) response.getBuffer()).getByteArray();
-		assertEquals(expectation, responseData[0]);
-	}
+        byte[] responseData = ((X_OCTET) response.getBuffer()).getByteArray();
+        assertEquals(expectation, responseData[0]);
+    }
 }

@@ -235,7 +235,7 @@
 		<chmod file="${protoc}" perm="755"/>
 
 		<mkdir dir="${proto.output.dir}" />
-		<apply executable="${protoc}" parallel="false" failonerror="true" newenvironment="true" relative="true" dir="${proto.src.dir}">
+		<apply executable="${protoc}" parallel="false" failonerror="true" newenvironment="false" relative="true" dir="${proto.src.dir}">
 			<env key="LD_LIBRARY_PATH" path="${proto.lroot}/lib:${proto.broot}" />
 			<env key="${neutral.path.key}" path="${neutral.path.value};${proto.lroot}/lib;${proto.broot}" />
 			<env key="SystemRoot" path="${env.SystemRoot}" />

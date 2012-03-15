@@ -20,13 +20,13 @@ package org.jboss.narayana.blacktie.jatmibroker.core.transport;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
 
 public interface Receiver {
-	public int getCd() throws ConnectionException;
+    public int getCd() throws ConnectionException;
 
-	public Message receive(long flags) throws ConnectionException;
+    public Message receive(long flags) throws ConnectionException;
 
-	public Object getReplyTo() throws ConnectionException;
+    public Object getReplyTo() throws ConnectionException;
 
-	public void close() throws ConnectionException;
+    public void close() throws ConnectionException;
 
-	public int determineTimeout(long flags) throws ConnectionException;
+    public int determineTimeout(long flags) throws ConnectionException;
 }

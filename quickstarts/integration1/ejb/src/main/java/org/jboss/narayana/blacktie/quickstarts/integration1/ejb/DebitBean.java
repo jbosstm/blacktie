@@ -23,28 +23,26 @@ import javax.ejb.TransactionAttributeType;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.ejb3.annotation.RemoteBinding;
 
 @Stateless
-@RemoteBinding(jndiBinding = "DebitBean/remote")
 public class DebitBean implements DebitRemote {
-	private static final Logger log = LogManager.getLogger(DebitBean.class);
+    private static final Logger log = LogManager.getLogger(DebitBean.class);
 
-	/*
-	 * @TransactionAttribute(TransactionAttributeType.REQUIRED)
-	 * 
-	 * @TransactionAttribute(TransactionAttributeType.SUPPORTS)
-	 * 
-	 * @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	 * 
-	 * @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-	 * 
-	 * @TransactionAttribute(TransactionAttributeType.NEVER)
-	 */
+    /*
+     * @TransactionAttribute(TransactionAttributeType.REQUIRED)
+     * 
+     * @TransactionAttribute(TransactionAttributeType.SUPPORTS)
+     * 
+     * @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+     * 
+     * @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+     * 
+     * @TransactionAttribute(TransactionAttributeType.NEVER)
+     */
 
-	@TransactionAttribute(TransactionAttributeType.MANDATORY)
-	public String debit(long acct_no, short amount) {
-		log.info("Debit called: acct_no: " + acct_no + " amount: " + amount);
-		return "DEBITTED";
-	}
+    @TransactionAttribute(TransactionAttributeType.MANDATORY)
+    public String debit(long acct_no, short amount) {
+        log.info("Debit called: acct_no: " + acct_no + " amount: " + amount);
+        return "DEBITTED";
+    }
 }

@@ -18,12 +18,12 @@
 package org.jboss.narayana.blacktie.jatmibroker.xatmi;
 
 public class CSTestOne extends CSControl {
-	public void test_one() {
-		String testname = System.getProperty("TESTNAME", null);
+    public void test_one() {
+        String testname = System.getProperty("TESTNAME", null);
 
-		if (testname != null) {
-			log.info("Running test " + testname);
-			runTest(testname);
-		}
-	}
+        if (testname != null) {
+            log.info("Running test " + testname);
+            runTest(testname);
+        }
+    }
 }

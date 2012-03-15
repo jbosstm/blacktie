@@ -20,7 +20,6 @@ package org.jboss.narayana.blacktie.quickstart.mdb;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 
-import org.jboss.ejb3.annotation.ResourceAdapter;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
@@ -31,22 +30,18 @@ import org.jboss.narayana.blacktie.jatmibroker.xatmi.mdb.MDBBlacktieService;
 
 @javax.ejb.TransactionAttribute(javax.ejb.TransactionAttributeType.NOT_SUPPORTED)
 @MessageDriven(activationConfig = {
-		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
-		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BTR_EchoService") })
-// @Depends("org.hornetq:module=JMS,name=\"BTR_EchoService\",type=Queue")
-@ResourceAdapter("hornetq-ra.rar")
-public class EchoServiceTestService extends MDBBlacktieService implements
-		javax.jms.MessageListener {
+        @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
+        @ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BTR_EchoService") })
+public class EchoServiceTestService extends MDBBlacktieService implements javax.jms.MessageListener {
 
-	public EchoServiceTestService() throws ConfigurationException {
-		super();
-	}
+    public EchoServiceTestService() throws ConfigurationException {
+        super("EchoServiceTestService");
+    }
 
-	public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException {
-		X_OCTET rcvd = (X_OCTET) svcinfo.getBuffer();
-		X_OCTET buffer = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET",
-				null, rcvd.getByteArray().length);
-		buffer.setByteArray(rcvd.getByteArray());
-		return new Response(Connection.TPSUCCESS, 0, buffer, 0);
-	}
+    public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException, ConfigurationException {
+        X_OCTET rcvd = (X_OCTET) svcinfo.getBuffer();
+        X_OCTET buffer = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null, rcvd.getByteArray().length);
+        buffer.setByteArray(rcvd.getByteArray());
+        return new Response(Connection.TPSUCCESS, 0, buffer, 0);
+    }
 }

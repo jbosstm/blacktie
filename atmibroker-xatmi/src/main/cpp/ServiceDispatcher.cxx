@@ -142,6 +142,8 @@ int ServiceDispatcher::svc(void) {
 		stopLock->unlock();
 
 		if (message.received) {
+			// Always ack the message as this is what closes the socket
+			destination->ack(message);
 			try {
 				counter += 1;
 				ACE_Time_Value start = ACE_OS::gettimeofday();
@@ -181,8 +183,6 @@ int ServiceDispatcher::svc(void) {
 						logger,
 						(char*) "Service Dispatcher caught error running during onMessage");
 			}
-			// Always ack the message as this is what closes the socket
-			destination->ack(message);
 
 			if (message.data != NULL) {
 				free(message.data);

@@ -68,15 +68,6 @@
 		</dependencySet>
 		<dependencySet>
 			<includes>
-				<include>org.jboss.narayana.blacktie:jatmibroker-xatmi-client</include>
-			</includes>
-			<useProjectArtifact>false</useProjectArtifact>
-			<unpack>false</unpack>
-			<outputDirectory>lib/java</outputDirectory>
-			<useTransitiveDependencies>true</useTransitiveDependencies>
-		</dependencySet>
-		<dependencySet>
-			<includes>
 				<include>org.jboss.narayana.blacktie:blacktie-rhq-plugin</include>
 			</includes>
 			<useProjectArtifact>false</useProjectArtifact>
@@ -86,7 +77,7 @@
 		</dependencySet>
 		<dependencySet>
 			<includes>
-				<include>org.jboss.narayana.blacktie:blacktie-admin-services-ear</include>
+				<include>org.jboss.narayana.blacktie:blacktie-admin-services-ear:ear</include>
 			</includes>
 			<useProjectArtifact>false</useProjectArtifact>
 			<useTransitiveDependencies>false</useTransitiveDependencies>
@@ -95,7 +86,7 @@
 		</dependencySet>
 		<dependencySet>
 			<includes>
-				<include>org.jboss.narayana.blacktie:stompconnectservice-ear</include>
+				<include>org.codehaus.stomp:stompconnect</include>
 			</includes>
 			<useProjectArtifact>false</useProjectArtifact>
 			<unpack>false</unpack>
@@ -107,10 +98,8 @@
 			<excludes>
 				<exclude>org.jboss.narayana.blacktie:btadmin</exclude>
 				<exclude>org.jboss.narayana.blacktie:codeGeneration</exclude>
-				<exclude>org.jboss.narayana.blacktie:jatmibroker-xatmi-client</exclude>
 				<exclude>org.jboss.narayana.blacktie:blacktie-rhq-plugin</exclude>
-				<exclude>org.jboss.narayana.blacktie:blacktie-admin-services-ear</exclude>
-				<exclude>org.jboss.narayana.blacktie:stompconnectservice-ear</exclude>
+				<exclude>org.jboss.narayana.blacktie:blacktie-admin-services-ear:ear</exclude>
 				<exclude>*:javadoc</exclude>
 				<exclude>*:jdocbook</exclude>
 			</excludes>
@@ -144,7 +133,7 @@
 			<fileMode>0755</fileMode>
 		</file>
 		<file>
-			<source>../blacktie-admin-services/ear/target/config/btconfig.xml</source>
+			<source>../blacktie-admin-services/target/classes/btconfig.xml</source>
 			<outputDirectory>blacktie-admin-services</outputDirectory>
 		</file>
 	</files>

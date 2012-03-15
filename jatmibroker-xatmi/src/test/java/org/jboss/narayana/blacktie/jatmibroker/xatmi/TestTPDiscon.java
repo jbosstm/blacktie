@@ -23,49 +23,43 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.narayana.blacktie.jatmibroker.RunServer;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionFactory;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.Session;
 
 public class TestTPDiscon extends TestCase {
-	private static final Logger log = LogManager.getLogger(TestTPDiscon.class);
-	private RunServer server = new RunServer();
-	private Connection connection;
-	private Session cd;
+    private static final Logger log = LogManager.getLogger(TestTPDiscon.class);
+    private RunServer server = new RunServer();
+    private Connection connection;
+    private Session cd;
 
-	public void setUp() throws ConnectionException, ConfigurationException {
-		server.serverinit();
-		server.tpadvertiseTestTPDiscon();
+    public void setUp() throws ConnectionException, ConfigurationException {
+        server.serverinit();
+        server.tpadvertiseTestTPDiscon();
 
-		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory();
-		connection = connectionFactory.getConnection();
+        ConnectionFactory connectionFactory = ConnectionFactory.getConnectionFactory();
+        connection = connectionFactory.getConnection();
 
-		cd = connection.tpconnect(RunServer.getServiceNameTestTPDiscon(), null,
-				Connection.TPSENDONLY);
-	}
+        cd = connection.tpconnect(RunServer.getServiceNameTestTPDiscon(), null, Connection.TPSENDONLY);
+    }
 
-	public void tearDown() throws ConnectionException, ConfigurationException {
-		connection.close();
-		server.serverdone();
-	}
+    public void tearDown() throws ConnectionException, ConfigurationException {
+        connection.close();
+        server.serverdone();
+    }
 
-	public void test_tpdiscon() throws ConnectionException {
-		log.info("TestOne");
-		cd.tpdiscon();
-		cd = null;
-	}
-	//
-	// public void test_tpdiscon_baddescr() {
-	// log.info("test_tpdiscon_baddescr");
-	// cd.tpdiscon(2);
-	// CPPUNIT_ASSERT(tperrno == TPEBADDESC);
-	// }
-	//
-	// public void test_tpdiscon_negdescr() {
-	// log.info("test_tpdiscon_negdescr");
-	// cd.tpdiscon(-1);
-	// CPPUNIT_ASSERT(tperrno == TPEBADDESC);
-	// }
+    public void test_tpdiscon() throws ConnectionException {
+        log.info("TestOne");
+        cd.tpdiscon();
+        cd = null;
+    }
+    //
+    // public void test_tpdiscon_baddescr() {
+    // log.info("test_tpdiscon_baddescr");
+    // cd.tpdiscon(2);
+    // CPPUNIT_ASSERT(tperrno == TPEBADDESC);
+    // }
+    //
+    // public void test_tpdiscon_negdescr() {
+    // log.info("test_tpdiscon_negdescr");
+    // cd.tpdiscon(-1);
+    // CPPUNIT_ASSERT(tperrno == TPEBADDESC);
+    // }
 }

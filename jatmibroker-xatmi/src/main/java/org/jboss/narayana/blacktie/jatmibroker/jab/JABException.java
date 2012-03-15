@@ -18,34 +18,30 @@
 package org.jboss.narayana.blacktie.jatmibroker.jab;
 
 /**
- * The JABException is used throughout the JAB library to report issues to the
- * client.
+ * The JABException is used throughout the JAB library to report issues to the client.
  */
 public class JABException extends Exception {
-	/**
-	 * The serialization id.
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     * The serialization id.
+     */
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Report a root cause.
-	 * 
-	 * @param msg
-	 *            The message to include
-	 * @param cause
-	 *            The root cause of the exception
-	 */
-	public JABException(String msg, Throwable cause) {
-		super(msg, cause);
-	}
+    /**
+     * Report a root cause.
+     * 
+     * @param msg The message to include
+     * @param cause The root cause of the exception
+     */
+    public JABException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
 
-	/**
-	 * The JABException that doesn't need the root cause.
-	 * 
-	 * @param msg
-	 *            The message to include
-	 */
-	public JABException(String msg) {
-		super(msg);
-	}
+    /**
+     * The JABException that doesn't need the root cause.
+     * 
+     * @param msg The message to include
+     */
+    public JABException(String msg) {
+        super(msg);
+    }
 }

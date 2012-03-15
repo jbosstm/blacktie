@@ -24,8 +24,8 @@
 #include "Sleeper.h"
 
 extern void test_tpcall_TPETIME_service(TPSVCINFO *svcinfo) {
-	int timeout = 21;
-	::sleeper(timeout);
+	btlogger((char*) "test_tpcall_TPETIME_service");
+	::sleeper(60);
 
 	int len = 60;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);

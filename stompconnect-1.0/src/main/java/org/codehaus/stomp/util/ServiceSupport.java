@@ -17,11 +17,16 @@
  */
 package org.codehaus.stomp.util;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.jms.JMSException;
 
 /**
  * A helper class for working with services together with a useful base class for service implementations.
- *
+ * 
  * @version $Revision: 50 $
  */
 public abstract class ServiceSupport {
@@ -29,19 +34,19 @@ public abstract class ServiceSupport {
     private AtomicBoolean stopping = new AtomicBoolean(false);
     private AtomicBoolean stopped = new AtomicBoolean(false);
 
-    public void start() throws Exception {
+    public void start() throws IOException, URISyntaxException, IllegalArgumentException, IllegalAccessException,
+            InvocationTargetException {
         if (started.compareAndSet(false, true)) {
             doStart();
         }
     }
 
-    public void stop() throws Exception {
+    public void stop() throws InterruptedException, IOException, JMSException, URISyntaxException {
         if (stopped.compareAndSet(false, true)) {
             stopping.set(true);
             try {
                 doStop();
-            }
-            finally {
+            } finally {
                 stopped.set(true);
                 started.set(false);
                 stopping.set(false);
@@ -70,7 +75,8 @@ public abstract class ServiceSupport {
         return stopped.get();
     }
 
-    protected abstract void doStop() throws Exception;
+    protected abstract void doStop() throws InterruptedException, IOException, JMSException, URISyntaxException;
 
-    protected abstract void doStart() throws Exception;
+    protected abstract void doStart() throws IOException, URISyntaxException, IllegalArgumentException, IllegalAccessException,
+            InvocationTargetException;
 }

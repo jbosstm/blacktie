@@ -25,117 +25,101 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.narayana.blacktie.btadmin.CommandHandler;
 
 public class ShutdownTest extends TestCase {
-	private static final Logger log = LogManager.getLogger(ShutdownTest.class);
+    private static final Logger log = LogManager.getLogger(ShutdownTest.class);
 
-	private CommandHandler commandHandler;
+    private CommandHandler commandHandler;
 
-	boolean shutdownRequired = false;
+    boolean shutdownRequired = false;
 
-	public void setUp() throws Exception {
-		this.commandHandler = new CommandHandler();
-		shutdownRequired = false;
-	}
+    public void setUp() throws Exception {
+        this.commandHandler = new CommandHandler();
+        shutdownRequired = false;
+    }
 
-	public void tearDown() throws Exception {
-		log.info("ShutdownTest::tearDown");
-		if (shutdownRequired
-				&& commandHandler.handleCommand("shutdown testsui".split(" ")) != 0) {
-			fail("Could not stop the server");
-		}
-	}
+    public void tearDown() throws Exception {
+        log.info("ShutdownTest::tearDown");
+        if (shutdownRequired && commandHandler.handleCommand("shutdown testsui".split(" ")) != 0) {
+            fail("Could not stop the server");
+        }
+    }
 
-	public void testShutdownWithoutArgs() throws IOException,
-			MalformedObjectNameException, NullPointerException,
-			InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		log.info("ShutdownTest::testShutdownWithoutArgs");
-		if (commandHandler.handleCommand("shutdown".split(" ")) == 0) {
-			fail("Command was successful");
-		}
-	}
+    public void testShutdownWithoutArgs() throws IOException, MalformedObjectNameException, NullPointerException,
+            InstantiationException, IllegalAccessException, ClassNotFoundException {
+        log.info("ShutdownTest::testShutdownWithoutArgs");
+        if (commandHandler.handleCommand("shutdown".split(" ")) == 0) {
+            fail("Command was successful");
+        }
+    }
 
-	public void testShutdownWithNonIntId() throws IOException,
-			MalformedObjectNameException, NullPointerException,
-			InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		log.info("ShutdownTest::testShutdownWithNonIntId");
-		if (commandHandler.handleCommand("shutdown testsui one".split(" ")) == 0) {
-			fail("Command was successful");
-		}
-	}
+    public void testShutdownWithNonIntId() throws IOException, MalformedObjectNameException, NullPointerException,
+            InstantiationException, IllegalAccessException, ClassNotFoundException {
+        log.info("ShutdownTest::testShutdownWithNonIntId");
+        if (commandHandler.handleCommand("shutdown testsui one".split(" ")) == 0) {
+            fail("Command was successful");
+        }
+    }
 
-	public void testShutdownUnknownServer() throws IOException,
-			MalformedObjectNameException, NullPointerException,
-			InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		log.info("ShutdownTest::testShutdownUnknownServer");
-		if (commandHandler.handleCommand("shutdown UNKNOWN".split(" ")) == 0) {
-			fail("Command was successful");
-		}
-	}
+    public void testShutdownUnknownServer() throws IOException, MalformedObjectNameException, NullPointerException,
+            InstantiationException, IllegalAccessException, ClassNotFoundException {
+        log.info("ShutdownTest::testShutdownUnknownServer");
+        if (commandHandler.handleCommand("shutdown UNKNOWN".split(" ")) == 0) {
+            fail("Command was successful");
+        }
+    }
 
-	public void testShutdownStoppedServer() throws IOException,
-			MalformedObjectNameException, NullPointerException,
-			InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		log.info("ShutdownTest::testShutdownStoppedServer");
-		if (commandHandler.handleCommand("shutdown testsui 1".split(" ")) == 0) {
-			fail("Command was successful");
-		}
-	}
+    public void testShutdownStoppedServer() throws IOException, MalformedObjectNameException, NullPointerException,
+            InstantiationException, IllegalAccessException, ClassNotFoundException {
+        log.info("ShutdownTest::testShutdownStoppedServer");
+        if (commandHandler.handleCommand("shutdown testsui 1".split(" ")) == 0) {
+            fail("Command was successful");
+        }
+    }
 
-	public void testShutdownWithoutId() throws IOException,
-			MalformedObjectNameException, NullPointerException,
-			InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		log.info("ShutdownTest::testShutdownWithoutId");
-		if (commandHandler.handleCommand("startup testsui".split(" ")) != 0) {
-			fail("Could not start the server");
-		}
-		if (commandHandler.handleCommand("shutdown testsui".split(" ")) != 0) {
-			shutdownRequired = true;
-			fail("Command was not successful");
-		}
-	}
+    public void testShutdownWithoutId() throws IOException, MalformedObjectNameException, NullPointerException,
+            InstantiationException, IllegalAccessException, ClassNotFoundException {
+        log.info("ShutdownTest::testShutdownWithoutId");
+        if (commandHandler.handleCommand("startup testsui".split(" ")) != 0) {
+            fail("Could not start the server");
+        }
+        if (commandHandler.handleCommand("shutdown testsui".split(" ")) != 0) {
+            shutdownRequired = true;
+            fail("Command was not successful");
+        }
+    }
 
-	public void testShutdownWithId() throws IOException,
-			MalformedObjectNameException, NullPointerException,
-			InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		log.info("ShutdownTest::testShutdownWithId");
-		if (commandHandler.handleCommand("startup testsui".split(" ")) != 0) {
-			fail("Could not start the server");
-		}
-		log.info("Shutting down testsui 1");
-		if (commandHandler.handleCommand("shutdown testsui 1".split(" ")) != 0) {
-			shutdownRequired = true;
-			fail("Command was not successful");
-		}
-		log.info("Shutting down testsui 2");
-		if (commandHandler.handleCommand("shutdown testsui 2".split(" ")) != 0) {
-			shutdownRequired = true;
-			fail("Command was not successful");
-		}
-	}
+    public void testShutdownWithId() throws IOException, MalformedObjectNameException, NullPointerException,
+            InstantiationException, IllegalAccessException, ClassNotFoundException {
+        log.info("ShutdownTest::testShutdownWithId");
+        if (commandHandler.handleCommand("startup testsui".split(" ")) != 0) {
+            fail("Could not start the server");
+        }
+        log.info("Shutting down testsui 1");
+        if (commandHandler.handleCommand("shutdown testsui 1".split(" ")) != 0) {
+            shutdownRequired = true;
+            fail("Command was not successful");
+        }
+        log.info("Shutting down testsui 2");
+        if (commandHandler.handleCommand("shutdown testsui 2".split(" ")) != 0) {
+            shutdownRequired = true;
+            fail("Command was not successful");
+        }
+    }
 
-	public void testShutdownWithInvalidId() throws IOException,
-			MalformedObjectNameException, NullPointerException,
-			InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		log.info("ShutdownTest::testShutdownWithInvalidId");
-		if (commandHandler.handleCommand("startup testsui".split(" ")) != 0) {
-			fail("Could not start the server");
-		}
-		if (commandHandler.handleCommand("shutdown testsui 3".split(" ")) == 0) {
-			shutdownRequired = true;
-			fail("Command was successful");
-		}
-		if (commandHandler.handleCommand("shutdown testsui".split(" ")) != 0) {
-			shutdownRequired = true;
-			fail("Command was not successful");
-		}
-	}
+    public void testShutdownWithInvalidId() throws IOException, MalformedObjectNameException, NullPointerException,
+            InstantiationException, IllegalAccessException, ClassNotFoundException {
+        log.info("ShutdownTest::testShutdownWithInvalidId");
+        if (commandHandler.handleCommand("startup testsui".split(" ")) != 0) {
+            fail("Could not start the server");
+        }
+        if (commandHandler.handleCommand("shutdown testsui 3".split(" ")) == 0) {
+            shutdownRequired = true;
+            fail("Command was successful");
+        }
+        if (commandHandler.handleCommand("shutdown testsui".split(" ")) != 0) {
+            shutdownRequired = true;
+            fail("Command was not successful");
+        }
+    }
 }

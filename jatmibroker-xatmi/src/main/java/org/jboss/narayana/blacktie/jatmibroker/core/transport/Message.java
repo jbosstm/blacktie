@@ -27,44 +27,39 @@ import org.apache.log4j.Logger;
 import org.jboss.narayana.blacktie.jatmibroker.core.transport.hybrid.stomp.StompManagement;
 
 public class Message {
-	private static final Logger log = LogManager.getLogger(Message.class);
+    private static final Logger log = LogManager.getLogger(Message.class);
 
-	public Object replyTo;
-	public byte[] data;
-	public int len;
-	public int flags;
-	public String control;
-	public short rval;
-	public int rcode;
-	public int cd;
-	public String serviceName;
-	public String type;
-	public String subtype;
+    public Object replyTo;
+    public byte[] data;
+    public int len;
+    public int flags;
+    public String control;
+    public short rval;
+    public int rcode;
+    public int cd;
+    public String serviceName;
+    public String type;
+    public String subtype;
 
-	private String messageId;
-	private StompManagement management;
-	private OutputStream outputStream;
+    private String messageId;
+    private OutputStream outputStream;
 
-	public void ack() throws IOException {
-		log.debug("Acking message: " + messageId);
-		org.jboss.narayana.blacktie.jatmibroker.core.transport.hybrid.stomp.Message ack = new org.jboss.narayana.blacktie.jatmibroker.core.transport.hybrid.stomp.Message();
-		ack.setCommand("ACK");
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put("message-id", messageId);
-		ack.setHeaders(headers);
-		management.send(ack, outputStream);
-		log.debug("Acked message: " + messageId);
-	}
+    public void ack() throws IOException {
+        log.debug("Acking message: " + messageId);
+        org.jboss.narayana.blacktie.jatmibroker.core.transport.hybrid.stomp.Message ack = new org.jboss.narayana.blacktie.jatmibroker.core.transport.hybrid.stomp.Message();
+        ack.setCommand("ACK");
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("message-id", messageId);
+        ack.setHeaders(headers);
+        StompManagement.send(ack, outputStream);
+        log.debug("Acked message: " + messageId);
+    }
 
-	public void setMessageId(String messageId) {
-		this.messageId = messageId;
-	}
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
+    }
 
-	public void setManagement(StompManagement management) {
-		this.management = management;
-	}
-
-	public void setOutputStream(OutputStream outputStream) {
-		this.outputStream = outputStream;
-	}
+    public void setOutputStream(OutputStream outputStream) {
+        this.outputStream = outputStream;
+    }
 }

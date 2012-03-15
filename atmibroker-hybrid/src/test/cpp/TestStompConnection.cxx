@@ -73,7 +73,7 @@ void TestStompConnection::testLibStomp() {
 		clientSend.replyto = client->getReplyTo();
 		clientSend.type = (char*) "X_OCTET";
 		clientSend.subtype = (char*) "";
-		clientSend.ttl = 10 * 1000;
+		clientSend.ttl = 20 * 1000;
 		clientSend.control = NULL;
 		clientSend.xid = NULL;
 		clientSend.syncRcv = 0;

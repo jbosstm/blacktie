@@ -16,96 +16,89 @@
 		02110-1301, USA.
 	-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <parent>
-    <groupId>org.jboss.narayana.blacktie</groupId>
-    <artifactId>atmibroker-idl</artifactId>
-    <version>5.0.0.M2-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
-  </parent>
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>atmibroker-idl-java</artifactId>
-  <name>Blacktie CORBA Transport Java Bindings</name>
-  <packaging>jar</packaging>
-  <description>A BlackTie component</description>
-  <developers>
-    <developer>
-      <id>tomjenkinson</id>
-      <name>Thomas Jenkinson</name>
-      <email>tom.jenkinson@redhat.com</email>
-      <organization>JBoss</organization>
-      <organizationUrl>http://www.jboss.org/</organizationUrl>
-      <roles>
-        <role>Project Lead</role>
-      </roles>
-      <timezone>0</timezone>
-    </developer>
-    <developer>
-      <id>mmusgrov</id>
-      <name>Michael Musgrove</name>
-      <email>mmusgrov@redhat.com</email>
-      <organization>JBoss</organization>
-      <organizationUrl>http://www.jboss.org/</organizationUrl>
-      <roles>
-        <role>Core Developer</role>
-      </roles>
-      <timezone>0</timezone>
-    </developer>
-    <developer>
-      <id>zfeng</id>
-      <name>Amos Feng</name>
-      <email>zfeng@redhat.com</email>
-      <organization>JBoss</organization>
-      <organizationUrl>http://www.jboss.org/</organizationUrl>
-      <roles>
-        <role>Core Developer</role>
-      </roles>
-      <timezone>0</timezone>
-    </developer>
-  </developers>
-  <licenses>
-    <license>
-      <name>LGPL 2.1</name>
-      <url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
-    </license>
-  </licenses>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>idlj-maven-plugin</artifactId>
-        <dependencies>
-          <dependency>
-            <groupId>org.jacorb</groupId>
-            <artifactId>jacorb-idl-compiler</artifactId>
-            <version>2.2.3</version>
-          </dependency>
-        </dependencies>
-        <executions>
-          <execution>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <compiler>jacorb</compiler>
-          <sourceDirectory>${project.parent.basedir}/src/main/idl</sourceDirectory>
-          <sources>
-            <source>
-              <includes>
-                <include>AtmiBroker.idl</include>
-              </includes>
-            </source>
-          </sources>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-  <dependencies>
-    <dependency>
-      <groupId>org.jboss.integration</groupId>
-      <artifactId>jboss-corba-ots-spi</artifactId>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
+    <parent>
+        <groupId>org.jboss.narayana.blacktie</groupId>
+        <artifactId>atmibroker-idl</artifactId>
+        <version>5.0.0.M2-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>atmibroker-idl-java</artifactId>
+    <name>Blacktie CORBA Transport Java Bindings</name>
+    <packaging>jar</packaging>
+    <description>A BlackTie component</description>
+    <developers>
+        <developer>
+            <id>tomjenkinson</id>
+            <name>Thomas Jenkinson</name>
+            <email>tom.jenkinson@redhat.com</email>
+            <organization>JBoss</organization>
+            <organizationUrl>http://www.jboss.org/</organizationUrl>
+            <roles>
+                <role>Project Lead</role>
+            </roles>
+            <timezone>0</timezone>
+        </developer>
+        <developer>
+            <id>mmusgrov</id>
+            <name>Michael Musgrove</name>
+            <email>mmusgrov@redhat.com</email>
+            <organization>JBoss</organization>
+            <organizationUrl>http://www.jboss.org/</organizationUrl>
+            <roles>
+                <role>Core Developer</role>
+            </roles>
+            <timezone>0</timezone>
+        </developer>
+        <developer>
+            <id>zfeng</id>
+            <name>Amos Feng</name>
+            <email>zfeng@redhat.com</email>
+            <organization>JBoss</organization>
+            <organizationUrl>http://www.jboss.org/</organizationUrl>
+            <roles>
+                <role>Core Developer</role>
+            </roles>
+            <timezone>0</timezone>
+        </developer>
+    </developers>
+    <licenses>
+        <license>
+            <name>LGPL 2.1</name>
+            <url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
+        </license>
+    </licenses>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>idlj-maven-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.jacorb</groupId>
+                        <artifactId>jacorb-idl-compiler</artifactId>
+                        <version>2.2.3</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <compiler>jacorb</compiler>
+                    <sourceDirectory>${project.parent.basedir}/src/main/idl</sourceDirectory>
+                    <sources>
+                        <source>
+                            <includes>
+                                <include>AtmiBroker.idl</include>
+                            </includes>
+                        </source>
+                    </sources>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -67,6 +67,7 @@ typedef BLACKTIE_CORE_DLL struct _mq_config {
 typedef BLACKTIE_CORE_DLL struct _orb_config {
 	char* opt;
 	char* transactionFactoryName;
+	char* interface;
 }OrbConfig;
 
 typedef BLACKTIE_CORE_DLL struct _txn_config {

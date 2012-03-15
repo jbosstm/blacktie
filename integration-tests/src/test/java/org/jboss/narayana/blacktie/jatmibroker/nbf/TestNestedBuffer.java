@@ -17,6 +17,8 @@
  */
 package org.jboss.narayana.blacktie.jatmibroker.nbf;
 
+import junit.framework.TestCase;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.narayana.blacktie.jatmibroker.RunServer;
@@ -27,48 +29,45 @@ import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionFactory;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.Response;
 
-import junit.framework.TestCase;
-
 public class TestNestedBuffer extends TestCase {
-	private static final Logger log = LogManager.getLogger(TestNestedBuffer.class);
-	private RunServer server = new RunServer();
-	private Connection connection;
+    private static final Logger log = LogManager.getLogger(TestNestedBuffer.class);
+    private RunServer server = new RunServer();
+    private Connection connection;
 
-	public void setUp() throws ConnectionException, ConfigurationException {
-		server.serverinit();
+    public void setUp() throws ConnectionException, ConfigurationException {
+        server.serverinit();
 
-		ConnectionFactory connectionFactory = ConnectionFactory
-		.getConnectionFactory();
-		connection = connectionFactory.getConnection();
-	}
+        ConnectionFactory connectionFactory = ConnectionFactory.getConnectionFactory();
+        connection = connectionFactory.getConnection();
+    }
 
-	public void tearDown() throws ConnectionException, ConfigurationException {
-		connection.close();
-		server.serverdone();
-	}
-	
-	public void test_nested_buffer() throws ConnectionException {
-		log.info("test_nested_buffer");
-		server.tpadvertiseTestNBF();
-		
-		try {
-			BT_NBF buffer = (BT_NBF) connection.tpalloc("BT_NBF", "employee", 0);
-			assertTrue(buffer.btaddattribute("name", "zhfeng"));
-			assertTrue(buffer.btaddattribute("id", new Long(1001)));
-			
-			Response resp = connection.tpcall(RunServer.getServiceNameNBF(), buffer, 0);
-			assertTrue(resp != null);
-			
-			BT_NBF rcvbuf = (BT_NBF)resp.getBuffer();
-			assertTrue(rcvbuf != null);
-			log.info(rcvbuf);
-			Long id = (Long)rcvbuf.btgetattribute("id", 0);
-			assertTrue(id.longValue() == 1234);
-			String name = (String)rcvbuf.btgetattribute("name", 0);
-			assertTrue(name == null);
-		} catch (ConnectionException e) {
-			log.warn("call service faild with " + e);
-			throw e;
-		}
-	}
+    public void tearDown() throws ConnectionException, ConfigurationException {
+        connection.close();
+        server.serverdone();
+    }
+
+    public void test_nested_buffer() throws ConnectionException, ConfigurationException {
+        log.info("test_nested_buffer");
+        server.tpadvertiseTestNBF();
+
+        try {
+            BT_NBF buffer = (BT_NBF) connection.tpalloc("BT_NBF", "employee", 0);
+            assertTrue(buffer.btaddattribute("name", "zhfeng"));
+            assertTrue(buffer.btaddattribute("id", new Long(1001)));
+
+            Response resp = connection.tpcall(RunServer.getServiceNameNBF(), buffer, 0);
+            assertTrue(resp != null);
+
+            BT_NBF rcvbuf = (BT_NBF) resp.getBuffer();
+            assertTrue(rcvbuf != null);
+            log.info(rcvbuf);
+            Long id = (Long) rcvbuf.btgetattribute("id", 0);
+            assertTrue(id.longValue() == 1234);
+            String name = (String) rcvbuf.btgetattribute("name", 0);
+            assertTrue(name == null);
+        } catch (ConnectionException e) {
+            log.warn("call service faild with " + e);
+            throw e;
+        }
+    }
 }

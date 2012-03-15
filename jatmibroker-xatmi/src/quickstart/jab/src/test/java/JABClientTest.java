@@ -29,32 +29,30 @@ import org.jboss.narayana.blacktie.jatmibroker.jab.JABSessionAttributes;
 import org.jboss.narayana.blacktie.jatmibroker.jab.JABTransaction;
 
 public class JABClientTest extends TestCase {
-	private static final Logger log = LogManager.getLogger(JABClientTest.class);
+    private static final Logger log = LogManager.getLogger(JABClientTest.class);
 
-	private InputStreamReader isr = new InputStreamReader(System.in);
-	private BufferedReader br = new BufferedReader(isr);
+    private InputStreamReader isr = new InputStreamReader(System.in);
+    private BufferedReader br = new BufferedReader(isr);
 
-	public void test() throws Exception {
-		log.info("JABClient");
-		String message = prompt("Enter a message to send");
-		byte[] toSend = new byte[message.length() + 1];
-		System.arraycopy(message.getBytes(), 0, toSend, 0, message.length());
-		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
-		JABSession jabSession = new JABSession(jabSessionAttributes);
-		JABTransaction transaction = new JABTransaction(jabSession, 5000);
-		JABServiceInvoker jabService = new JABServiceInvoker("FOOAPP", jabSession,
-				"X_OCTET", null);
-		jabService.getRequest().setByteArray("X_OCTET", toSend);
-		log.info("Calling call with input: " + message);
-		jabService.call(null);
-		log.info("Called call with output: "
-				+ new String(jabService.getResponse().getByteArray("X_OCTET")));
-		transaction.commit();
-		jabSession.closeSession();
-	}
+    public void test() throws Exception {
+        log.info("JABClient");
+        String message = prompt("Enter a message to send");
+        byte[] toSend = new byte[message.length() + 1];
+        System.arraycopy(message.getBytes(), 0, toSend, 0, message.length());
+        JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
+        JABSession jabSession = new JABSession(jabSessionAttributes);
+        JABTransaction transaction = new JABTransaction(jabSession, 5000);
+        JABServiceInvoker jabService = new JABServiceInvoker("FOOAPP", jabSession, "X_OCTET", null);
+        jabService.getRequest().setByteArray("X_OCTET", toSend);
+        log.info("Calling call with input: " + message);
+        jabService.call(null);
+        log.info("Called call with output: " + new String(jabService.getResponse().getByteArray("X_OCTET")));
+        transaction.commit();
+        jabSession.closeSession();
+    }
 
-	private String prompt(String prompt) throws IOException {
-		System.out.println("Please press return after you: " + prompt + "...");
-		return br.readLine();
-	}
+    private String prompt(String prompt) throws IOException {
+        System.out.println("Please press return after you: " + prompt + "...");
+        return br.readLine();
+    }
 }

@@ -23,49 +23,41 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.narayana.blacktie.jatmibroker.RunServer;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionFactory;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.ResponseException;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.Session;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.X_OCTET;
 
 public class TestTPRecv extends TestCase {
-	private static final Logger log = LogManager.getLogger(TestTPRecv.class);
-	private RunServer server = new RunServer();
-	private Connection connection;
-	private int sendlen;
-	private X_OCTET sendbuf;
-	private Session cd;
+    private static final Logger log = LogManager.getLogger(TestTPRecv.class);
+    private RunServer server = new RunServer();
+    private Connection connection;
+    private int sendlen;
+    private X_OCTET sendbuf;
+    private Session cd;
 
-	public void setUp() throws ConnectionException, ConfigurationException {
-		server.serverinit();
-		server.tpadvertiseTestTPRecv();
+    public void setUp() throws ConnectionException, ConfigurationException {
+        server.serverinit();
+        server.tpadvertiseTestTPRecv();
 
-		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory();
-		connection = connectionFactory.getConnection();
+        ConnectionFactory connectionFactory = ConnectionFactory.getConnectionFactory();
+        connection = connectionFactory.getConnection();
 
-		sendlen = "recv".length() + 1;
-		sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
-	}
+        sendlen = "recv".length() + 1;
+        sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
+    }
 
-	public void tearDown() throws ConnectionException, ConfigurationException {
-		connection.close();
-		server.serverdone();
-	}
+    public void tearDown() throws ConnectionException, ConfigurationException {
+        connection.close();
+        server.serverdone();
+    }
 
-	public void test_tprecv_sendonly() throws ConnectionException {
-		log.info("test_tprecv_sendonly");
-		cd = connection.tpconnect(RunServer.getServiceNameTestTPRecv(),
-				sendbuf, Connection.TPSENDONLY);
-		try {
-			cd.tprecv(0);
-			fail("expected proto error");
-		} catch (ResponseException e) {
-			assertTrue(e.getEvent() == Connection.TPEV_SVCERR);
-		} catch (ConnectionException e) {
-			assertTrue(e.getTperrno() == Connection.TPEPROTO);
-		}
-	}
+    public void test_tprecv_sendonly() throws ConnectionException, ConfigurationException {
+        log.info("test_tprecv_sendonly");
+        cd = connection.tpconnect(RunServer.getServiceNameTestTPRecv(), sendbuf, Connection.TPSENDONLY);
+        try {
+            cd.tprecv(0);
+            fail("expected proto error");
+        } catch (ResponseException e) {
+            assertTrue(e.getEvent() == Connection.TPEV_SVCERR);
+        } catch (ConnectionException e) {
+            assertTrue(e.getTperrno() == Connection.TPEPROTO);
+        }
+    }
 }

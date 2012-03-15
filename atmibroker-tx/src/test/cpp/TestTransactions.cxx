@@ -68,9 +68,9 @@ void TestTransactions::tearDown()
 
 void TestTransactions::test_rclog()
 {
-	btlogger_debug("TestTransactions::test_rclog begin");
+	btlogger("TestTransactions::test_rclog begin");
 	doOne();
-	btlogger_debug("TestTransactions::test_rclog pass");
+	btlogger("TestTransactions::test_rclog pass");
 }
 
 void TestTransactions::test_basic()
@@ -81,7 +81,7 @@ void TestTransactions::test_basic()
 // sanity check
 void TestTransactions::test_transactions()
 {
-	btlogger_debug("TestTransactions::test_transactions begin");
+	btlogger("TestTransactions::test_transactions begin");
 	BT_ASSERT_EQUAL(TX_OK, tx_open());
 	BT_ASSERT_EQUAL(TX_OK, tx_begin());
 	BT_ASSERT_EQUAL(TX_OK, tx_commit());
@@ -92,7 +92,7 @@ void TestTransactions::test_transactions()
 // check for protocol errors in a transactions lifecycle
 void TestTransactions::test_protocol()
 {
-	btlogger_debug("TestTransactions::test_protocol begin");
+	btlogger("TestTransactions::test_protocol begin");
 	// should not be able to begin or complete a transaction before calling tx_open
 	BT_ASSERT_EQUAL(TX_PROTOCOL_ERROR, tx_begin());
 	BT_ASSERT_EQUAL(TX_PROTOCOL_ERROR, tx_commit());
@@ -113,7 +113,7 @@ void TestTransactions::test_protocol()
 
 	// reopen the transaction - begin should succeed
 	BT_ASSERT_EQUAL(TX_OK, tx_open());
-	btlogger_debug("TestTransactions::test_protocol 2nd begin");
+	btlogger("TestTransactions::test_protocol 2nd begin");
 	BT_ASSERT_EQUAL(TX_OK, tx_begin());
 	// should not be able to close a transaction before calling tx_commit or tx_rollback
 	BT_ASSERT_EQUAL(TX_PROTOCOL_ERROR, tx_close());
@@ -152,7 +152,7 @@ void TestTransactions::test_protocol()
 
 void TestTransactions::test_info()
 {
-	btlogger_debug("TestTransactions::test_info begin");
+	btlogger("TestTransactions::test_info begin");
 	BT_ASSERT_EQUAL(TX_OK, tx_open());
 	BT_ASSERT_EQUAL(TX_OK, tx_begin());
 
@@ -174,7 +174,7 @@ void TestTransactions::test_info()
 	// verify that the new values are correct and that there is a running transaction
 	CHECKINFO("modified values", 1, TX_COMMIT_COMPLETED, TX_CHAINED, 10l, TX_ACTIVE);
 	// commit the transaction
-	btlogger_debug("TestTransactions::test_info commit chained tx");
+	btlogger("TestTransactions::test_info commit chained tx");
 	BT_ASSERT_EQUAL(TX_OK, tx_commit());
 	// transaction control mode is TX_CHAINED so there should be an active transaction after a commit
 	CHECKINFO("TX_CHAINED after commit", 1, TX_COMMIT_COMPLETED, TX_CHAINED, 10l, TX_ACTIVE);
@@ -200,9 +200,9 @@ void TestTransactions::test_info()
 // test for transaction timeout behaviour
 void TestTransactions::test_timeout()
 {
-	long timeout = 4;
-	long delay = 8;
-	btlogger_debug("TestTransactions::test_timeout begin");
+	long timeout = 10;
+	long delay = 20;
+	btlogger("TestTransactions::test_timeout begin");
 	// cause RMs to sleep during 2PC
 	fault_t fault1 = {0, 102, O_XA_COMMIT, XA_OK, F_DELAY, (void*)&delay};
 	fault_t fault2 = {0, 100, O_XA_PREPARE, XA_OK, F_DELAY, (void*)&delay};
@@ -219,18 +219,22 @@ void TestTransactions::test_timeout()
 	// start another transaction
 	BT_ASSERT_EQUAL(TX_OK, tx_begin());
 	// sleep for longer than the timeout
-	btlogger_debug("TestTransactions::test_timeout sleeping");
+	btlogger("TestTransactions::test_timeout sleeping");
 	doSix(delay);
-	btlogger_debug("TestTransactions::test_timeout testing for rollback on commit");
+	btlogger("TestTransactions::test_timeout testing for rollback on commit");
 	BT_ASSERT_EQUAL(TX_ROLLBACK, tx_commit());
 
 	// cause the RM to delay for delay seconds during commit processing
 	(void) dummy_rm_add_fault(fault1);
 	(void) dummy_rm_add_fault(fault2);
-	btlogger_debug("TestTransactions::test_timeout injecting delay after phase 1");
+
+
+	btlogger("TestTransactions::test_timeout injecting delay after phase 1");
 	BT_ASSERT_EQUAL(TX_OK, tx_begin());
 	// once the transaction has started 2PC any further delays (beyond the timeout period) should have no effect
-	btlogger_debug("TestTransactions::test_timeout validating that the delay was ignored");
+	btlogger("TestTransactions::test_timeout validating that the delay was ignored");
+
+
 	BT_ASSERT_EQUAL(TX_OK, tx_commit());
 
 	/* cleanup */
@@ -243,7 +247,7 @@ void TestTransactions::test_timeout()
 void TestTransactions::test_rollback()
 {
 	// TODO check the behaviour when a real RM is used.
-	btlogger_debug("TestTransactions::test_rollback begin");
+	btlogger("TestTransactions::test_rollback begin");
 
 //	fault_t fault1 = {0, 102, O_XA_COMMIT, XA_HEURHAZ, F_NONE};
 	/* cause RM 102 start to fail */
@@ -270,7 +274,7 @@ void TestTransactions::test_rollback()
 void TestTransactions::test_hhazard()
 {
 	// TODO check the behaviour when a real RM is used.
-	btlogger_debug("TestTransactions::test_hhazard begin");
+	btlogger("TestTransactions::test_hhazard begin");
 
 	fault_t fault1 = {0, 102, O_XA_COMMIT, XA_HEURHAZ, F_NONE};
 	/* cause RM 102 start to fail */
@@ -303,7 +307,7 @@ void TestTransactions::test_RM()
 	/* cause RM 102 start to fail */
 	fault_t fault2 = {1, 100, O_XA_START, XAER_RMERR, F_NONE};
 
-	btlogger_debug("TestTransactions::test_RM begin");
+	btlogger("TestTransactions::test_RM begin");
 	/* inject a commit fault in Resource Manager with rmid 102 */
 	(void) dummy_rm_add_fault(fault1);
 
@@ -312,7 +316,7 @@ void TestTransactions::test_RM()
 	BT_ASSERT_EQUAL(TX_OK, tx_set_commit_return(TX_COMMIT_COMPLETED));
 	BT_ASSERT_EQUAL(TX_OK, tx_begin());
 	/* since we have added a XA_HEURMIX fault tx_commit should return an mixed error */
-	btlogger_debug("TestTransactions::test_RM expecting TX_MIXED");
+	btlogger("TestTransactions::test_RM expecting TX_MIXED");
 	dummy_rm_dump();
 	BT_ASSERT_EQUAL(TX_MIXED, tx_commit());
 
@@ -354,7 +358,7 @@ void TestTransactions::test_RM_recovery_scan()
 	long nbranches = 2l;
 	fault_t fault1 = {0, 102, O_XA_RECOVER, XA_OK, F_ADD_XIDS, &nbranches, 0};
 
-	btlogger_debug("TestTransactions::test_RM_recovery_scan begin");
+	btlogger("TestTransactions::test_RM_recovery_scan begin");
 
 	/* tell the Resource Manager with rmid 102 to remember prepared XID's */
 	(void) dummy_rm_add_fault(fault1);
@@ -384,7 +388,7 @@ void TestTransactions::test_RM_recovery_scan()
  */
 void TestTransactions::test_register_resource()
 {
-	btlogger_debug("TestTransactions::test_register_resource begin");
+	btlogger("TestTransactions::test_register_resource begin");
 	// start a transaction running
 	BT_ASSERT_EQUAL(TX_OK, tx_open());
 	BT_ASSERT_EQUAL(TX_OK, tx_begin());
@@ -430,12 +434,12 @@ static int rcCnt2 = 0;
 
 static void recovery_cb1(void) {
 	rcCnt1 += 1;
-	btlogger_debug("TestTransactions recovery_cb1 called %d times", rcCnt1);
+	btlogger("TestTransactions recovery_cb1 called %d times", rcCnt1);
 }
 
 static void recovery_cb2(void) {
 	rcCnt2 += 1;
-	btlogger_debug("TestTransactions recovery_cb2 called %d times", rcCnt2);
+	btlogger("TestTransactions recovery_cb2 called %d times", rcCnt2);
 
 	// the intent is to deactivate the CORBA resource object corresponding to
 	// the second RM after both RMs have prepared and after the first one has
@@ -449,15 +453,15 @@ static void generate_recovery_record()
 	int nrecs1, nrecs2;
 
 	nrecs1 = count_log_records();
-	btlogger_debug("TestTransactions::test_recovery begin %d records", nrecs1);
+	btlogger("TestTransactions::test_recovery begin %d records", nrecs1);
 	rcCnt1 = 0;
 	BT_ASSERT_EQUAL(TX_OK, tx_begin());
 
-	btlogger_debug("TestTransactions::test_recovery commiting after generating a recovery condition");
+	btlogger("TestTransactions::test_recovery commiting after generating a recovery condition");
 
 	BT_ASSERT_EQUAL(TX_OK, tx_commit());
 	nrecs2 = count_log_records();
-	btlogger_debug("TestTransactions::test_recovery committed %d records", nrecs2);
+	btlogger("TestTransactions::test_recovery committed %d records", nrecs2);
 	BT_ASSERT(nrecs2 > nrecs1);
 }
 
@@ -468,7 +472,7 @@ void TestTransactions::test_recovery()
 	bool ots = isOTS();
 
 	int nrecs = clear_log();
-	btlogger_debug("TestTransactions::test_recovery begin (cleared %d records)", nrecs);
+	btlogger("TestTransactions::test_recovery begin (cleared %d records)", nrecs);
 	(void) dummy_rm_add_fault(ots ? fault1 : fault2);
 
 	BT_ASSERT_EQUAL(TX_OK, tx_open());
@@ -478,7 +482,7 @@ void TestTransactions::test_recovery()
 	(void) dummy_rm_del_fault(ots ? fault1 : fault2);
 	BT_ASSERT_EQUAL(TX_OK, tx_close());
 
-	btlogger_debug("TestTransactions::test_recovery passed");
+	btlogger("TestTransactions::test_recovery passed");
 
 	// recover the pending transactions
 	test_wait_for_recovery();
@@ -512,7 +516,7 @@ void TestTransactions::test_wait_for_recovery()
 	(void) dummy_rm_del_fault(fault2);
 	(void) dummy_rm_del_fault(fault3);
 	nrecs = count_log_records();
-	btlogger_debug("TestTransactions::test_run_recovery %d recs after recovery", nrecs);
+	btlogger("TestTransactions::test_run_recovery %d recs after recovery", nrecs);
 	BT_ASSERT(nrecs < nrecs1);
 	BT_ASSERT_EQUAL(TX_OK, tx_close());
 	btlogger("TestTransactions::test_run_recovery passed");

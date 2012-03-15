@@ -312,8 +312,7 @@ void testTPConversation_short_service(TPSVCINFO *svcinfo) {
 }
 void testtpdiscon_service(TPSVCINFO *svcinfo) {
 	btlogger((char*) "testtpdiscon_service");
-	long timeout = 2;
-	ACE_OS::sleep(timeout);
+	::sleeper(2);
 }
 
 void testtpfreeservice_service(TPSVCINFO *svcinfo) {
@@ -400,7 +399,7 @@ void testtpunadvertise_service(TPSVCINFO *svcinfo) {
 int n = 0;
 
 void test_TTL_service(TPSVCINFO *svcinfo) {
-	long timeout = 45;
+	btlogger((char*) "test_TTL_service");
 	int len = 60;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 
@@ -408,9 +407,8 @@ void test_TTL_service(TPSVCINFO *svcinfo) {
 	if (strncmp(svcinfo->data, "counter", 7) == 0) {
 		sprintf(toReturn, "%d", n);
 	} else {
+		::sleeper(60);
 		n++;
-		ACE_OS::sleep(timeout);
-		btlogger((char*) "TTL sleep timeout %d seconds", timeout);
 
 		strcpy(toReturn, "test_tpcall_TTL_service");
 	}

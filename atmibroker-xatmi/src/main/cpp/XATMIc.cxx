@@ -100,7 +100,6 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 			message.rval = rval;
 			message.type = (char *) "";
 			message.subtype = (char *) "";
-			message.syncRcv = 0;
 			if (message.data != NULL) {
 				message.type = (char*) malloc(MAX_TYPE_SIZE + 1);
 				memset(message.type, '\0', MAX_TYPE_SIZE + 1);
@@ -121,7 +120,6 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 				if (mopts != NULL) {
 					message.priority = mopts->priority;
 					message.ttl = mopts->ttl;
-					message.syncRcv = mopts->syncRcv;
 				}
 
 				if (session->send(queueName, message))
@@ -175,7 +173,8 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 		int correlationId, long flags, long rval, long rcode,
 		msg_opts_t* mopts, bool queue, char* queueName) {
 	MESSAGE message;
-	return send(session, replyTo, idata, ilen,
+	message.syncRcv = 0;
+	return ::send(session, replyTo, idata, ilen,
 		correlationId, flags, rval, message, rcode,
 		mopts, queue, queueName);
 }
@@ -1247,7 +1246,6 @@ int btenqueue(char * svc, msg_opts_t* mopts, char* idata, long ilen, long flags)
 	int toReturn = -1;
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	flags = flags | TPNOREPLY | TPNOTIME;
-	mopts->syncRcv = 0;
 
 	long toCheck = flags & ~(TPNOTRAN | TPNOREPLY | TPNOTIME | TPSIGRSTRT
 			| TPNOBLOCK);
@@ -1317,64 +1315,6 @@ int btenqueue(char * svc, msg_opts_t* mopts, char* idata, long ilen, long flags)
 	return toReturn;
 }
 
-int async_btdequeue(char * svcname, char ** odata, long *olen, long flags) {
-	LOG4CXX_TRACE(loggerXATMI, (char*) "btdequeue: " << svcname);
-	setSpecific(TPE_KEY, TSS_TPERESET);
-	int toReturn = -1;
-	int len = ::bufferSize(*odata, *olen);
-	if (len != -1) {
-		if (serverinit(0, NULL) != -1) {
-			LOG4CXX_DEBUG(loggerXATMI, (char*) "btdequeue(): " << svcname);
-			Destination* destination;
-			destination = ptrServer->createDestination(svcname, false, NULL);
-			LOG4CXX_DEBUG(loggerXATMI, (char*) "created destination: "
-					<< svcname);
-
-			MESSAGE message;
-			message.replyto = NULL;
-			message.correlationId = -1;
-			message.data = NULL;
-			message.len = -1;
-			message.priority = 0;
-			message.flags = -1;
-			message.control = NULL;
-			message.rval = -1;
-			message.rcode = -1;
-			message.type = NULL;
-			message.subtype = NULL;
-			message.received = false;
-			message.ttl = -1;
-			message.syncRcv = 0;
-			message.serviceName = NULL;
-			message.messageId = NULL;
-			message = destination->receive(determineTimeout(flags));
-
-			if (message.received) {
-				// Always ack the message as this is what closes the socket
-				destination->ack(message);
-				convertMessage(message, len, odata, olen, flags);
-				toReturn = 0;
-			}
-
-			LOG4CXX_TRACE(loggerXATMI, (char*) "remove the destination: "
-					<< svcname);
-			destination->disconnect();
-			delete destination;
-			LOG4CXX_TRACE(loggerXATMI,
-					(char*) "removed the destination return: " << toReturn
-							<< " tperrno: " << tperrno);
-		} else {
-			LOG4CXX_ERROR(loggerXATMI, (char*) "server not initialized");
-			setSpecific(TPE_KEY, TSS_TPESYSTEM);
-		}
-	} else {
-		LOG4CXX_ERROR(loggerXATMI, (char*) "Receive buffer was not valid");
-		setSpecific(TPE_KEY, TSS_TPEOTYPE);
-	}
-	LOG4CXX_TRACE(loggerXATMI, (char*) "btqueue return: " << toReturn
-			<< " tperrno: " << tperrno);
-	return toReturn;
-}
 
 
 int btdequeue(char * svc, msg_opts_t *pmopts, char ** odata, long *olen, long flags) {
@@ -1405,18 +1345,15 @@ int btdequeue(char * svc, msg_opts_t *pmopts, char ** odata, long *olen, long fl
 				txx_release_control(ctrl);
 		}
 
-		// see if the caller has requested aysnchronous dequeue and not in txn mode:
-		if (!transactional && pmopts != NULL && pmopts->syncRcv == 0)
-			return async_btdequeue(svc, odata, olen, flags);
-
 		try {
 			Session* session = ptrAtmiBrokerClient->getQueueSession();
 			LOG4CXX_TRACE(loggerXATMI, (char*) "new session: " << session <<
 				" transactional: " << transactional);
 
 			if (session != NULL) {
-				msg_opts_t mopts = {0, 0L, 1};
+				msg_opts_t mopts = {0, 0L};
 				MESSAGE message = {0, 0, 0, 0, 0, 0, 0};
+				message.syncRcv = 1;
 				char* tperr;
 
 				if (pmopts != NULL)
@@ -1428,7 +1365,7 @@ int btdequeue(char * svc, msg_opts_t *pmopts, char ** odata, long *olen, long fl
 				}
 
 				message.data = NULL;
-				toReturn = send(session, "", NULL, 0, 0, flags, 0, message, 0, &mopts, true, svc);
+				toReturn = ::send(session, "", NULL, 0, 0, flags, 0, message, 0, &mopts, true, svc);
 				// save tperrno (convertMessage may mask it)
 				tperr = (char*) getSpecific(TPE_KEY);
 

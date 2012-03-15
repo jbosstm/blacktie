@@ -22,11 +22,11 @@ import java.util.Map;
 
 /**
  * Represents all the data in a STOMP frame.
- *
+ * 
  * @author <a href="http://hiramchirino.com">chirino</a>
  */
 public class StompFrame {
-    private static final byte[] NO_DATA = new byte[]{};
+    private static final byte[] NO_DATA = new byte[] {};
     private String action;
     private Map<String, Object> headers;
     private byte[] content = StompFrame.NO_DATA;

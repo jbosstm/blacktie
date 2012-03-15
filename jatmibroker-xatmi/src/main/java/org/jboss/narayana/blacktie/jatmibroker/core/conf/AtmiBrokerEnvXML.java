@@ -20,22 +20,22 @@ package org.jboss.narayana.blacktie.jatmibroker.core.conf;
 import java.util.Properties;
 
 public class AtmiBrokerEnvXML {
-	private Properties prop;
+    private Properties prop;
 
-	public AtmiBrokerEnvXML() {
-		prop = new Properties();
-	}
+    public AtmiBrokerEnvXML() {
+        prop = new Properties();
+    }
 
-	public Properties getProperties() throws ConfigurationException {
-	  XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
+    public Properties getProperties() throws ConfigurationException {
+        XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
 
-		// define BTStompAdmin and BTDomainAdmin
-		prop.put("blacktie.BTStompAdmin.server", "jboss");
-		prop.put("blacktie.BTStompAdmin.conversational", false);
+        // define BTStompAdmin and BTDomainAdmin
+        prop.put("blacktie.BTStompAdmin.server", "jboss");
+        prop.put("blacktie.BTStompAdmin.conversational", false);
 
-		prop.put("blacktie.BTDomainAdmin.server", "jboss");
-		prop.put("blacktie.BTDomainAdmin.conversational", false);
+        prop.put("blacktie.BTDomainAdmin.server", "jboss");
+        prop.put("blacktie.BTDomainAdmin.conversational", false);
 
-		return prop;
-	}
+        return prop;
+    }
 }

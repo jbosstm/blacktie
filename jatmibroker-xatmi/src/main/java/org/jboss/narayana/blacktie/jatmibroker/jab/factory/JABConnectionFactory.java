@@ -28,81 +28,72 @@ import org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionFactory;
 
 /**
- * The connection factory is the entry point into the JAB API for client
- * applications. It is a singleton class which is accessed via the
- * JABConnectionFactory.getInstance() method. Connections obtained via the
- * getConnection(String) method, should be closed via the
- * closeConnection(String) method.
+ * The connection factory is the entry point into the JAB API for client applications. It is a singleton class which is accessed
+ * via the JABConnectionFactory.getInstance() method. Connections obtained via the getConnection(String) method, should be
+ * closed via the closeConnection(String) method.
  */
 public class JABConnectionFactory {
 
-	/**
-	 * The instance
-	 */
-	private static JABConnectionFactory instance;
+    /**
+     * The instance
+     */
+    private static JABConnectionFactory instance;
 
-	/**
-	 * The list of open connections
-	 */
-	private Map<String, JABConnection> connections = new HashMap<String, JABConnection>();
+    /**
+     * The list of open connections
+     */
+    private Map<String, JABConnection> connections = new HashMap<String, JABConnection>();
 
-	private ConnectionFactory connectionFactory;
+    private ConnectionFactory connectionFactory;
 
-	private JABSession session;
+    private JABSession session;
 
-	/**
-	 * The constructor is not intended to be invoked by clients of the factory
-	 * 
-	 * @throws JABException
-	 *             In case the connection factory cannot be created
-	 */
-	public JABConnectionFactory(String applicationName) throws JABException {
-		try {
-			connectionFactory = ConnectionFactory.getConnectionFactory();
-		} catch (ConfigurationException e) {
-			throw new JABException("Could not create the connection factory: "
-					+ e.getMessage(), e);
-		}
-		JABSessionAttributes attributes = new JABSessionAttributes();
-		session = new JABSession(attributes);
-	}
+    /**
+     * The constructor is not intended to be invoked by clients of the factory
+     * 
+     * @throws JABException In case the connection factory cannot be created
+     */
+    public JABConnectionFactory(String applicationName) throws JABException {
+        try {
+            connectionFactory = ConnectionFactory.getConnectionFactory();
+        } catch (ConfigurationException e) {
+            throw new JABException("Could not create the connection factory: " + e.getMessage(), e);
+        }
+        JABSessionAttributes attributes = new JABSessionAttributes();
+        session = new JABSession(attributes);
+    }
 
-	/**
-	 * Obtain a reference to the connection identified by the parameter
-	 * 
-	 * @param connectionName
-	 *            The name of the connection to retrieve
-	 * @return The single connection named connectionName
-	 * @throws JABException
-	 *             If the connection cannot be created
-	 */
-	public JABConnection getConnection(String connectionName)
-			throws JABException {
-		JABConnection toReturn = connections.get(connectionName);
-		if (toReturn == null) {
-			try {
-				Connection connection = connectionFactory.getConnection();
-				toReturn = new JABConnection(connection, session);
-				connections.put(connectionName, toReturn);
-			} catch (ConfigurationException e) {
-				throw new JABException(e.getMessage());
-			}
-		}
-		return toReturn;
-	}
+    /**
+     * Obtain a reference to the connection identified by the parameter
+     * 
+     * @param connectionName The name of the connection to retrieve
+     * @return The single connection named connectionName
+     * @throws JABException If the connection cannot be created
+     */
+    public JABConnection getConnection(String connectionName) throws JABException {
+        JABConnection toReturn = connections.get(connectionName);
+        if (toReturn == null) {
+            try {
+                Connection connection = connectionFactory.getConnection();
+                toReturn = new JABConnection(connection, session);
+                connections.put(connectionName, toReturn);
+            } catch (ConfigurationException e) {
+                throw new JABException(e.getMessage());
+            }
+        }
+        return toReturn;
+    }
 
-	/**
-	 * Close the JAB connection to the server
-	 * 
-	 * @param connectionName
-	 *            The name of the connection to close
-	 * @throws JABException
-	 *             In case the connection cannot be closed
-	 */
-	public void closeConnection(String connectionName) throws JABException {
-		JABConnection connection = connections.remove(connectionName);
-		if (connection != null) {
-			connection.close();
-		}
-	}
+    /**
+     * Close the JAB connection to the server
+     * 
+     * @param connectionName The name of the connection to close
+     * @throws JABException In case the connection cannot be closed
+     */
+    public void closeConnection(String connectionName) throws JABException {
+        JABConnection connection = connections.remove(connectionName);
+        if (connection != null) {
+            connection.close();
+        }
+    }
 }

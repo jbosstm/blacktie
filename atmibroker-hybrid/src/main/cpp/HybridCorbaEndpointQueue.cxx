@@ -27,7 +27,6 @@
 #include "txx.h"
 #include "HybridCorbaEndpointQueue.h"
 #include "HybridSessionImpl.h"
-//#include "BufferConverterImpl.h"
 #include "Codec.h"
 #include "CodecFactory.h"
 
@@ -150,9 +149,6 @@ void HybridCorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 			message.type = strdup(type);
 			message.subtype = strdup(subtype);
 			message.len = ilen;
-			//message.data = BufferConverterImpl::convertToMemoryFormat(
-			//		message.type, message.subtype, (char*) idata.get_buffer(),
-			//		&message.len);
 
 			CodecFactory factory;
 			Codec* codec = this->session->getCodec();

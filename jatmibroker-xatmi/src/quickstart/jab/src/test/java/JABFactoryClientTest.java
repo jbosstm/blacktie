@@ -25,30 +25,28 @@ import org.jboss.narayana.blacktie.jatmibroker.jab.factory.JABResponse;
 import org.jboss.narayana.blacktie.jatmibroker.jab.factory.Transaction;
 
 public class JABFactoryClientTest {
-	private static final Logger log = LogManager
-			.getLogger(JABFactoryClientTest.class);
+    private static final Logger log = LogManager.getLogger(JABFactoryClientTest.class);
 
-	public static void main(String[] args) throws Exception {
-		log.info("JABClient");
-		if (args.length != 1) {
-			log.error("java JABFactoryClient message");
-			return;
-		}
-		String message = args[0];
-		try {
-			JABConnectionFactory jcf = new JABConnectionFactory(
-					"JABFactoryClientTest");
-			JABConnection c = jcf.getConnection("connection");
-			Transaction t = c.beginTransaction(-1);
-			JABBuffer b = new JABBuffer();
-			b.setValue("X_OCTET", message.getBytes());
-			log.info("Calling call with input: " + message);
-			JABResponse call = c.call("FOOAPP", b, t, "X_OCTET", null);
-			log.info("Called call with output: " + call.getValue("X_OCTET"));
-			t.commit();
-			jcf.closeConnection("connection");
-		} catch (JABException e) {
-			log.error("JAB error: " + e.getMessage(), e);
-		}
-	}
+    public static void main(String[] args) throws Exception {
+        log.info("JABClient");
+        if (args.length != 1) {
+            log.error("java JABFactoryClient message");
+            return;
+        }
+        String message = args[0];
+        try {
+            JABConnectionFactory jcf = new JABConnectionFactory("JABFactoryClientTest");
+            JABConnection c = jcf.getConnection("connection");
+            Transaction t = c.beginTransaction(-1);
+            JABBuffer b = new JABBuffer();
+            b.setValue("X_OCTET", message.getBytes());
+            log.info("Calling call with input: " + message);
+            JABResponse call = c.call("FOOAPP", b, t, "X_OCTET", null);
+            log.info("Called call with output: " + call.getValue("X_OCTET"));
+            t.commit();
+            jcf.closeConnection("connection");
+        } catch (JABException e) {
+            log.error("JAB error: " + e.getMessage(), e);
+        }
+    }
 }

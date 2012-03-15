@@ -26,7 +26,7 @@
 #include "ace/OS_NS_time.h"
 #include "ace/OS_NS_sys_time.h"
 
-log4cxx::LoggerPtr xarmlogger(log4cxx::Logger::getLogger("TxXAResourceManager"));
+log4cxx::LoggerPtr xarmlogger(log4cxx::Logger::getLogger("XAResourceManager"));
 
 static const int RR_TYPE_UNK = 0;
 static const int RR_TYPE_IOR = 1;

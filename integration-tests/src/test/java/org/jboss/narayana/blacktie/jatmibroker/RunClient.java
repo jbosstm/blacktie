@@ -18,9 +18,9 @@
 package org.jboss.narayana.blacktie.jatmibroker;
 
 public class RunClient {
-	public native boolean test_x_octet();
+    public native boolean test_x_octet();
 
-	static {
-		System.loadLibrary("testsuite");
-	}
+    static {
+        System.loadLibrary("testsuite");
+    }
 }

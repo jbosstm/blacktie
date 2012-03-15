@@ -18,11 +18,11 @@
 package org.jboss.narayana.blacktie.jatmibroker.core.conf;
 
 public class AttributeStructure {
-	public String id;
-	public Class type;
-	public int count;
-	public int length;
-	long wirePosition;
-	long memPosition;
-	int instanceSize;
+    public String id;
+    public Class type;
+    public int count;
+    public int length;
+    long wirePosition;
+    long memPosition;
+    int instanceSize;
 }

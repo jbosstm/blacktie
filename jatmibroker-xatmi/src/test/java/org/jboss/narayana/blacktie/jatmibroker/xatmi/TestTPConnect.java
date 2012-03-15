@@ -23,81 +23,69 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.narayana.blacktie.jatmibroker.RunServer;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionFactory;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.Session;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.X_OCTET;
 
 public class TestTPConnect extends TestCase {
-	private static final Logger log = LogManager.getLogger(TestTPConnect.class);
-	private RunServer server = new RunServer();
-	private Connection connection;
-	private int sendlen;
-	private X_OCTET sendbuf;
-	private Session cd;
-	private Session cd2;
+    private static final Logger log = LogManager.getLogger(TestTPConnect.class);
+    private RunServer server = new RunServer();
+    private Connection connection;
+    private int sendlen;
+    private X_OCTET sendbuf;
+    private Session cd;
+    private Session cd2;
 
-	public void setUp() throws ConnectionException, ConfigurationException {
-		log.info("TestTPConnect::setUp");
-		server.serverinit();
-		server.tpadvertiseTestTPConnect();
+    public void setUp() throws ConnectionException, ConfigurationException {
+        log.info("TestTPConnect::setUp");
+        server.serverinit();
+        server.tpadvertiseTestTPConnect();
 
-		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory();
-		connection = connectionFactory.getConnection();
+        ConnectionFactory connectionFactory = ConnectionFactory.getConnectionFactory();
+        connection = connectionFactory.getConnection();
 
-		byte[] message = "connect".getBytes();
-		sendlen = message.length + 1;
-		sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
-		sendbuf.setByteArray(message);
-		cd = null;
-		cd2 = null;
-		log.info("TestTPConnect::setUp done");
-	}
+        byte[] message = "connect".getBytes();
+        sendlen = message.length + 1;
+        sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
+        sendbuf.setByteArray(message);
+        cd = null;
+        cd2 = null;
+        log.info("TestTPConnect::setUp done");
+    }
 
-	public void tearDown() throws ConnectionException {
-		log.info("TestTPConnect::tearDown");
-		// Do local work
-		if (cd != null) {
-			cd.tpdiscon();
-			cd = null;
-		}
-		if (cd2 != null) {
-			cd2.tpdiscon();
-			cd2 = null;
-		}
+    public void tearDown() throws ConnectionException {
+        log.info("TestTPConnect::tearDown");
+        // Do local work
+        if (cd != null) {
+            cd.tpdiscon();
+            cd = null;
+        }
+        if (cd2 != null) {
+            cd2.tpdiscon();
+            cd2 = null;
+        }
 
-		connection.close();
-		server.serverdone();
-		log.info("TestTPConnect::tearDown done");
-	}
+        connection.close();
+        server.serverdone();
+        log.info("TestTPConnect::tearDown done");
+    }
 
-	public void test_tpconnect() throws ConnectionException {
-		log.info("test_tpconnect: " + RunServer.getServiceNameTestTPConnect());
-		cd = connection.tpconnect(RunServer.getServiceNameTestTPConnect(),
-				sendbuf, Connection.TPRECVONLY);
-		assertTrue(cd != null);
-	}
+    public void test_tpconnect() throws ConnectionException {
+        log.info("test_tpconnect: " + RunServer.getServiceNameTestTPConnect());
+        cd = connection.tpconnect(RunServer.getServiceNameTestTPConnect(), sendbuf, Connection.TPRECVONLY);
+        assertTrue(cd != null);
+    }
 
-	public void test_tpconnect_double_connect() throws ConnectionException {
-		log.info("test_tpconnect_double_connect: "
-				+ RunServer.getServiceNameTestTPConnect());
-		cd = connection.tpconnect(RunServer.getServiceNameTestTPConnect(),
-				sendbuf, Connection.TPRECVONLY);
-		cd2 = connection.tpconnect(RunServer.getServiceNameTestTPConnect(),
-				sendbuf, Connection.TPRECVONLY);
-		assertTrue(cd != null);
-		assertTrue(cd2 != null);
-		assertTrue(cd != cd2);
-		assertTrue(!cd.equals(cd2));
-	}
+    public void test_tpconnect_double_connect() throws ConnectionException {
+        log.info("test_tpconnect_double_connect: " + RunServer.getServiceNameTestTPConnect());
+        cd = connection.tpconnect(RunServer.getServiceNameTestTPConnect(), sendbuf, Connection.TPRECVONLY);
+        cd2 = connection.tpconnect(RunServer.getServiceNameTestTPConnect(), sendbuf, Connection.TPRECVONLY);
+        assertTrue(cd != null);
+        assertTrue(cd2 != null);
+        assertTrue(cd != cd2);
+        assertTrue(!cd.equals(cd2));
+    }
 
-	public void test_tpconnect_nodata() throws ConnectionException {
-		log.info("test_tpconnect_nodata: "
-				+ RunServer.getServiceNameTestTPConnect());
-		cd = connection.tpconnect(RunServer.getServiceNameTestTPConnect(),
-				null, Connection.TPRECVONLY);
-		assertTrue(cd != null);
-	}
+    public void test_tpconnect_nodata() throws ConnectionException {
+        log.info("test_tpconnect_nodata: " + RunServer.getServiceNameTestTPConnect());
+        cd = connection.tpconnect(RunServer.getServiceNameTestTPConnect(), null, Connection.TPRECVONLY);
+        assertTrue(cd != null);
+    }
 }

@@ -32,7 +32,7 @@
 namespace atmibroker {
 	namespace tx {
 
-log4cxx::LoggerPtr otsclogger(log4cxx::Logger::getLogger("TxOTSControl"));
+log4cxx::LoggerPtr otsclogger(log4cxx::Logger::getLogger("OTSControl"));
 
 OTSControl::OTSControl(CosTransactions::Control_ptr ctrl, long timeout, int tid) : TxControl(timeout, tid),
 	_ctrl(ctrl) {
@@ -282,22 +282,11 @@ bool OTSControl::get_xid(XID& xid)
 
 		bq = strchr(tid, JBOSSTS_NODE_SEPARATOR);
 
-		if (bq == 0) {
-			// fingers crossed JBTM-577 has been fixed - do it the OTS way
-			LOG4CXX_WARN(otsclogger, (char*) "no JBOSS separator in otid - assuming JBTM-577 is fixed");
-			xid.bqual_length = otid.bqual_length;
-			xid.gtrid_length = otidlen - otid.bqual_length;
-			memcpy(xid.data, tid, otidlen);
-		} else {
-			// TODO com.arjuna.ats.jts.utils.Utility.uidToOtid is not OTS compliant
-			// duplicate what JBossTS does - will be fixed in JBossTS 4.8.0 (see JBTM-577)
-			bq += 1;
-			xid.gtrid_length = (long) (bq - tid - 1);
-			xid.bqual_length = strlen(bq);
-			memset(xid.data, 0, XIDDATASIZE);
-			memcpy(xid.data, tid, xid.gtrid_length);
-			memcpy(xid.data + xid.gtrid_length, bq, xid.bqual_length);
-		}
+		// fingers crossed JBTM-577 has been fixed - do it the OTS way
+		LOG4CXX_DEBUG(otsclogger, (char*) "no JBOSS separator in otid - assuming JBTM-577 is fixed");
+		xid.bqual_length = otid.bqual_length;
+		xid.gtrid_length = otidlen - otid.bqual_length;
+		memcpy(xid.data, tid, otidlen);
 
 		free(tid);
 		LOG4CXX_TRACE(otsclogger,  (char *) "converted OTS tid len:" << otidlen << (char *) " XID: "

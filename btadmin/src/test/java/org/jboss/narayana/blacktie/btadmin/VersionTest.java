@@ -25,26 +25,24 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.narayana.blacktie.btadmin.CommandHandler;
 
 public class VersionTest extends TestCase {
-	private static final Logger log = LogManager.getLogger(VersionTest.class);
+    private static final Logger log = LogManager.getLogger(VersionTest.class);
 
-	private CommandHandler commandHandler;
+    private CommandHandler commandHandler;
 
-	public void setUp() throws Exception {
-		this.commandHandler = new CommandHandler();
-	}
+    public void setUp() throws Exception {
+        this.commandHandler = new CommandHandler();
+    }
 
-	public void tearDown() {
-	}
+    public void tearDown() {
+    }
 
-	public void testVersion() throws IOException, MalformedObjectNameException,
-			NullPointerException, InstantiationException,
-			IllegalAccessException, ClassNotFoundException {
-		log.info("VersionTest::testVersion");
-		if (commandHandler.handleCommand("version".split(" ")) != 0) {
-			fail("Command was unsuccessful");
-		}
-	}
+    public void testVersion() throws IOException, MalformedObjectNameException, NullPointerException, InstantiationException,
+            IllegalAccessException, ClassNotFoundException {
+        log.info("VersionTest::testVersion");
+        if (commandHandler.handleCommand("version".split(" ")) != 0) {
+            fail("Command was unsuccessful");
+        }
+    }
 }

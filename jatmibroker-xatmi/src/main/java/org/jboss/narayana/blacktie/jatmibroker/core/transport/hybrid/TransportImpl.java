@@ -32,7 +32,6 @@ import org.jboss.narayana.blacktie.jatmibroker.core.transport.Receiver;
 import org.jboss.narayana.blacktie.jatmibroker.core.transport.Sender;
 import org.jboss.narayana.blacktie.jatmibroker.core.transport.Transport;
 import org.jboss.narayana.blacktie.jatmibroker.core.transport.TransportFactory;
-import org.jboss.narayana.blacktie.jatmibroker.core.transport.hybrid.stomp.StompManagement;
 import org.jboss.narayana.blacktie.jatmibroker.core.transport.hybrid.stomp.StompReceiverImpl;
 import org.jboss.narayana.blacktie.jatmibroker.core.transport.hybrid.stomp.StompSenderImpl;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection;
@@ -40,158 +39,140 @@ import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
 
 public class TransportImpl implements Transport {
 
-	private static final Logger log = LogManager.getLogger(TransportImpl.class);
-	private OrbManagement orbManagement;
-	private StompManagement momManagement;
-	private Properties properties;
-	private TransportFactory transportFactoryImpl;
-	private boolean closed;
+    private static final Logger log = LogManager.getLogger(TransportImpl.class);
+    private OrbManagement orbManagement;
+    private Properties properties;
+    private TransportFactory transportFactoryImpl;
+    private boolean closed;
 
-	private Map<Boolean, Map<String, Sender>> senders = new HashMap<Boolean, Map<String, Sender>>();
-	private Map<Boolean, Map<String, Receiver>> receivers = new HashMap<Boolean, Map<String, Receiver>>();
+    private Map<Boolean, Map<String, Sender>> senders = new HashMap<Boolean, Map<String, Sender>>();
+    private Map<Boolean, Map<String, Receiver>> receivers = new HashMap<Boolean, Map<String, Receiver>>();
 
-	public TransportImpl(OrbManagement orbManagement,
-			StompManagement momManagement, Properties properties,
-			TransportFactory transportFactoryImpl) {
-		log.debug("Creating transport");
-		this.orbManagement = orbManagement;
-		this.momManagement = momManagement;
-		this.properties = properties;
-		this.transportFactoryImpl = transportFactoryImpl;
-		log.debug("Created transport");
-	}
+    public TransportImpl(OrbManagement orbManagement, Properties properties, TransportFactory transportFactoryImpl) {
+        log.debug("Creating transport");
+        this.orbManagement = orbManagement;
+        this.properties = properties;
+        this.transportFactoryImpl = transportFactoryImpl;
+        log.debug("Created transport");
+    }
 
-	public void close() throws ConnectionException {
-		log.debug("Close called: " + this);
-		if (!closed) {
-			// SENDERS
-			{
-				Collection<Map<String, Sender>> values = senders.values();
-				Iterator<Map<String, Sender>> iterator = values.iterator();
-				while (iterator.hasNext()) {
-					Collection<Sender> next = iterator.next().values();
-					Iterator<Sender> iterator2 = next.iterator();
-					while (iterator2.hasNext()) {
-						iterator2.next().close();
-					}
-				}
-			}
-			// RECEIVERS
-			{
-				Collection<Map<String, Receiver>> values = receivers.values();
-				Iterator<Map<String, Receiver>> iterator = values.iterator();
-				while (iterator.hasNext()) {
-					Collection<Receiver> next = iterator.next().values();
-					Iterator<Receiver> iterator2 = next.iterator();
-					while (iterator2.hasNext()) {
-						iterator2.next().close();
-					}
-				}
-			}
-			transportFactoryImpl.removeTransport(this);
-			closed = true;
-		}
-		log.debug("Closed: " + this);
-	}
+    public void close() throws ConnectionException {
+        log.debug("Close called: " + this);
+        if (!closed) {
+            // SENDERS
+            {
+                Collection<Map<String, Sender>> values = senders.values();
+                Iterator<Map<String, Sender>> iterator = values.iterator();
+                while (iterator.hasNext()) {
+                    Collection<Sender> next = iterator.next().values();
+                    Iterator<Sender> iterator2 = next.iterator();
+                    while (iterator2.hasNext()) {
+                        iterator2.next().close();
+                    }
+                }
+            }
+            // RECEIVERS
+            {
+                Collection<Map<String, Receiver>> values = receivers.values();
+                Iterator<Map<String, Receiver>> iterator = values.iterator();
+                while (iterator.hasNext()) {
+                    Collection<Receiver> next = iterator.next().values();
+                    Iterator<Receiver> iterator2 = next.iterator();
+                    while (iterator2.hasNext()) {
+                        iterator2.next().close();
+                    }
+                }
+            }
+            transportFactoryImpl.removeTransport(this);
+            closed = true;
+        }
+        log.debug("Closed: " + this);
+    }
 
-	public Sender getSender(String serviceName, boolean conversational)
-			throws ConnectionException {
-		if (closed) {
-			log.error("Already closed");
-			throw new ConnectionException(Connection.TPEPROTO, "Already closed");
-		}
-		log.debug("Get sender: " + serviceName);
-		Map<String, Sender> conversationalMap = senders.get(conversational);
-		if (conversationalMap == null) {
-			conversationalMap = new HashMap<String, Sender>();
-			senders.put(conversational, conversationalMap);
-		}
+    public Sender getSender(String serviceName, boolean conversational) throws ConnectionException {
+        if (closed) {
+            log.error("Already closed");
+            throw new ConnectionException(Connection.TPEPROTO, "Already closed");
+        }
+        log.debug("Get sender: " + serviceName);
+        Map<String, Sender> conversationalMap = senders.get(conversational);
+        if (conversationalMap == null) {
+            conversationalMap = new HashMap<String, Sender>();
+            senders.put(conversational, conversationalMap);
+        }
 
-		Sender toReturn = conversationalMap.get(serviceName);
-		if (toReturn == null) {
-			try {
-				String type = (String) properties.get(
-						"blacktie." + serviceName + ".type");
-				toReturn = new StompSenderImpl(momManagement, serviceName,
-						conversational, type, conversationalMap);
-				conversationalMap.put(serviceName, toReturn);
-			} catch (ConnectionException e) {
-				throw e;
-			} catch (Throwable t) {
-				throw new ConnectionException(
-						org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection.TPESYSTEM,
-						"Could not create a service sender: " + t.getMessage(),
-						t);
-			}
-		}
-		return toReturn;
-	}
+        Sender toReturn = conversationalMap.get(serviceName);
+        if (toReturn == null) {
+            try {
+                String type = (String) properties.get("blacktie." + serviceName + ".type");
+                toReturn = new StompSenderImpl(serviceName, conversational, type, conversationalMap, properties);
+                conversationalMap.put(serviceName, toReturn);
+            } catch (ConnectionException e) {
+                throw e;
+            } catch (Throwable t) {
+                throw new ConnectionException(org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection.TPESYSTEM,
+                        "Could not create a service sender: " + t.getMessage(), t);
+            }
+        }
+        return toReturn;
+    }
 
-	public Sender createSender(Object destination) throws ConnectionException {
-		if (closed) {
-			log.error("Already closed");
-			throw new ConnectionException(Connection.TPEPROTO, "Already closed");
-		}
-		String callback_ior = (String) destination;
-		log.debug("Creating a sender for: " + callback_ior);
-		org.omg.CORBA.Object serviceFactoryObject = orbManagement.getOrb()
-				.string_to_object(callback_ior);
-		CorbaSenderImpl sender = new CorbaSenderImpl(serviceFactoryObject,
-				callback_ior);
-		log.debug("Created sender");
-		return sender;
-	}
+    public Sender createSender(Object destination) throws ConnectionException {
+        if (closed) {
+            log.error("Already closed");
+            throw new ConnectionException(Connection.TPEPROTO, "Already closed");
+        }
+        String callback_ior = (String) destination;
+        log.debug("Creating a sender for: " + callback_ior);
+        org.omg.CORBA.Object serviceFactoryObject = orbManagement.getOrb().string_to_object(callback_ior);
+        CorbaSenderImpl sender = new CorbaSenderImpl(serviceFactoryObject, callback_ior);
+        log.debug("Created sender");
+        return sender;
+    }
 
-	public Receiver getReceiver(String serviceName, boolean conversational)
-			throws ConnectionException {
-		if (closed) {
-			log.error("Already closed");
-			throw new ConnectionException(Connection.TPEPROTO, "Already closed");
-		}
-		log.debug("Creating a receiver: " + serviceName);
-		Map<String, Receiver> conversationalMap = receivers.get(conversational);
-		if (conversationalMap == null) {
-			conversationalMap = new HashMap<String, Receiver>();
-			receivers.put(conversational, conversationalMap);
-		}
+    public Receiver getReceiver(String serviceName, boolean conversational) throws ConnectionException {
+        if (closed) {
+            log.error("Already closed");
+            throw new ConnectionException(Connection.TPEPROTO, "Already closed");
+        }
+        log.debug("Creating a receiver: " + serviceName);
+        Map<String, Receiver> conversationalMap = receivers.get(conversational);
+        if (conversationalMap == null) {
+            conversationalMap = new HashMap<String, Receiver>();
+            receivers.put(conversational, conversationalMap);
+        }
 
-		Receiver toReturn = conversationalMap.get(serviceName);
-		if (toReturn == null) {
-			try {
-				log.debug("Resolved destination");
-				String type = (String) properties.get(
-						"blacktie." + serviceName + ".type");
-				return new StompReceiverImpl(momManagement, serviceName,
-						conversational, type, properties);
-			} catch (ConnectionException e) {
-				throw e;
-			} catch (Throwable t) {
-				throw new ConnectionException(
-						org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection.TPESYSTEM,
-						"Could not create the receiver on: " + serviceName, t);
-			}
-		}
-		return toReturn;
-	}
+        Receiver toReturn = conversationalMap.get(serviceName);
+        if (toReturn == null) {
+            try {
+                log.debug("Resolved destination");
+                String type = (String) properties.get("blacktie." + serviceName + ".type");
+                return new StompReceiverImpl(serviceName, conversational, type, properties);
+            } catch (ConnectionException e) {
+                throw e;
+            } catch (Throwable t) {
+                throw new ConnectionException(org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection.TPESYSTEM,
+                        "Could not create the receiver on: " + serviceName, t);
+            }
+        }
+        return toReturn;
+    }
 
-	public Receiver createReceiver(int cd, ResponseMonitor responseMonitor)
-			throws ConnectionException {
-		if (closed) {
-			log.error("Already closed");
-			throw new ConnectionException(Connection.TPEPROTO, "Already closed");
-		}
-		log.debug("Creating a receiver");
-		return new CorbaReceiverImpl(orbManagement, properties, cd,
-				responseMonitor);
-	}
+    public Receiver createReceiver(int cd, ResponseMonitor responseMonitor) throws ConnectionException {
+        if (closed) {
+            log.error("Already closed");
+            throw new ConnectionException(Connection.TPEPROTO, "Already closed");
+        }
+        log.debug("Creating a receiver");
+        return new CorbaReceiverImpl(orbManagement, properties, cd, responseMonitor);
+    }
 
-	public Receiver createReceiver(EventListener eventListener)
-			throws ConnectionException {
-		if (closed) {
-			log.error("Already closed");
-			throw new ConnectionException(Connection.TPEPROTO, "Already closed");
-		}
-		log.debug("Creating a receiver with event listener");
-		return new CorbaReceiverImpl(eventListener, orbManagement, properties);
-	}
+    public Receiver createReceiver(EventListener eventListener) throws ConnectionException {
+        if (closed) {
+            log.error("Already closed");
+            throw new ConnectionException(Connection.TPEPROTO, "Already closed");
+        }
+        log.debug("Creating a receiver with event listener");
+        return new CorbaReceiverImpl(eventListener, orbManagement, properties);
+    }
 }

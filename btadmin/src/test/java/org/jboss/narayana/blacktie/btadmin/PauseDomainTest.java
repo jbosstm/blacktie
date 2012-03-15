@@ -25,74 +25,66 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.narayana.blacktie.btadmin.CommandHandler;
 
 public class PauseDomainTest extends TestCase {
-	private static final Logger log = LogManager
-			.getLogger(PauseDomainTest.class);
+    private static final Logger log = LogManager.getLogger(PauseDomainTest.class);
 
-	private CommandHandler commandHandler;
+    private CommandHandler commandHandler;
 
-	public void setUp() throws Exception {
-		log.info("PauseDomainTest::setUp");
+    public void setUp() throws Exception {
+        log.info("PauseDomainTest::setUp");
 
-		this.commandHandler = new CommandHandler();
+        this.commandHandler = new CommandHandler();
 
-		if (commandHandler.handleCommand("startup testsui".split(" ")) != 0) {
-			fail("Could not start the server");
-		}
+        if (commandHandler.handleCommand("startup testsui".split(" ")) != 0) {
+            fail("Could not start the server");
+        }
 
-		String command = "advertise testsui BAR";
-		if (commandHandler.handleCommand(command.split(" ")) != 0) {
-			if (commandHandler.handleCommand("shutdown testsui".split(" ")) != 0) {
-				log.error("Could not stop the server");
-			}
-			fail("Command failed");
-		}
+        String command = "advertise testsui BAR";
+        if (commandHandler.handleCommand(command.split(" ")) != 0) {
+            if (commandHandler.handleCommand("shutdown testsui".split(" ")) != 0) {
+                log.error("Could not stop the server");
+            }
+            fail("Command failed");
+        }
 
-	}
+    }
 
-	public void tearDown() throws Exception {
-		log.info("PauseDomainTest::tearDown");
-		if (commandHandler.handleCommand("resumeDomain".split(" ")) != 0) {
-			fail("Command failed");
-		}
+    public void tearDown() throws Exception {
+        log.info("PauseDomainTest::tearDown");
+        if (commandHandler.handleCommand("resumeDomain".split(" ")) != 0) {
+            fail("Command failed");
+        }
 
-		if (commandHandler.handleCommand("shutdown testsui".split(" ")) != 0) {
-			fail("Could not stop the server");
-		}
-	}
+        if (commandHandler.handleCommand("shutdown testsui".split(" ")) != 0) {
+            fail("Could not stop the server");
+        }
+    }
 
-	public void testPauseDomain() throws IOException,
-			MalformedObjectNameException, NullPointerException,
-			InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		log.info("PauseDomainTest::testPauseDomain");
-		if (commandHandler.handleCommand("pauseDomain".split(" ")) != 0) {
-			fail("Command failed");
-		}
-	}
+    public void testPauseDomain() throws IOException, MalformedObjectNameException, NullPointerException,
+            InstantiationException, IllegalAccessException, ClassNotFoundException {
+        log.info("PauseDomainTest::testPauseDomain");
+        if (commandHandler.handleCommand("pauseDomain".split(" ")) != 0) {
+            fail("Command failed");
+        }
+    }
 
-	public void testPausePauseDomain() throws IOException,
-			MalformedObjectNameException, NullPointerException,
-			InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		log.info("PauseDomainTest::testPausePauseDomain");
-		if (commandHandler.handleCommand("pauseDomain".split(" ")) != 0) {
-			fail("Command failed");
-		}
-		if (commandHandler.handleCommand("pauseDomain".split(" ")) != 0) {
-			fail("Command failed");
-		}
-	}
+    public void testPausePauseDomain() throws IOException, MalformedObjectNameException, NullPointerException,
+            InstantiationException, IllegalAccessException, ClassNotFoundException {
+        log.info("PauseDomainTest::testPausePauseDomain");
+        if (commandHandler.handleCommand("pauseDomain".split(" ")) != 0) {
+            fail("Command failed");
+        }
+        if (commandHandler.handleCommand("pauseDomain".split(" ")) != 0) {
+            fail("Command failed");
+        }
+    }
 
-	public void testPauseDomainWithArg() throws IOException,
-			MalformedObjectNameException, NullPointerException,
-			InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		log.info("PauseDomainTest::testPauseDomainWithArg");
-		if (commandHandler.handleCommand("pauseDomain fooapp".split(" ")) == 0) {
-			fail("Command successful");
-		}
-	}
+    public void testPauseDomainWithArg() throws IOException, MalformedObjectNameException, NullPointerException,
+            InstantiationException, IllegalAccessException, ClassNotFoundException {
+        log.info("PauseDomainTest::testPauseDomainWithArg");
+        if (commandHandler.handleCommand("pauseDomain fooapp".split(" ")) == 0) {
+            fail("Command successful");
+        }
+    }
 }

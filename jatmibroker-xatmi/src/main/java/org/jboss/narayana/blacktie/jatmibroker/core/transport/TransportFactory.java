@@ -25,83 +25,64 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.narayana.blacktie.jatmibroker.core.transport.hybrid.TransportImpl;
-import org.jboss.narayana.blacktie.jatmibroker.core.transport.hybrid.stomp.StompManagement;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
 
 public class TransportFactory {
 
-	private static final Logger log = LogManager
-			.getLogger(TransportFactory.class);
-	private Properties properties;
-	private OrbManagement orbManagement;
-	private StompManagement momManagement;
-	private List<Transport> transports = new ArrayList<Transport>();
+    private static final Logger log = LogManager.getLogger(TransportFactory.class);
+    private Properties properties;
+    private OrbManagement orbManagement;
+    private List<Transport> transports = new ArrayList<Transport>();
 
-	private boolean closed;
+    private boolean closed;
 
-	public TransportFactory(Properties properties)
-			throws ConfigurationException {
-		log.debug("Creating Transportfactory: " + this);
-		this.properties = properties;
+    public TransportFactory(Properties properties) throws ConfigurationException {
+        log.debug("Creating Transportfactory: " + this);
+        this.properties = properties;
 
-		try {
-			momManagement = new StompManagement(properties);
-		} catch (Throwable t) {
-			throw new ConfigurationException(
-					"Could not create the required connection", t);
-		}
+        try {
+            orbManagement = OrbManagement.getInstance(properties);
+        } catch (Throwable t) {
+            throw new ConfigurationException("Could not create the orb management function", t);
+        }
 
-		try {
-			orbManagement = OrbManagement.getInstance(properties);
-		} catch (Throwable t) {
-			throw new ConfigurationException(
-					"Could not create the orb management function", t);
-		}
+        log.debug("Created OrbManagement");
+    }
 
-		log.debug("Created OrbManagement");
-	}
+    public synchronized Transport createTransport() {
+        log.debug("Creating transport from factory: " + this);
+        TransportImpl instance = new TransportImpl(orbManagement, properties, this);
+        transports.add(instance);
+        log.debug("Created transport from factory: " + this + " transport: " + instance);
+        return instance;
+    }
 
-	public synchronized Transport createTransport() {
-		log.debug("Creating transport from factory: " + this);
-		TransportImpl instance = new TransportImpl(orbManagement,
-				momManagement, properties, this);
-		transports.add(instance);
-		log.debug("Created transport from factory: " + this + " transport: "
-				+ instance);
-		return instance;
-	}
+    public void removeTransport(TransportImpl transportImpl) {
+        boolean remove = transports.remove(transportImpl);
+        log.debug("Transport was removed: " + transportImpl + " from: " + this + " result: " + remove);
+    }
 
-	public void removeTransport(TransportImpl transportImpl) {
-		boolean remove = transports.remove(transportImpl);
-		log.debug("Transport was removed: " + transportImpl + " from: " + this
-				+ " result: " + remove);
-	}
-
-	/**
-	 * Make sure that the
-	 */
-	public synchronized final void close() {
-		log.debug("Close called: " + this);
-		if (!closed) {
-			log.debug("Going into shutdown");
-			log.debug("Closing factory: " + this);
-			Transport[] transport = new Transport[transports.size()];
-			transport = transports.toArray(transport);
-			for (int i = 0; i < transport.length; i++) {
-				try {
-					log.debug("Closing transport: " + transport[i]
-							+ " from factory: " + this);
-					transport[i].close();
-				} catch (ConnectionException e) {
-					log.warn(
-							"Transport could not be closed: " + e.getMessage(),
-							e);
-				}
-			}
-			transports.clear();
-			momManagement.close();
-			closed = true;
-		}
-		log.debug("Closed factory: " + getClass().getName());
-	}
+    /**
+     * Make sure that the
+     */
+    public synchronized final void close() {
+        log.debug("Close called: " + this);
+        if (!closed) {
+            log.debug("Going into shutdown");
+            log.debug("Closing factory: " + this);
+            Transport[] transport = new Transport[transports.size()];
+            transport = transports.toArray(transport);
+            for (int i = 0; i < transport.length; i++) {
+                try {
+                    log.debug("Closing transport: " + transport[i] + " from factory: " + this);
+                    transport[i].close();
+                } catch (ConnectionException e) {
+                    log.warn("Transport could not be closed: " + e.getMessage(), e);
+                }
+            }
+            transports.clear();
+            closed = true;
+        }
+        log.debug("Closed factory: " + getClass().getName());
+    }
 }

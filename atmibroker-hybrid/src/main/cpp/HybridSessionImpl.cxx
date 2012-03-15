@@ -30,7 +30,6 @@
 #include "ThreadLocalStorage.h"
 #include "Codec.h"
 #include "CodecFactory.h"
-//#include "BufferConverterImpl.h"
 
 
 #include <time.h>
@@ -259,9 +258,6 @@ bool HybridSessionImpl::send(MESSAGE& message) {
 	char* data_togo = NULL;
 
 	if (message.len !=0) {
-		//data_togo = BufferConverterImpl::convertToWireFormat(message.type,
-		//	message.subtype, message.data, &message.len);
-
 		if(this->codec == NULL) {
 			char* coding_type = NULL;
 			if(this->serviceName != NULL) {
@@ -324,7 +320,7 @@ bool HybridSessionImpl::send(MESSAGE& message) {
 		}
 
 		if (message.xid) {
-			LOG4CXX_TRACE(logger, "Sending serialized control: " << message.xid);
+			LOG4CXX_TRACE(logger, "Sending serialized xid: " << message.xid);
 			apr_hash_set(frame.headers, "messagexid", APR_HASH_KEY_STRING,
 					message.xid);
 		}
@@ -462,6 +458,7 @@ bool HybridSessionImpl::send(MESSAGE& message) {
 						toReturn = false;
 					} else {
 						memcpy(message.data, framed->body, message.len);
+						message.received = true;
 					}
 				}
 			} else {

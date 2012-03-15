@@ -23,7 +23,7 @@ import java.io.InputStream;
 
 /**
  * An optimized buffered input stream for Tcp
- *
+ * 
  * @version $Revision: 50 $
  */
 public class TcpBufferedInputStream extends FilterInputStream {
@@ -84,12 +84,11 @@ public class TcpBufferedInputStream extends FilterInputStream {
     public int read(byte b[], int off, int len) throws IOException {
         if ((off | len | (off + len) | (b.length - (off + len))) < 0) {
             throw new IndexOutOfBoundsException();
-        }
-        else if (len == 0) {
+        } else if (len == 0) {
             return 0;
         }
         int n = 0;
-        for (; ;) {
+        for (;;) {
             int nread = readStream(b, off + n, len - n);
             if (nread <= 0) {
                 return (n == 0) ? nread : n;

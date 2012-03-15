@@ -20,6 +20,7 @@ package org.codehaus.stomp.util;
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URI;
@@ -32,7 +33,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class IntrospectionSupport {
-    static public boolean getProperties(Object target, Map props, String optionPrefix) {
+    private static boolean getProperties(Object target, Map props, String optionPrefix) throws IllegalArgumentException,
+            IllegalAccessException, InvocationTargetException, URISyntaxException {
 
         boolean rc = false;
         if (target == null) {
@@ -53,34 +55,29 @@ public class IntrospectionSupport {
             String name = method.getName();
             Class type = method.getReturnType();
             Class params[] = method.getParameterTypes();
-            if (name.startsWith("get") && params.length == 0 &&
-                    type != null && IntrospectionSupport.isSettableType(type)) {
+            if (name.startsWith("get") && params.length == 0 && type != null && IntrospectionSupport.isSettableType(type)) {
 
-                try {
-
-                    Object value = method.invoke(target, new Object[]{});
-                    if (value == null) {
-                        continue;
-                    }
-
-                    String strValue = IntrospectionSupport.convertToString(value, type);
-                    if (strValue == null) {
-                        continue;
-                    }
-
-                    name = name.substring(3, 4).toLowerCase() + name.substring(4);
-                    props.put(optionPrefix + name, strValue);
-                    rc = true;
+                Object value = method.invoke(target, new Object[] {});
+                if (value == null) {
+                    continue;
                 }
-                catch (Throwable ignore) {
+
+                String strValue = IntrospectionSupport.convertToString(value, type);
+                if (strValue == null) {
+                    continue;
                 }
+
+                name = name.substring(3, 4).toLowerCase() + name.substring(4);
+                props.put(optionPrefix + name, strValue);
+                rc = true;
             }
         }
 
         return rc;
     }
 
-    static public boolean setProperties(Object target, Map props, String optionPrefix) {
+    private static boolean setProperties(Object target, Map props, String optionPrefix) throws IllegalArgumentException,
+            IllegalAccessException, InvocationTargetException, URISyntaxException {
         boolean rc = false;
         if (target == null) {
             throw new IllegalArgumentException("target was null.");
@@ -103,7 +100,7 @@ public class IntrospectionSupport {
         return rc;
     }
 
-    public static Map extractProperties(Map props, String optionPrefix) {
+    private static Map extractProperties(Map props, String optionPrefix) {
         if (props == null) {
             throw new IllegalArgumentException("props was null.");
         }
@@ -123,7 +120,8 @@ public class IntrospectionSupport {
         return rc;
     }
 
-    public static boolean setProperties(Object target, Map props) {
+    public static boolean setProperties(Object target, Map props) throws IllegalArgumentException, IllegalAccessException,
+            InvocationTargetException, URISyntaxException {
         boolean rc = false;
 
         if (target == null) {
@@ -144,27 +142,22 @@ public class IntrospectionSupport {
         return rc;
     }
 
-    public static boolean setProperty(Object target, String name, Object value) {
-        try {
-            Class clazz = target.getClass();
-            Method setter = IntrospectionSupport.findSetterMethod(clazz, name);
-            if (setter == null) {
-                return false;
-            }
-
-            // If the type is null or it matches the needed type, just use the value directly
-            if (value == null || value.getClass() == setter.getParameterTypes()[0]) {
-                setter.invoke(target, new Object[]{value});
-            }
-            else {
-                // We need to convert it
-                setter.invoke(target, new Object[]{IntrospectionSupport.convert(value, setter.getParameterTypes()[0])});
-            }
-            return true;
-        }
-        catch (Throwable ignore) {
+    private static boolean setProperty(Object target, String name, Object value) throws IllegalArgumentException,
+            IllegalAccessException, InvocationTargetException, URISyntaxException {
+        Class clazz = target.getClass();
+        Method setter = IntrospectionSupport.findSetterMethod(clazz, name);
+        if (setter == null) {
             return false;
         }
+
+        // If the type is null or it matches the needed type, just use the value directly
+        if (value == null || value.getClass() == setter.getParameterTypes()[0]) {
+            setter.invoke(target, new Object[] { value });
+        } else {
+            // We need to convert it
+            setter.invoke(target, new Object[] { IntrospectionSupport.convert(value, setter.getParameterTypes()[0]) });
+        }
+        return true;
     }
 
     private static Object convert(Object value, Class type) throws URISyntaxException {
@@ -198,9 +191,7 @@ public class IntrospectionSupport {
         for (int i = 0; i < methods.length; i++) {
             Method method = methods[i];
             Class params[] = method.getParameterTypes();
-            if (method.getName().equals(name)
-                    && params.length == 1
-                    && IntrospectionSupport.isSettableType(params[0])) {
+            if (method.getName().equals(name) && params.length == 1 && IntrospectionSupport.isSettableType(params[0])) {
                 return method;
             }
         }
@@ -220,11 +211,11 @@ public class IntrospectionSupport {
         return false;
     }
 
-    static public String toString(Object target) {
+    private static String toString(Object target) throws IllegalArgumentException, IllegalAccessException {
         return IntrospectionSupport.toString(target, Object.class);
     }
 
-    static public String toString(Object target, Class stopClass) {
+    private static String toString(Object target, Class stopClass) throws IllegalArgumentException, IllegalAccessException {
         LinkedHashMap map = new LinkedHashMap();
         IntrospectionSupport.addFields(target, target.getClass(), stopClass, map);
         StringBuffer buffer = new StringBuffer(IntrospectionSupport.simpleName(target.getClass()));
@@ -235,8 +226,7 @@ public class IntrospectionSupport {
             Map.Entry entry = (Map.Entry) iter.next();
             if (first) {
                 first = false;
-            }
-            else {
+            } else {
                 buffer.append(", ");
             }
             buffer.append(entry.getKey());
@@ -247,7 +237,7 @@ public class IntrospectionSupport {
         return buffer.toString();
     }
 
-    static public String simpleName(Class clazz) {
+    private static String simpleName(Class clazz) {
         String name = clazz.getName();
         int p = name.lastIndexOf(".");
         if (p >= 0) {
@@ -256,7 +246,8 @@ public class IntrospectionSupport {
         return name;
     }
 
-    static private void addFields(Object target, Class startClass, Class stopClass, LinkedHashMap map) {
+    private static void addFields(Object target, Class startClass, Class stopClass, LinkedHashMap map)
+            throws IllegalArgumentException, IllegalAccessException {
 
         if (startClass != stopClass) {
             IntrospectionSupport.addFields(target, startClass.getSuperclass(), stopClass, map);
@@ -265,27 +256,17 @@ public class IntrospectionSupport {
         Field[] fields = startClass.getDeclaredFields();
         for (int i = 0; i < fields.length; i++) {
             Field field = fields[i];
-            if (Modifier.isStatic(field.getModifiers()) ||
-                    Modifier.isTransient(field.getModifiers()) ||
-                    Modifier.isPrivate(field.getModifiers())) {
+            if (Modifier.isStatic(field.getModifiers()) || Modifier.isTransient(field.getModifiers())
+                    || Modifier.isPrivate(field.getModifiers())) {
                 continue;
             }
 
-            try {
-                field.setAccessible(true);
-                Object o = field.get(target);
-                if (o != null && o.getClass().isArray()) {
-                    try {
-                        o = Arrays.asList((Object[]) o);
-                    }
-                    catch (Throwable e) {
-                    }
-                }
-                map.put(field.getName(), o);
+            field.setAccessible(true);
+            Object o = field.get(target);
+            if (o != null && o.getClass().isArray()) {
+                o = Arrays.asList((Object[]) o);
             }
-            catch (Throwable e) {
-                e.printStackTrace();
-            }
+            map.put(field.getName(), o);
         }
     }
 }

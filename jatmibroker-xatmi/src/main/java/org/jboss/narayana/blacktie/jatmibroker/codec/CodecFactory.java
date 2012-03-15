@@ -22,13 +22,13 @@ import org.jboss.narayana.blacktie.jatmibroker.core.transport.Codec;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection;
 
 public class CodecFactory {
-	private Connection connection;
-	
-	public CodecFactory(Connection connection) {
-		this.connection = connection;
-	}
-	
-	public Codec getCodec(String name) {
-		return new DefaultCodecImpl(connection);
-	}
+    private Connection connection;
+
+    public CodecFactory(Connection connection) {
+        this.connection = connection;
+    }
+
+    public Codec getCodec(String name) {
+        return new DefaultCodecImpl(connection);
+    }
 }

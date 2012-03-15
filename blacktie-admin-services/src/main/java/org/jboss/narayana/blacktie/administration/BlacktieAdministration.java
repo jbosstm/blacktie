@@ -20,136 +20,129 @@ package org.jboss.narayana.blacktie.administration;
 /**
  * This is the Admin service operations.
  * 
- * Don't forget that all the operations need to be in the select statement of
- * the Blacktie XATMI Administration Service
+ * Don't forget that all the operations need to be in the select statement of the Blacktie XATMI Administration Service
  */
 public interface BlacktieAdministration {
 
-	/**
-	 * Retrieve the Domain Name
-	 */
-	public String getDomainName();
+    /**
+     * Ensures we dont return zero length responses
+     */
+    public String LIST_TERMINATOR = "|";
 
-	/**
-	 * Retrieve the software version of domain
-	 */
-	public String getSoftwareVersion();
+    /**
+     * Retrieve the Domain Name
+     */
+    public String getDomainName();
 
-	/**
-	 * Retrieve the server version
-	 */
-	public String getServerVersionById(String serverName, int id);
+    /**
+     * Retrieve the software version of domain
+     */
+    public String getSoftwareVersion();
 
-	/**
-	 * Retrieve the full list of servers
-	 */
-	public java.util.List<String> getServerList();
+    /**
+     * Retrieve the server version
+     */
+    public String getServerVersionById(String serverName, int id);
 
-	/**
-	 * Discover running servers
-	 */
-	public java.util.List<String> listRunningServers();
+    /**
+     * Retrieve the full list of servers
+     */
+    public java.util.List<String> getServerList();
 
-	/**
-	 * Get current status of domain
-	 */
-	public Boolean getDomainStatus();
+    /**
+     * Discover running servers
+     */
+    public java.util.List<String> listRunningServers();
 
-	/**
-	 * This calls pauseServer for each server in the domain
-	 */
-	public Boolean pauseDomain();
+    /**
+     * Get current status of domain
+     */
+    public Boolean getDomainStatus();
 
-	/**
-	 * This calls resumeDomain for each server in the domain
-	 */
-	public Boolean resumeDomain();
+    /**
+     * This calls pauseServer for each server in the domain
+     */
+    public Boolean pauseDomain();
 
-	/**
-	 * Halt servers, update configuration, restart
-	 */
-	public Boolean reloadDomain();
+    /**
+     * This calls resumeDomain for each server in the domain
+     */
+    public Boolean resumeDomain();
 
-	/**
-	 * reload server
-	 */
-	public Boolean reloadServer(String serverName);
+    /**
+     * Halt servers, update configuration, restart
+     */
+    public Boolean reloadDomain();
 
-	/**
-	 * Get the name of the server that this service resides at.
-	 * 
-	 * @param serviceName
-	 *            The service name.
-	 * @return The server name.
-	 */
-	public String getServerName(String serviceName);
+    /**
+     * reload server
+     */
+    public Boolean reloadServer(String serverName);
 
-	/**
-	 * Retrieves the counter for a service from all servers
-	 */
-	public long getServiceCounter(String serverName, String serviceName);
+    /**
+     * Get the name of the server that this service resides at.
+     * 
+     * @param serviceName The service name.
+     * @return The server name.
+     */
+    public String getServerName(String serviceName);
 
-	/**
-	 * Retrieves the counter for a service from specify server
-	 */
-	public long getServiceCounterById(String serverName, int id,
-			String serviceName);
+    /**
+     * Retrieves the counter for a service from all servers
+     */
+    public long getServiceCounter(String serverName, String serviceName);
 
-	/**
-	 * Get the list of Ids of currently running servers
-	 */
-	public java.util.List<Integer> listRunningInstanceIds(String serverName);
+    /**
+     * Retrieves the counter for a service from specify server
+     */
+    public long getServiceCounterById(String serverName, int id, String serviceName);
 
-	/**
-	 * Describe the status of the servers in the domain
-	 */
-	public org.w3c.dom.Element getServersStatus();
+    /**
+     * Get the list of Ids of currently running servers
+     */
+    public java.util.List<Integer> listRunningInstanceIds(String serverName);
 
-	/**
-	 * Describe the service status of server
-	 */
-	public org.w3c.dom.Element listServiceStatus(String serverName,
-			String serviceName);
+    /**
+     * Describe the status of the servers in the domain
+     */
+    public String listServersStatus();
 
-	public org.w3c.dom.Element listServiceStatusById(String serverName, int id,
-			String serviceName);
+    /**
+     * Describe the service status of server
+     */
+    public String listServiceStatus(String serverName, String serviceName);
 
-	/**
-	 * Advertise service
-	 */
-	public Boolean advertise(String serverName, String serviceName);
+    public String listServiceStatusById(String serverName, int id, String serviceName);
 
-	/**
-	 * Unadvertise service
-	 */
-	public Boolean unadvertise(String serverName, String serviceName);
+    /**
+     * Advertise service
+     */
+    public Boolean advertise(String serverName, String serviceName);
 
-	/**
-	 * Shutdown server
-	 */
-	public Boolean shutdown(String serverName, int id);
+    /**
+     * Unadvertise service
+     */
+    public Boolean unadvertise(String serverName, String serviceName);
 
-	/**
-	 * Get service response time
-	 */
-	public String getResponseTimeById(String serverName, int id,
-			String serviceName);
+    /**
+     * Shutdown server
+     */
+    public Boolean shutdown(String serverName, int id);
 
-	public String getResponseTime(String serverName, String serviceName);
+    /**
+     * Get service response time
+     */
+    public String getResponseTimeById(String serverName, int id, String serviceName);
 
-	/**
-	 * Get message queue depth
-	 */
-	public int getQueueDepth(String serverName, String serviceName);
+    public String getResponseTime(String serverName, String serviceName);
 
-	/**
-	 * Retrieves the error counter for a service from all servers
-	 */
-	public long getErrorCounter(String serverName, String serviceName);
+    /**
+     * Retrieves the error counter for a service from all servers
+     */
+    public long getErrorCounter(String serverName, String serviceName);
 
-	/**
-	 * Retrieves the error counter for a service from specify server
-	 */
-	public long getErrorCounterById(String serverName, int id,
-			String serviceName);
+    /**
+     * Retrieves the error counter for a service from specify server
+     */
+    public long getErrorCounterById(String serverName, int id, String serviceName);
 }

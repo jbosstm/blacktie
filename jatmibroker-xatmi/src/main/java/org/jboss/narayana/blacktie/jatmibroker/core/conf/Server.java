@@ -27,41 +27,40 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 public class Server {
-	/**
-	 * The logger to use for output
-	 */
-	private static Logger log = LogManager.getLogger(Server.class);
+    /**
+     * The logger to use for output
+     */
+    private static Logger log = LogManager.getLogger(Server.class);
 
-	private List<Machine> machines = new ArrayList<Machine>();
-	private String name;
+    private List<Machine> machines = new ArrayList<Machine>();
+    private String name;
 
-	public Server(String name) {
-		this.name = name;
-	}
+    public Server(String name) {
+        this.name = name;
+    }
 
-	public void addMachine(Machine machine) {
-		machines.add(machine);
-		machine.setServer(this);
-	}
+    public void addMachine(Machine machine) {
+        machines.add(machine);
+        machine.setServer(this);
+    }
 
-	public List<Machine> getLocalMachine() throws UnknownHostException {
-		List<Machine> toReturn = new ArrayList<Machine>();
-		String hostname = InetAddress.getLocalHost().getHostName();
-		String ipAddress = InetAddress.getLocalHost().getHostAddress();
-		log.info("Checking for host: " + hostname + " or ip: " + ipAddress);
-		Iterator<Machine> iterator = machines.iterator();
-		while (iterator.hasNext()) {
-			Machine next = iterator.next();
-			log.debug("Checking against: " + next.getHostname() + " or ip: " + next.getIpAddress());
-			if (hostname.equals(next.getHostname())
-					|| ipAddress.equals(next.getIpAddress())) {
-				toReturn.add(next);
-			}
-		}
-		return toReturn;
-	}
+    public List<Machine> getLocalMachine() throws UnknownHostException {
+        List<Machine> toReturn = new ArrayList<Machine>();
+        String hostname = InetAddress.getLocalHost().getHostName();
+        String ipAddress = InetAddress.getLocalHost().getHostAddress();
+        log.info("Checking for host: " + hostname + " or ip: " + ipAddress);
+        Iterator<Machine> iterator = machines.iterator();
+        while (iterator.hasNext()) {
+            Machine next = iterator.next();
+            log.debug("Checking against: " + next.getHostname() + " or ip: " + next.getIpAddress());
+            if (hostname.equals(next.getHostname()) || ipAddress.equals(next.getIpAddress())) {
+                toReturn.add(next);
+            }
+        }
+        return toReturn;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 }

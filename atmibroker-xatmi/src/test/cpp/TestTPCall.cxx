@@ -533,6 +533,6 @@ void test_tpcall_TPNOBLOCK(TPSVCINFO *svcinfo) {
 
 void test_tpcall_TPNOTIME(TPSVCINFO *svcinfo) {
 	btlogger((char*) "test_tpcall_TPNOTIME");
-	::sleeper(31);
+	::sleeper(60);
 	tpreturn(TPSUCCESS, 0, svcinfo->data, svcinfo->len, 0);
 }

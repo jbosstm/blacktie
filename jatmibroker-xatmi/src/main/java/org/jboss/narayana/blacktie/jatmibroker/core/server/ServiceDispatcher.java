@@ -32,111 +32,109 @@ import org.jboss.narayana.blacktie.jatmibroker.xatmi.Service;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.TPSVCINFO;
 
 /**
- * This is the compatriot to the MDBBlacktieService found in the xatmi.mdb
- * package. It is a wrapper for user services.
+ * This is the compatriot to the MDBBlacktieService found in the xatmi.mdb package. It is a wrapper for user services.
  */
 public class ServiceDispatcher extends BlackTieService implements Runnable {
-	private static final Logger log = LogManager
-			.getLogger(ServiceDispatcher.class);
-	private Service callback;
-	private Receiver receiver;
-	private Thread thread;
-	private volatile boolean closed;
-	private String serviceName;
-	private int index;
-	private Object closeLock = new Object();
+    private static final Logger log = LogManager.getLogger(ServiceDispatcher.class);
+    private Service callback;
+    private Receiver receiver;
+    private Thread thread;
+    private volatile boolean closing;
+    private String serviceName;
+    private Object closeLock = new Object();
+    private String threadName;
+    private boolean closed;
 
-	ServiceDispatcher(String serviceName, Service callback, Receiver receiver,
-			int index) throws ConfigurationException {
-		super();
-		this.index = index;
-		this.serviceName = serviceName;
-		this.callback = callback;
-		this.receiver = receiver;
-		thread = new Thread(this, serviceName + "-Dispatcher-" + index);
-		thread.start();
-		log.debug("Created: " + thread.getName());
-	}
+    ServiceDispatcher(String serviceName, Service callback, Receiver receiver, int index) throws ConfigurationException {
+        super(serviceName);
+        this.serviceName = serviceName;
+        this.callback = callback;
+        this.receiver = receiver;
+        this.threadName = serviceName + "-Dispatcher-" + index;
+        thread = new Thread(this, threadName);
+        thread.start();
+        log.debug("Created: " + thread.getName());
+    }
 
-	public void run() {
-		log.debug("Running");
+    public void run() {
+        log.debug("Running");
 
-		while (!closed) {
-			Message message = null;
-			try {
-				message = receiver.receive(0);
-				log.trace("Received");
-			} catch (ConnectionException e) {
-				if (closed) {
-					log.trace(
-							"Got an exception during close: " + e.getMessage(),
-							e);
-					break;
-				}
-				if (e.getTperrno() == Connection.TPETIME) {
-					log.debug("Got a timeout");
-				} else {
-					log.error(
-							"Could not receive the message: " + e.getMessage(),
-							e);
-					break;
-				}
-			}
+        while (!closing) {
+            Message message = null;
+            try {
+                message = receiver.receive(0);
+                log.trace("Received");
 
-			synchronized (closeLock) {
-				if (message != null) {
-					if (closed) {
-						log.warn("Message will be ignored as closing");
-					} else {
-						try {
+                if (message != null && !closing) {
+                    // Process the consumed message
+                    try {
+                        this.processMessage(serviceName, message);
+                        log.trace("Processed");
+                    } catch (Throwable t) {
+                        log.error("Can't process the message", t);
+                    }
 
-							this.processMessage(serviceName, message);
-							log.trace("Processed");
-						} catch (Throwable t) {
-							log.error("Can't process the message", t);
-						}
+                    try {
+                        // Assumes the message was received from stomp -
+                        // fair
+                        // assumption outside of an MDB
+                        message.ack();
+                    } catch (IOException t) {
+                        log.error("Can't ack the message", t);
+                    }
+                }
+            } catch (ConnectionException e) {
+                if (closing) {
+                    log.trace("Got an exception during close: " + e.getMessage(), e);
+                    break;
+                }
+                if (e.getTperrno() == Connection.TPETIME) {
+                    log.debug("Got a timeout");
+                } else {
+                    log.error("Could not receive the message: " + e.getMessage(), e);
+                    break;
+                }
+            } catch (Throwable t) {
+                log.warn("Got throwable trying to receive: " + t.getMessage(), t);
+            }
+        }
 
-						try {
-							// Assumes the message was received from stomp -
-							// fair
-							// assumption outside of an MDB
-							message.ack();
-						} catch (IOException t) {
-							log.error("Can't ack the message", t);
-						}
-					}
-				}
-			}
-		}
-	}
+        synchronized (closeLock) {
+            log.debug("Close the thread");
+            closed = true;
+            closeLock.notify();
+        }
+    }
 
-	public void startClose() {
-		synchronized (closeLock) {
-			closed = true;
-			log.trace("Closed set");
-		}
-	}
+    public void startClose() {
+        log.trace("Attempting to close: " + threadName);
+        closing = true;
+        log.trace("Closed set: " + threadName);
+    }
 
-	public void close() throws ConnectionException {
-		log.trace("closing");
+    public void close() throws ConnectionException {
+        log.trace("closing: " + threadName);
 
-		log.trace("Interrupting");
-		thread.interrupt();
-		log.trace("Interrupted");
+        log.trace("Closing receiver");
+        receiver.close();
+        log.trace("Closing receiver");
 
-		try {
-			log.trace("Joining");
-			thread.join();
-			log.trace("Joined");
-		} catch (InterruptedException e) {
-			log.error("Could not join the dispatcher", e);
-		}
-		log.trace("closed");
-	}
+        synchronized (closeLock) {
+            try {
+                log.trace("Joining");
+                if (!closed) {
+                    closeLock.wait();
+                }
+                log.trace("Joined");
+            } catch (InterruptedException e) {
+                log.error("Could not join the dispatcher", e);
+            }
+        }
+        log.trace("closed");
+    }
 
-	public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException,
-			ConfigurationException {
-		log.trace("Invoking callback");
-		return callback.tpservice(svcinfo);
-	}
+    public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException, ConfigurationException {
+        log.trace("Invoking callback");
+        return callback.tpservice(svcinfo);
+    }
 }

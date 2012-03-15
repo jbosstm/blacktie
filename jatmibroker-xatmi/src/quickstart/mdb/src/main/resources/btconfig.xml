@@ -28,10 +28,10 @@
 		</SERVER>
 	</SERVERS>
 	<ORB
-		OPT="-ORBInitRef NameService=corbaloc::localhost:3528/NameService"
+		OPT="-ORBInitRef NameService=corbaloc::${jboss.bind.address}:3528/NameService -ORBListenEndpoints iiop://${jboss.bind.address}:0"
 		TRANS_FACTORY_ID="TransactionManagerService.OTS" />
-	<MQ HOST="localhost" PORT="61613" USER="guest" PASSWORD="guest"
-		 RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10"
-		NAMING_URL="jnp://localhost:1099" />
-	<JMX url="service:jmx:rmi:///jndi/rmi://localhost:1090/jmxconnector" />
+	<MQ HOST="${jboss.bind.address}" PORT="61613" USER="guest" PASSWORD="password"
+		 RECEIVE_TIMEOUT="10" TIME_TO_LIVE="40"
+		 />
+	
 </ENVIRONMENT>

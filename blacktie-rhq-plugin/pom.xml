@@ -16,254 +16,254 @@
 		02110-1301, USA.
 	-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <parent>
-    <groupId>org.jboss.narayana.blacktie</groupId>
-    <artifactId>blacktie-all</artifactId>
-    <version>5.0.0.M2-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
-  </parent>
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>blacktie-rhq-plugin</artifactId>
-  <packaging>jar</packaging>
-  <name>Blacktie RHQ Plugin</name>
-  <description>A plugin for managing blacktie server</description>
-  <developers>
-    <developer>
-      <id>tomjenkinson</id>
-      <name>Thomas Jenkinson</name>
-      <email>tom.jenkinson@redhat.com</email>
-      <organization>JBoss</organization>
-      <organizationUrl>http://www.jboss.org/</organizationUrl>
-      <roles>
-        <role>Project Lead</role>
-      </roles>
-      <timezone>0</timezone>
-    </developer>
-    <developer>
-      <id>mmusgrov</id>
-      <name>Michael Musgrove</name>
-      <email>mmusgrov@redhat.com</email>
-      <organization>JBoss</organization>
-      <organizationUrl>http://www.jboss.org/</organizationUrl>
-      <roles>
-        <role>Core Developer</role>
-      </roles>
-      <timezone>0</timezone>
-    </developer>
-    <developer>
-      <id>zfeng</id>
-      <name>Amos Feng</name>
-      <email>zfeng@redhat.com</email>
-      <organization>JBoss</organization>
-      <organizationUrl>http://www.jboss.org/</organizationUrl>
-      <roles>
-        <role>Core Developer</role>
-      </roles>
-      <timezone>0</timezone>
-    </developer>
-  </developers>
-  <licenses>
-    <license>
-      <name>LGPL 2.1</name>
-      <url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
-    </license>
-  </licenses>
-  <properties>
-    <rhq.version>1.2.0.GA</rhq.version>
-  </properties>
-  <dependencies>
-    <!-- Below are the core modules that are required dependencies of all plugins -->
-    <dependency>
-      <groupId>org.rhq</groupId>
-      <artifactId>rhq-core-domain</artifactId>
-      <version>${rhq.version}</version>
-      <scope>provided</scope>
-      <!-- provided by the agent/plugin-container -->
-      <exclusions>
-        <exclusion>
-          <groupId>javax.xml.bind</groupId>
-          <artifactId>jaxb-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.sun.xml.bind</groupId>
-          <artifactId>jaxb-impl</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>javax.xml.stream</groupId>
-          <artifactId>stax-api</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.rhq</groupId>
-      <artifactId>rhq-core-plugin-api</artifactId>
-      <version>${rhq.version}</version>
-      <scope>provided</scope>
-      <!-- provided by the agent/plugin-container -->
-      <exclusions>
-        <exclusion>
-          <groupId>javax.xml.bind</groupId>
-          <artifactId>jaxb-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.sun.xml.bind</groupId>
-          <artifactId>jaxb-impl</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>javax.xml.stream</groupId>
-          <artifactId>stax-api</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.rhq</groupId>
-      <artifactId>rhq-core-native-system</artifactId>
-      <version>${rhq.version}</version>
-      <scope>provided</scope>
-      <!-- provided by the agent/plugin-container -->
-    </dependency>
-    <!-- Fix for the Javac bug requiring annotations to be available when compiling classes. (fixed in JDK 6) -->
-    <dependency>
-      <groupId>javax.persistence</groupId>
-      <artifactId>persistence-api</artifactId>
-      <version>1.0</version>
-      <scope>provided</scope>
-      <!-- provided by the agent/plugin-container -->
-    </dependency>
-    <!-- Fix for the Javac bug requiring annotations to be available when compiling classes. (fixed in JDK 6) -->
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-annotations</artifactId>
-      <version>3.2.1.ga</version>
-      <scope>provided</scope>
-      <!-- provided by the agent/plugin-container -->
-    </dependency>
-    <!-- Fix for the Javac bug requiring annotations to be available when compiling classes. (fixed in JDK 6) -->
-    <dependency>
-      <groupId>javax.xml.bind</groupId>
-      <artifactId>jaxb-api</artifactId>
-      <version>2.1</version>
-      <scope>provided</scope>
-      <!-- provided by the agent/plugin-container -->
-    </dependency>
-    <!--
+    <parent>
+        <groupId>org.jboss.narayana.blacktie</groupId>
+        <artifactId>blacktie-all</artifactId>
+        <version>5.0.0.M2-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>blacktie-rhq-plugin</artifactId>
+    <packaging>jar</packaging>
+    <name>Blacktie RHQ Plugin</name>
+    <description>A plugin for managing blacktie server</description>
+    <developers>
+        <developer>
+            <id>tomjenkinson</id>
+            <name>Thomas Jenkinson</name>
+            <email>tom.jenkinson@redhat.com</email>
+            <organization>JBoss</organization>
+            <organizationUrl>http://www.jboss.org/</organizationUrl>
+            <roles>
+                <role>Project Lead</role>
+            </roles>
+            <timezone>0</timezone>
+        </developer>
+        <developer>
+            <id>mmusgrov</id>
+            <name>Michael Musgrove</name>
+            <email>mmusgrov@redhat.com</email>
+            <organization>JBoss</organization>
+            <organizationUrl>http://www.jboss.org/</organizationUrl>
+            <roles>
+                <role>Core Developer</role>
+            </roles>
+            <timezone>0</timezone>
+        </developer>
+        <developer>
+            <id>zfeng</id>
+            <name>Amos Feng</name>
+            <email>zfeng@redhat.com</email>
+            <organization>JBoss</organization>
+            <organizationUrl>http://www.jboss.org/</organizationUrl>
+            <roles>
+                <role>Core Developer</role>
+            </roles>
+            <timezone>0</timezone>
+        </developer>
+    </developers>
+    <licenses>
+        <license>
+            <name>LGPL 2.1</name>
+            <url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
+        </license>
+    </licenses>
+    <properties>
+        <rhq.version>1.2.0.GA</rhq.version>
+    </properties>
+    <dependencies>
+        <!-- Below are the core modules that are required dependencies of all plugins -->
+        <dependency>
+            <groupId>org.rhq</groupId>
+            <artifactId>rhq-core-domain</artifactId>
+            <version>${rhq.version}</version>
+            <scope>provided</scope>
+            <!-- provided by the agent/plugin-container -->
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb-impl</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.xml.stream</groupId>
+                    <artifactId>stax-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.rhq</groupId>
+            <artifactId>rhq-core-plugin-api</artifactId>
+            <version>${rhq.version}</version>
+            <scope>provided</scope>
+            <!-- provided by the agent/plugin-container -->
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb-impl</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.xml.stream</groupId>
+                    <artifactId>stax-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.rhq</groupId>
+            <artifactId>rhq-core-native-system</artifactId>
+            <version>${rhq.version}</version>
+            <scope>provided</scope>
+            <!-- provided by the agent/plugin-container -->
+        </dependency>
+        <!-- Fix for the Javac bug requiring annotations to be available when compiling classes. (fixed in JDK 6) -->
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>persistence-api</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
+            <!-- provided by the agent/plugin-container -->
+        </dependency>
+        <!-- Fix for the Javac bug requiring annotations to be available when compiling classes. (fixed in JDK 6) -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-annotations</artifactId>
+            <version>3.2.1.ga</version>
+            <scope>provided</scope>
+            <!-- provided by the agent/plugin-container -->
+        </dependency>
+        <!-- Fix for the Javac bug requiring annotations to be available when compiling classes. (fixed in JDK 6) -->
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.1</version>
+            <scope>provided</scope>
+            <!-- provided by the agent/plugin-container -->
+        </dependency>
+        <!--
 		Uncomment the one of the three logging systems your plugin uses: log4j, commons-logging or i18nlog
 		All three are provided to your plugin by the agent/plugin-container.
 		-->
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>1.1</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.servlet</groupId>
-          <artifactId>servlet-api</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <!-- Define any third-party dependencies your plugin has here. -->
-    <dependency>
-      <groupId>org.jboss.narayana.blacktie</groupId>
-      <artifactId>jatmibroker-xatmi</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.jbossas</groupId>
-      <artifactId>jboss-as-j2se</artifactId>
-      <version>5.1.0.GA</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.transaction</groupId>
-        <artifactId>jta</artifactId>
-	  <version>1.1</version>
-	  </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.rhq</groupId>
-        <artifactId>rhq-plugin-validator</artifactId>
-        <version>${rhq.version}</version>
-      </plugin>
-    </plugins>
-  </build>
-  <profiles>
-    <profile>
-      <id>dev</id>
-      <properties>
-        <!-- define the location of your RHQ root directory - typically rhq.rootDir is overridden in Maven's settings.xml -->
-        <rhq.rootDir>/rhq/trunk</rhq.rootDir>
-        <rhq.defaultDevContainerPath>dev-container</rhq.defaultDevContainerPath>
-        <rhq.containerDir>${rhq.rootDir}/${rhq.defaultDevContainerPath}</rhq.containerDir>
-        <rhq.deploymentDir>${rhq.containerDir}/jbossas/server/default/deploy/rhq.ear/rhq-downloads/rhq-plugins</rhq.deploymentDir>
-      </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
             <version>1.1</version>
-            <executions>
-              <execution>
-                <id>deploy</id>
-                <phase>compile</phase>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- Define any third-party dependencies your plugin has here. -->
+        <dependency>
+            <groupId>org.jboss.narayana.blacktie</groupId>
+            <artifactId>jatmibroker-xatmi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.jbossas</groupId>
+            <artifactId>jboss-as-j2se</artifactId>
+            <version>5.1.0.GA</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>jta</artifactId>
+            <version>1.1</version>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                  <tasks>
-                    <mkdir dir="${rhq.deploymentDir}"/>
-                    <property name="deployment.file" location="${rhq.deploymentDir}/${project.build.finalName}.jar"/>
-                    <echo>*** Updating ${deployment.file}...</echo>
-                    <jar destfile="${deployment.file}" basedir="${project.build.outputDirectory}"/>
-                  </tasks>
+                    <source>1.5</source>
+                    <target>1.5</target>
                 </configuration>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>deploy-jar-meta-inf</id>
-                <phase>package</phase>
-                <configuration>
-                  <tasks>
-                    <property name="deployment.file" location="${rhq.deploymentDir}/${project.build.finalName}.jar"/>
-                    <echo>*** Updating META-INF dir in ${deployment.file}...</echo>
-                    <unjar src="${project.build.directory}/${project.build.finalName}.jar" dest="${project.build.outputDirectory}">
-                      <patternset>
-                        <include name="META-INF/**"/>
-                      </patternset>
-                    </unjar>
-                    <jar destfile="${deployment.file}" manifest="${project.build.outputDirectory}/META-INF/MANIFEST.MF" update="true">
-										</jar>
-                  </tasks>
-                </configuration>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>undeploy</id>
-                <phase>clean</phase>
-                <configuration>
-                  <tasks>
-                    <property name="deployment.file" location="${rhq.deploymentDir}/${project.build.finalName}.jar"/>
-                    <echo>*** Deleting ${deployment.file}...</echo>
-                    <delete file="${deployment.file}"/>
-                  </tasks>
-                </configuration>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
+            </plugin>
+            <plugin>
+                <groupId>org.rhq</groupId>
+                <artifactId>rhq-plugin-validator</artifactId>
+                <version>${rhq.version}</version>
+            </plugin>
         </plugins>
-      </build>
-    </profile>
-  </profiles>
+    </build>
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <!-- define the location of your RHQ root directory - typically rhq.rootDir is overridden in Maven's settings.xml -->
+                <rhq.rootDir>/rhq/trunk</rhq.rootDir>
+                <rhq.defaultDevContainerPath>dev-container</rhq.defaultDevContainerPath>
+                <rhq.containerDir>${rhq.rootDir}/${rhq.defaultDevContainerPath}</rhq.containerDir>
+                <rhq.deploymentDir>${rhq.containerDir}/jbossas/server/default/deploy/rhq.ear/rhq-downloads/rhq-plugins</rhq.deploymentDir>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.1</version>
+                        <executions>
+                            <execution>
+                                <id>deploy</id>
+                                <phase>compile</phase>
+                                <configuration>
+                                    <tasks>
+                                        <mkdir dir="${rhq.deploymentDir}"/>
+                                        <property name="deployment.file" location="${rhq.deploymentDir}/${project.build.finalName}.jar"/>
+                                        <echo>*** Updating ${deployment.file}...</echo>
+                                        <jar destfile="${deployment.file}" basedir="${project.build.outputDirectory}"/>
+                                    </tasks>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>deploy-jar-meta-inf</id>
+                                <phase>package</phase>
+                                <configuration>
+                                    <tasks>
+                                        <property name="deployment.file" location="${rhq.deploymentDir}/${project.build.finalName}.jar"/>
+                                        <echo>*** Updating META-INF dir in ${deployment.file}...</echo>
+                                        <unjar src="${project.build.directory}/${project.build.finalName}.jar" dest="${project.build.outputDirectory}">
+                                            <patternset>
+                                                <include name="META-INF/**"/>
+                                            </patternset>
+                                        </unjar>
+                                        <jar destfile="${deployment.file}" manifest="${project.build.outputDirectory}/META-INF/MANIFEST.MF" update="true">
+										</jar>
+                                    </tasks>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>undeploy</id>
+                                <phase>clean</phase>
+                                <configuration>
+                                    <tasks>
+                                        <property name="deployment.file" location="${rhq.deploymentDir}/${project.build.finalName}.jar"/>
+                                        <echo>*** Deleting ${deployment.file}...</echo>
+                                        <delete file="${deployment.file}"/>
+                                    </tasks>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

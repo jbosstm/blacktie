@@ -19,9 +19,7 @@ package org.jboss.narayana.blacktie.btadmin.commands;
 
 import java.util.Properties;
 
-import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
-
+import org.jboss.narayana.blacktie.administration.BlacktieAdministration;
 import org.jboss.narayana.blacktie.btadmin.Command;
 import org.jboss.narayana.blacktie.btadmin.IncompatibleArgsException;
 
@@ -30,20 +28,15 @@ import org.jboss.narayana.blacktie.btadmin.IncompatibleArgsException;
  */
 public class Quit implements Command {
 
-	public boolean requiresAdminConnection() {
-		return false;
-	}
+    public String getQuickstartUsage() {
+        return "";
+    }
 
-	public String getQuickstartUsage() {
-		return "";
-	}
+    public void initializeArgs(String[] args) throws IncompatibleArgsException {
+        // NO-OP
+    }
 
-	public void initializeArgs(String[] args) throws IncompatibleArgsException {
-		// NO-OP
-	}
-
-	public void invoke(MBeanServerConnection beanServerConnection,
-			ObjectName blacktieAdmin, Properties configuration) {
-		// NO-OP
-	}
+    public void invoke(BlacktieAdministration connection, Properties configuration) {
+        // NO-OP
+    }
 }

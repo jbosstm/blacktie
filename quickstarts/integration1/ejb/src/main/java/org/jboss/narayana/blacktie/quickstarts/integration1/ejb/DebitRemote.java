@@ -21,5 +21,5 @@ import javax.ejb.Remote;
 
 @Remote
 public interface DebitRemote {
-	public String debit(long acct_no, short amount);
+    public String debit(long acct_no, short amount);
 }

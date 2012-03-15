@@ -220,6 +220,9 @@ void AtmiBrokerEnv::destroy() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "free orbConfig");
 	free(orbConfig.opt);
 	free(orbConfig.transactionFactoryName);
+	if (orbConfig.interface != NULL) {
+		free(orbConfig.interface);
+	}
 	orbConfig.opt = NULL;
 	orbConfig.transactionFactoryName = NULL;
 

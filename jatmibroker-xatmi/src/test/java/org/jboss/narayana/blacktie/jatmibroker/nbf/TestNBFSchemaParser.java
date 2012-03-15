@@ -19,35 +19,34 @@ package org.jboss.narayana.blacktie.jatmibroker.nbf;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.jboss.narayana.blacktie.jatmibroker.nbf.NBFSchemaParser;
-
 import junit.framework.TestCase;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 public class TestNBFSchemaParser extends TestCase {
-	private static final Logger log = LogManager.getLogger(TestNBFSchemaParser.class);
-	
-	public void test() {
-		log.info("TestNBFSchemaParser:test");
-		NBFSchemaParser parser = new NBFSchemaParser();
-		Map<String, String> flds;
-		
-		assertTrue(parser.parse("buffers/test.xsd"));
-		assertTrue("test".equals(parser.getBufferName()));
-		flds = parser.getFileds();
-		assertTrue(flds.size() == 1);
-		for(Entry<String, String> entry : flds.entrySet()) {
-			log.info(entry.getKey() + " : " + entry.getValue());
-		}
-		
-		assertTrue(parser.parse("buffers/employee.xsd"));
-		assertTrue("employee".equals(parser.getBufferName()));
-		flds = parser.getFileds();
-		for(Entry<String, String> entry : flds.entrySet()) {
-			log.info(entry.getKey() + " : " + entry.getValue());
-		}
-		assertTrue(flds.size() == 2);
-	}
+    private static final Logger log = LogManager.getLogger(TestNBFSchemaParser.class);
+
+    public void test() {
+        log.info("TestNBFSchemaParser:test");
+        NBFSchemaParser parser = new NBFSchemaParser();
+        Map<String, String> flds;
+
+        assertTrue(parser.parse("buffers/test.xsd"));
+        assertTrue("test".equals(parser.getBufferName()));
+        flds = parser.getFileds();
+        assertTrue(flds.size() == 1);
+        for (Entry<String, String> entry : flds.entrySet()) {
+            log.info(entry.getKey() + " : " + entry.getValue());
+        }
+
+        assertTrue(parser.parse("buffers/employee.xsd"));
+        assertTrue("employee".equals(parser.getBufferName()));
+        flds = parser.getFileds();
+        for (Entry<String, String> entry : flds.entrySet()) {
+            log.info(entry.getKey() + " : " + entry.getValue());
+        }
+        assertTrue(flds.size() == 2);
+    }
 
 }

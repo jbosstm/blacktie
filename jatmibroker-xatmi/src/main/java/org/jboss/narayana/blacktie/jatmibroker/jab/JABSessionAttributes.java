@@ -24,45 +24,43 @@ import org.apache.log4j.Logger;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.AtmiBrokerEnvXML;
 
 /**
- * Create a wrapper for the attributes to use for the sessions. The session
- * attributes are used in the constructor to the JABSession.
+ * Create a wrapper for the attributes to use for the sessions. The session attributes are used in the constructor to the
+ * JABSession.
  * 
  * @see JABSession
  */
 public class JABSessionAttributes {
-	/**
-	 * The logger to output information to
-	 */
-	private static final Logger log = LogManager
-			.getLogger(JABSessionAttributes.class);
+    /**
+     * The logger to output information to
+     */
+    private static final Logger log = LogManager.getLogger(JABSessionAttributes.class);
 
-	/**
-	 * The set of properties to use.
-	 */
-	private Properties properties;
+    /**
+     * The set of properties to use.
+     */
+    private Properties properties;
 
-	/**
-	 * Create the session attributes using the default configuration directory
-	 * 
-	 * @throws JABException
-	 *             In case the configuration file cannot be accessed
-	 */
-	public JABSessionAttributes() throws JABException {
-		try {
-			AtmiBrokerEnvXML client = new AtmiBrokerEnvXML();
-			this.properties = client.getProperties();
-		} catch (Exception e) {
-			log.error("Could not load the configuration", e);
-			throw new JABException("Could not load the configuration", e);
-		}
-	}
+    /**
+     * Create the session attributes using the default configuration directory
+     * 
+     * @throws JABException In case the configuration file cannot be accessed
+     */
+    public JABSessionAttributes() throws JABException {
+        try {
+            AtmiBrokerEnvXML client = new AtmiBrokerEnvXML();
+            this.properties = client.getProperties();
+        } catch (Exception e) {
+            log.error("Could not load the configuration", e);
+            throw new JABException("Could not load the configuration", e);
+        }
+    }
 
-	/**
-	 * Get the properties defined in the configuration file
-	 * 
-	 * @return The configuration properties
-	 */
-	public Properties getProperties() {
-		return properties;
-	}
+    /**
+     * Get the properties defined in the configuration file
+     * 
+     * @return The configuration properties
+     */
+    public Properties getProperties() {
+        return properties;
+    }
 }

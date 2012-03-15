@@ -18,32 +18,31 @@
 package org.jboss.narayana.blacktie.btadmin;
 
 public class CommandFailedException extends Exception {
-	/**
-	 * Non default serialization id.
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     * Non default serialization id.
+     */
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * The return code
-	 */
-	private int exitCode;
+    /**
+     * The return code
+     */
+    private int exitCode;
 
-	/**
-	 * Create the exception with an exit code
-	 * 
-	 * @param exitCode
-	 *            The exit code
-	 */
-	public CommandFailedException(int exitCode) {
-		this.exitCode = exitCode;
-	}
+    /**
+     * Create the exception with an exit code
+     * 
+     * @param exitCode The exit code
+     */
+    public CommandFailedException(int exitCode) {
+        this.exitCode = exitCode;
+    }
 
-	/**
-	 * Get the exit code of the command.
-	 * 
-	 * @return
-	 */
-	public int getExitCode() {
-		return exitCode;
-	}
+    /**
+     * Get the exit code of the command.
+     * 
+     * @return
+     */
+    public int getExitCode() {
+        return exitCode;
+    }
 }

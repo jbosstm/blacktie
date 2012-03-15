@@ -21,102 +21,88 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.TestTimeToLive;
 import org.jboss.narayana.blacktie.jatmibroker.RunServer;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionFactory;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.Response;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.X_OCTET;
 
 public class TestTimeToLive extends TestCase {
-	private static final Logger log = LogManager
-			.getLogger(TestTimeToLive.class);
-	private RunServer server = new RunServer();
-	private Connection connection;
+    private static final Logger log = LogManager.getLogger(TestTimeToLive.class);
+    private RunServer server = new RunServer();
+    private Connection connection;
 
-	public void setUp() throws ConnectionException, ConfigurationException {
-		server.serverinit();
+    public void setUp() throws ConnectionException, ConfigurationException {
+        server.serverinit();
 
-		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory();
-		connection = connectionFactory.getConnection();
-	}
+        ConnectionFactory connectionFactory = ConnectionFactory.getConnectionFactory();
+        connection = connectionFactory.getConnection();
+    }
 
-	public void tearDown() throws ConnectionException, ConfigurationException {
-		connection.close();
-		server.serverdone();
-	}
+    public void tearDown() throws ConnectionException, ConfigurationException {
+        connection.close();
+        server.serverdone();
+    }
 
-	public void test_call_ttl() throws ConnectionException {
-		log.info("test_call_ttl");
+    public void test_call_ttl() throws ConnectionException, ConfigurationException {
+        log.info("test_call_ttl");
 
-		server.tpadvertiseTTL();
+        server.tpadvertiseTTL();
 
-		try {
-			log.info("send first message");
+        try {
+            log.info("send first message");
 
-			String toSend = "test_call_ttl_1";
-			int sendlen = toSend.length() + 1;
-			X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null,
-					sendlen);
-			sendbuf.setByteArray(toSend.getBytes());
+            String toSend = "test_call_ttl_1";
+            int sendlen = toSend.length() + 1;
+            X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
+            sendbuf.setByteArray(toSend.getBytes());
 
-			Response rcvbuf = connection.tpcall(RunServer.getServiceNameTTL(),
-					sendbuf, 0);
-			fail("Expected TPETIME, got a buffer with rval: "
-					+ rcvbuf.getRval());
-		} catch (ConnectionException e) {
-			if (e.getTperrno() != Connection.TPETIME) {
-				fail("Expected TPETIME, got: " + e.getTperrno());
-			}
-		}
+            Response rcvbuf = connection.tpcall(RunServer.getServiceNameTTL(), sendbuf, 0);
+            fail("Expected TPETIME, got a buffer with rval: " + rcvbuf.getRval());
+        } catch (ConnectionException e) {
+            if (e.getTperrno() != Connection.TPETIME) {
+                fail("Expected TPETIME, got: " + e.getTperrno());
+            }
+        }
 
-		try {
-			log.info("send second message");
+        try {
+            log.info("send second message");
 
-			String toSend = "test_call_ttl_2";
-			int sendlen = toSend.length() + 1;
-			X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null,
-					sendlen);
-			sendbuf.setByteArray(toSend.getBytes());
+            String toSend = "test_call_ttl_2";
+            int sendlen = toSend.length() + 1;
+            X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
+            sendbuf.setByteArray(toSend.getBytes());
 
-			Response rcvbuf = connection.tpcall(RunServer.getServiceNameTTL(),
-					sendbuf, 0);
-			fail("Expected TPETIME, got a buffer with rval: "
-					+ rcvbuf.getRval());
-		} catch (ConnectionException e) {
-			if (e.getTperrno() != Connection.TPETIME) {
-				fail("Expected TPETIME, got: " + e.getTperrno());
-			}
-		}
+            Response rcvbuf = connection.tpcall(RunServer.getServiceNameTTL(), sendbuf, 0);
+            fail("Expected TPETIME, got a buffer with rval: " + rcvbuf.getRval());
+        } catch (ConnectionException e) {
+            if (e.getTperrno() != Connection.TPETIME) {
+                fail("Expected TPETIME, got: " + e.getTperrno());
+            }
+        }
 
-		try {
-			log.info("wait 30 second for first message process");
-			Thread.sleep(30 * 1000);
-			log.info("wait done");
-		} catch (Exception e) {
-			log.warn("sleep exception " + e);
-		}
+        // try {
+        // log.info("wait 30 second for first message process");
+        // Thread.sleep(30 * 1000);
+        // log.info("wait done");
+        // } catch (Exception e) {
+        // log.warn("sleep exception " + e);
+        // }
 
-		String toSend = "counter";
-		int sendlen = toSend.length() + 1;
-		X_OCTET sendbuf = (X_OCTET) connection
-				.tpalloc("X_OCTET", null, sendlen);
-		sendbuf.setByteArray(toSend.getBytes());
+        log.info("send third message");
 
-		Response rcvbuf = connection.tpcall(RunServer.getServiceNameTTL(),
-				sendbuf, 0);
+        String toSend = "counter";
+        int sendlen = toSend.length() + 1;
+        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
+        sendbuf.setByteArray(toSend.getBytes());
 
-		assertTrue(rcvbuf != null);
-		assertTrue(rcvbuf.getBuffer() != null);
-		assertTrue(((X_OCTET) rcvbuf.getBuffer()).getByteArray() != null);
-		byte[] received = ((X_OCTET) rcvbuf.getBuffer()).getByteArray();
+        Response rcvbuf = connection.tpcall(RunServer.getServiceNameTTL(), sendbuf, 0);
 
-		log.info("received length is " + received.length);
-		String counter = new String(received);
-		log.info("get message counter of TTL is " + counter);
-		assertTrue(received[0] == '1');
-	}
+        assertTrue(rcvbuf != null);
+        assertTrue(rcvbuf.getBuffer() != null);
+        assertTrue(((X_OCTET) rcvbuf.getBuffer()).getByteArray() != null);
+        byte[] received = ((X_OCTET) rcvbuf.getBuffer()).getByteArray();
+
+        log.info("received length is " + received.length);
+        String counter = new String(received);
+        log.info("get message counter of TTL is " + counter);
+        assertTrue(received[0] == '1');
+    }
 }

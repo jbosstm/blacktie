@@ -22,8 +22,8 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestAdmin );
 CPPUNIT_TEST_SUITE_REGISTRATION( TestAdvertise );
 #include "TestUnadvertise.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestUnadvertise );
-//#include "TestTimeToLive.h"
-//CPPUNIT_TEST_SUITE_REGISTRATION( TestTimeToLive );
+#include "TestTimeToLive.h"
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTimeToLive );
 /* Extern Managed Destination */
 #include "TestExternManageDestination.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestExternManageDestination);

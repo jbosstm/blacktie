@@ -257,12 +257,14 @@ static void* work2(void *args)
 //XXX	ACE_OS::sleep(4);	// yield to ensure that all threads have initialised env (see bug BLACKTIE-211)
 
 	for (int i = 0; i < ncalls; i++) {
+		btlogger((char*) "%s: loop %d of %d", params->svc, i, ncalls);
 		params->svc = s1;
 		if ((rv = do_tpcall(params)))
 			btlogger((char*) "%s: tpcall %d error: %d", params->svc, i, rv);
 		else
 			okcalls += 1;
 		params->svc = s2;
+		btlogger((char*) "%s: loop %d of %d call 2", params->svc, i, ncalls);
 		if ((rv = do_tpcall(params)))
 			btlogger((char*) "%s: tpcall %d error: %d", params->svc, i, rv);
 		else

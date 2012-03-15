@@ -1,4 +1,4 @@
- <?xml version="1.0"?>
+<?xml version="1.0"?>
 <!-- JBoss, Home of Professional Open Source Copyright 2008, Red Hat Middleware 
 	LLC, and others contributors as indicated by the @authors tag. All rights 
 	reserved. See the copyright.txt in the distribution for a full listing of 
@@ -23,10 +23,8 @@
 		</SERVER>
 	</SERVERS>
 	<ORB
-		OPT="-ORBInitRef NameService=corbaloc::${JBOSSAS_IP_ADDR}:3528/NameService"
+		OPT="-ORBInitRef NameService=corbaloc::${JBOSSAS_IP_ADDR}:3528/NameService -ORBListenEndpoints iiop://${JBOSSAS_IP_ADDR}:0"
 		TRANS_FACTORY_ID="TransactionManagerService.OTS" />
-	<MQ HOST="${JBOSSAS_IP_ADDR}" PORT="61613" USER="guest" PASSWORD="guest"
-		RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10" />
-	<JMX
-		url="service:jmx:rmi:///jndi/rmi://${JBOSSAS_IP_ADDR}:1090/jmxconnector" />
+	<MQ HOST="${JBOSSAS_IP_ADDR}" PORT="61613" USER="guest" PASSWORD="password"
+		RECEIVE_TIMEOUT="10" TIME_TO_LIVE="40" />
 </ENVIRONMENT>

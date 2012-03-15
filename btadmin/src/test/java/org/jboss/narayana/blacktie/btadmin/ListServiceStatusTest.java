@@ -25,89 +25,76 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.narayana.blacktie.btadmin.CommandHandler;
 
 public class ListServiceStatusTest extends TestCase {
-	private static final Logger log = LogManager
-			.getLogger(ListServiceStatusTest.class);
+    private static final Logger log = LogManager.getLogger(ListServiceStatusTest.class);
 
-	private CommandHandler commandHandler;
+    private CommandHandler commandHandler;
 
-	boolean shutdownRequired = false;
+    boolean shutdownRequired = false;
 
-	public void setUp() throws Exception {
-		this.commandHandler = new CommandHandler();
-		shutdownRequired = false;
-	}
+    public void setUp() throws Exception {
+        this.commandHandler = new CommandHandler();
+        shutdownRequired = false;
+    }
 
-	public void tearDown() throws Exception {
-		log.info("ListServiceStatusTest::tearDown");
-		if (shutdownRequired
-				&& commandHandler.handleCommand("shutdown testsui".split(" ")) != 0) {
-			fail("Could not stop the server");
-		}
-	}
+    public void tearDown() throws Exception {
+        log.info("ListServiceStatusTest::tearDown");
+        if (shutdownRequired && commandHandler.handleCommand("shutdown testsui".split(" ")) != 0) {
+            fail("Could not stop the server");
+        }
+    }
 
-	public void testListServiceStatusWithoutServerName() throws IOException,
-			MalformedObjectNameException, NullPointerException,
-			InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		log.info("ListServiceStatusTest::testListServiceStatusWithoutServerName");
-		String command = "listServiceStatus";
-		if (commandHandler.handleCommand(command.split(" ")) == 0) {
-			fail("Command was successful");
-		}
-	}
+    public void testListServiceStatusWithoutServerName() throws IOException, MalformedObjectNameException,
+            NullPointerException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+        log.info("ListServiceStatusTest::testListServiceStatusWithoutServerName");
+        String command = "listServiceStatus";
+        if (commandHandler.handleCommand(command.split(" ")) == 0) {
+            fail("Command was successful");
+        }
+    }
 
-	public void testListServiceStatusWithoutServiceName() throws IOException,
-			MalformedObjectNameException, NullPointerException,
-			InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		log.info("ListServiceStatusTest::testListRunningServersWithoutServers");
-		String command = "listServiceStatus testsui";
-		if (commandHandler.handleCommand(command.split(" ")) == 0) {
-			fail("Command was successful");
-		}
-	}
+    public void testListServiceStatusWithoutServiceName() throws IOException, MalformedObjectNameException,
+            NullPointerException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+        log.info("ListServiceStatusTest::testListRunningServersWithoutServers");
+        String command = "listServiceStatus testsui";
+        if (commandHandler.handleCommand(command.split(" ")) == 0) {
+            fail("Command was successful");
+        }
+    }
 
-	public void testListServiceStatusWithAdditionalParameters()
-			throws IOException, MalformedObjectNameException,
-			NullPointerException, InstantiationException,
-			IllegalAccessException, ClassNotFoundException {
-		log.info("ListServiceStatusTest::testListServiceStatusWithAdditionalParameters");
-		String command = "listServiceStatus testsui 1 BAR";
-		if (commandHandler.handleCommand(command.split(" ")) == 0) {
-			fail("Command was successful");
-		}
-	}
+    public void testListServiceStatusWithAdditionalParameters() throws IOException, MalformedObjectNameException,
+            NullPointerException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+        log.info("ListServiceStatusTest::testListServiceStatusWithAdditionalParameters");
+        String command = "listServiceStatus testsui 1 BAR";
+        if (commandHandler.handleCommand(command.split(" ")) == 0) {
+            fail("Command was successful");
+        }
+    }
 
-	public void testListServiceStatusWithNonRunningServer() throws IOException,
-			MalformedObjectNameException, NullPointerException,
-			InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		log.info("ListServiceStatusTest::testListServiceStatusWithNonRunningServer");
-		String command = "listServiceStatus foo BAR";
-		if (commandHandler.handleCommand(command.split(" ")) == 0) {
-			fail("Command was not successful");
-		}
-	}
+    public void testListServiceStatusWithNonRunningServer() throws IOException, MalformedObjectNameException,
+            NullPointerException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+        log.info("ListServiceStatusTest::testListServiceStatusWithNonRunningServer");
+        String command = "listServiceStatus foo BAR";
+        if (commandHandler.handleCommand(command.split(" ")) != 0) {
+            fail("Command was not successful");
+        }
+    }
 
-	public void testListServiceStatusWithRunningServer() throws IOException,
-			MalformedObjectNameException, NullPointerException,
-			InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		log.info("ListServiceStatusTest::testListServiceStatusWithRunningServer");
-		if (commandHandler.handleCommand("startup testsui".split(" ")) != 0) {
-			fail("Could not start the server");
-		}
-		shutdownRequired = true;
-		String command = "advertise testsui BAR";
-		if (commandHandler.handleCommand(command.split(" ")) != 0) {
-			fail("Command failed");
-		}
-		command = "listServiceStatus testsui BAR";
-		if (commandHandler.handleCommand(command.split(" ")) != 0) {
-			fail("Command was not successful");
-		}
-	}
+    public void testListServiceStatusWithRunningServer() throws IOException, MalformedObjectNameException,
+            NullPointerException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+        log.info("ListServiceStatusTest::testListServiceStatusWithRunningServer");
+        if (commandHandler.handleCommand("startup testsui".split(" ")) != 0) {
+            fail("Could not start the server");
+        }
+        shutdownRequired = true;
+        String command = "advertise testsui BAR";
+        if (commandHandler.handleCommand(command.split(" ")) != 0) {
+            fail("Command failed");
+        }
+        command = "listServiceStatus testsui BAR";
+        if (commandHandler.handleCommand(command.split(" ")) != 0) {
+            fail("Command was not successful");
+        }
+    }
 }

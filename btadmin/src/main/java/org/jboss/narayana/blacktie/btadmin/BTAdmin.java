@@ -21,7 +21,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 
 import javax.management.MalformedObjectNameException;
 
@@ -36,71 +35,56 @@ import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
  * @author tomjenkinson
  */
 public class BTAdmin {
-	private static Logger log = LogManager.getLogger(BTAdmin.class);
+    private static Logger log = LogManager.getLogger(BTAdmin.class);
 
-	private static InputStreamReader isr = new InputStreamReader(System.in);
-	private static BufferedReader br = new BufferedReader(isr);
+    private static InputStreamReader isr = new InputStreamReader(System.in);
+    private static BufferedReader br = new BufferedReader(isr);
 
-	public static void main(String[] args) throws IOException {
-		int exitStatus = -1;
-		if (System.getProperty("log4j.configuration") == null
-				&& !new File("log4cxx.properties").exists()
-				&& !new File("log4j.xml").exists()) {
-			BasicConfigurator.configure();
-			log.info("BasicConfigurator ran");
-		}
+    public static void main(String[] args) throws IOException {
+        int exitStatus = -1;
+        if (System.getProperty("log4j.configuration") == null && !new File("log4cxx.properties").exists()
+                && !new File("log4j.xml").exists()) {
+            BasicConfigurator.configure();
+            log.info("BasicConfigurator ran");
+        }
 
-		boolean interactive = args.length == 0;
-		boolean done = false;
-		try {
-			CommandHandler commandHandler = new CommandHandler();
-			do {
-				if (interactive) {
-					System.out.print("> ");
-					args = br.readLine().split("\\s+"); // split on white space
-				}
+        boolean interactive = args.length == 0;
+        boolean done = false;
+        try {
+            CommandHandler commandHandler = new CommandHandler();
+            do {
+                if (interactive) {
+                    System.out.print("> ");
+                    args = br.readLine().split("\\s+"); // split on white space
+                }
 
-				try {
-					exitStatus = commandHandler.handleCommand(args);
-					if (exitStatus == 0) {
-						log.trace("Command was successful");
-					} else {
-						log.trace("Command failed");
-					}
-					if (args.length > 0 && args[0].equals("quit")) {
-						done = true;
-					}
-				} catch (MalformedURLException e) {
-					log.error("JMXURL was incorrect: " + e.getMessage(), e);
-				} catch (IOException e) {
-					log.error("No connect to mbean server: " + e.getMessage(),
-							e);
-				} catch (NullPointerException e) {
-					log.error("MBean name raised an NPE: " + e.getMessage(), e);
-				} catch (InstantiationException e) {
-					log.error("Command could not be loaded: " + e.getMessage(),
-							e);
-				} catch (IllegalAccessException e) {
-					log.error("Command could not be loaded: " + e.getMessage(),
-							e);
-				} catch (ClassNotFoundException e) {
-					log.error("Command could not be loaded: " + e.getMessage(),
-							e);
-				}
-			} while (interactive && !done);
-		} catch (MalformedObjectNameException e) {
-			log.error("MBean name was badly structured: " + e.getMessage(), e);
-		} catch (ConfigurationException e) {
-			log.error("BlackTie Configuration invalid: " + e.getMessage(), e);
-		}
+                try {
+                    exitStatus = commandHandler.handleCommand(args);
+                    if (exitStatus == 0) {
+                        log.trace("Command was successful");
+                    } else {
+                        log.trace("Command failed");
+                    }
+                    if (args.length > 0 && args[0].equals("quit")) {
+                        done = true;
+                    }
+                } catch (Exception e) {
+                    log.error("Could not invoke command: " + e.getMessage(), e);
+                }
+            } while (interactive && !done);
+        } catch (MalformedObjectNameException e) {
+            log.error("MBean name was badly structured: " + e.getMessage(), e);
+        } catch (ConfigurationException e) {
+            log.error("BlackTie Configuration invalid: " + e.getMessage(), e);
+        }
 
-		if (!interactive) {
-			// Exit the launcher with the value of the command
-			// This must be a halt so that any executed servers are not reaped
-			// by the JVM. If spawned servers die when launcher does we will
-			// need to investigate using setppid or something to set the
-			// spawned process as daemons
-			Runtime.getRuntime().halt(exitStatus);
-		}
-	}
+        if (!interactive) {
+            // Exit the launcher with the value of the command
+            // This must be a halt so that any executed servers are not reaped
+            // by the JVM. If spawned servers die when launcher does we will
+            // need to investigate using setppid or something to set the
+            // spawned process as daemons
+            Runtime.getRuntime().halt(exitStatus);
+        }
+    }
 }

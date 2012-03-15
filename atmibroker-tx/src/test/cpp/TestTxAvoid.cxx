@@ -84,7 +84,7 @@ try {
 }
 
 void doTwo() {
-btlogger_debug( (char*) "TestTransactions::test_basic begin");
+	btlogger( (char*) "TestTransactions::test_basic begin");
 	atmibroker::tx::TxManager *txm = atmibroker::tx::TxManager::get_instance();
 	BT_ASSERT_EQUAL(TX_OK, txm->open());
 	BT_ASSERT_EQUAL(TX_OK, txm->begin());

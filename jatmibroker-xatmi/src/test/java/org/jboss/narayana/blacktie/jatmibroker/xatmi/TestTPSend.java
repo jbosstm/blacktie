@@ -23,92 +23,79 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.narayana.blacktie.jatmibroker.RunServer;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionFactory;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.Response;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.ResponseException;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.Session;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.X_OCTET;
 
 public class TestTPSend extends TestCase {
-	private static final Logger log = LogManager.getLogger(TestTPSend.class);
-	private RunServer server = new RunServer();
-	private Connection connection;
-	private int sendlen;
-	private X_OCTET sendbuf;
-	private Session cd;
+    private static final Logger log = LogManager.getLogger(TestTPSend.class);
+    private RunServer server = new RunServer();
+    private Connection connection;
+    private int sendlen;
+    private X_OCTET sendbuf;
+    private Session cd;
 
-	public void setUp() throws ConnectionException, ConfigurationException {
-		server.serverinit();
+    public void setUp() throws ConnectionException, ConfigurationException {
+        server.serverinit();
 
-		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory();
-		connection = connectionFactory.getConnection();
+        ConnectionFactory connectionFactory = ConnectionFactory.getConnectionFactory();
+        connection = connectionFactory.getConnection();
 
-		sendlen = "tpsend".length() + 1;
-		sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
-		sendbuf.setByteArray("tpsend".getBytes());
-	}
+        sendlen = "tpsend".length() + 1;
+        sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
+        sendbuf.setByteArray("tpsend".getBytes());
+    }
 
-	public void tearDown() throws ConnectionException, ConfigurationException {
-		connection.close();
-		server.serverdone();
-	}
+    public void tearDown() throws ConnectionException, ConfigurationException {
+        connection.close();
+        server.serverdone();
+    }
 
-	public void test_tpsend_recvonly() throws ConnectionException {
-		log.info("test_tpsend_recvonly");
-		server.tpadvertiseTestTPSend();
+    public void test_tpsend_recvonly() throws ConnectionException {
+        log.info("test_tpsend_recvonly");
+        server.tpadvertiseTestTPSend();
 
-		cd = connection.tpconnect(RunServer.getServiceNameTestTPSend(),
-				sendbuf, Connection.TPRECVONLY);
-		try {
-			cd.tpsend(sendbuf, 0);
-			fail("expected proto error");
-		} catch (ResponseException e) {
-			assertTrue(e.getEvent() == Connection.TPEV_SVCERR);
-		} catch (ConnectionException e) {
-			assertTrue(e.getTperrno() == Connection.TPEPROTO);
-		}
-	}
+        cd = connection.tpconnect(RunServer.getServiceNameTestTPSend(), sendbuf, Connection.TPRECVONLY);
+        try {
+            cd.tpsend(sendbuf, 0);
+            fail("expected proto error");
+        } catch (ResponseException e) {
+            assertTrue(e.getEvent() == Connection.TPEV_SVCERR);
+        } catch (ConnectionException e) {
+            assertTrue(e.getTperrno() == Connection.TPEPROTO);
+        }
+    }
 
-	public void test_tpsend_tpsendonly() throws ConnectionException {
-		log.info("test_tpsend_tpsendonly");
-		server.tpadvertiseTestTPSendTPSendOnly();
+    public void test_tpsend_tpsendonly() throws ConnectionException, ConfigurationException {
+        log.info("test_tpsend_tpsendonly");
+        server.tpadvertiseTestTPSendTPSendOnly();
 
-		cd = connection.tpconnect(
-				RunServer.getServiceNameTestTPSendTPSendOnly(), sendbuf,
-				Connection.TPRECVONLY);
+        cd = connection.tpconnect(RunServer.getServiceNameTestTPSendTPSendOnly(), sendbuf, Connection.TPRECVONLY);
 
-		try {
-			cd.tprecv(0);
-			fail("Expected sendonly event");
-		} catch (ResponseException e) {
-			assertTrue(e.getTperrno() == Connection.TPEEVENT);
-			assertTrue(e.getEvent() == Connection.TPEV_SENDONLY);
-		} catch (ConnectionException e) {
-			fail("expected sendonly error");
-		}
-		try {
-			cd.tprecv(0);
-			fail("Expected TPEPROTO");
-		} catch (ConnectionException e) {
-			assertTrue(e.getTperrno() == Connection.TPEPROTO);
-		}
+        try {
+            cd.tprecv(0);
+            fail("Expected sendonly event");
+        } catch (ResponseException e) {
+            assertTrue(e.getTperrno() == Connection.TPEEVENT);
+            assertTrue(e.getEvent() == Connection.TPEV_SENDONLY);
+        } catch (ConnectionException e) {
+            fail("expected sendonly error");
+        }
+        try {
+            cd.tprecv(0);
+            fail("Expected TPEPROTO");
+        } catch (ConnectionException e) {
+            assertTrue(e.getTperrno() == Connection.TPEPROTO);
+        }
 
-		cd.tpsend(sendbuf, 0);
-	}
+        cd.tpsend(sendbuf, 0);
+    }
 
-	public void test_tpsend_non_TPCONV_session() throws ConnectionException {
-		server.tpadvertiseTestTPSendNonTPCONVService();
+    public void test_tpsend_non_TPCONV_session() throws ConnectionException, ConfigurationException {
+        server.tpadvertiseTestTPSendNonTPCONVService();
 
-		try {
-			Response rcvbuf = connection.tpcall(
-					RunServer.getServiceNameTPSendNonTPCONVService(), sendbuf,
-					0);
-			fail("Received a rcvbuf: " + rcvbuf);
-		} catch (ConnectionException e) {
-			assertTrue(e.getTperrno() == Connection.TPESVCERR);
-		}
-	}
+        try {
+            Response rcvbuf = connection.tpcall(RunServer.getServiceNameTPSendNonTPCONVService(), sendbuf, 0);
+            fail("Received a rcvbuf: " + rcvbuf);
+        } catch (ConnectionException e) {
+            assertTrue(e.getTperrno() == Connection.TPESVCERR);
+        }
+    }
 }

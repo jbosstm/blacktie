@@ -29,30 +29,27 @@ import org.jboss.narayana.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.X_OCTET;
 
 public class AbstractBlacktieServiceTestCase extends TestCase {
-	private static final Logger log = LogManager
-			.getLogger(AbstractBlacktieServiceTestCase.class);
-	private Connection connection;
+    private static final Logger log = LogManager.getLogger(AbstractBlacktieServiceTestCase.class);
+    private Connection connection;
 
-	public void setUp() throws ConnectionException, ConfigurationException {
-		log.info("AbstractBlacktieServiceTestCase::setUp");
-		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory();
-		connection = connectionFactory.getConnection();
-	}
+    public void setUp() throws ConnectionException, ConfigurationException {
+        log.info("AbstractBlacktieServiceTestCase::setUp");
+        ConnectionFactory connectionFactory = ConnectionFactory.getConnectionFactory();
+        connection = connectionFactory.getConnection();
+    }
 
-	public void tearDown() throws ConnectionException, ConfigurationException {
-		log.info("AbstractBlacktieServiceTestCase::tearDown");
-		connection.close();
-	}
+    public void tearDown() throws ConnectionException, ConfigurationException {
+        log.info("AbstractBlacktieServiceTestCase::tearDown");
+        connection.close();
+    }
 
-	public void test() throws ConnectionException {
-		log.info("AbstractBlacktieServiceTestCase::test");
-		X_OCTET buffer = (X_OCTET) connection.tpalloc("X_OCTET", null, 4);
-		buffer.setByteArray("echo".getBytes());
+    public void test() throws ConnectionException, ConfigurationException {
+        log.info("AbstractBlacktieServiceTestCase::test");
+        X_OCTET buffer = (X_OCTET) connection.tpalloc("X_OCTET", null, 4);
+        buffer.setByteArray("echo".getBytes());
 
-		Response response = connection.tpcall("EchoService", buffer, 0);
-		String responseData = new String(
-				((X_OCTET) response.getBuffer()).getByteArray());
-		assertEquals("echo", responseData);
-	}
+        Response response = connection.tpcall("EchoService", buffer, 0);
+        String responseData = new String(((X_OCTET) response.getBuffer()).getByteArray());
+        assertEquals("echo", responseData);
+    }
 }

@@ -23,74 +23,66 @@ import org.jboss.narayana.blacktie.jatmibroker.jab.JABTransaction;
 import org.jboss.narayana.blacktie.jatmibroker.jab.TransactionException;
 
 /**
- * The JABTransaction provides the programmer access to the underlying
- * transaction object it can be committed or rolled back at most once.
+ * The JABTransaction provides the programmer access to the underlying transaction object it can be committed or rolled back at
+ * most once.
  * 
  * @see JABConnection
  */
 public class Transaction {
 
-	/**
-	 * The connection that created the transaction, the transaction must be
-	 * disassociated from the connection upon completion
-	 */
-	private JABConnection connection;
+    /**
+     * The connection that created the transaction, the transaction must be disassociated from the connection upon completion
+     */
+    private JABConnection connection;
 
-	/**
-	 * The real transaction wrapper
-	 */
-	private JABTransaction jabTransaction;
+    /**
+     * The real transaction wrapper
+     */
+    private JABTransaction jabTransaction;
 
-	/**
-	 * The constructor is hidden from the programmer as it should be created
-	 * using the factory method beginTransaction of JABConnection
-	 * 
-	 * @param connection
-	 *            The connection that initialised this transaction
-	 * @param timeout
-	 *            The timeout for the transaction
-	 * @throws JABException
-	 *             In case the transaction cannot be created
-	 */
-	Transaction(JABConnection connection, JABSession session, int timeout)
-			throws TransactionException {
-		this.connection = connection;
-		try {
-			this.jabTransaction = new JABTransaction(session, timeout);
-		} catch (Throwable e) {
-			throw new TransactionException("Could not create the transaction: "
-					+ e.getMessage(), e);
-		}
-	}
+    /**
+     * The constructor is hidden from the programmer as it should be created using the factory method beginTransaction of
+     * JABConnection
+     * 
+     * @param connection The connection that initialised this transaction
+     * @param timeout The timeout for the transaction
+     * @throws JABException In case the transaction cannot be created
+     */
+    Transaction(JABConnection connection, JABSession session, int timeout) throws TransactionException {
+        this.connection = connection;
+        try {
+            this.jabTransaction = new JABTransaction(session, timeout);
+        } catch (Throwable e) {
+            throw new TransactionException("Could not create the transaction: " + e.getMessage(), e);
+        }
+    }
 
-	/**
-	 * Commit the work performed within the scope of this transaction
-	 * 
-	 * @throws JABException
-	 *             In case the transaction cannot be committed
-	 */
-	public synchronized void commit() throws TransactionException {
-		jabTransaction.commit();
-		connection.removeTransaction(this);
-	}
+    /**
+     * Commit the work performed within the scope of this transaction
+     * 
+     * @throws JABException In case the transaction cannot be committed
+     */
+    public synchronized void commit() throws TransactionException {
+        jabTransaction.commit();
+        connection.removeTransaction(this);
+    }
 
-	/**
-	 * Discard the work associated with this transaction
-	 * 
-	 * @throws JABException
-	 *             In case the transaction cannot be rolled back successfully
-	 */
-	public synchronized void rollback() throws TransactionException {
-		jabTransaction.rollback();
-		connection.removeTransaction(this);
-	}
+    /**
+     * Discard the work associated with this transaction
+     * 
+     * @throws JABException In case the transaction cannot be rolled back successfully
+     */
+    public synchronized void rollback() throws TransactionException {
+        jabTransaction.rollback();
+        connection.removeTransaction(this);
+    }
 
-	/**
-	 * Get the transaction wrapper
-	 * 
-	 * @return The transaction wrapper
-	 */
-	JABTransaction getJABTransaction() {
-		return jabTransaction;
-	}
+    /**
+     * Get the transaction wrapper
+     * 
+     * @return The transaction wrapper
+     */
+    JABTransaction getJABTransaction() {
+        return jabTransaction;
+    }
 }

@@ -17,24 +17,24 @@
  */
 package org.codehaus.stomp.jms;
 
+import java.io.IOException;
+import java.util.Map;
+
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageListener;
+import javax.naming.NamingException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.stomp.ProtocolException;
 import org.codehaus.stomp.Stomp;
 import org.codehaus.stomp.StompFrame;
 
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageListener;
-import javax.jms.Session;
-import javax.jms.Topic;
-import java.util.Map;
-
 /**
  * Represents an individual Stomp subscription
- *
+ * 
  * @version $Revision: 50 $
  */
 public class StompSubscription implements MessageListener {
@@ -43,39 +43,16 @@ public class StompSubscription implements MessageListener {
     private static final transient Log log = LogFactory.getLog(StompSubscription.class);
     private final StompSession session;
     private final String subscriptionId;
-    private Destination destination;
     private MessageConsumer consumer;
-    private String destinationName;
+    private Map<String, Object> headers;
 
-    public StompSubscription(StompSession session, String subscriptionId, StompFrame frame) throws JMSException, ProtocolException {
+    public StompSubscription(StompSession session, String subscriptionId, StompFrame frame) throws JMSException,
+            ProtocolException, NamingException {
         this.subscriptionId = subscriptionId;
         this.session = session;
-
-        Map headers = frame.getHeaders();
-        String selector = (String) headers.remove(Stomp.Headers.Subscribe.SELECTOR);
-        destinationName = (String) headers.get(Stomp.Headers.Subscribe.DESTINATION);
-        destination = session.convertDestination(destinationName, true);
-        Session jmsSession = session.getSession();
-        boolean noLocal = false;
-
-        if (destination instanceof Topic) {
-            String value = (String) headers.get(Stomp.Headers.Subscribe.NO_LOCAL);
-            if (value != null && "true".equalsIgnoreCase(value)) {
-                noLocal = true;
-            }
-
-            String subscriberName = (String) headers.get(Stomp.Headers.Subscribe.DURABLE_SUBSCRIPTION_NAME);
-            if (subscriberName != null) {
-                consumer = jmsSession.createDurableSubscriber((Topic) destination, subscriberName, selector, noLocal);
-            }
-            else {
-                consumer = jmsSession.createConsumer(destination, selector, noLocal);
-            }
-        }
-        else {
-            consumer = jmsSession.createConsumer(destination, selector);
-        }
-        consumer.setMessageListener(this);
+        this.headers = frame.getHeaders();
+        this.consumer = session.createConsumer(headers);
+        this.consumer.setMessageListener(this);
     }
 
     public void close() throws JMSException {
@@ -83,30 +60,50 @@ public class StompSubscription implements MessageListener {
     }
 
     public void onMessage(Message message) {
-    	log.debug("onMessage:" + destinationName);
+        String destinationName = (String) headers.get(Stomp.Headers.Subscribe.DESTINATION);
         try {
-            int ackMode = session.getSession().getAcknowledgeMode();
-			if (ackMode == Session.CLIENT_ACKNOWLEDGE) {
-				synchronized (consumer) {
-					boolean closing = session.getProtocolConverter()
-							.addMessageToAck(message, consumer);
-					if (!closing) {
-						session.sendToStomp(message, this);
-						consumer.wait();
-					}
-				}
-			}
+            log.debug("received: " + destinationName + " for: " + message.getObjectProperty("messagereplyto"));
+        } catch (JMSException e) {
+            log.warn("received: " + destinationName + " with trouble getting the messagereplyto");
         }
-        catch (Exception e) {
-            log.error("Failed to process message due to: " + e + ". Message: " + message, e);
+        if (message != null) {
+            log.debug("Locking session to send a message");
+            // Lock the session so that the connection cannot be started before the acknowledge is done
+            synchronized (session) {
+                // Stop the session before sending the message
+                try {
+                    session.stop();
+                } catch (JMSException e) {
+                    log.fatal("Could not stop the connection: " + e, e);
+                }
+                // Send the message to the server
+                log.debug("Sending message: " + session);
+                try {
+                    session.sendToStomp(message, subscriptionId);
+                    // Acknowledge the message for this connection as we know the server has received it now
+                    try {
+                        log.debug("Acking message: " + session);
+                        message.acknowledge();
+                        log.debug("Acked message: " + session);
+                    } catch (JMSException e) {
+                        log.error("Could not acknowledge the message: " + e, e);
+                    }
+                } catch (IOException e) {
+                    log.warn("Could not send to stomp: " + e, e);
+                    try {
+                        session.recover();
+                    } catch (JMSException e1) {
+                        log.fatal("Could not recover the session, possible lost message: " + e, e);
+                    }
+                } catch (JMSException e) {
+                    log.warn("Could not convert message to send to stomp: " + e, e);
+                    try {
+                        session.recover();
+                    } catch (JMSException e1) {
+                        log.fatal("Could not recover the session, possible lost message: " + e, e);
+                    }
+                }
+            }
         }
-    }
-
-    public String getSubscriptionId() {
-        return subscriptionId;
-    }
-
-    public Destination getDestination() {
-        return destination;
     }
 }
