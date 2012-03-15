@@ -121,7 +121,7 @@ public class StompManagement {
         String toReturn = null;
         char[] read = new char[0];
         char c = (char) inputStream.read();
-        while (!(c == '\n') && c != '\000') {
+        while (c != '\n' && c != '\000' && c != -1) {
             char[] tmp = new char[read.length + 1];
             System.arraycopy(read, 0, tmp, 0, read.length);
             tmp[read.length] = c;
