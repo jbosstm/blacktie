@@ -27,7 +27,7 @@
 extern "C" {
 #endif
 extern void test_tpcall_TPETIME_service(TPSVCINFO *svcinfo) {
-	::sleeper(10);
+	::sleeper(16);
 
 	int len = 60;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
