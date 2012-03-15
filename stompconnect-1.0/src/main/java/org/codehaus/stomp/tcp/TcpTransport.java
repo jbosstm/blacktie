@@ -112,19 +112,18 @@ public class TcpTransport extends ServiceSupport implements Runnable {
                 StompFrame frame = marshaller.unmarshal(dataIn);
                 log.debug("Sending stomp frame");
                 inputHandler.onStompFrame(frame);
-            } catch (SocketTimeoutException e) {
-            } catch (InterruptedIOException e) {
-            } catch (IOException e) {
-                log.fatal("Caught an exception: " + e.getMessage(), e);
+            } catch (Throwable e) {
+                // no need to log EOF exceptions
+                if (e instanceof EOFException) {
+                    // Should only happen when a sender disconnects
+                    log.debug("Caught an EOFException: " + e.getMessage(), e);
+                } else {
+                    log.fatal("Caught an exception: " + e.getMessage(), e);
+                }
                 try {
                     stop();
                 } catch (Exception e2) {
                     log.warn("Caught while closing: " + e2 + ". Now Closed", e2);
-                }
-
-                // no need to log EOF exceptions
-                if (!(e instanceof EOFException)) {
-                    inputHandler.onException(e);
                 }
             }
         }

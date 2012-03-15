@@ -210,10 +210,6 @@ public class ProtocolConverter {
         }
     }
 
-    public void onException(Exception e) {
-        log.error("Caught: " + e, e);
-    }
-
     // Implemenation methods
     // -------------------------------------------------------------------------
     protected void onStompConnect(StompFrame command) throws IOException, JMSException {
