@@ -131,6 +131,8 @@ public class StompReceiverImpl implements Receiver {
         try {
             log.debug("closing socket: " + socket);
             StompManagement.close(outputStream);
+            inputStream.close();
+            log.debug("closed input stream: " + inputStream);
             socket.close();
             log.debug("closed socket: " + socket);
             closed = true;

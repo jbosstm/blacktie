@@ -121,6 +121,8 @@ public class ServiceDispatcher extends BlackTieService implements Runnable {
 
         synchronized (closeLock) {
             try {
+                // Stop the receive
+                thread.interrupt();
                 log.trace("Joining");
                 if (!closed) {
                     closeLock.wait();
