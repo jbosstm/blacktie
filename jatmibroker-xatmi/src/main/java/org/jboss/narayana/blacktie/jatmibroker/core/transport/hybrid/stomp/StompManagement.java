@@ -1,5 +1,6 @@
 package org.jboss.narayana.blacktie.jatmibroker.core.transport.hybrid.stomp;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -127,6 +128,9 @@ public class StompManagement {
             tmp[read.length] = c;
             read = tmp;
             c = (char) inputStream.read();
+        }
+        if (c == -1) {
+            throw new EOFException("Read the end of the stream");
         }
         if (c == '\000') {
             log.trace("returning null");
