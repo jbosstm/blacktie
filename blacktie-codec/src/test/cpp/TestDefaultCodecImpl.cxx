@@ -46,7 +46,7 @@ void TestDefaultCodecImpl::test() {
 	CodecFactory factory;
 	Codec* codec = factory.getCodec(NULL);
 	DEPOSIT* deposit = (DEPOSIT*) malloc(sizeof(DEPOSIT));
-	deposit->acct_no = 1234567889;
+	deposit->acct_no = 0x0123456789abcdef;
 	deposit->amount = 100;
 	deposit->balance = 20;
 	strcpy(
