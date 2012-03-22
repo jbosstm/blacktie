@@ -125,7 +125,7 @@ void TestTxTPCall::test_timeout_with_tx() {
 	char* commitS = (char*) malloc(110);
 	int commit = tx_commit();
 	sprintf(commitS, "%d", commit);
-	BT_ASSERT_MESSAGE(commitS, commit == TX_ROLLBACK);
+	BT_ASSERT_MESSAGE(commitS, commit == TX_ROLLBACK || commit == TX_FAIL); // BLACKTIE-323, as the transaction is gc'd on the server we may get an OBJECT_NOT_EXIST
 	free(commitS);
 }
 
