@@ -71,7 +71,6 @@ private:
 	char* fullName;
 	bool transactional;
 	bool _connected;
-	bool requiresDisconnect;
 	int unackedMessages;
 	CodecFactory factory;
 	Codec* codec;

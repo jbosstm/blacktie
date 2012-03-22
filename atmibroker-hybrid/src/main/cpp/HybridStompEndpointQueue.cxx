@@ -36,7 +36,6 @@ HybridStompEndpointQueue::HybridStompEndpointQueue(apr_pool_t* pool,
 	this->receipt = NULL;
 	_connected = false;
 	shutdown = false;
-	requiresDisconnect = false;
 	shutdownLock = new SynchronizableObject();
 	LOG4CXX_DEBUG(logger, "Created lock: " << shutdownLock);
 	readLock = new SynchronizableObject();
@@ -333,72 +332,62 @@ void HybridStompEndpointQueue::disconnect() {
 		if (this->_connected) {
 			this->_connected = false;
 			// This will only disconnect after the last message is consumed
-			requiresDisconnect = true;
-			disconnectImpl();
+        	while (unackedMessages != 0) {
+                shutdownLock->wait(0);
+            }
+    		stomp_frame frame;
+    		frame.command = (char*) "DISCONNECT";
+    		frame.headers = NULL;
+    		frame.body_length = -1;
+    		frame.body = NULL;
+    		LOG4CXX_TRACE(logger, (char*) "Sending DISCONNECT" << connection
+    				<< "pool" << pool);
+    		apr_status_t rc = stomp_write(connection, &frame, pool);
+    		LOG4CXX_TRACE(logger, (char*) "Sent DISCONNECT");
+    		if (rc != APR_SUCCESS) {
+    			LOG4CXX_ERROR(logger, "Could not send frame");
+    			char errbuf[256];
+    			apr_strerror(rc, errbuf, sizeof(errbuf));
+    			LOG4CXX_ERROR(logger, (char*) "APR Error was: " << rc << ": "
+    					<< errbuf);
+    			//			free(errbuf);
+    		}
+
+    		// Disconnect existing receivers
+		    rc = apr_socket_shutdown(connection->socket, APR_SHUTDOWN_WRITE);
+    		LOG4CXX_TRACE(logger, (char*) "Sent SHUTDOWN");
+    		if (rc != APR_SUCCESS) {
+    			LOG4CXX_ERROR(logger, "Could not send SHUTDOWN");
+    			char errbuf[256];
+    			apr_strerror(rc, errbuf, sizeof(errbuf));
+    			LOG4CXX_ERROR(logger, (char*) "APR Error was: " << rc << ": "
+	    				<< errbuf);
+    			//			free(errbuf);
+    		}
+
+    		LOG4CXX_TRACE(logger, (char*) "readLock: " << name);
+    		readLock->lock();
+    		LOG4CXX_TRACE(logger, (char*) "readLocked: " << name);
+    		LOG4CXX_DEBUG(logger, "Disconnecting...");
+    		rc = stomp_disconnect(&connection);
+	    	if (rc != APR_SUCCESS) {
+	    		LOG4CXX_ERROR(logger, "Could not disconnect");
+	    		char errbuf[256];
+	    		apr_strerror(rc, errbuf, sizeof(errbuf));
+	    		LOG4CXX_ERROR(logger, (char*) "APR Error was: " << rc << ": "
+	    				<< errbuf);
+	    		//			free(errbuf);
+	    	} else {
+	    		LOG4CXX_DEBUG(logger, "Disconnected");
+	    	}
+	    	LOG4CXX_TRACE(logger, (char*) "readUnlock: " << name);
+	    	readLock->unlock();
+	    	LOG4CXX_TRACE(logger, (char*) "readUnlocked: " << name);
 		}
 	}
 	LOG4CXX_TRACE(logger, (char*) "shutdownUnlock: " << name);
 	shutdownLock->unlock();
 	LOG4CXX_TRACE(logger, (char*) "shutdownUnlocked: " << name);
-	LOG4CXX_DEBUG(logger, (char*) "disconnected: " << name);
-}
-
-void HybridStompEndpointQueue::disconnectImpl() {
-	LOG4CXX_DEBUG(logger, (char*) "disconnecting: " << name);
-	//	shutdownLock NOT REQUIRED AS WE SHOULD ALWAYS HAVE THE LOCK
-	shutdownLock->lock();
-	if (requiresDisconnect && unackedMessages == 0) {
-		stomp_frame frame;
-		frame.command = (char*) "DISCONNECT";
-		frame.headers = NULL;
-		frame.body_length = -1;
-		frame.body = NULL;
-		LOG4CXX_TRACE(logger, (char*) "Sending DISCONNECT" << connection
-				<< "pool" << pool);
-		apr_status_t rc = stomp_write(connection, &frame, pool);
-		LOG4CXX_TRACE(logger, (char*) "Sent DISCONNECT");
-		if (rc != APR_SUCCESS) {
-			LOG4CXX_ERROR(logger, "Could not send frame");
-			char errbuf[256];
-			apr_strerror(rc, errbuf, sizeof(errbuf));
-			LOG4CXX_ERROR(logger, (char*) "APR Error was: " << rc << ": "
-					<< errbuf);
-			//			free(errbuf);
-		}
-
-		// Disconnect existing receivers
-		rc = apr_socket_shutdown(connection->socket, APR_SHUTDOWN_WRITE);
-		LOG4CXX_TRACE(logger, (char*) "Sent SHUTDOWN");
-		if (rc != APR_SUCCESS) {
-			LOG4CXX_ERROR(logger, "Could not send SHUTDOWN");
-			char errbuf[256];
-			apr_strerror(rc, errbuf, sizeof(errbuf));
-			LOG4CXX_ERROR(logger, (char*) "APR Error was: " << rc << ": "
-					<< errbuf);
-			//			free(errbuf);
-		}
-
-		LOG4CXX_TRACE(logger, (char*) "readLock: " << name);
-		readLock->lock();
-		LOG4CXX_TRACE(logger, (char*) "readLocked: " << name);
-		LOG4CXX_DEBUG(logger, "Disconnecting...");
-		rc = stomp_disconnect(&connection);
-		if (rc != APR_SUCCESS) {
-			LOG4CXX_ERROR(logger, "Could not disconnect");
-			char errbuf[256];
-			apr_strerror(rc, errbuf, sizeof(errbuf));
-			LOG4CXX_ERROR(logger, (char*) "APR Error was: " << rc << ": "
-					<< errbuf);
-			//			free(errbuf);
-		} else {
-			LOG4CXX_DEBUG(logger, "Disconnected");
-		}
-		LOG4CXX_TRACE(logger, (char*) "readUnlock: " << name);
-		readLock->unlock();
-		LOG4CXX_TRACE(logger, (char*) "readUnlocked: " << name);
-		requiresDisconnect = false;
-	}
-	shutdownLock->unlock();
 	LOG4CXX_DEBUG(logger, (char*) "disconnected: " << name);
 }
 
@@ -549,7 +538,7 @@ void HybridStompEndpointQueue::ack(MESSAGE message) {
 	}
 	unackedMessages--;
 	// This will clean up the queue if we require the disconnect
-	disconnectImpl();
+	shutdownLock->notify();
 	LOG4CXX_TRACE(logger, (char*) "shutdownUnlock: " << name);
 	shutdownLock->unlock();
 	LOG4CXX_TRACE(logger, (char*) "shutdownUnlocked: " << name);
