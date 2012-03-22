@@ -51,7 +51,7 @@ if [ "$?" != "0" ]; then
 fi
 
 # INITIALIZE THE BLACKTIE DISTRIBUTION
-ant -f $WORKSPACE/scripts/test/build.xml dist -DBT_HOME=$WORKSPACE/dist/ -DVERSION=blacktie-5.0.0.M2-SNAPSHOT -DMACHINE_ADDR=`hostname` -DJBOSSAS_IP_ADDR=$JBOSSAS_IP_ADDR -Dbpa=centos54x64
+ant -f $WORKSPACE/scripts/test/build.xml dist -DBT_HOME=$WORKSPACE/dist/ -DVERSION=blacktie-5.0.0.M2-SNAPSHOT -DMACHINE_ADDR=`hostname` -DJBOSSAS_IP_ADDR=$JBOSSAS_IP_ADDR
 if [ "$?" != "0" ]; then
 	ps -f
 	for i in `ps -eaf | grep java | grep "standalone-full.xml" | grep -v grep | cut -c10-15`; do kill -9 $i; done
@@ -77,15 +77,9 @@ if [ "$?" != "0" ]; then
   ps -f
 	exit -1
 fi
-export ORACLE_HOME=/usr/lib/oracle/11.2/client64
-export ORACLE_LIB_DIR=/usr/lib/oracle/11.2/client64/lib
-export ORACLE_INC_DIR=/usr/include/oracle/11.2/client64
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_LIB_DIR
-export TNS_ADMIN=$WORKSPACE/instantclient_11_2/network/admin
 
-export DB2DIR=/opt/ibm/db2/V9.7
-export DB2_LIB=$DB2DIR/lib64
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DB2_LIB
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_LIB_DIR
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DB2_LIB_DIR
 
 export PATH=$PATH:$WORKSPACE/tools/maven/bin
 

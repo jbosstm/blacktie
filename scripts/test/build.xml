@@ -9,8 +9,8 @@
 	</target>
 
 	<target name="_extract-gcc" depends="init" unless="is-msvc">
-		<exec executable="tar">
-			<arg line="xfz ../../blacktie/target/${VERSION}-${bpa}-bin.tar.gz -C ${BT_HOME}"/>
+		<exec executable="sh">
+			<arg line="-c &quot;tar xfz ../../blacktie/target/${VERSION}-*-bin.tar.gz -C ${BT_HOME}&quot;"/>
 		</exec>
 		<property name="ESC_BT_HOME" value="${BT_HOME}/"/>
 	</target>
