@@ -33,14 +33,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.stomp.tcp.TcpTransport;
 import org.codehaus.stomp.tcp.TcpTransportServer;
-import org.codehaus.stomp.util.ServiceSupport;
 
 /**
  * This class represents a service which accepts STOMP socket connections and binds them to JMS operations
  * 
  * @version $Revision: 53 $
  */
-public class StompConnect extends ServiceSupport {
+public class StompConnect {
     private static final transient Log log = LogFactory.getLog(StompConnect.class);
 
     private ConnectionFactory connectionFactory;
@@ -135,7 +134,7 @@ public class StompConnect extends ServiceSupport {
 
     public TcpTransportServer getTcpServer() throws IOException, URISyntaxException {
         if (tcpServer == null) {
-            tcpServer = createTcpServer();
+            tcpServer = new TcpTransportServer(this, getLocation(), getServerSocketFactory());
         }
         return tcpServer;
     }
@@ -176,19 +175,13 @@ public class StompConnect extends ServiceSupport {
         this.connectionFactoryName = jndiName;
     }
 
-    // Implementation methods
-    // -------------------------------------------------------------------------
-    protected void doStart() throws IOException, URISyntaxException, IllegalArgumentException, IllegalAccessException,
+    public void start() throws IOException, URISyntaxException, IllegalArgumentException, IllegalAccessException,
             InvocationTargetException {
         getTcpServer().start();
     }
 
-    protected void doStop() throws InterruptedException, IOException, JMSException, URISyntaxException {
+    public void stop() throws InterruptedException, IOException, JMSException, URISyntaxException {
         getTcpServer().stop();
-    }
-
-    protected TcpTransportServer createTcpServer() throws IOException, URISyntaxException {
-        return new TcpTransportServer(this, getLocation(), getServerSocketFactory());
     }
 
     /**

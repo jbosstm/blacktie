@@ -28,6 +28,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.jms.JMSException;
 import javax.net.SocketFactory;
@@ -39,28 +40,24 @@ import org.codehaus.stomp.Stomp;
 import org.codehaus.stomp.StompFrame;
 import org.codehaus.stomp.StompMarshaller;
 import org.codehaus.stomp.jms.ProtocolConverter;
-import org.codehaus.stomp.util.ServiceSupport;
 
 /**
  * @version $Revision: 65 $
  */
-public class TcpTransport extends ServiceSupport implements Runnable {
+public class TcpTransport implements Runnable {
     private static final Log log = LogFactory.getLog(TcpTransport.class);
     private StompMarshaller marshaller = new StompMarshaller();
     private ProtocolConverter inputHandler;
     private final URI remoteLocation;
     private final URI localLocation;
     private int connectionTimeout = 30000;
-    private int soTimeout = 0;
-    private int socketBufferSize = 64 * 1024;
     private Socket socket;
     private DataOutputStream dataOut;
     private DataInputStream dataIn;
     private SocketFactory socketFactory;
-    private Boolean keepAlive;
-    private Boolean tcpNoDelay;
-    private boolean daemon = false;
     private Thread runner;
+    private AtomicBoolean started = new AtomicBoolean(false);
+    private AtomicBoolean stopped = new AtomicBoolean(false);
 
     /**
      * Initialize from a server Socket
@@ -69,7 +66,6 @@ public class TcpTransport extends ServiceSupport implements Runnable {
         this.socket = socket;
         this.remoteLocation = null;
         this.localLocation = null;
-        this.daemon = true;
     }
 
     /**
@@ -79,7 +75,10 @@ public class TcpTransport extends ServiceSupport implements Runnable {
      * @throws IOException
      */
     public void onStompFrame(StompFrame command) throws IOException {
-        checkStarted();
+
+        if (!started.get() || stopped.get()) {
+            throw new ProtocolException("The transport is not running.");
+        }
         marshaller.marshal(command, dataOut);
         dataOut.flush();
     }
@@ -96,7 +95,7 @@ public class TcpTransport extends ServiceSupport implements Runnable {
      */
     public void run() {
         log.trace("StompConnect TCP consumer thread starting");
-        while (!isStopped()) {
+        while (!stopped.get()) {
             try {
                 StompFrame frame = marshaller.unmarshal(dataIn);
                 log.debug("Sending stomp frame");
@@ -111,7 +110,7 @@ public class TcpTransport extends ServiceSupport implements Runnable {
             } catch (Throwable e) {
                 // no need to log EOF exceptions
                 if (e instanceof EOFException) {
-                    // Should only happen when a sender disconnects
+                    // Happens when the remote side disconnects
                     log.debug("Caught an EOFException: " + e.getMessage(), e);
                 } else {
                     log.fatal("Caught an exception: " + e.getMessage(), e);
@@ -129,43 +128,33 @@ public class TcpTransport extends ServiceSupport implements Runnable {
         this.inputHandler = protocolConverter;
     }
 
-    // /**
-    // * Configures the socket for use
-    // *
-    // * @param sock
-    // * @throws SocketException
-    // * @throws URISyntaxException
-    // * @throws InvocationTargetException
-    // * @throws IllegalAccessException
-    // * @throws IllegalArgumentException
-    // */
-    // protected void initialiseSocket(Socket sock) throws SocketException, IllegalArgumentException, IllegalAccessException,
-    // InvocationTargetException, URISyntaxException {
-    //
-    // // try {
-    // // sock.setReceiveBufferSize(socketBufferSize);
-    // // sock.setSendBufferSize(socketBufferSize);
-    // // } catch (SocketException se) {
-    // // log.warn("Cannot set socket buffer size = " + socketBufferSize);
-    // // log.debug("Cannot set socket buffer size. Reason: " + se, se);
-    // // }
-    // // sock.setSoTimeout(soTimeout);
-    // //
-    // // if (keepAlive != null) {
-    // // sock.setKeepAlive(keepAlive.booleanValue());
-    // // }
-    // // if (tcpNoDelay != null) {
-    // // sock.setTcpNoDelay(tcpNoDelay.booleanValue());
-    // // }
-    // }
+    public void start() throws IOException, URISyntaxException, IllegalArgumentException, IllegalAccessException,
+            InvocationTargetException {
+        if (started.compareAndSet(false, true)) {
+            connect();
 
-    protected void doStart() throws IOException, IllegalArgumentException, IllegalAccessException, InvocationTargetException,
-            URISyntaxException {
-        connect();
+            runner = new Thread(this, "StompConnect Transport: " + toString());
+            runner.setDaemon(true);
+            runner.start();
+        }
+    }
 
-        runner = new Thread(this, "StompConnect Transport: " + toString());
-        runner.setDaemon(daemon);
-        runner.start();
+    public void stop() throws InterruptedException, IOException, JMSException, URISyntaxException {
+        if (stopped.compareAndSet(false, true)) {
+            try {
+                if (log.isDebugEnabled()) {
+                    log.debug("Stopping transport " + this);
+                }
+                if (inputHandler != null) {
+                    inputHandler.close();
+                }
+
+                socket.close();
+            } finally {
+                stopped.set(true);
+                started.set(false);
+            }
+        }
     }
 
     protected void connect() throws IOException, IllegalArgumentException, IllegalAccessException, InvocationTargetException,
@@ -213,48 +202,9 @@ public class TcpTransport extends ServiceSupport implements Runnable {
             }
         }
 
-        // initialiseSocket(socket);
-        initializeStreams();
-    }
-
-    protected void doStop() throws InterruptedException, IOException, JMSException, URISyntaxException {
-        if (log.isDebugEnabled()) {
-            log.debug("Stopping transport " + this);
-        }
-        if (inputHandler != null) {
-            inputHandler.close();
-        }
-
-        dataOut.flush();
-        socket.shutdownOutput();
-        socket.shutdownInput();
-        // Closing the streams flush the sockets before closing.. if the socket
-        // is hung.. then this hangs the close.
-        // closeStreams();
-        // if (socket != null) {
-        // socket.close();
-        // }
-    }
-
-    protected void checkStarted() throws ProtocolException {
-        if (!isStarted()) {
-            throw new ProtocolException("The transport is not running.");
-        }
-    }
-
-    protected void initializeStreams() throws IOException {
         // TcpBufferedInputStream buffIn = new TcpBufferedInputStream(socket.getInputStream(), ioBufferSize);
         this.dataIn = new DataInputStream(socket.getInputStream());// new DataInputStream(buffIn);
         // TcpBufferedOutputStream buffOut = new TcpBufferedOutputStream(socket.getOutputStream(), ioBufferSize);
         this.dataOut = new DataOutputStream(socket.getOutputStream());// new DataOutputStream(buffOut);
-    }
-
-    protected void closeStreams() throws IOException {
-        if (dataOut != null) {
-            dataOut.close();
-        }
-        if (dataIn != null) {
-            dataIn.close();
-        }
     }
 }

@@ -265,7 +265,6 @@ public class ProtocolConverter {
         checkConnected();
         close();
         sendResponse(command);
-        tcpTransport.stop();
     }
 
     protected void onStompSend(StompFrame command) throws IllegalStateException, SystemException, JMSException,
