@@ -118,7 +118,7 @@ public class AdministrationTest extends TestCase {
         callAdmin("advertise,BAR,", '1');
 
         try {
-            log.info("call BAR should time out after 20 second");
+            log.info("call BAR should time out after 50 second");
             callBAR();
         } catch (ConnectionException e) {
             assertTrue("Error was: " + e.getTperrno(), e.getTperrno() == Connection.TPETIME);

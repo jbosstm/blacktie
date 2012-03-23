@@ -68,8 +68,11 @@ public class StompSenderImpl implements Sender {
         log.debug("Sender Created: " + destinationName);
     }
 
-    public void send(Object replyTo, short rval, int rcode, byte[] data, int len, int correlationId, int flags, int ttl,
-            String type, String subtype) throws ConnectionException {
+    /**
+     * Don't want send and close at the same time
+     */
+    public synchronized void send(Object replyTo, short rval, int rcode, byte[] data, int len, int correlationId, int flags,
+            int ttl, String type, String subtype) throws ConnectionException {
         if (closed) {
             throw new ConnectionException(Connection.TPEPROTO, "Sender closed");
         }
@@ -132,7 +135,7 @@ public class StompSenderImpl implements Sender {
         Message ack;
         try {
             StompManagement.send(message, this.outputStream);
-            ack = StompManagement.receive(this.inputStream);
+            ack = StompManagement.receive(socket, this.inputStream);
         } catch (IOException e) {
             throw new ConnectionException(Connection.TPEOS, e.getMessage());
         }
@@ -143,7 +146,10 @@ public class StompSenderImpl implements Sender {
         log.debug("sent message");
     }
 
-    public void close() throws ConnectionException {
+    /**
+     * Don't want send and close at the same time
+     */
+    public synchronized void close() throws ConnectionException {
         log.debug("Sender closing: " + destinationName);
         if (closed) {
             throw new ConnectionException(Connection.TPEPROTO, "Sender already closed");
@@ -151,7 +157,7 @@ public class StompSenderImpl implements Sender {
         closed = true;
         try {
             log.debug("closing socket: " + socket);
-            StompManagement.close(outputStream);
+            StompManagement.close(socket, outputStream, inputStream);
             socket.close();
             log.debug("closed socket: " + socket);
             conversationalMap.remove(serviceName);

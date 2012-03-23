@@ -264,6 +264,7 @@ public class ProtocolConverter {
             URISyntaxException {
         checkConnected();
         close();
+        sendResponse(command);
         tcpTransport.stop();
     }
 

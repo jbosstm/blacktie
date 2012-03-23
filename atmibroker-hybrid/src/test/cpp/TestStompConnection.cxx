@@ -55,8 +55,8 @@ void TestStompConnection::testLibStomp() {
 			(char*) "JAVA_Converse", false, (char*) "queue");
 
 	// THIS IS THE INITIAL EXCHANCE
-	btlogger("Iterating");
-	for (int i = 0; i < 100; i++) {
+	btlogger("Iterating (takes about 16 seconds on toms machine)");
+	for (int i = 0; i < 50; i++) {
 		Session* client = clientConnection->createSession(false,
 				(char*) "JAVA_Converse");
 		MESSAGE clientSend;

@@ -200,7 +200,9 @@ void HybridConnectionImpl::disconnect(stomp_connection* connection,
 		LOG4CXX_DEBUG(logger, (char*) "HybridConnectionImpl::disconnect");
 		stomp_frame frame;
 		frame.command = (char*) "DISCONNECT";
-		frame.headers = NULL;
+		frame.headers = apr_hash_make(pool);
+		apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING,
+				"disconnect");
 		frame.body_length = -1;
 		frame.body = NULL;
 		LOG4CXX_TRACE(logger, (char*) "Sending DISCONNECT" << connection
@@ -215,6 +217,22 @@ void HybridConnectionImpl::disconnect(stomp_connection* connection,
 					<< errbuf);
 			//			free(errbuf);
 		}
+
+        stomp_frame *framed;
+		rc = stomp_read(connection, &framed, pool);
+        if (rc != APR_SUCCESS) {
+			LOG4CXX_ERROR(logger, "Could not read disconnect frame");
+			char errbuf[256];
+			apr_strerror(rc, errbuf, sizeof(errbuf));
+			LOG4CXX_ERROR(logger, (char*) "APR Error was: " << rc << ": "
+					<< errbuf);
+		} else if (strcmp(framed->command, (const char*) "RECEIPT") == 0) {
+			LOG4CXX_DEBUG(logger, (char*) "Received the receipt");
+        } else if (strcmp(framed->command, (const char*) "ERROR") == 0) {
+			LOG4CXX_WARN(logger, (char*) "Got an error: " << framed->body);
+		} else {
+			LOG4CXX_WARN(logger, (char*) "Got an error: " << framed->body);
+        }
 
 		LOG4CXX_DEBUG(logger, "Disconnecting...");
 		rc = stomp_disconnect(&connection);

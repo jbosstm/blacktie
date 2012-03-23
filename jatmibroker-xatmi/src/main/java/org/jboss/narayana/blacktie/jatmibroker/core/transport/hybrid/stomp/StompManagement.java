@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.LogManager;
@@ -20,13 +22,26 @@ import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
 public class StompManagement {
     private static final Logger log = LogManager.getLogger(StompManagement.class);
 
-    public static void close(OutputStream outputStream) throws IOException {
+    private static List<Socket> disconnectedConnections = new ArrayList<Socket>();
+
+    public static void close(Socket socket, OutputStream outputStream, InputStream inputStream) throws IOException {
         log.debug("close");
         Message message = new Message();
         message.setCommand("DISCONNECT");
-        message.setHeaders(new HashMap<String, String>());
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("receipt", "disconnect");
+        message.setHeaders(headers);
         send(message, outputStream);
         log.debug("Sent disconnect");
+        synchronized (socket) {
+            if (!disconnectedConnections.remove(socket)) {
+                Message received = receive(socket, inputStream);
+                if (received != null && received.getCommand().equals("ERROR")) {
+                    log.error("Did not receive the receipt for the disconnect:" + new String(received.getBody()));
+                }
+            }
+            disconnectedConnections.remove(socket);
+        }
     }
 
     public static Socket connect(String host, int port, String username, String password) throws IOException,
@@ -42,7 +57,7 @@ public class StompManagement {
         message.setCommand("CONNECT");
         message.setHeaders(headers);
         send(message, outputStream);
-        Message received = receive(inputStream);
+        Message received = receive(socket, inputStream);
         if (received.getCommand().equals("ERROR")) {
             throw new ConnectionException(Connection.TPESYSTEM, new String(received.getBody()));
         }
@@ -76,46 +91,70 @@ public class StompManagement {
         log.trace("Wrote on: " + outputStream);
     }
 
-    public static Message receive(InputStream inputStream) throws IOException {
-        log.trace("Reading from: " + inputStream);
-        Message message = new Message();
-        message.setCommand(readLine(inputStream));
-        log.trace(message.getCommand());
-        Map<String, String> headers = new HashMap<String, String>();
-        String header;
-        while ((header = readLine(inputStream)).length() > 0) {
-            int sep = header.indexOf(':');
-            String key = header.substring(0, sep);
-            String value = header.substring(sep + 1, header.length());
-            headers.put(key.trim(), value.trim());
-            log.trace("Header: " + key + ":" + value);
-        }
-        if (!message.getCommand().equals("ERROR")) {
-            message.setHeaders(headers);
-            String contentLength = headers.get("content-length");
-            if (contentLength != null) {
-                byte[] body = new byte[Integer.valueOf(contentLength)];
-                int offset = 0;
-                while (offset != body.length) {
-                    offset = inputStream.read(body, offset, body.length - offset);
+    public static Message receive(Socket socket, InputStream inputStream) throws IOException {
+        synchronized (socket) {
+            log.trace("Reading from: " + inputStream);
+            Message message = new Message();
+            message.setCommand(readLine(inputStream));
+            log.trace(message.getCommand());
+            Map<String, String> headers = new HashMap<String, String>();
+            String header;
+            while ((header = readLine(inputStream)).length() > 0) {
+                int sep = header.indexOf(':');
+                if (sep > 0) {
+                    String key = header.substring(0, sep);
+                    String value = header.substring(sep + 1, header.length());
+                    headers.put(key.trim(), value.trim());
+                    log.trace("Header: " + key + ":" + value);
                 }
-                message.setBody(body);
             }
-            readLine(inputStream);
-            readLine(inputStream);
-        } else {
-            message.setBody(headers.get("message").getBytes());
-            // Drain off the error message
-            String read = null;
-            do {
-                read = readLine(inputStream);
-                if (read != null)
-                    log.debug(read);
-            } while (read != null);
-            readLine(inputStream);
+            message.setHeaders(headers);
+
+            if (message.getCommand() != null) {
+                if (message.getCommand().equals("RECEIPT")) {
+                    if (message.getHeaders().get("receipt-id") != null
+                            && message.getHeaders().get("receipt-id").equals("disconnect")) {
+                        log.debug("Read disconnect receipt from: " + inputStream);
+                        disconnectedConnections.add(socket);
+                        message = null;
+                    } else {
+                        log.trace("Read from: " + inputStream + " command was: " + message.getCommand());
+                    }
+                    readLine(inputStream);
+                    readLine(inputStream);
+                } else if (!message.getCommand().equals("ERROR")) {
+                    String contentLength = headers.get("content-length");
+                    if (contentLength != null) {
+                        byte[] body = new byte[Integer.valueOf(contentLength)];
+                        int offset = 0;
+                        while (offset != body.length) {
+                            offset = inputStream.read(body, offset, body.length - offset);
+                        }
+                        message.setBody(body);
+                        log.trace("Read error: " + body);
+                    }
+                    readLine(inputStream);
+                    readLine(inputStream);
+                    log.trace("Read from: " + inputStream + " command was: " + message.getCommand());
+                } else {
+                    message.setBody(headers.get("message").getBytes());
+                    // Drain off the error message
+                    String read = null;
+                    do {
+                        read = readLine(inputStream);
+                        if (read != null)
+                            log.debug(read);
+                    } while (read != null);
+                    readLine(inputStream);
+                    log.trace("Read from: " + inputStream + " command was: " + message.getCommand());
+                }
+            } else {
+                log.trace("Read from: " + inputStream + " null");
+                message = null;
+            }
+
+            return message;
         }
-        log.trace("Read from: " + inputStream);
-        return message;
     }
 
     private static String readLine(InputStream inputStream) throws IOException {

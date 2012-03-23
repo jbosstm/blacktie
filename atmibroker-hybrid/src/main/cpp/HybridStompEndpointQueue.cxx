@@ -74,6 +74,7 @@ HybridStompEndpointQueue::HybridStompEndpointQueue(apr_pool_t* pool,
 	this->name = strdup(serviceName);
 	this->transactional = true;
 	this->unackedMessages = 0;
+    this->readDisconnected = false;
 }
 
 // ~EndpointQueue destructor.
@@ -169,7 +170,10 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 				} else if (strcmp(frame->command, (const char*) "RECEIPT") == 0) {
 					char * receipt = (char*) apr_hash_get(frame->headers,
 							"receipt-id", APR_HASH_KEY_STRING);
-					if (this->receipt == NULL || strcmp(this->receipt, receipt)
+					if (strcmp(receipt, "disconnect") == 0) {
+                        frame =  NULL;
+                        this->readDisconnected = true;
+                    } else if (this->receipt == NULL || strcmp(this->receipt, receipt)
 							!= 0) {
 						LOG4CXX_ERROR(logger,
 								(char*) "read an unexpected receipt for: "
@@ -337,7 +341,9 @@ void HybridStompEndpointQueue::disconnect() {
             }
     		stomp_frame frame;
     		frame.command = (char*) "DISCONNECT";
-    		frame.headers = NULL;
+			frame.headers = apr_hash_make(pool);
+			apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING,
+					"disconnect");
     		frame.body_length = -1;
     		frame.body = NULL;
     		LOG4CXX_TRACE(logger, (char*) "Sending DISCONNECT" << connection
@@ -353,6 +359,29 @@ void HybridStompEndpointQueue::disconnect() {
     			//			free(errbuf);
     		}
 
+    		LOG4CXX_TRACE(logger, (char*) "readLock: " << name);
+    		readLock->lock();
+    		LOG4CXX_TRACE(logger, (char*) "readLocked: " << name);
+
+            if (!readDisconnected) {
+            stomp_frame *framed;
+    		rc = stomp_read(connection, &framed, pool);
+            if (rc != APR_SUCCESS) {
+    			LOG4CXX_ERROR(logger, "Could not read disconnect frame");
+    			char errbuf[256];
+    			apr_strerror(rc, errbuf, sizeof(errbuf));
+    			LOG4CXX_ERROR(logger, (char*) "APR Error was: " << rc << ": "
+    					<< errbuf);
+    		} else if (strcmp(framed->command, (const char*) "RECEIPT") == 0) {
+    			LOG4CXX_DEBUG(logger, (char*) "Received the receipt");
+            } else if (strcmp(framed->command, (const char*) "ERROR") == 0) {
+    			LOG4CXX_WARN(logger, (char*) "Got an error: " << framed->body);
+    		} else {
+    			LOG4CXX_WARN(logger, (char*) "Got an error: " << framed->body);
+            }
+            }
+
+/*
     		// Disconnect existing receivers
 		    rc = apr_socket_shutdown(connection->socket, APR_SHUTDOWN_WRITE);
     		LOG4CXX_TRACE(logger, (char*) "Sent SHUTDOWN");
@@ -368,6 +397,8 @@ void HybridStompEndpointQueue::disconnect() {
     		LOG4CXX_TRACE(logger, (char*) "readLock: " << name);
     		readLock->lock();
     		LOG4CXX_TRACE(logger, (char*) "readLocked: " << name);
+
+*/
     		LOG4CXX_DEBUG(logger, "Disconnecting...");
     		rc = stomp_disconnect(&connection);
 	    	if (rc != APR_SUCCESS) {

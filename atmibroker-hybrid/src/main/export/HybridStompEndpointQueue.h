@@ -72,6 +72,7 @@ private:
 	bool transactional;
 	bool _connected;
 	int unackedMessages;
+    bool readDisconnected;
 	CodecFactory factory;
 	Codec* codec;
 };

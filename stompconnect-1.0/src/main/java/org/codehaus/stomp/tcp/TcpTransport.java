@@ -21,14 +21,12 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
-import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
@@ -41,6 +39,7 @@ import javax.net.SocketFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.stomp.ProtocolException;
+import org.codehaus.stomp.Stomp;
 import org.codehaus.stomp.StompFrame;
 import org.codehaus.stomp.StompMarshaller;
 import org.codehaus.stomp.jms.ProtocolConverter;
@@ -111,7 +110,14 @@ public class TcpTransport extends ServiceSupport implements Runnable {
             try {
                 StompFrame frame = marshaller.unmarshal(dataIn);
                 log.debug("Sending stomp frame");
-                inputHandler.onStompFrame(frame);
+                try {
+                    inputHandler.onStompFrame(frame);
+                } catch (IOException e) {
+                    if (frame.getAction().equals(Stomp.Responses.ERROR)) {
+                        log.warn("Could not send frame to client: " + new String(frame.getContent()));
+                    }
+                    throw e;
+                }
             } catch (Throwable e) {
                 // no need to log EOF exceptions
                 if (e instanceof EOFException) {
@@ -355,12 +361,13 @@ public class TcpTransport extends ServiceSupport implements Runnable {
             inputHandler.close();
         }
 
+        dataOut.flush();
         // Closing the streams flush the sockets before closing.. if the socket
         // is hung.. then this hangs the close.
         // closeStreams();
-        if (socket != null) {
-            socket.close();
-        }
+        // if (socket != null) {
+        // socket.close();
+        // }
     }
 
     protected void checkStarted() throws ProtocolException {

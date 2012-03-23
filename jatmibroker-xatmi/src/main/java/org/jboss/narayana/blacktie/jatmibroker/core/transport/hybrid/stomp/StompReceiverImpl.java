@@ -75,8 +75,8 @@ public class StompReceiverImpl implements Receiver {
         message.setHeaders(headers);
 
         StompManagement.send(message, outputStream);
-        org.jboss.narayana.blacktie.jatmibroker.core.transport.hybrid.stomp.Message receive = StompManagement
-                .receive(inputStream);
+        org.jboss.narayana.blacktie.jatmibroker.core.transport.hybrid.stomp.Message receive = StompManagement.receive(socket,
+                inputStream);
         if (receive.getCommand().equals("ERROR")) {
             log.error(new String(receive.getBody()));
             throw new ConnectionException(Connection.TPENOENT, new String(receive.getBody()));
@@ -99,13 +99,17 @@ public class StompReceiverImpl implements Receiver {
         pendingMessage = null;
         try {
             if (receive == null) {
-                receive = StompManagement.receive(inputStream);
+                receive = StompManagement.receive(socket, inputStream);
                 // TODO remove when moving to HQStomp
-                if (receive.getCommand().equals("RECEIPT") && ignoreSingleReceipt) {
+                if (receive != null && receive.getCommand().equals("RECEIPT") && ignoreSingleReceipt) {
                     ignoreSingleReceipt = false;
-                    receive = StompManagement.receive(inputStream);
+                    receive = StompManagement.receive(socket, inputStream);
                 }
                 log.debug("Received from: " + destinationName);
+            }
+            if (receive == null) {
+                log.debug("No message to return: " + destinationName);
+                return null;
             }
             if (!receive.getCommand().equals("MESSAGE")) {
                 throw new ConnectionException(Connection.TPESYSTEM, "Internal error, received unexpected receipt");
@@ -130,7 +134,7 @@ public class StompReceiverImpl implements Receiver {
         }
         try {
             log.debug("closing socket: " + socket);
-            StompManagement.close(outputStream);
+            StompManagement.close(socket, outputStream, inputStream);
             inputStream.close();
             log.debug("closed input stream: " + inputStream);
             socket.close();

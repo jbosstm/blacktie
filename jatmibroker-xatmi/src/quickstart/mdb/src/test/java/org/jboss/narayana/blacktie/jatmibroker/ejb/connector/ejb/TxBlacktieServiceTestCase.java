@@ -91,7 +91,8 @@ public class TxBlacktieServiceTestCase extends TestCase {
         assertEquals("test=test3,tx=false", responseData);
     }
 
-    public void test4() throws ConnectionException, JABException, ConfigurationException, NotFound, CannotProceed, InvalidName, org.omg.CORBA.ORBPackage.InvalidName, AdapterInactive {
+    public void test4() throws ConnectionException, JABException, ConfigurationException, NotFound, CannotProceed, InvalidName,
+            org.omg.CORBA.ORBPackage.InvalidName, AdapterInactive {
         log.info("TxBlacktieServiceTestCase::test4");
         byte[] args = "test=test4,tx=false".getBytes();
         X_OCTET buffer = (X_OCTET) connection.tpalloc("X_OCTET", null, args.length);

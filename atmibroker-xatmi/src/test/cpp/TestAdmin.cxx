@@ -113,7 +113,7 @@ void TestAdmin::testServerPauseAndResume() {
 	cd = callADMIN((char*)"advertise,BAR,", '1', 0, NULL);
 	BT_ASSERT(cd == 0);
 
-	btlogger((char*)"call BAR should time out after 20 seconds");
+	btlogger((char*)"call BAR should time out after 50 seconds");
 	BT_ASSERT(callBAR(TPETIME) == -1);
 
 	cd = callADMIN((char*)"resume", '1', 0, NULL);
