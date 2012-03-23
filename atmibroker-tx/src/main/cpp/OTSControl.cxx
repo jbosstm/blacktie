@@ -101,6 +101,13 @@ int OTSControl::do_end(bool commit, bool reportHeuristics)
 			// cannot assume TX_ROLLBACK since the RMs will not have been told (must return TX_FAIL to indicate
 			// that the caller’s state with respect to the transaction is unknown)
 			outcome = TX_FAIL;
+		} catch (CORBA::OBJECT_NOT_EXIST & e) {
+			LOG4CXX_DEBUG(otsclogger, (char*) "end: term ex " << e._name() <<
+			" minor: " << e.minor());
+			// transaction no longer exists (presumed abort) assume that in between the
+			// time we obtain the terminator and the time we called commit/rollback on it
+			// the transaction timed out and the terminator corba object was destroyed
+			outcome = TX_ROLLBACK;
 		} catch (CORBA::SystemException & e) {
 			LOG4CXX_WARN(otsclogger, (char*) "end: " << e._name() << " minor: " << e.minor());
 			outcome = TX_FAIL;
