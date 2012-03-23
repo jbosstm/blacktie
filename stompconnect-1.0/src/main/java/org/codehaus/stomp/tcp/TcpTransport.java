@@ -26,12 +26,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.UnknownHostException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.jms.JMSException;
 import javax.net.SocketFactory;
@@ -43,7 +39,6 @@ import org.codehaus.stomp.Stomp;
 import org.codehaus.stomp.StompFrame;
 import org.codehaus.stomp.StompMarshaller;
 import org.codehaus.stomp.jms.ProtocolConverter;
-import org.codehaus.stomp.util.IntrospectionSupport;
 import org.codehaus.stomp.util.ServiceSupport;
 
 /**
@@ -58,14 +53,10 @@ public class TcpTransport extends ServiceSupport implements Runnable {
     private int connectionTimeout = 30000;
     private int soTimeout = 0;
     private int socketBufferSize = 64 * 1024;
-    private int ioBufferSize = 8 * 1024;
     private Socket socket;
     private DataOutputStream dataOut;
     private DataInputStream dataIn;
-    private boolean trace;
-    private boolean useLocalHost = true;
     private SocketFactory socketFactory;
-    private Map socketOptions;
     private Boolean keepAlive;
     private Boolean tcpNoDelay;
     private boolean daemon = false;
@@ -74,12 +65,11 @@ public class TcpTransport extends ServiceSupport implements Runnable {
     /**
      * Initialize from a server Socket
      */
-    public TcpTransport(Socket socket, Map socketOptions) throws IOException {
-        this.socketOptions = socketOptions;
+    public TcpTransport(Socket socket) throws IOException {
         this.socket = socket;
         this.remoteLocation = null;
         this.localLocation = null;
-        setDaemon(true);
+        this.daemon = true;
     }
 
     /**
@@ -139,161 +129,35 @@ public class TcpTransport extends ServiceSupport implements Runnable {
         this.inputHandler = protocolConverter;
     }
 
-    // Properties
-    // -------------------------------------------------------------------------
-
-    public boolean isDaemon() {
-        return daemon;
-    }
-
-    public void setDaemon(boolean daemon) {
-        this.daemon = daemon;
-    }
-
-    public boolean isTrace() {
-        return trace;
-    }
-
-    public void setTrace(boolean trace) {
-        this.trace = trace;
-    }
-
-    public boolean isUseLocalHost() {
-        return useLocalHost;
-    }
-
-    /**
-     * Sets whether 'localhost' or the actual local host name should be used to make local connections. On some operating
-     * systems such as Macs its not possible to connect as the local host name so localhost is better.
-     */
-    public void setUseLocalHost(boolean useLocalHost) {
-        this.useLocalHost = useLocalHost;
-    }
-
-    public int getSocketBufferSize() {
-        return socketBufferSize;
-    }
-
-    /**
-     * Sets the buffer size to use on the socket
-     */
-    public void setSocketBufferSize(int socketBufferSize) {
-        this.socketBufferSize = socketBufferSize;
-    }
-
-    public int getSoTimeout() {
-        return soTimeout;
-    }
-
-    /**
-     * Sets the socket timeout
-     */
-    public void setSoTimeout(int soTimeout) {
-        this.soTimeout = soTimeout;
-    }
-
-    public int getConnectionTimeout() {
-        return connectionTimeout;
-    }
-
-    /**
-     * Sets the timeout used to connect to the socket
-     */
-    public void setConnectionTimeout(int connectionTimeout) {
-        this.connectionTimeout = connectionTimeout;
-    }
-
-    public Boolean getKeepAlive() {
-        return keepAlive;
-    }
-
-    /**
-     * Enable/disable TCP KEEP_ALIVE mode
-     */
-    public void setKeepAlive(Boolean keepAlive) {
-        this.keepAlive = keepAlive;
-    }
-
-    public Boolean getTcpNoDelay() {
-        return tcpNoDelay;
-    }
-
-    /**
-     * Enable/disable the TCP_NODELAY option on the socket
-     */
-    public void setTcpNoDelay(Boolean tcpNoDelay) {
-        this.tcpNoDelay = tcpNoDelay;
-    }
-
-    /**
-     * @return the ioBufferSize
-     */
-    public int getIoBufferSize() {
-        return this.ioBufferSize;
-    }
-
-    /**
-     * @param ioBufferSize the ioBufferSize to set
-     */
-    public void setIoBufferSize(int ioBufferSize) {
-        this.ioBufferSize = ioBufferSize;
-    }
-
-    public void setSocketOptions(Map socketOptions) {
-        this.socketOptions = new HashMap(socketOptions);
-    }
-
-    public String getRemoteAddress() {
-        if (socket != null) {
-            return "" + socket.getRemoteSocketAddress();
-        }
-        return null;
-    }
-
-    // Implementation methods
-    // -------------------------------------------------------------------------
-    protected String resolveHostName(String host) throws UnknownHostException {
-        String localName = InetAddress.getLocalHost().getHostName();
-        if (localName != null && isUseLocalHost()) {
-            if (localName.equals(host)) {
-                return "localhost";
-            }
-        }
-        return host;
-    }
-
-    /**
-     * Configures the socket for use
-     * 
-     * @param sock
-     * @throws SocketException
-     * @throws URISyntaxException
-     * @throws InvocationTargetException
-     * @throws IllegalAccessException
-     * @throws IllegalArgumentException
-     */
-    protected void initialiseSocket(Socket sock) throws SocketException, IllegalArgumentException, IllegalAccessException,
-            InvocationTargetException, URISyntaxException {
-        if (socketOptions != null) {
-            IntrospectionSupport.setProperties(socket, socketOptions);
-        }
-
-        try {
-            sock.setReceiveBufferSize(socketBufferSize);
-            sock.setSendBufferSize(socketBufferSize);
-        } catch (SocketException se) {
-            log.warn("Cannot set socket buffer size = " + socketBufferSize);
-            log.debug("Cannot set socket buffer size. Reason: " + se, se);
-        }
-        sock.setSoTimeout(soTimeout);
-
-        if (keepAlive != null) {
-            sock.setKeepAlive(keepAlive.booleanValue());
-        }
-        if (tcpNoDelay != null) {
-            sock.setTcpNoDelay(tcpNoDelay.booleanValue());
-        }
-    }
+    // /**
+    // * Configures the socket for use
+    // *
+    // * @param sock
+    // * @throws SocketException
+    // * @throws URISyntaxException
+    // * @throws InvocationTargetException
+    // * @throws IllegalAccessException
+    // * @throws IllegalArgumentException
+    // */
+    // protected void initialiseSocket(Socket sock) throws SocketException, IllegalArgumentException, IllegalAccessException,
+    // InvocationTargetException, URISyntaxException {
+    //
+    // // try {
+    // // sock.setReceiveBufferSize(socketBufferSize);
+    // // sock.setSendBufferSize(socketBufferSize);
+    // // } catch (SocketException se) {
+    // // log.warn("Cannot set socket buffer size = " + socketBufferSize);
+    // // log.debug("Cannot set socket buffer size. Reason: " + se, se);
+    // // }
+    // // sock.setSoTimeout(soTimeout);
+    // //
+    // // if (keepAlive != null) {
+    // // sock.setKeepAlive(keepAlive.booleanValue());
+    // // }
+    // // if (tcpNoDelay != null) {
+    // // sock.setTcpNoDelay(tcpNoDelay.booleanValue());
+    // // }
+    // }
 
     protected void doStart() throws IOException, IllegalArgumentException, IllegalAccessException, InvocationTargetException,
             URISyntaxException {
@@ -319,7 +183,7 @@ public class TcpTransport extends ServiceSupport implements Runnable {
         }
 
         if (remoteLocation != null) {
-            String host = resolveHostName(remoteLocation.getHost());
+            String host = remoteLocation.getHost();
             remoteAddress = new InetSocketAddress(host, remoteLocation.getPort());
         }
 
@@ -349,7 +213,7 @@ public class TcpTransport extends ServiceSupport implements Runnable {
             }
         }
 
-        initialiseSocket(socket);
+        // initialiseSocket(socket);
         initializeStreams();
     }
 
@@ -362,6 +226,8 @@ public class TcpTransport extends ServiceSupport implements Runnable {
         }
 
         dataOut.flush();
+        socket.shutdownOutput();
+        socket.shutdownInput();
         // Closing the streams flush the sockets before closing.. if the socket
         // is hung.. then this hangs the close.
         // closeStreams();

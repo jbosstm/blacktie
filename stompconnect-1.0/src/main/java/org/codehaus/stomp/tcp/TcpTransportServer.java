@@ -28,7 +28,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.jms.JMSException;
@@ -50,7 +49,6 @@ public class TcpTransportServer extends ServiceSupport implements Runnable {
     private ServerSocket serverSocket;
     private int backlog = 5000;
     private boolean trace;
-    private Map transportOptions;
     private ServerSocketFactory serverSocketFactory;
     private boolean daemon = true;
     private Thread runner;
@@ -174,10 +172,6 @@ public class TcpTransportServer extends ServiceSupport implements Runnable {
         return (InetSocketAddress) serverSocket.getLocalSocketAddress();
     }
 
-    public void setTransportOption(Map transportOptions) {
-        this.transportOptions = transportOptions;
-    }
-
     // Implementation methods
     // -------------------------------------------------------------------------
     protected void doStart() throws IOException {
@@ -246,7 +240,7 @@ public class TcpTransportServer extends ServiceSupport implements Runnable {
      * Allow derived classes to override the Transport implementation that this transport server creates.
      */
     protected TcpTransport createTransport(Socket socket) throws IOException {
-        return new TcpTransport(socket, transportOptions);
+        return new TcpTransport(socket);
     }
 
     protected String resolveHostName(String hostName) throws UnknownHostException {
