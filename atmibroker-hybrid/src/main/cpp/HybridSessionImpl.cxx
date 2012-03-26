@@ -450,8 +450,7 @@ bool HybridSessionImpl::send(MESSAGE& message) {
 					message.len = framed->body_length;
 
 					LOG4CXX_TRACE(logger, "syncRcv: copying message body response: len=" << message.len
-						<< " type=" << message.type << " subtype=" << message.subtype
-						<< " data=" << framed->body);
+						<< " type=" << message.type << " subtype=" << message.subtype);
 
 					if ((message.data = (char*) ::malloc(message.len)) == 0) {
 						LOG4CXX_WARN(logger, (char*) "Out of memory");
