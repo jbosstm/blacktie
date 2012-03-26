@@ -263,7 +263,6 @@ bool OTSControl::get_xid(XID& xid)
 		int otidlen = (int) otid.tid.length();
 		char JBOSSTS_NODE_SEPARATOR = '-';
 		char *tid, *p; // copy of the ots tid
-		char *bq;   // the branch qualifier component
 
 		p = tid = (char*) malloc(otidlen);
 
@@ -278,9 +277,7 @@ bool OTSControl::get_xid(XID& xid)
 		for (int k = 0; k < otidlen; p++, k++)
 			*p = otid.tid[k];
 
-		LOG4CXX_TRACE(otsclogger,  (char *) "converting OTS tid " << tid);
-
-		bq = strchr(tid, JBOSSTS_NODE_SEPARATOR);
+		LOG4CXX_TRACE(otsclogger,  (char *) "converting OTS tid");
 
 		// fingers crossed JBTM-577 has been fixed - do it the OTS way
 		LOG4CXX_DEBUG(otsclogger, (char*) "no JBOSS separator in otid - assuming JBTM-577 is fixed");
