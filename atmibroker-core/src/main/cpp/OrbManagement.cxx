@@ -64,6 +64,7 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 		while (p != NULL) {
 			vals[i] = strdup(p);
 			p = strtok(NULL, " ");
+			LOG4CXX_TRACE(loggerOrbManagement, (char*) "orb arg: " << vals[i]);
 			i++;
 		}
 
