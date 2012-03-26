@@ -56,6 +56,7 @@ void TestTimeToLive::setUp() {
 	BaseServerTest::setUp();
 	sendbuf = tpalloc((char*) "X_OCTET", NULL, 7);
 	rcvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
+	rcvlen = 1;
 }
 
 void TestTimeToLive::tearDown() {
