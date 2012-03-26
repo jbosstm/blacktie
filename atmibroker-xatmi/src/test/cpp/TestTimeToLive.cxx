@@ -85,7 +85,7 @@ void TestTimeToLive::testTTL() {
 	btlogger((char*)"send third message");
 	(void) strncpy(sendbuf, "counter", 7);
 	cd = callTTL();	
-	btlogger((char*)"TTL get message counter is %s", rcvbuf);
+	//btlogger((char*)"TTL get message counter is %s", rcvbuf);
 	BT_ASSERT(strncmp(rcvbuf, "1", 1) == 0);
 }
 
