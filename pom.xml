@@ -254,11 +254,6 @@
             </dependency>
             <dependency>
                 <groupId>org.jboss.narayana.blacktie</groupId>
-                <artifactId>docs</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.narayana.blacktie</groupId>
                 <artifactId>userguide</artifactId>
                 <version>${project.version}</version>
                 <type>jdocbook</type>
@@ -316,7 +311,6 @@
         <module>btadmin</module>
         <module>codeGeneration</module>
         <module>integration-tests</module>
-        <module>docs</module>
         <module>blacktie</module>
     </modules>
     <build>

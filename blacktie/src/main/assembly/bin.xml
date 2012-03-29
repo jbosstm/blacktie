@@ -23,31 +23,6 @@
 		<format>zip</format>
 	</formats>
 	<dependencySets>
-			<dependencySet>
-			<includes>
-				<include>org.jboss.narayana.blacktie*:jdocbook</include>
-			</includes>
-			<outputDirectory>docs/guides/${artifact.artifactId}</outputDirectory>
-			<useProjectAttachments>true</useProjectAttachments>
-			<unpack>true</unpack>
-			<unpackOptions>
-				<excludes>
-					<exclude>META-INF/</exclude>
-					<exclude>html/</exclude>
-				</excludes>
-			</unpackOptions>
-			<useProjectArtifact>false</useProjectArtifact>
-		</dependencySet>
-  	<dependencySet>
-			<useProjectArtifact>false</useProjectArtifact>
-			<includes>
-				<include>org.jboss.narayana.blacktie:jatmibroker-xatmi:*:javadoc</include>
-			</includes>
-			<outputDirectory>docs/api/jatmibroker-xatmi</outputDirectory>
-			<useProjectAttachments>true</useProjectAttachments>
-			<unpack>true</unpack>
-		</dependencySet>
-
 		<dependencySet>
 			<includes>
 				<include>org.jboss.narayana.blacktie:btadmin</include>
