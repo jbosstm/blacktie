@@ -24,7 +24,6 @@ REM things up
 REM ******************************************************
 
 set PWD=%~dp0
-echo %PWD%
 
 
 SETLOCAL
@@ -35,8 +34,7 @@ set CLASSPATH=
 set M2_HOME=
 set MAVEN_HOME=
 
-rem set MAVEN_OPTS=%MAVEN_OPTS% -Xms1000m -Xmx1000m -XX:PermSize=600m -XX:MaxPermSize=600m
-set MVN_OPTIONS=-Dbpa=%BPA% -gs tools\maven\conf\settings.xml
+set MVN_OPTIONS=-gs tools\maven\conf\settings.xml -Dbpa=%BPA%
 
 REM ******************************************************
 REM - "for" loops have been unrolled for compatibility
