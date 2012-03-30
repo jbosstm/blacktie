@@ -33,7 +33,7 @@ echo "Started server"
 
 rem BUILD BLACKTIE
 cd %WORKSPACE%
-call build.bat clean install "-Dbpa=vc9x32" "-Djbossas.ip.addr=%JBOSSAS_IP_ADDR%"
+call build.bat clean install "-Djbossas.ip.addr=%JBOSSAS_IP_ADDR%"
 IF %ERRORLEVEL% NEQ 0 echo "Failing build 2" & tasklist & call %WORKSPACE%\jboss-as-7.1.1.Final\bin\jboss-cli.bat --connect command=:shutdown & @ping 127.0.0.1 -n 10 -w 1000 > nul & exit -1
 
 rem SHUTDOWN ANY PREVIOUS BUILD REMNANTS
