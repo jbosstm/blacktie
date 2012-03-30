@@ -90,9 +90,9 @@ REM ************* Execute Batch file only once ***********
 REM ******************************************************
 
 :ExecuteBatch
-echo Calling %1 %2 %3 %4 %5 %6 %7 %8
 set GOAL=%2
 if "%GOAL%"=="" set GOAL=install
+echo Calling %1 %MVN_OPTIONS% %GOAL% %3 %4 %5 %6 %7 %8
 call %1 %MVN_OPTIONS% %GOAL% %3 %4 %5 %6 %7 %8
 
 :end
