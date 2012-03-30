@@ -72,6 +72,7 @@ AtmiBrokerEnv * AtmiBrokerEnv::get_instance() {
 
 void AtmiBrokerEnv::discard_instance() {
 	instance_lock.lock();
+    if (referencesAtmiBrokerEnv > 0) {
 	referencesAtmiBrokerEnv--;
 	LOG4CXX_TRACE(loggerAtmiBrokerEnv, (char*) "Reference count: "
 			<< referencesAtmiBrokerEnv);
@@ -92,6 +93,10 @@ void AtmiBrokerEnv::discard_instance() {
 					(char*) "Did not delete AtmiBrokerEnv");
 		}
 	}
+    } else {
+			LOG4CXX_WARN(loggerAtmiBrokerEnv,
+					(char*) "Reference count already zero");
+    }
 	instance_lock.unlock();
 }
 

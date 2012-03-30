@@ -15,18 +15,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-/* Administration functions Tests */
-#include "TestSecurity.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestSecurity );
-#include "TestAdmin.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestAdmin );
-#include "TestAdvertise.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestAdvertise );
-#include "TestUnadvertise.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestUnadvertise );
-#include "TestTimeToLive.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestTimeToLive );
-/* Extern Managed Destination */
-#include "TestExternManageDestination.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestExternManageDestination);
-/* End of Extern Managed Destination*/
+#ifndef TestSecurity_H
+#define TestSecurity_H
+
+#include <cppunit/extensions/HelperMacros.h>
+#include <cppunit/TestFixture.h>
+
+#include "BaseServerTest.h"
+
+class TestSecurity: public BaseServerTest {
+	CPPUNIT_TEST_SUITE( TestSecurity);
+	CPPUNIT_TEST( test_tpcall_guest);
+	CPPUNIT_TEST( test_tpcall_dynsub);
+CPPUNIT_TEST_SUITE_END();
+
+public:
+	void test_tpcall_guest();
+	void test_tpcall_dynsub();
+	virtual void setUp();
+	virtual void tearDown();
+
+private:
+	char *sendbuf, *rcvbuf;
+	long sendlen, rcvlen;
+};
+
+#endif
