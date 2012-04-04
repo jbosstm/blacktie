@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <!--
 		JBoss, Home of Professional Open Source Copyright 2009, Red Hat
 		Middleware LLC, and others contributors as indicated by the @authors
@@ -18,15 +18,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.jboss.narayana.blacktie</groupId>
-        <artifactId>blacktie-C</artifactId>
+        <artifactId>blacktie-all</artifactId>
         <version>5.0.0.M2-SNAPSHOT</version>
-        <relativePath>../blacktie-common/blacktie-C/pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>blacktie-tx-test-utilities</artifactId>
-    <name>Blacktie Utilities</name>
-    <packaging>jar</packaging>
+    <groupId>org.jboss.narayana.blacktie</groupId>
+    <artifactId>blacktie-common</artifactId>
+    <packaging>pom</packaging>
+    <name>Blacktie Defaults and Dependencies</name>
+    <url>http://www.jboss.org/blacktie</url>
     <description>A BlackTie component</description>
+    <scm>
+        <connection>scm:svn:http://anonsvn.jboss.org/repos/blacktie/trunk/blacktie</connection>
+        <developerConnection>scm:svn:https://svn.jboss.org/repos/blacktie/trunk/blacktie</developerConnection>
+        <url>http://viewvc.jboss.org/cgi-bin/viewvc.cgi/blacktie/trunk/blacktie</url>
+    </scm>
     <developers>
         <developer>
             <id>tomjenkinson</id>
@@ -68,26 +75,20 @@
             <url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
         </license>
     </licenses>
-    <dependencies>
-        <dependency>
-            <groupId>org.jboss.narayana.blacktie</groupId>
-            <classifier>${bpa}</classifier>
-            <artifactId>blacktie-core</artifactId>
-        </dependency>
-    </dependencies>
-    <profiles>
-        <profile>
-            <id>windows</id>
-            <activation>
-                <os>
-                    <family>windows</family>
-                </os>
-            </activation>
-            <properties>
-                <export.dll>_UTILITIES_DLL</export.dll>
-            </properties>
-        </profile>
-    </profiles>
-    <properties>
-	</properties>
+    <build>
+        <plugins>
+            <plugin>
+                <inherited>false</inherited>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>false</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <modules>
+        <module>C</module>
+        <module>java</module>
+    </modules>
 </project>

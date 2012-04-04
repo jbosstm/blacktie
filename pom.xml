@@ -124,18 +124,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <!--
-            <dependency>
-                <groupId>org.jboss.jbossts</groupId>
-                <artifactId>jbossjts</artifactId>
-                <version>4.16.2.Final</version>
-            </dependency>
--->
-            <dependency>
-                <groupId>org.jboss.narayana.blacktie</groupId>
-                <artifactId>cpp-tools</artifactId>
-                <version>${project.version}</version>
-            </dependency>
             <dependency>
                 <groupId>cppunit.contrib</groupId>
                 <classifier>${bpa}</classifier>
@@ -158,7 +146,7 @@
             </dependency>
             <dependency>
                 <groupId>org.jboss.narayana.blacktie.plugins</groupId>
-                <artifactId>cpp-plugin</artifactId>
+                <artifactId>blacktie-cpp-plugin</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -168,17 +156,17 @@
             </dependency>
             <dependency>
                 <groupId>org.codehaus.stomp</groupId>
-                <artifactId>stompconnect</artifactId>
+                <artifactId>blacktie-stompconnect</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.narayana.blacktie</groupId>
-                <artifactId>jatmibroker-xatmi</artifactId>
+                <artifactId>blacktie-jatmibroker-xatmi</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.narayana.blacktie</groupId>
-                <artifactId>jatmibroker-xatmi</artifactId>
+                <artifactId>blacktie-jatmibroker-xatmi</artifactId>
                 <version>${project.version}</version>
                 <classifier>javadoc</classifier>
             </dependency>
@@ -195,49 +183,49 @@
             </dependency>
             <dependency>
                 <groupId>org.jboss.narayana.blacktie</groupId>
-                <artifactId>atmibroker-idl-java</artifactId>
+                <artifactId>blacktie-idl-java</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.narayana.blacktie</groupId>
                 <classifier>${bpa}</classifier>
-                <artifactId>atmibroker-idl-cxx</artifactId>
+                <artifactId>blacktie-idl-cxx</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.narayana.blacktie</groupId>
                 <classifier>${bpa}</classifier>
-                <artifactId>tx-test-utilities</artifactId>
+                <artifactId>blacktie-tx-test-utilities</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.narayana.blacktie</groupId>
                 <classifier>${bpa}</classifier>
-                <artifactId>atmibroker-core</artifactId>
+                <artifactId>blacktie-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.narayana.blacktie</groupId>
                 <classifier>${bpa}</classifier>
-                <artifactId>atmibroker-transport</artifactId>
+                <artifactId>blacktie-transport</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.narayana.blacktie</groupId>
                 <classifier>${bpa}</classifier>
-                <artifactId>atmibroker-tx</artifactId>
+                <artifactId>blacktie-tx</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.narayana.blacktie</groupId>
                 <classifier>${bpa}</classifier>
-                <artifactId>atmibroker-hybrid</artifactId>
+                <artifactId>blacktie-hybrid</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.narayana.blacktie</groupId>
                 <classifier>${bpa}</classifier>
-                <artifactId>atmibroker-xatmi</artifactId>
+                <artifactId>blacktie-xatmi</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -260,7 +248,7 @@
             </dependency>
             <dependency>
                 <groupId>org.jboss.narayana.blacktie</groupId>
-                <artifactId>codeGeneration</artifactId>
+                <artifactId>blacktie-codeGeneration</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -285,24 +273,24 @@
         <jbossas.ip.addr>127.0.0.1</jbossas.ip.addr>
     </properties>
     <modules>
-        <module>blacktie-utils/cpp-plugin</module>
-        <module>blacktie-common</module>
-        <module>blacktie-xsd</module>
-        <module>atmibroker-idl</module>
+        <module>utils/cpp-plugin</module>
+        <module>common</module>
+        <module>xsd</module>
+        <module>idl</module>
         <module>hornetq-rest</module>
         <module>stompconnect-1.0</module>
         <module>jatmibroker-xatmi</module>
         <module>blacktie-admin-services</module>
         <module>blacktie-admin-services/ear</module>
         <module>blacktie-rhq-plugin</module>
-        <module>atmibroker-core</module>
-        <module>atmibroker-transport</module>
+        <module>core</module>
+        <module>transport</module>
         <module>tx-test-utilities</module>
-        <module>atmibroker-tx</module>
-        <module>atmibroker-hybrid</module>
-        <module>atmibroker-xatmi</module>
-        <module>blacktie-nbf</module>
-        <module>blacktie-codec</module>
+        <module>tx</module>
+        <module>hybrid</module>
+        <module>xatmi</module>
+        <module>nbf</module>
+        <module>codec</module>
         <module>btadmin</module>
         <module>codeGeneration</module>
         <module>integration-tests</module>
@@ -313,7 +301,7 @@
             <plugins>
                 <plugin>
                     <groupId>org.jboss.narayana.blacktie.plugins</groupId>
-                    <artifactId>cpp-plugin</artifactId>
+                    <artifactId>blacktie-cpp-plugin</artifactId>
                     <version>${project.version}</version>
                 </plugin>
                 <plugin>
@@ -454,7 +442,7 @@
             <properties>
                 <ld_library_path>${env.Path};${project.build.directory}/cxx/runtime/lib;${project.build.directory}/cxx/test/lib;${project.build.directory}</ld_library_path>
                 <exclude_unpack_type/>
-                <atmibroker.configuration.dir>.</atmibroker.configuration.dir>
+                <blacktie.configuration.dir>.</blacktie.configuration.dir>
             </properties>
         </profile>
         <profile>
@@ -467,7 +455,7 @@
             <properties>
                 <ld_library_path>${project.build.directory}/cxx/runtime/lib:${project.build.directory}/cxx/test/lib:${project.build.directory}</ld_library_path>
                 <export.dll/>
-                <atmibroker.configuration.dir>.</atmibroker.configuration.dir>
+                <blacktie.configuration.dir>.</blacktie.configuration.dir>
                 <exclude_unpack_type>zip</exclude_unpack_type>
             </properties>
         </profile>

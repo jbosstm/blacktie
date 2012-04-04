@@ -176,8 +176,8 @@
         <include name="*.xsd"/>
       </fileset>
     </copy>
-    <copy file="${workdir}/${tag}/jatmibroker-xatmi/target/jatmibroker-xatmi-${version}-javadoc.jar" todir="tmp-downloads-dir/api/jatmibroker-xatmi"/>
-    <unzip src="${workdir}/${tag}/jatmibroker-xatmi/target/jatmibroker-xatmi-${version}-javadoc.jar" dest="tmp-docs-dir/api/jatmibroker"/>
+    <copy file="${workdir}/${tag}/blacktie-jatmibroker-xatmi/target/blacktie-jatmibroker-xatmi-${version}-javadoc.jar" todir="tmp-downloads-dir/api/blacktie-jatmibroker-xatmi"/>
+    <unzip src="${workdir}/${tag}/blacktie-jatmibroker-xatmi/target/blacktie-jatmibroker-xatmi-${version}-javadoc.jar" dest="tmp-docs-dir/api/jatmibroker"/>
     <move todir="${downloads.dir}/${version}" verbose="true">
       <fileset dir="tmp-downloads-dir"/>
     </move>

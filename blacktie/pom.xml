@@ -155,9 +155,9 @@
                         <configuration>
                             <tasks>
                                 <mkdir dir="target/${project.artifactId}-${project.version}/lib/cxx"/>
-                                <echo message="copying symlinks from atmibroker-xatmi runtime library"/>
+                                <echo message="copying symlinks from blacktie-xatmi runtime library"/>
                                 <exec executable="find" dir="target">
-                                    <arg line="../../atmibroker-xatmi/target/cxx/runtime/lib -type l -exec cp -rpP {} ${project.artifactId}-${project.version}/lib/cxx ;"/>
+                                    <arg line="../../blacktie-xatmi/target/cxx/runtime/lib -type l -exec cp -rpP {} ${project.artifactId}-${project.version}/lib/cxx ;"/>
                                 </exec>
                                 <echo message="update symlinks to zip"/>
                                 <exec executable="/bin/sh" dir="target">
@@ -183,7 +183,7 @@
     <dependencies>
         <dependency>
             <groupId>org.jboss.narayana.blacktie</groupId>
-            <artifactId>codeGeneration</artifactId>
+            <artifactId>blacktie-codeGeneration</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jboss.narayana.blacktie</groupId>
@@ -200,7 +200,7 @@
         </dependency>
         <dependency>
             <groupId>org.codehaus.stomp</groupId>
-            <artifactId>stompconnect</artifactId>
+            <artifactId>blacktie-stompconnect</artifactId>
         </dependency>
     </dependencies>
 </project>

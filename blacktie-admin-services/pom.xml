@@ -163,7 +163,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.narayana.blacktie</groupId>
-			<artifactId>jatmibroker-xatmi</artifactId>
+			<artifactId>blacktie-jatmibroker-xatmi</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.as</groupId>

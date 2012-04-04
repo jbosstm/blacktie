@@ -37,7 +37,7 @@ public class AdvertiseUnadvertiseTest {
                 .create(WebArchive.class, "test.war")
                 .addClasses(BlacktieStompAdministrationService.class, Authentication.class, AdministrationProxy.class,
                         BlacktieAdministration.class)
-                .addAsLibraries(resolver.artifact("org.jboss.narayana.blacktie:jatmibroker-xatmi").resolveAsFiles())
+                .addAsLibraries(resolver.artifact("org.jboss.narayana.blacktie:blacktie-jatmibroker-xatmi").resolveAsFiles())
                 .addAsResource("btconfig.xml").setManifest(new StringAsset(ManifestMF));
     }
 

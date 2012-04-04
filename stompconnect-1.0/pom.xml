@@ -9,7 +9,7 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<groupId>org.codehaus.stomp</groupId>
-	<artifactId>stompconnect</artifactId>
+	<artifactId>blacktie-stompconnect</artifactId>
 	<packaging>jar</packaging>
 	<developers>
 		<developer>
@@ -35,11 +35,6 @@
 		<name>LogicBlaze, Inc.</name>
 		<url>http://www.logicblaze.com/</url>
 	</organization>
-	<scm>
-		<connection>scm:svn:https://svn.codehaus.org/stomp/tags/stompconnect-1.0</connection>
-		<developerConnection>scm:svn:https://svn.codehaus.org/stomp/tags/stompconnect-1.0</developerConnection>
-		<url>https://svn.codehaus.org/stomp/tags/stompconnect-1.0</url>
-	</scm>
 	<dependencies>
 		<dependency>
 			<groupId>org.jboss.as</groupId>

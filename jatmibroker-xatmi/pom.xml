@@ -19,7 +19,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>jatmibroker-xatmi</artifactId>
+    <artifactId>blacktie-jatmibroker-xatmi</artifactId>
     <name>Blacktie Java XATMI Implementation</name>
     <packaging>jar</packaging>
     <description>A BlackTie component</description>
@@ -184,7 +184,7 @@
         </dependency>
         <dependency>
             <groupId>org.codehaus.stomp</groupId>
-            <artifactId>stompconnect</artifactId>
+            <artifactId>blacktie-stompconnect</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -193,7 +193,7 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.narayana.blacktie</groupId>
-            <artifactId>atmibroker-idl-java</artifactId>
+            <artifactId>blacktie-idl-java</artifactId>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>

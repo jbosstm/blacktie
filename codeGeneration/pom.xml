@@ -24,16 +24,16 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.narayana.blacktie</groupId>
-    <artifactId>codeGeneration</artifactId>
+    <artifactId>blacktie-codeGeneration</artifactId>
     <version>5.0.0.M2-SNAPSHOT</version>
     <name>Blacktie Server Code Generation</name>
     <packaging>jar</packaging>
     <url>http://www.jboss.org/blacktie</url>
     <description>A BlackTie component</description>
     <scm>
-        <connection>scm:svn:http://anonsvn.jboss.org/repos/blacktie/trunk/codeGeneration</connection>
-        <developerConnection>scm:svn:https://svn.jboss.org/repos/blacktie/trunk/codeGeneration</developerConnection>
-        <url>http://viewvc.jboss.org/cgi-bin/viewvc.cgi/blacktie/trunk/codeGeneration</url>
+        <connection>scm:svn:http://anonsvn.jboss.org/repos/blacktie/trunk/blacktie-codeGeneration</connection>
+        <developerConnection>scm:svn:https://svn.jboss.org/repos/blacktie/trunk/blacktie-codeGeneration</developerConnection>
+        <url>http://viewvc.jboss.org/cgi-bin/viewvc.cgi/blacktie/trunk/blacktie-codeGeneration</url>
     </scm>
     <developers>
         <developer>

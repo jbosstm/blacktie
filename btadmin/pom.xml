@@ -85,7 +85,7 @@
 			</plugin>
 			<plugin>
 				<groupId>org.jboss.narayana.blacktie.plugins</groupId>
-				<artifactId>cpp-plugin</artifactId>
+				<artifactId>blacktie-cpp-plugin</artifactId>
 				<configuration>
 					<src.main.file>cs</src.main.file>
 				</configuration>
@@ -108,7 +108,7 @@
 					<environmentVariables>
 						<Path>${ld_library_path}</Path>
 						<LD_LIBRARY_PATH>${ld_library_path}</LD_LIBRARY_PATH>
-						<BLACKTIE_CONFIGURATION_DIR>${atmibroker.configuration.dir}</BLACKTIE_CONFIGURATION_DIR>
+						<BLACKTIE_CONFIGURATION_DIR>${blacktie.configuration.dir}</BLACKTIE_CONFIGURATION_DIR>
 						<BLACKTIE_SCHEMA_DIR>${project.build.directory}/cxx/test/</BLACKTIE_SCHEMA_DIR>
 						<JBOSSAS_IP_ADDR>${jbossas.ip.addr}</JBOSSAS_IP_ADDR>
 					</environmentVariables>
@@ -123,7 +123,7 @@
 						</property>
 						<property>
 							<name>BLACKTIE_CONFIGURATION_DIR</name>
-							<value>${atmibroker.configuration.dir}</value>
+							<value>${blacktie.configuration.dir}</value>
 						</property>
 						<property>
 							<name>BLACKTIE_SCHEMA_DIR</name>
@@ -168,7 +168,7 @@
 											org.jboss.narayana.blacktie.plugins
 										</groupId>
 										<artifactId>
-											cpp-plugin
+											blacktie-cpp-plugin
 										</artifactId>
 										<versionRange>
 											[5.0.0.M2-SNAPSHOT,)
@@ -236,7 +236,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.jboss.narayana.blacktie</groupId>
-			<artifactId>jatmibroker-xatmi</artifactId>
+			<artifactId>blacktie-jatmibroker-xatmi</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.narayana.blacktie</groupId>
@@ -267,7 +267,7 @@
 		<dependency>
 			<groupId>org.jboss.narayana.blacktie</groupId>
 			<classifier>${bpa}</classifier>
-			<artifactId>atmibroker-xatmi</artifactId>
+			<artifactId>blacktie-xatmi</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

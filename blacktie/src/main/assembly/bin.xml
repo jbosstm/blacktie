@@ -34,7 +34,7 @@
 		</dependencySet>
 		<dependencySet>
 			<includes>
-				<include>org.jboss.narayana.blacktie:codeGeneration</include>
+				<include>org.jboss.narayana.blacktie:blacktie-codeGeneration</include>
 			</includes>
 			<useProjectArtifact>false</useProjectArtifact>
 			<unpack>false</unpack>
@@ -52,7 +52,7 @@
 		</dependencySet>
 		<dependencySet>
 			<includes>
-				<include>org.codehaus.stomp:stompconnect</include>
+				<include>org.codehaus.stomp:blacktie-stompconnect</include>
 			</includes>
 			<useProjectArtifact>false</useProjectArtifact>
 			<unpack>false</unpack>
@@ -63,9 +63,9 @@
 			<useProjectArtifact>false</useProjectArtifact>
 			<excludes>
 				<exclude>org.jboss.narayana.blacktie:btadmin</exclude>
-				<exclude>org.jboss.narayana.blacktie:codeGeneration</exclude>
+				<exclude>org.jboss.narayana.blacktie:blacktie-codeGeneration</exclude>
 				<exclude>org.jboss.narayana.blacktie:blacktie-admin-services-ear:ear</exclude>
-				<exclude>org.codehaus.stomp:stompconnect</exclude>
+				<exclude>org.codehaus.stomp:blacktie-stompconnect</exclude>
 				<exclude>*:javadoc</exclude>
 				<exclude>*:jdocbook</exclude>
 			</excludes>
@@ -111,7 +111,7 @@
 			<fileMode>0775</fileMode>
 		</fileSet>
 		<fileSet>
-			<directory>../atmibroker-xatmi/src/main/export/
+			<directory>../xatmi/src/main/export/
 			</directory>
 			<outputDirectory>include</outputDirectory>
 			<includes>
@@ -119,7 +119,7 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../atmibroker-tx/src/main/export/
+			<directory>../tx/src/main/export/
 			</directory>
 			<outputDirectory>include</outputDirectory>
 			<includes>
@@ -129,7 +129,7 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../atmibroker-core/src/main/export/
+			<directory>../core/src/main/export/
 			</directory>
 			<outputDirectory>include</outputDirectory>
 			<includes>
@@ -138,7 +138,7 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../blacktie-nbf/src/main/export/
+			<directory>../nbf/src/main/export/
 			</directory>
 			<outputDirectory>include</outputDirectory>
 			<includes>
@@ -146,7 +146,7 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../blacktie-xsd/src/main/xsd/
+			<directory>../xsd/src/main/xsd/
 			</directory>
 			<outputDirectory>xsd</outputDirectory>
 			<includes>
@@ -154,7 +154,7 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../atmibroker-xatmi/target/debug/shared
+			<directory>../xatmi/target/debug/shared
 			</directory>
 			<outputDirectory>lib/cxx</outputDirectory>
 			<includes>
@@ -165,7 +165,7 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../blacktie-nbf/target/debug/shared
+			<directory>../nbf/target/debug/shared
 			</directory>
 			<outputDirectory>lib/cxx</outputDirectory>
 			<includes>
@@ -176,7 +176,7 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../atmibroker-xatmi/target/cxx/runtime/lib
+			<directory>../xatmi/target/cxx/runtime/lib
 			</directory>
 			<outputDirectory>lib/cxx</outputDirectory>
 			<includes>
