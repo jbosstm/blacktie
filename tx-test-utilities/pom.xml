@@ -20,7 +20,7 @@
         <groupId>org.jboss.narayana.blacktie</groupId>
         <artifactId>blacktie-C</artifactId>
         <version>5.0.0.M2-SNAPSHOT</version>
-        <relativePath>../blacktie-common/blacktie-C/pom.xml</relativePath>
+        <relativePath>../common/C/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>blacktie-tx-test-utilities</artifactId>
