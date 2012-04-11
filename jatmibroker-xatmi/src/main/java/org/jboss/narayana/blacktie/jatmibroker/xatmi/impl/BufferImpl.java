@@ -536,17 +536,17 @@ public abstract class BufferImpl implements Serializable, Buffer {
 
         byte x = dis.readByte();
         ByteBuffer bbuf = ByteBuffer.allocate(BYTE_SIZE);
-        bbuf.order(ByteOrder.LITTLE_ENDIAN);
+        //bbuf.order(ByteOrder.LITTLE_ENDIAN);
         bbuf.put(x);
-        bbuf.order(ByteOrder.BIG_ENDIAN);
+        //bbuf.order(ByteOrder.BIG_ENDIAN);
         return bbuf.get(0);
     }
 
     private void writeLong(DataOutputStream dos, long x) throws IOException {
         ByteBuffer bbuf = ByteBuffer.allocate(LONG_SIZE);
-        bbuf.order(ByteOrder.BIG_ENDIAN);
+        //bbuf.order(ByteOrder.BIG_ENDIAN);
         bbuf.putLong(x);
-        bbuf.order(ByteOrder.LITTLE_ENDIAN);
+        //bbuf.order(ByteOrder.LITTLE_ENDIAN);
         long toWrite = bbuf.getLong(0);
         dos.writeLong(toWrite);
         currentPos += LONG_SIZE;
@@ -556,17 +556,17 @@ public abstract class BufferImpl implements Serializable, Buffer {
         currentPos += LONG_SIZE;
         long x = dis.readLong();
         ByteBuffer bbuf = ByteBuffer.allocate(LONG_SIZE);
-        bbuf.order(ByteOrder.LITTLE_ENDIAN);
+        //bbuf.order(ByteOrder.LITTLE_ENDIAN);
         bbuf.putLong(x);
-        bbuf.order(ByteOrder.BIG_ENDIAN);
+        //bbuf.order(ByteOrder.BIG_ENDIAN);
         return bbuf.getLong(0);
     }
 
     private void writeInt(DataOutputStream dos, int x) throws IOException {
         ByteBuffer bbuf = ByteBuffer.allocate(INT_SIZE);
-        bbuf.order(ByteOrder.BIG_ENDIAN);
+        //bbuf.order(ByteOrder.BIG_ENDIAN);
         bbuf.putInt(x);
-        bbuf.order(ByteOrder.LITTLE_ENDIAN);
+        //bbuf.order(ByteOrder.LITTLE_ENDIAN);
         int toWrite = bbuf.getInt(0);
         dos.writeInt(toWrite);
         currentPos += INT_SIZE;
@@ -576,17 +576,17 @@ public abstract class BufferImpl implements Serializable, Buffer {
         currentPos += INT_SIZE;
         int x = dis.readInt();
         ByteBuffer bbuf = ByteBuffer.allocate(INT_SIZE);
-        bbuf.order(ByteOrder.LITTLE_ENDIAN);
+        //bbuf.order(ByteOrder.LITTLE_ENDIAN);
         bbuf.putInt(x);
-        bbuf.order(ByteOrder.BIG_ENDIAN);
+        //bbuf.order(ByteOrder.BIG_ENDIAN);
         return bbuf.getInt(0);
     }
 
     private void writeShort(DataOutputStream dos, short x) throws IOException {
         ByteBuffer bbuf = ByteBuffer.allocate(SHORT_SIZE);
-        bbuf.order(ByteOrder.BIG_ENDIAN);
+        //bbuf.order(ByteOrder.BIG_ENDIAN);
         bbuf.putShort(x);
-        bbuf.order(ByteOrder.LITTLE_ENDIAN);
+        //bbuf.order(ByteOrder.LITTLE_ENDIAN);
         short toWrite = bbuf.getShort(0);
         dos.writeShort(toWrite);
 
@@ -597,17 +597,17 @@ public abstract class BufferImpl implements Serializable, Buffer {
         currentPos += SHORT_SIZE;
         short x = dis.readShort();
         ByteBuffer bbuf = ByteBuffer.allocate(SHORT_SIZE);
-        bbuf.order(ByteOrder.LITTLE_ENDIAN);
+        //bbuf.order(ByteOrder.LITTLE_ENDIAN);
         bbuf.putShort(x);
-        bbuf.order(ByteOrder.BIG_ENDIAN);
+        //bbuf.order(ByteOrder.BIG_ENDIAN);
         return bbuf.getShort(0);
     }
 
     private void writeFloat(DataOutputStream dos, float x) throws IOException {
         ByteBuffer bbuf = ByteBuffer.allocate(FLOAT_SIZE);
-        bbuf.order(ByteOrder.BIG_ENDIAN);
+        //bbuf.order(ByteOrder.BIG_ENDIAN);
         bbuf.putFloat(x);
-        bbuf.order(ByteOrder.LITTLE_ENDIAN);
+        //bbuf.order(ByteOrder.LITTLE_ENDIAN);
         float toWrite = bbuf.getFloat(0);
         dos.writeFloat(toWrite);
 
@@ -618,17 +618,17 @@ public abstract class BufferImpl implements Serializable, Buffer {
         currentPos += FLOAT_SIZE;
         float x = dis.readFloat();
         ByteBuffer bbuf = ByteBuffer.allocate(FLOAT_SIZE);
-        bbuf.order(ByteOrder.LITTLE_ENDIAN);
+        //bbuf.order(ByteOrder.LITTLE_ENDIAN);
         bbuf.putFloat(x);
-        bbuf.order(ByteOrder.BIG_ENDIAN);
+        //bbuf.order(ByteOrder.BIG_ENDIAN);
         return bbuf.getFloat(0);
     }
 
     private void writeDouble(DataOutputStream dos, double x) throws IOException {
         ByteBuffer bbuf = ByteBuffer.allocate(DOUBLE_SIZE);
-        bbuf.order(ByteOrder.BIG_ENDIAN);
+        //bbuf.order(ByteOrder.BIG_ENDIAN);
         bbuf.putDouble(x);
-        bbuf.order(ByteOrder.LITTLE_ENDIAN);
+        //bbuf.order(ByteOrder.LITTLE_ENDIAN);
         double toWrite = bbuf.getDouble(0);
         dos.writeDouble(toWrite);
 
@@ -639,9 +639,9 @@ public abstract class BufferImpl implements Serializable, Buffer {
         currentPos += DOUBLE_SIZE;
         double x = dis.readDouble();
         ByteBuffer bbuf = ByteBuffer.allocate(DOUBLE_SIZE);
-        bbuf.order(ByteOrder.LITTLE_ENDIAN);
+        //bbuf.order(ByteOrder.LITTLE_ENDIAN);
         bbuf.putDouble(x);
-        bbuf.order(ByteOrder.BIG_ENDIAN);
+        //bbuf.order(ByteOrder.BIG_ENDIAN);
         return bbuf.getDouble(0);
     }
 

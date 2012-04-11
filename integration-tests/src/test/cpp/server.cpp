@@ -201,7 +201,12 @@ void test_tpcall_x_c_type_service(TPSVCINFO *svcinfo) {
 	bool balsEq = aptr->balances[0] == 1.1 && aptr->balances[1] == 2.2;
 	if (acctEq && nameEq && fooEq && balsEq) {
 		ok = true;
+	} else {
+		btlogger((char*) "Data was: %ld/%s/%.2f/%.2f/%.2f/%.2f/", 
+				aptr->acct_no, aptr->name, aptr->foo[0], aptr->foo[1],
+				aptr->balances[0], aptr->balances[1]);
 	}
+
 	int len = 60;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	if (ok) {
