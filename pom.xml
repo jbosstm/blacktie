@@ -282,7 +282,6 @@
         <module>jatmibroker-xatmi</module>
         <module>blacktie-admin-services</module>
         <module>blacktie-admin-services/ear</module>
-        <module>blacktie-rhq-plugin</module>
         <module>core</module>
         <module>transport</module>
         <module>tx-test-utilities</module>
