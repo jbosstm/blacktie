@@ -16,7 +16,7 @@ public class TPConversationShortService implements Service {
     public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException, ConfigurationException {
         log.info("testTPConversation_short_service");
         int sendlen = 4;
-        X_OCTET sendbuf = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null, sendlen);
+        X_OCTET sendbuf = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null);
         sendbuf.setByteArray("hi0".getBytes());
         svcinfo.getSession().tpsend(sendbuf, 0);
         sendbuf.setByteArray("hi1".getBytes());

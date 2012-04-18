@@ -172,6 +172,17 @@
             </dependency>
             <dependency>
                 <groupId>org.jboss.narayana.blacktie</groupId>
+                <artifactId>blacktie-jatmibroker-nbf</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.narayana.blacktie</groupId>
+                <artifactId>blacktie-jatmibroker-nbf</artifactId>
+                <version>${project.version}</version>
+                <classifier>javadoc</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.narayana.blacktie</groupId>
                 <artifactId>blacktie-admin-services</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -280,6 +291,7 @@
         <module>messaging</module>
         <module>stompconnect-1.0</module>
         <module>jatmibroker-xatmi</module>
+        <module>jatmibroker-nbf</module>
         <module>blacktie-admin-services</module>
         <module>blacktie-admin-services/ear</module>
         <module>core</module>

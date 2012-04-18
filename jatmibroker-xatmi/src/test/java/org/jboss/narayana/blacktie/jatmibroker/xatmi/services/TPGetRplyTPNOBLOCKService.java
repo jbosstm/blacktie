@@ -18,7 +18,7 @@ public class TPGetRplyTPNOBLOCKService implements Service {
         log.info(response);
 
         int sendlen = response.length() + 1;
-        X_OCTET toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null, sendlen);
+        X_OCTET toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null);
         toReturn.setByteArray(response.getBytes());
         try {
             Thread.sleep(5000);

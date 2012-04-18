@@ -79,7 +79,7 @@ public class BlacktieStompAdministrationServiceTest extends TestCase {
 
     private void processStompCommand(String command, int expectation) throws ConnectionException, ConfigurationException {
         byte[] toSend = command.getBytes();
-        X_OCTET buffer = (X_OCTET) connection.tpalloc("X_OCTET", null, toSend.length);
+        X_OCTET buffer = (X_OCTET) connection.tpalloc("X_OCTET", null);
         buffer.setByteArray(toSend);
 
         Response response = connection.tpcall("BTStompAdmin", buffer, 0);
@@ -90,7 +90,7 @@ public class BlacktieStompAdministrationServiceTest extends TestCase {
 
     private void processDomainCommand(String command, int expectation) throws ConnectionException, ConfigurationException {
         byte[] toSend = command.getBytes();
-        X_OCTET buffer = (X_OCTET) connection.tpalloc("X_OCTET", null, toSend.length);
+        X_OCTET buffer = (X_OCTET) connection.tpalloc("X_OCTET", null);
         buffer.setByteArray(toSend);
 
         Response response = connection.tpcall("BTDomainAdmin", buffer, 0);

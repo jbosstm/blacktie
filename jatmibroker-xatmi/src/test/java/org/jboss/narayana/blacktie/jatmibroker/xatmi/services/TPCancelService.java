@@ -20,7 +20,7 @@ public class TPCancelService implements Service {
             X_OCTET toReturn;
             String received = new String(((X_OCTET) svcinfo.getBuffer()).getByteArray());
             if (received.equals("cancel")) {
-                toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null, len);
+                toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null);
                 toReturn.setByteArray("testtpcancel_service".getBytes());
                 return new Response(Connection.TPSUCCESS, 0, toReturn, 0);
             } else {

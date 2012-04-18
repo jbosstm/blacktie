@@ -23,8 +23,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
 
-public class TestNestedBuffer extends TestCase {
-    private static final Logger log = LogManager.getLogger(TestNestedBuffer.class);
+public class TestNBF extends TestCase {
+    private static final Logger log = LogManager.getLogger(TestNBF.class);
 
     private Connection connection;
 
@@ -38,8 +38,8 @@ public class TestNestedBuffer extends TestCase {
     }
 
     public void test() throws ConnectionException, ConfigurationException {
-        log.info("TestNestedBuffer::test");
-        BT_NBF buffer = (BT_NBF) connection.tpalloc("BT_NBF", "employee", 0);
+        log.info("TestNBF::test");
+        BT_NBF buffer = (BT_NBF) connection.tpalloc("BT_NBF", "employee");
         assertFalse(buffer.btaddattribute("id", new Integer(1001)));
         assertTrue(buffer.btaddattribute("name", "zhfeng"));
         assertTrue(buffer.btaddattribute("id", new Long(1001)));
@@ -57,7 +57,7 @@ public class TestNestedBuffer extends TestCase {
         assertTrue("java.lang.String".equals(obj.getClass().getName()));
         assertTrue("zhfeng".equals((String) (obj)));
 
-        BT_NBF test = (BT_NBF) connection.tpalloc("BT_NBF", "test", 0);
+        BT_NBF test = (BT_NBF) connection.tpalloc("BT_NBF", "test");
         assertTrue(test.btaddattribute("employee", buffer));
         // log.info(new String(test.serialize()));
 
@@ -71,8 +71,8 @@ public class TestNestedBuffer extends TestCase {
     }
 
     public void testDel() throws ConnectionException, ConfigurationException {
-        log.info("TestNestedBuffer::testDel");
-        BT_NBF buffer = (BT_NBF) connection.tpalloc("BT_NBF", "employee", 0);
+        log.info("TestNBF::testDel");
+        BT_NBF buffer = (BT_NBF) connection.tpalloc("BT_NBF", "employee");
         buffer.btaddattribute("id", new Long(1234));
         buffer.btaddattribute("id", new Long(1001));
         buffer.btaddattribute("id", new Long(1001));
@@ -101,8 +101,8 @@ public class TestNestedBuffer extends TestCase {
     }
 
     public void testSet() throws ConnectionException, ConfigurationException {
-        log.info("TestNestedBuffer::testSet");
-        BT_NBF buffer = (BT_NBF) connection.tpalloc("BT_NBF", "employee", 0);
+        log.info("TestNBF::testSet");
+        BT_NBF buffer = (BT_NBF) connection.tpalloc("BT_NBF", "employee");
         buffer.btaddattribute("id", new Long(1234));
         buffer.btaddattribute("id", new Long(1001));
         buffer.btaddattribute("name", "test");

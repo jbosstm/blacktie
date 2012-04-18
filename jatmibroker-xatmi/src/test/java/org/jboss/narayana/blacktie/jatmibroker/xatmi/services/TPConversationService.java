@@ -33,7 +33,7 @@ public class TPConversationService implements Service {
             for (int i = 0; i < TestTPConversation.interationCount; i++) {
                 byte[] bytes = ("hi" + i).getBytes();
 
-                X_OCTET sendbuf = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null, bytes.length);
+                X_OCTET sendbuf = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null);
                 sendbuf.setByteArray(bytes);
                 // btlogger((char*) "testTPConversation_service:%s:",
                 // sendbuf);
@@ -70,7 +70,7 @@ public class TPConversationService implements Service {
             return new Response((short) Connection.TPESVCFAIL, 0, null, 0);
         } else {
             byte[] bytes = ("hi" + TestTPConversation.interationCount).getBytes();
-            X_OCTET sendbuf = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null, bytes.length);
+            X_OCTET sendbuf = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null);
             sendbuf.setByteArray(bytes);
             return new Response(Connection.TPSUCCESS, 0, sendbuf, 0);
         }

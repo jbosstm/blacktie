@@ -29,8 +29,6 @@
 #include "btnbf.h"
 #include "XATMITestSuite.h"
 
-int interationCount = 100;
-
 #include "ace/OS_NS_unistd.h"
 
 #include "xatmi.h"
@@ -230,20 +228,12 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 
 	btlogger((char*) "testTPConversation_service ");
 	bool fail = false;
-	char *sendbuf = ::tpalloc((char*) "X_OCTET", NULL, svcinfo->len);
-	char *rcvbuf = ::tpalloc((char*) "X_OCTET", NULL, svcinfo->len);
+	char *sendbuf = ::tpalloc((char*) "X_OCTET", NULL, 10);
+	char *rcvbuf = ::tpalloc((char*) "X_OCTET", NULL, 10);
 
-	char* expectedResult = (char*) malloc(11);
-	strcpy(expectedResult, "conversate");
-	btlogger((char*) "testTPConversation_service expected: %s", expectedResult);
+	char* expectedResult = (char*) malloc(10);
+	strncpy(expectedResult, "conversate", 10);
 
-	/*	int errorMessageLen = 10 + 1 + svcinfo->len + 1;
-	 btlogger((char*) "testTPConversation_service errorMessageLen: %d", errorMessageLen);
-
-	 char* errorMessage = (char*) malloc(errorMessageLen);
-	 sprintf(errorMessage, "%s/%s", expectedResult, svcinfo->data);
-	 btlogger((char*) "testTPConversation_service errorMessage will be: %s", errorMessage);
-	 */
 	if (strncmp(expectedResult, svcinfo->data, 10) != 0) {
 		btlogger((char*) "Fail");
 		if (svcinfo->data != NULL) {
@@ -255,7 +245,7 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 	} else {
 		btlogger((char*) "Chatting");
 		long revent = 0;
-		for (int i = 0; i < interationCount; i++) {
+		for (int i = 10; i < 100; i++) {
 			sprintf(sendbuf, "hi%d", i);
 			//btlogger((char*) "testTPConversation_service:%s:", sendbuf);
 			int result = ::tpsend(svcinfo->cd, sendbuf, svcinfo->len,
@@ -289,10 +279,12 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 	}
 
 	if (fail) {
+		btlogger((char*) "Failed");
 		tpreturn(TPESVCFAIL, 0, sendbuf, 0, 0);
 	} else {
-		sprintf(sendbuf, "hi%d", interationCount);
-		tpreturn(TPSUCCESS, 0, sendbuf, svcinfo->len, 0);
+		btlogger((char*) "Passed");
+		sprintf(sendbuf, "hi%d", 100);
+		tpreturn(TPSUCCESS, 0, sendbuf, 5, 0);
 	}
 
 	::tpfree(rcvbuf);

@@ -22,7 +22,7 @@ public class TTLService implements Service {
         log.info("test_ttl_service get data: " + data);
 
         int len = 60;
-        X_OCTET toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null, len);
+        X_OCTET toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null);
 
         log.info("Data was: " + data);
         if (data.contains("counter")) {

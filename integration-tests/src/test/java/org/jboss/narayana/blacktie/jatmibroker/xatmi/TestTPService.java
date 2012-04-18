@@ -39,7 +39,7 @@ public class TestTPService extends TestCase {
         connection = connectionFactory.getConnection();
 
         sendlen = "TestTPService".length() + 1;
-        sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
+        sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
         sendbuf.setByteArray("TestTPService".getBytes());
     }
 

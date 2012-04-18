@@ -50,7 +50,7 @@ public class TestTPCall extends TestCase {
 
         String message = "test_tpcall_unknown_service";
         int sendlen = message.length() + 1;
-        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
+        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
         sendbuf.setByteArray("test_tpcall_unknown_service".getBytes());
 
         try {
@@ -69,7 +69,7 @@ public class TestTPCall extends TestCase {
 
         String toSend = "test_tpcall_x_octet";
         int sendlen = toSend.length() + 1;
-        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
+        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
         sendbuf.setByteArray(toSend.getBytes());
 
         Response rcvbuf = connection.tpcall(RunServer.getServiceNametpcallXOctet(), sendbuf, 0);
@@ -88,7 +88,7 @@ public class TestTPCall extends TestCase {
         Thread.currentThread().sleep(3000);
         String toSend = "test_tpcall_x_octet";
         int sendlen = toSend.length() + 1;
-        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
+        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
         sendbuf.setByteArray(toSend.getBytes());
 
         Response rcvbuf = connection.tpcall(RunServer.getServiceNametpcallXOctet(), sendbuf, 0);
@@ -105,7 +105,7 @@ public class TestTPCall extends TestCase {
         log.info("TestTPCall::test_tpcall_x_common");
         server.tpadvertisetpcallXCommon();
 
-        X_COMMON dptr = (X_COMMON) connection.tpalloc("X_COMMON", "deposit", 0);
+        X_COMMON dptr = (X_COMMON) connection.tpalloc("X_COMMON", "deposit");
 
         dptr.setLong("acct_no", 12345678);
         dptr.setShort("amount", (short) 50);
@@ -122,7 +122,7 @@ public class TestTPCall extends TestCase {
         log.info("TestTPCall::test_tpcall_x_c_type");
         server.tpadvertisetpcallXCType();
 
-        X_C_TYPE aptr = (X_C_TYPE) connection.tpalloc("X_C_TYPE", "acct_info", 0);
+        X_C_TYPE aptr = (X_C_TYPE) connection.tpalloc("X_C_TYPE", "acct_info");
 
         aptr.setLong("acct_no", 12345678);
         aptr.setByteArray("name", "TOM".getBytes());

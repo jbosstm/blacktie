@@ -84,7 +84,7 @@ public interface Connection {
 	 *             If the buffer was unknown or invalid.
 	 * @throws ConfigurationException
 	 */
-	public Buffer tpalloc(String type, String subtype, int len)
+	public Buffer tpalloc(String type, String subtype)
 			throws ConnectionException, ConfigurationException;
 
 	/**

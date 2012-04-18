@@ -46,7 +46,7 @@ public class TestRollbackOnly extends TestCase {
         connection = connectionFactory.getConnection();
 
         sendlen = "TestRbkOnly".length() + 1;
-        sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
+        sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
         sendbuf.setByteArray("TestRbkOnly".getBytes());
     }
 

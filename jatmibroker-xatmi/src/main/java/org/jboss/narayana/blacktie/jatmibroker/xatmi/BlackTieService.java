@@ -28,6 +28,7 @@ import org.jboss.narayana.blacktie.jatmibroker.core.transport.JtsTransactionImpl
 import org.jboss.narayana.blacktie.jatmibroker.core.transport.Message;
 import org.jboss.narayana.blacktie.jatmibroker.core.tx.TransactionException;
 import org.jboss.narayana.blacktie.jatmibroker.core.tx.TransactionImpl;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.impl.BufferImpl;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.impl.ConnectionImpl;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.impl.SessionImpl;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.impl.TPSVCINFO_Impl;
@@ -93,9 +94,11 @@ public abstract class BlackTieService implements Service {
                 log.trace(serviceName);
                 boolean isConversational = conversational == true;
                 if (hasTPCONV && isConversational) {
-                    int olen = 4;
-                    X_OCTET odata = new X_OCTET_Impl(olen);
-                    odata.setByteArray("ACK".getBytes());
+                    X_OCTET odata = new X_OCTET_Impl(null);
+                    byte[] ack = new byte[4];
+            		byte[] bytes = "ACK".getBytes();
+            		System.arraycopy(bytes, 0, ack, 0, 3);
+                    odata.setByteArray(ack);
                     long result = serviceSession.tpsend(odata, 0);
                     if (result == -1) {
                         log.error("Could not send ack");
@@ -109,9 +112,11 @@ public abstract class BlackTieService implements Service {
                     log.debug("Session was not a TPCONV");
                 } else {
                     log.error("Session was invoked in an improper manner");
-                    int olen = 4;
-                    X_OCTET odata = new X_OCTET_Impl(olen);
-                    odata.setByteArray("ERR".getBytes());
+                    X_OCTET odata = new X_OCTET_Impl(null);
+                    byte[] ack = new byte[4];
+            		byte[] bytes = "ERR".getBytes();
+            		System.arraycopy(bytes, 0, ack, 0, 3);
+                    odata.setByteArray(bytes);
                     long result = serviceSession.tpsend(odata, 0);
                     if (result == -1) {
                         log.error("Could not send err");
@@ -123,9 +128,9 @@ public abstract class BlackTieService implements Service {
                 }
                 log.debug("Created the session");
                 // THIS IS THE FIRST CALL
-                Buffer buffer = null;
+                BufferImpl buffer = null;
                 if (message.type != null && !message.type.equals("")) {
-                    buffer = connection.tpalloc(message.type, message.subtype, message.len);
+                    buffer = (BufferImpl) connection.tpalloc(message.type, message.subtype);
                     buffer.deserialize(message.data);
                 }
                 TPSVCINFO tpsvcinfo = new TPSVCINFO_Impl(message.serviceName, buffer, message.flags, (hasTPCONV ? serviceSession
@@ -178,7 +183,7 @@ public abstract class BlackTieService implements Service {
                     }
 
                     if (response != null) {
-                        Buffer toSend = response.getBuffer();
+                        BufferImpl toSend = (BufferImpl) response.getBuffer();
                         if (toSend != null) {
                             len = toSend.getLen();
                             data = toSend.serialize();

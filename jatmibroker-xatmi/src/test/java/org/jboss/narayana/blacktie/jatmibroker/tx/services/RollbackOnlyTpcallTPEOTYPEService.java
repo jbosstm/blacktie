@@ -16,7 +16,7 @@ public class RollbackOnlyTpcallTPEOTYPEService implements Service {
     public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException, ConfigurationException {
         log.info("test_tpcall_TPEOTYPE_service");
         int len = 60;
-        X_COMMON toReturn = (X_COMMON) svcinfo.getConnection().tpalloc("X_COMMON", "test", len);
+        X_COMMON toReturn = (X_COMMON) svcinfo.getConnection().tpalloc("X_COMMON", "test");
         toReturn.setByteArray("key", "test_tpcall_TPEOTYPE_service".getBytes());
         return new Response(Connection.TPSUCCESS, 0, toReturn, 0);
     }

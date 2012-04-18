@@ -17,7 +17,7 @@ public class TPGetRplyOneService implements Service {
         String response = "test_tpgetrply_TPGETANY_one";
         log.info(response);
 
-        X_OCTET toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null, response.getBytes().length);
+        X_OCTET toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null);
         toReturn.setByteArray(response.getBytes());
         try {
             Thread.sleep(3 * 1000);

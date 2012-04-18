@@ -46,7 +46,7 @@ public class TestTPACall extends TestCase {
         log.info("test_tpacall");
         byte[] toSend = "test_tpacall".getBytes();
         int sendlen = toSend.length;
-        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
+        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
         sendbuf.setByteArray(toSend);
 
         int cd = connection.tpacall(RunServer.getServiceNameTestTPACall(), sendbuf, Connection.TPNOREPLY);
@@ -62,7 +62,8 @@ public class TestTPACall extends TestCase {
 
     public void test_tpacall_x_octet_not_exist() throws ConnectionException, ConfigurationException {
         log.info("test_tpacall_x_octet_not_exist");
-        Buffer sendbuf = connection.tpalloc("X_OCTET", null, 25);
+        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+        sendbuf.setByteArray("foo".getBytes());
 
         try {
             connection.tpacall("GREETSVC", sendbuf, Connection.TPNOREPLY);

@@ -38,7 +38,7 @@ public class AdministrationTest extends TestCase {
 
     private String callAdmin(String command, char expect) throws Exception {
         int sendlen = command.length() + 1;
-        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
+        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
         sendbuf.setByteArray(command.getBytes());
 
         Response buf = connection.tpcall(service, sendbuf, 0);
@@ -72,23 +72,23 @@ public class AdministrationTest extends TestCase {
     public void testAdvertiseAndUnadvertise() throws Exception {
         log.info("testAdvertiseAndUnadvertise");
         callBAR();
-        callAdmin("unadvertise,BAR", '1');
+        callAdmin("unadvertise,BAR,", '1');
         try {
             callBAR();
             fail("Should fail when unadvertise BAR");
         } catch (ConnectionException e) {
             assertTrue("Error was: " + e.getTperrno(), e.getTperrno() == Connection.TPENOENT);
         }
-        callAdmin("advertise,BAR", '1');
+        callAdmin("advertise,BAR,", '1');
         callBAR();
 
         // can not (un)advertise ADMIN service
-        callAdmin("advertise,.testsui", '0');
-        callAdmin("unadvertise,.testsui1", '0');
+        callAdmin("advertise,.testsui,", '0');
+        callAdmin("unadvertise,.testsui1,", '0');
 
         // can not (un)advertise UNKNOW service
-        callAdmin("advertise,UNKNOW", '0');
-        callAdmin("unadvertise,UNKNOW", '0');
+        callAdmin("advertise,UNKNOW,", '0');
+        callAdmin("unadvertise,UNKNOW,", '0');
     }
 
     public void testGetServiceCounter() throws Exception {

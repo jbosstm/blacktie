@@ -60,8 +60,8 @@ public class X_COMMON_Impl extends BufferImpl implements X_COMMON {
      * @throws ConfigurationException
      * @see {@link ConnectionImpl#tpalloc(String, String)}
      */
-    public X_COMMON_Impl(String subtype, Properties properties) throws ConnectionException, ConfigurationException {
-        super("X_COMMON", subtype, true, types, properties, 0);
+    public X_COMMON_Impl(String subtype) throws ConnectionException, ConfigurationException {
+        super("X_COMMON", subtype, true, types);
     }
 
     /**

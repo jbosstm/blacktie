@@ -28,7 +28,6 @@ public class TestTPGetRply extends TestCase {
     private static final Logger log = LogManager.getLogger(TestTPGetRply.class);
     private RunServer server = new RunServer();
     private Connection connection;
-    private int sendlen;
     private X_OCTET sendbuf;
 
     public void setUp() throws ConnectionException, ConfigurationException {
@@ -37,8 +36,7 @@ public class TestTPGetRply extends TestCase {
         ConnectionFactory connectionFactory = ConnectionFactory.getConnectionFactory();
         connection = connectionFactory.getConnection();
 
-        sendlen = "grply".length() + 1;
-        sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
+        sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
         sendbuf.setByteArray("grply".getBytes());
     }
 
@@ -55,7 +53,7 @@ public class TestTPGetRply extends TestCase {
 
         // RETRIEVE THE RESPONSE
         Buffer rcvbuf = connection.tpgetrply(cd, 0).getBuffer();
-        assertTrue(TestTPConversation.strcmp(rcvbuf, "testtpgetrply_service") == 0);
+        assertTrue(TestTPConversation.strcmp("testtpgetrply_service", rcvbuf) == 0);
     }
 
     // 8.5
@@ -169,7 +167,7 @@ public class TestTPGetRply extends TestCase {
         int cdToGet = cd1;
         Response response = connection.tpgetrply(cdToGet, Connection.TPGETANY);
         assertTrue(response.getCd() == cd2);
-        assertTrue(TestTPConversation.strcmp(response.getBuffer(), "test_tpgetrply_TPGETANY_two") == 0);
+        assertTrue(TestTPConversation.strcmp("test_tpgetrply_TPGETANY_two", response.getBuffer()) == 0);
     }
 
     public void test_tpgetrply_without_TPGETANY() throws ConnectionException, ConfigurationException {
@@ -188,7 +186,7 @@ public class TestTPGetRply extends TestCase {
         int cdToGet = cd1;
         Response response = connection.tpgetrply(cdToGet, 0);
         assertTrue(response.getCd() == cd1);
-        assertTrue(TestTPConversation.strcmp(response.getBuffer(), "test_tpgetrply_TPGETANY_one") == 0);
+        assertTrue(TestTPConversation.strcmp("test_tpgetrply_TPGETANY_one", response.getBuffer()) == 0);
     }
 
 }

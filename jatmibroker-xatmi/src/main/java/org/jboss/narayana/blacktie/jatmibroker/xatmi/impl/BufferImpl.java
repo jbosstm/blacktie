@@ -38,6 +38,7 @@ import org.jboss.narayana.blacktie.jatmibroker.core.tx.TransactionException;
 import org.jboss.narayana.blacktie.jatmibroker.core.tx.TransactionImpl;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionFactory;
 
 /**
  * This class is used to send and receive data to and from clients to services.
@@ -156,7 +157,7 @@ public abstract class BufferImpl implements Serializable, Buffer {
      */
     private Map<String, Class> format = new HashMap<String, Class>();
 
-    private int len = -1;
+    protected int len = -1;
 
     /**
      * Create a new buffer.
@@ -172,14 +173,15 @@ public abstract class BufferImpl implements Serializable, Buffer {
      * @see {@link X_C_TYPE_Impl}
      * @see {@link X_COMMON_Impl}
      */
-    BufferImpl(String type, String subtype, boolean requiresSerialization, List<Class> supportedTypes, Properties properties,
-            int len) throws ConfigurationException, ConnectionException {
+    BufferImpl(String type, String subtype, boolean requiresSerialization, List<Class> supportedTypes) 
+    		throws ConfigurationException, ConnectionException {
         this.type = type;
         this.subtype = subtype;
         this.requiresSerialization = requiresSerialization;
         this.supportedTypes = supportedTypes;
 
         if (requiresSerialization) {
+        	Properties properties = ConnectionFactory.getConnectionFactory().getProperties();
             Map<String, BufferStructure> buffers = (Map<String, BufferStructure>) properties.get("blacktie.domain.buffers");
             BufferStructure buffer = buffers.get(subtype);
             if (buffer == null) {
@@ -205,10 +207,7 @@ public abstract class BufferImpl implements Serializable, Buffer {
             }
             format(ids, types, length, count);
         } else {
-            if (len < 0) {
-                throw new ConnectionException(ConnectionImpl.TPEINVAL, "Tried to create a negative length buffer");
-            }
-            this.len = len;
+            this.len = 0;
             format.put("X_OCTET", byte[].class);
         }
     }
@@ -336,6 +335,7 @@ public abstract class BufferImpl implements Serializable, Buffer {
             }
         } else {
             this.data = data;
+            this.len = data.length;
         }
         deserialized = true;
     }

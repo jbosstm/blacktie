@@ -17,6 +17,8 @@
  */
 package org.jboss.narayana.blacktie.jatmibroker.xatmi.impl;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -134,26 +136,28 @@ public class ConnectionImpl implements Connection {
 	 *             If the buffer was unknown or invalid.
 	 * @throws ConfigurationException
 	 */
-	public Buffer tpalloc(String type, String subtype, int len)
+	public Buffer tpalloc(String type, String subtype)
 			throws ConnectionException, ConfigurationException {
 		if (type == null) {
 			throw new ConnectionException(ConnectionImpl.TPEINVAL,
 					"No type provided");
-		} else if (type.equals("X_OCTET")) {
-			log.debug("Initializing a new X_OCTET");
-			return new X_OCTET_Impl(len);
-		} else if (type.equals("X_C_TYPE")) {
-			log.debug("Initializing a new X_C_TYPE");
-			return new X_C_TYPE_Impl(subtype, properties);
-		} else if (type.equals("X_COMMON")) {
-			log.debug("Initializing a new X_COMMON");
-			return new X_COMMON_Impl(subtype, properties);
-		} else if (type.equals("BT_NBF")) {
-			log.debug("Initializing a new BT_NBF");
-			return new BT_NBF_Impl(subtype);
 		} else {
-			throw new ConnectionException(ConnectionImpl.TPENOENT,
-					"Type was not known: " + type);
+			log.debug("Initializing a new: " + type);
+			try {
+				Class clazz = Class.forName(getClass().getPackage().getName() + "."
+						+ type + "_Impl");
+				Constructor ctor = clazz.getConstructor(String.class);
+				return (Buffer) ctor.newInstance(subtype);
+			} catch (InvocationTargetException t) {
+				if (t.getCause() instanceof ConfigurationException) {
+					throw ((ConfigurationException)t.getCause());
+				}
+				throw new ConnectionException(ConnectionImpl.TPENOENT,
+						"Type was not known: " + type, t);
+			} catch (Throwable t) {
+				throw new ConnectionException(ConnectionImpl.TPENOENT,
+						"Type was not known: " + type, t);
+			}
 		}
 	}
 
@@ -164,8 +168,6 @@ public class ConnectionImpl implements Connection {
 	 *            The name of the service to call
 	 * @param buffer
 	 *            The inbound data
-	 * @param len
-	 *            The length of the data
 	 * @param flags
 	 *            The flags to use
 	 * @return The returned buffer
@@ -193,8 +195,6 @@ public class ConnectionImpl implements Connection {
 	 *            The name of the service to call
 	 * @param toSend
 	 *            The inbound data
-	 * @param len
-	 *            The length of the data
 	 * @param flags
 	 *            The flags to use
 	 * @return The connection descriptor
@@ -243,7 +243,7 @@ public class ConnectionImpl implements Connection {
 			String coding_type = properties.getProperty("blacktie." + svc
 					+ ".coding_type");
 			Codec codec = factory.getCodec(coding_type);
-			data = codec.encode(toSend);
+			data = codec.encode((BufferImpl) toSend);
 			// data = toSend.serialize();
 			type = toSend.getType();
 			subtype = toSend.getSubtype();
@@ -362,8 +362,6 @@ public class ConnectionImpl implements Connection {
 	 *            The name of the service
 	 * @param toSend
 	 *            The outbound buffer
-	 * @param len
-	 *            The length of the data
 	 * @param flags
 	 *            The flags to use
 	 * @return The connection descriptor
@@ -398,7 +396,7 @@ public class ConnectionImpl implements Connection {
 			String coding_type = properties.getProperty("blacktie." + svc
 					+ ".coding_type");
 			Codec codec = factory.getCodec(coding_type);
-			data = codec.encode(toSend);
+			data = codec.encode((BufferImpl) toSend);
 			// data = toSend.serialize();
 			type = toSend.getType();
 			subtype = toSend.getSubtype();

@@ -22,7 +22,7 @@ public class RollbackOnlyTpcallTPETIMEService implements Service {
             log.info("RollbackOnlyTpcallTPETIMEService, slept for " + timeout + " seconds");
 
             int len = 60;
-            X_OCTET toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null, len);
+            X_OCTET toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null);
             toReturn.setByteArray("test_tpcall_TPETIME_service".getBytes());
             return new Response(Connection.TPSUCCESS, 0, toReturn, 0);
         } catch (InterruptedException e) {

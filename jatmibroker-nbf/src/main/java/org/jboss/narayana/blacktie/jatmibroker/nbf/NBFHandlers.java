@@ -25,8 +25,8 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-public class NestedBufferHandlers extends DefaultHandler {
-    private static final Logger log = LogManager.getLogger(NestedBufferHandlers.class);
+public class NBFHandlers extends DefaultHandler {
+    private static final Logger log = LogManager.getLogger(NBFHandlers.class);
 
     private PSVIProvider provider;
     private String id;
@@ -37,7 +37,7 @@ public class NestedBufferHandlers extends DefaultHandler {
     private int curIndex;
     private boolean found;
 
-    public NestedBufferHandlers(PSVIProvider provider) {
+    public NBFHandlers(PSVIProvider provider) {
         this.provider = provider;
         curIndex = 0;
         value = null;

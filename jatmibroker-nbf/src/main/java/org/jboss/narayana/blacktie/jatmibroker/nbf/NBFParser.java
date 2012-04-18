@@ -33,14 +33,14 @@ import org.apache.xerces.xs.PSVIProvider;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.xml.sax.SAXException;
 
-public class NestedBufferParser {
-    private NestedBufferHandlers handler;
+public class NBFParser {
+    private NBFHandlers handler;
     private SAXParser saxParser;
     private Schema schema;
 
-    private static final Logger log = LogManager.getLogger(NestedBufferParser.class);
+    private static final Logger log = LogManager.getLogger(NBFParser.class);
 
-    public NestedBufferParser(String xsdFilename) throws ConfigurationException {
+    public NBFParser(String xsdFilename) throws ConfigurationException {
         try {
             // Obtain a new instance of a SAXParserFactory.
             SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -60,7 +60,7 @@ public class NestedBufferParser {
             saxParser = factory.newSAXParser();
             PSVIProvider p = (PSVIProvider) saxParser.getXMLReader();
 
-            handler = new NestedBufferHandlers(p);
+            handler = new NBFHandlers(p);
 
         } catch (SAXException e) {
             log.error("Could not create a SAXParser: " + e.getMessage(), e);

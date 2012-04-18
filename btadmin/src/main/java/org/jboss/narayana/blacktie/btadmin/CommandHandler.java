@@ -41,12 +41,12 @@ import org.apache.log4j.Logger;
 import org.jboss.narayana.blacktie.administration.BlacktieAdministration;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.XMLParser;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionFactory;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.X_OCTET;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.impl.BufferImpl;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -181,7 +181,7 @@ public class CommandHandler implements java.lang.reflect.InvocationHandler {
                 command.append(',');
             }
         }
-        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, command.length());
+        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
         sendbuf.setByteArray(command.toString().getBytes());
 
         Response received = connection.tpcall("BTDomainAdmin", sendbuf, 0);
@@ -239,7 +239,7 @@ public class CommandHandler implements java.lang.reflect.InvocationHandler {
     private long convertLong(byte[] response) throws IOException {
         ByteArrayInputStream baos = new ByteArrayInputStream(response);
         DataInputStream dos = new DataInputStream(baos);
-        ByteBuffer bbuf = ByteBuffer.allocate(Buffer.LONG_SIZE);
+        ByteBuffer bbuf = ByteBuffer.allocate(BufferImpl.LONG_SIZE);
         bbuf.order(ByteOrder.BIG_ENDIAN);
         bbuf.put(response);
         bbuf.order(ByteOrder.LITTLE_ENDIAN);

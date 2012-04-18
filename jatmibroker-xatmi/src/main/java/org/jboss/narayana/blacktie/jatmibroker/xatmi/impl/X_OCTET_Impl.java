@@ -52,13 +52,13 @@ public class X_OCTET_Impl extends BufferImpl implements X_OCTET {
     /**
      * The constructor is hidden as it should be created from the Connection factory method.
      * 
-     * @param len
+     * @param subtype Ignored, provided for reflective ease
      * 
      * @throws ConnectionException
      * @throws ConfigurationException
      */
-    public X_OCTET_Impl(int len) throws ConnectionException, ConfigurationException {
-        super("X_OCTET", "", false, types, null, len);
+    public X_OCTET_Impl(String subtype) throws ConnectionException, ConfigurationException {
+        super("X_OCTET", "", false, types);
     }
 
     /**
@@ -68,6 +68,7 @@ public class X_OCTET_Impl extends BufferImpl implements X_OCTET {
      */
     public void setByteArray(byte[] bytes) {
         super.setRawData(bytes);
+        this.len = bytes.length;
     }
 
     /**

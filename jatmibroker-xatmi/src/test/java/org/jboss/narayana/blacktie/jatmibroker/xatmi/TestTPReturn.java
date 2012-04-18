@@ -63,7 +63,7 @@ public class TestTPReturn extends TestCase {
         server.tpadvertiseTestTPReturn();
 
         int sendlen = "tprnb".length() + 1;
-        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
+        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
         sendbuf.setByteArray("tprnb".getBytes());
 
         try {
@@ -81,7 +81,7 @@ public class TestTPReturn extends TestCase {
         server.tpadvertiseTestTPReturn2();
 
         int sendlen = 3;
-        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
+        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
         sendbuf.setByteArray("24".getBytes());
         Response success = connection.tpcall(RunServer.getServiceNameTestTPReturn2(), sendbuf, 0);
         assertTrue(success != null);
@@ -102,7 +102,7 @@ public class TestTPReturn extends TestCase {
 
         int sendlen = 2;
 
-        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
+        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
         sendbuf.setByteArray("X".getBytes());
         try {
             connection.tpcall(RunServer.getServiceNameTestTPReturn(), sendbuf, 0);

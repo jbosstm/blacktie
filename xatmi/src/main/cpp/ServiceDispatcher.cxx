@@ -246,7 +246,8 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 
 	LOG4CXX_DEBUG(logger, (char*) "message.len: " << message.len
 			<< " message.flags: " << message.flags << "cd: "
-			<< message.correlationId << " message.control=" << message.control);
+			<< message.correlationId << " message.control=" << message.control
+            << " message.serviceName=" << message.serviceName);
 
 	// PREPARE THE STRUCT FOR SENDING TO THE CLIENT
 	TPSVCINFO tpsvcinfo;

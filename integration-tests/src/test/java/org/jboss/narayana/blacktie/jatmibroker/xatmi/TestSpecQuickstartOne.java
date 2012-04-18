@@ -54,8 +54,8 @@ public class TestSpecQuickstartOne extends TestCase {
         long clen = 0; /* contains a character array named input and an */
         int cd; /* integer named output. */
         /* allocate typed buffers */
-        X_C_TYPE dptr = (X_C_TYPE) connection.tpalloc("X_C_TYPE", "dc_buf", 0);
-        X_C_TYPE cptr = (X_C_TYPE) connection.tpalloc("X_C_TYPE", "dc_buf", 0);
+        X_C_TYPE dptr = (X_C_TYPE) connection.tpalloc("X_C_TYPE", "dc_buf");
+        X_C_TYPE cptr = (X_C_TYPE) connection.tpalloc("X_C_TYPE", "dc_buf");
         /* populate typed buffers with input data */
         dptr.setByteArray("input", "debit account 123 by 50".getBytes());
         cptr.setByteArray("input", "credit account 456 by 50".getBytes());

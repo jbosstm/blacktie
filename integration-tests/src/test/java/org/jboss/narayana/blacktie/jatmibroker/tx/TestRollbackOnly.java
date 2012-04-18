@@ -46,7 +46,7 @@ public class TestRollbackOnly extends TestCase {
         connection = connectionFactory.getConnection();
 
         sendlen = "TestRbkOnly".length() + 1;
-        sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
+        sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
         sendbuf.setByteArray("TestRbkOnly".getBytes());
     }
 
@@ -107,10 +107,10 @@ public class TestRollbackOnly extends TestCase {
             connection.tpcall(RunServer.getServiceNameTestRollbackOnly(), sendbuf, 0);
             fail("Expected e.getTperrno() == TPESVCFAIL");
         } catch (ResponseException e) {
-            assertTrue(TestTPConversation.strcmp(e.getReceived(), "test_tpcall_TPESVCFAIL_service") == 0);
+            assertTrue(TestTPConversation.strcmp("test_tpcall_TPESVCFAIL_service", e.getReceived()) == 0);
             assertTrue(e.getTperrno() == Connection.TPESVCFAIL);
         } catch (ConnectionException e) {
-            fail("Expected e.getTperrno() == TPESVCFAIL");
+            fail("Expected e.getTperrno() == TPESVCFAIL: " + e.getTperrno());
         }
 
         TXINFO txinfo = new TXINFO();
@@ -153,7 +153,7 @@ public class TestRollbackOnly extends TestCase {
             assertTrue(e.getEvent() == Connection.TPEV_SVCFAIL);
             assertTrue(e.getTperrno() == Connection.TPEEVENT);
             Buffer rcvbuf = e.getReceived();
-            assertTrue(TestTPConversation.strcmp(rcvbuf, "test_tprecv_TPEV_SVCFAIL_service") == 0);
+            assertTrue(TestTPConversation.strcmp("test_tprecv_TPEV_SVCFAIL_service", rcvbuf) == 0);
         } catch (ConnectionException e) {
             fail("Expected e.getEvent() == Connection.TPEV_SVCFAIL");
         }

@@ -47,7 +47,7 @@ public class TestTopic extends TestCase {
 
         String toSend = "test_tpcall_topic";
         int sendlen = toSend.length() + 1;
-        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
+        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
         sendbuf.setByteArray(toSend.getBytes());
 
         try {
@@ -64,7 +64,7 @@ public class TestTopic extends TestCase {
 
         String toSend = "test_tpcall_topic";
         int sendlen = toSend.length() + 1;
-        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
+        X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
         sendbuf.setByteArray(toSend.getBytes());
         int cd = connection.tpacall(RunServer.getServiceNameTestTopic(), sendbuf, Connection.TPNOREPLY);
         assertTrue(cd == 0);

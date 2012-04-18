@@ -50,7 +50,7 @@ public class TestSpecQuickstartTwo extends TestCase {
         Session cd; /* contains a character array named input and an */
         /* array of integers named output. */
         /* allocate typed buffer */
-        Buffer ptr = connection.tpalloc("X_C_TYPE", "inq_buf", 0);
+        Buffer ptr = connection.tpalloc("X_C_TYPE", "inq_buf");
 
         /* populate typed buffer with input data */
         ((X_C_TYPE) ptr).setByteArray("input", "retrieve all accounts with balances less than 0".getBytes());

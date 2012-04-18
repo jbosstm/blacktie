@@ -29,8 +29,8 @@ import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionFactory;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.Response;
 
-public class TestNestedBuffer extends TestCase {
-    private static final Logger log = LogManager.getLogger(TestNestedBuffer.class);
+public class TestNBF extends TestCase {
+    private static final Logger log = LogManager.getLogger(TestNBF.class);
     private RunServer server = new RunServer();
     private Connection connection;
 
@@ -46,12 +46,12 @@ public class TestNestedBuffer extends TestCase {
         server.serverdone();
     }
 
-    public void test_nested_buffer() throws ConnectionException, ConfigurationException {
-        log.info("test_nested_buffer");
+    public void test_nbf() throws ConnectionException, ConfigurationException {
+        log.info("test_nbf");
         server.tpadvertiseTestNBF();
 
         try {
-            BT_NBF buffer = (BT_NBF) connection.tpalloc("BT_NBF", "employee", 0);
+            BT_NBF buffer = (BT_NBF) connection.tpalloc("BT_NBF", "employee");
             assertTrue(buffer.btaddattribute("name", "zhfeng"));
             assertTrue(buffer.btaddattribute("id", new Long(1001)));
 

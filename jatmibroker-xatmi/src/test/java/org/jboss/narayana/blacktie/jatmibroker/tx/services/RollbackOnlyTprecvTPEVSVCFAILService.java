@@ -16,7 +16,7 @@ public class RollbackOnlyTprecvTPEVSVCFAILService implements Service {
     public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException, ConfigurationException {
         log.info("test_tprecv_TPEV_SVCFAIL_service");
         int len = 60;
-        X_OCTET toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null, len);
+        X_OCTET toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null);
         toReturn.setByteArray("test_tprecv_TPEV_SVCFAIL_service".getBytes());
         return new Response(Connection.TPFAIL, 0, toReturn, 0);
     }

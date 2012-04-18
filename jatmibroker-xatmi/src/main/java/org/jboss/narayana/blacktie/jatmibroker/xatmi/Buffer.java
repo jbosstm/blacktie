@@ -30,32 +30,6 @@ import java.util.Map;
 public interface Buffer extends Serializable {
 
 	/**
-	 * Get the format of the message.
-	 * 
-	 * @return The format of the message
-	 */
-	public Map<String, Class> getFormat();
-
-	/**
-	 * Deserialize the buffer.
-	 * 
-	 * @param data
-	 *            The data to deserialize.
-	 * @throws ConnectionException
-	 *             In case the data does not match the format defined.
-	 */
-	public void deserialize(byte[] data) throws ConnectionException;
-
-	/**
-	 * Serialize the buffer.
-	 * 
-	 * @return The byte array for sending.
-	 * @throws ConnectionException
-	 *             In case the data cannot be formatted correctly
-	 */
-	public byte[] serialize() throws ConnectionException;
-
-	/**
 	 * Get the type
 	 * 
 	 * @return The type
@@ -68,11 +42,6 @@ public interface Buffer extends Serializable {
 	 * @return The subtype
 	 */
 	public String getSubtype();
-
-	/**
-	 * Clear the content of the buffer
-	 */
-	public void clear();
 
 	public int getLen();
 }

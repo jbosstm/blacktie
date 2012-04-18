@@ -183,6 +183,14 @@
     <dependencies>
         <dependency>
             <groupId>org.jboss.narayana.blacktie</groupId>
+            <artifactId>blacktie-jatmibroker-xatmi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.narayana.blacktie</groupId>
+            <artifactId>blacktie-jatmibroker-nbf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.narayana.blacktie</groupId>
             <artifactId>blacktie-codeGeneration</artifactId>
         </dependency>
         <dependency>

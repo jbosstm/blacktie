@@ -16,7 +16,7 @@ public class RollbackOnlyTpcallTPESVCFAILService implements Service {
     public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException, ConfigurationException {
         log.info("test_tpcall_TPESVCFAIL_service");
         int len = 60;
-        X_OCTET toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null, len);
+        X_OCTET toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null);
         toReturn.setByteArray("test_tpcall_TPESVCFAIL_service".getBytes());
         return new Response(Connection.TPFAIL, 0, toReturn, 0);
     }

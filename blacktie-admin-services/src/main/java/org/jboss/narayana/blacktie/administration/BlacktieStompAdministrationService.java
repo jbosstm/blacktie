@@ -406,7 +406,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService imple
                 success[0] = 0;
             }
 
-            X_OCTET buffer = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null, 1);
+            X_OCTET buffer = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null);
             buffer.setByteArray(success);
             log.debug("Responding");
             return new Response(Connection.TPSUCCESS, 0, buffer, 0);

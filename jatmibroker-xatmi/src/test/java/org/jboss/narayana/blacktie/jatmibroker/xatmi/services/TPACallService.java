@@ -16,7 +16,7 @@ public class TPACallService implements Service {
     public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException, ConfigurationException {
         log.info("testtpacall_service");
         int len = 20;
-        X_OCTET toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null, len);
+        X_OCTET toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null);
         toReturn.setByteArray("testtpacall_service".getBytes());
         return new Response(Connection.TPSUCCESS, 0, toReturn, 0);
     }

@@ -21,7 +21,7 @@ import java.io.File;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.narayana.blacktie.jatmibroker.nbf.NestedBufferParser;
+import org.jboss.narayana.blacktie.jatmibroker.nbf.NBFParser;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.BT_NBF;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
 
@@ -32,11 +32,11 @@ public class BT_NBF_Impl extends BufferImpl implements BT_NBF {
      * The default ID
      */
     private static final long serialVersionUID = 1L;
-    private NestedBufferParser parser;
+    private NBFParser parser;
     private String rootElement;
 
-    BT_NBF_Impl(String subtype) throws org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException, ConnectionException {
-        super("BT_NBF", subtype, false, null, null, 0);
+    public BT_NBF_Impl(String subtype) throws org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException, ConnectionException {
+        super("BT_NBF", subtype, false, null);
 
         rootElement = "</" + subtype + ">";
         String xsd = "buffers/" + subtype + ".xsd";
@@ -59,7 +59,7 @@ public class BT_NBF_Impl extends BufferImpl implements BT_NBF {
         buffer.append(">");
 
         setRawData(buffer.toString().getBytes());
-        parser = new NestedBufferParser(xsd);
+        parser = new NBFParser(xsd);
         parser.parse(getRawData());
     }
 

@@ -240,6 +240,11 @@
 			<artifactId>blacktie-jatmibroker-xatmi</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.jboss.narayana.blacktie</groupId>
+			<artifactId>blacktie-jatmibroker-nbf</artifactId>
+			<scope>test</scope>
+		</dependency>
         <dependency>
             <groupId>org.jboss.jbossts</groupId>
             <artifactId>jbossjts</artifactId>

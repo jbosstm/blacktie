@@ -110,7 +110,7 @@ quickstarts/security
     Shows how services may be secured using the <security> element in the BlackTie configuration file (btconfig.xml)
     Refer to the README file in the quickstarts/security directory for more information
 
-quickstarts/mdb
+quickstarts/mdb-xatmi-service
     Demonstrates how to write BlackTie services as MDB's: starts a service (implemented as an MDB) running in the 
     App Server. Then runs a client which uses the jatmibroker api to send requests to the service. The quickstart also shows 
     the service making EJB calls to demonstrate transaction propagation.
@@ -118,8 +118,4 @@ quickstarts/mdb
 integration1
     Shows how a C client can invoke an EJB (via a "BlackTie service adaptor") within the scope of a transaction
     started at the client.
-
-quickstarts/nbf
-	Shows how to use nested buffer in blacktie
-	Refer to ther README file in quickstarts/nbf directory for more information
 

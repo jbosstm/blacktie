@@ -17,8 +17,8 @@ public class TPReturnTpurcodeService implements Service {
 
     public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException, ConfigurationException {
         log.info("testtpreturn_service_tpurcode");
-        int len = 1;
-        Buffer toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null, len);
+        X_OCTET toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null);
+        toReturn.setByteArray(new byte[]{0});
         if (TestTPConversation.strcmp(svcinfo.getBuffer(), "24") == 0) {
             return new Response(Connection.TPSUCCESS, 24, toReturn, 0);
         } else {

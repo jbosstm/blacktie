@@ -28,7 +28,6 @@ public class TestTPRecv extends TestCase {
     private static final Logger log = LogManager.getLogger(TestTPRecv.class);
     private RunServer server = new RunServer();
     private Connection connection;
-    private int sendlen;
     private X_OCTET sendbuf;
     private Session cd;
 
@@ -39,8 +38,9 @@ public class TestTPRecv extends TestCase {
         ConnectionFactory connectionFactory = ConnectionFactory.getConnectionFactory();
         connection = connectionFactory.getConnection();
 
-        sendlen = "recv".length() + 1;
-        sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
+
+        sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+        sendbuf.setByteArray("recv".getBytes());
     }
 
     public void tearDown() throws ConnectionException, ConfigurationException {

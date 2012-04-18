@@ -39,6 +39,7 @@ import org.jboss.narayana.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.TPSVCINFO;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.X_OCTET;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.impl.BufferImpl;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.impl.TPSVCINFO_Impl;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.mdb.MDBBlacktieService;
 
 @MessageDriven(activationConfig = {
@@ -173,7 +174,7 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements jav
                 return new Response(Connection.TPFAIL, 0, null, 0);
             }
 
-            X_OCTET buffer = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null, toReturn.length);
+            X_OCTET buffer = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null);
             buffer.setByteArray(toReturn);
             log.debug("Responding");
             return new Response(Connection.TPSUCCESS, 0, buffer, 0);
