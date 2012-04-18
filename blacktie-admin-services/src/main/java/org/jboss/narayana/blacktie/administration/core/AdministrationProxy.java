@@ -64,7 +64,7 @@ public class AdministrationProxy implements BlacktieAdministration {
     private Response callAdminService(String serverName, int id, String command) throws ConnectionException,
             ConfigurationException {
         log.trace("callAdminService");
-        int sendlen = command.length() + 1;
+        command = command + "\0";
         X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
         sendbuf.setByteArray(command.getBytes());
 
