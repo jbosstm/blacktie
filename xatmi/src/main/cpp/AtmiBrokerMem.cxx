@@ -268,7 +268,6 @@ char* AtmiBrokerMem::tprealloc(char * addr, long size, char* type,
 }
 
 void AtmiBrokerMem::tpfree(char* ptr, bool force) {
-	bool found = false;
 	LOG4CXX_TRACE(logger, (char*) "tpfree locking");
 	lock->lock();
 	LOG4CXX_TRACE(logger, (char*) "tpfree locked");
@@ -304,7 +303,6 @@ void AtmiBrokerMem::tpfree(char* ptr, bool force) {
 					memoryInfoVector.erase(it);
 					LOG4CXX_DEBUG(logger, (char*) "removed from vector ");
 
-					found = true;
 					break;
 				} else {
 					LOG4CXX_DEBUG(logger,

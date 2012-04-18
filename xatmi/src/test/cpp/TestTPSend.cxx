@@ -119,9 +119,11 @@ void testtpsend_tpsendonly_service(TPSVCINFO *svcinfo) {
 	long event = 0;
 	int result = ::tpsend(svcinfo->cd, svcinfo->data, svcinfo->len, TPRECVONLY,
 			&event);
+	btlogger((char*) "result=%d", result);
 
 	long revent = 0;
 	long rcvlen = svcinfo->len;
 	char* rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, svcinfo->len);
 	result = ::tprecv(svcinfo->cd, &rcvbuf, &rcvlen, 0, &revent);
+	btlogger((char*) "result=%d", result);
 }

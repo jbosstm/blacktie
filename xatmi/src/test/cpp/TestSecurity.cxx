@@ -158,7 +158,7 @@ void test_tpcall_SECURE(TPSVCINFO * svcinfo) {
 	btlogger((char*) "bar called  - svc: %s data %s len: %d flags: %d", svcinfo->name, svcinfo->data, svcinfo->len, svcinfo->flags);
 
 	sendlen = 15;
-	buffer = tpalloc("X_OCTET", 0, sendlen);
+	buffer = tpalloc((char*) "X_OCTET", NULL, sendlen);
 	strcpy(buffer, "BAR SAYS HELLO");
 
 	tpreturn(TPSUCCESS, 0, buffer, sendlen, 0);

@@ -252,7 +252,15 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	// PREPARE THE STRUCT FOR SENDING TO THE CLIENT
 	TPSVCINFO tpsvcinfo;
 	memset(&tpsvcinfo, '\0', sizeof(tpsvcinfo));
+
+
+	LOG4CXX_DEBUG(logger, (char*) "serviceName Allocated the TPSVCINFO: " << sizeof(tpsvcinfo));
+	LOG4CXX_DEBUG(logger, (char*) "serviceName Will copy up to: " << XATMI_SERVICE_NAME_LENGTH);
+	LOG4CXX_DEBUG(logger, (char*) "serviceName Will copy: " << message.serviceName);
+	LOG4CXX_DEBUG(logger, (char*) "serviceName Length of name is: " << strlen(message.serviceName));
+	LOG4CXX_DEBUG(logger, (char*) "serviceName Length of existing name is: " << strlen(tpsvcinfo.name));
 	memcpy(tpsvcinfo.name, message.serviceName, XATMI_SERVICE_NAME_LENGTH);
+	LOG4CXX_DEBUG(logger, (char*) "serviceName Length of new name is: " << strlen(tpsvcinfo.name));
 	//strdup(tpsvcinfo.name, this->serviceName);
 	tpsvcinfo.flags = message.flags;
 	tpsvcinfo.len = message.len;

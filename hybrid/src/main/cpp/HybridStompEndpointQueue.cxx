@@ -284,7 +284,7 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 
 				char * serviceName = (char*) apr_hash_get(frame->headers,
 						"servicename", APR_HASH_KEY_STRING);
-				LOG4CXX_TRACE(logger, "Extracted servicename");
+				LOG4CXX_TRACE(logger, "Extracted servicename " << serviceName << " from buffer, will be setting on serviceName");
 
 				message.len = frame->body_length;
 				message.data = codec->decode(message.type, message.subtype,
@@ -305,7 +305,7 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 				LOG4CXX_TRACE(logger, "Set rcode: " << message.rcode);
 				LOG4CXX_TRACE(logger, "Set control: " << message.control);
 				message.serviceName = serviceName;
-				LOG4CXX_TRACE(logger, "set serviceName");
+				LOG4CXX_TRACE(logger, "set serviceName: " << message.serviceName);
 				message.received = true;
 				unackedMessages++;
 			} else if (!shutdown) {
