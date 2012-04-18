@@ -27,40 +27,7 @@ import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
  * The X_COMMON buffer type supports a subset of the types provided by the X_C_TYPE buffer in order to support more language
  * portable data exchange.
  */
-public class X_COMMON extends Buffer {
-
-    /**
-     * The default ID
-     */
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * The list of types supported by X_COMMON, short, long, byte and arrays of these types.
-     */
-    private static List<Class> types = new ArrayList<Class>();
-
-    /**
-     * Populate the list of supported types
-     */
-    static {
-        Class[] x_commonType = new Class[] { short.class, long.class, byte.class, short[].class, long[].class, byte[].class };
-        for (int i = 0; i < x_commonType.length; i++) {
-            types.add(x_commonType[i]);
-        }
-    }
-
-    /**
-     * The constructor is hidden as a <code>Connection</code> should be used to allocate the object.
-     * 
-     * @param subtype The subtype of the buffer, must be registered in the configuration
-     * @param properties The properties to use
-     * @throws ConnectionException In case the buffer cannot be created.
-     * @throws ConfigurationException
-     * @see {@link Connection#tpalloc(String, String)}
-     */
-    X_COMMON(String subtype, Properties properties) throws ConnectionException, ConfigurationException {
-        super("X_COMMON", subtype, true, types, properties, 0);
-    }
+public interface X_COMMON extends Buffer {
 
     /**
      * Get the short value identified by the key.
@@ -69,9 +36,7 @@ public class X_COMMON extends Buffer {
      * @return The short value
      * @throws ConnectionException In case the key is not part of the structure.
      */
-    public short getShort(String key) throws ConnectionException {
-        return ((Short) getAttributeValue(key, short.class)).shortValue();
-    }
+    public short getShort(String key) throws ConnectionException;
 
     /**
      * Set the short value
@@ -80,47 +45,25 @@ public class X_COMMON extends Buffer {
      * @param value The value to use
      * @throws ConnectionException In case the key is unknown.
      */
-    public void setShort(String key, short value) throws ConnectionException {
-        setAttributeValue(key, short.class, value);
-    }
+    public void setShort(String key, short value) throws ConnectionException;
 
-    public long getLong(String key) throws ConnectionException {
-        return ((Long) getAttributeValue(key, long.class)).longValue();
-    }
+    public long getLong(String key) throws ConnectionException;
 
-    public void setLong(String key, long value) throws ConnectionException {
-        setAttributeValue(key, long.class, value);
-    }
+    public void setLong(String key, long value) throws ConnectionException;
 
-    public byte getByte(String key) throws ConnectionException {
-        return ((Byte) getAttributeValue(key, byte.class)).byteValue();
-    }
+    public byte getByte(String key) throws ConnectionException;
 
-    public void setByte(String key, byte value) throws ConnectionException {
-        setAttributeValue(key, byte.class, value);
-    }
+    public void setByte(String key, byte value) throws ConnectionException;
 
-    public short[] getShortArray(String key) throws ConnectionException {
-        return (short[]) getAttributeValue(key, short[].class);
-    }
+    public short[] getShortArray(String key) throws ConnectionException;
 
-    public void setShortArray(String key, short[] value) throws ConnectionException {
-        setAttributeValue(key, short[].class, value);
-    }
+    public void setShortArray(String key, short[] value) throws ConnectionException;
 
-    public long[] getLongArray(String key) throws ConnectionException {
-        return (long[]) getAttributeValue(key, long[].class);
-    }
+    public long[] getLongArray(String key) throws ConnectionException;
 
-    public void setLongArray(String key, long[] value) throws ConnectionException {
-        setAttributeValue(key, long[].class, value);
-    }
+    public void setLongArray(String key, long[] value) throws ConnectionException;
 
-    public byte[] getByteArray(String key) throws ConnectionException {
-        return (byte[]) getAttributeValue(key, byte[].class);
-    }
+    public byte[] getByteArray(String key) throws ConnectionException;
 
-    public void setByteArray(String key, byte[] value) throws ConnectionException {
-        setAttributeValue(key, byte[].class, value);
-    }
+    public void setByteArray(String key, byte[] value) throws ConnectionException;
 }

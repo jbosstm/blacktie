@@ -19,8 +19,11 @@ package org.jboss.narayana.blacktie.jatmibroker.xatmi;
 
 import java.io.Serializable;
 
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.impl.ConnectionImpl;
+
 /**
- * This class encapsulates the response from the remote service and the return code
+ * This class encapsulates the response from the remote service and the return
+ * code
  */
 public class Response implements Serializable {
 
@@ -72,14 +75,14 @@ public class Response implements Serializable {
     /**
      * When a client receives a response this is the method that is used by the core framework to assemble the response.
      * 
-     * @param cd The connection that actually received the response (may be different to expected if {@link Connection#TPGETANY}
+     * @param cd The connection that actually received the response (may be different to expected if {@link ConnectionImpl#TPGETANY}
      *        was used.
      * @param rval The return value.
      * @param rcode The return code.
      * @param buffer The buffer response.
      * @param flags The flags the service used.
      */
-    Response(int cd, short rval, int rcode, Buffer buffer, int flags) {
+    public Response(int cd, short rval, int rcode, Buffer buffer, int flags) {
         this.cd = cd;
         this.rval = rval;
         this.rcode = rcode;

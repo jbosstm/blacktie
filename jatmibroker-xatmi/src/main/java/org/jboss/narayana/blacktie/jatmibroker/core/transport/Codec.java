@@ -20,6 +20,7 @@ package org.jboss.narayana.blacktie.jatmibroker.core.transport;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.impl.BufferImpl;
 
 public interface Codec {
     public byte[] encode(Buffer buf) throws ConnectionException;

@@ -28,6 +28,10 @@ import org.jboss.narayana.blacktie.jatmibroker.core.transport.JtsTransactionImpl
 import org.jboss.narayana.blacktie.jatmibroker.core.transport.Message;
 import org.jboss.narayana.blacktie.jatmibroker.core.tx.TransactionException;
 import org.jboss.narayana.blacktie.jatmibroker.core.tx.TransactionImpl;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.impl.ConnectionImpl;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.impl.SessionImpl;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.impl.TPSVCINFO_Impl;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.impl.X_OCTET_Impl;
 
 /**
  * MDB services implementations extend this class as it provides the core service template method. For non MDB services on the
@@ -69,7 +73,7 @@ public abstract class BlackTieService implements Service {
     protected void processMessage(String serviceName, Message message) throws ConnectionException, ConfigurationException,
             NamingException, InvalidTransactionException, IllegalStateException, SystemException, TransactionException {
         log.trace("Service invoked");
-        Connection connection = connectionFactory.getConnection();
+        ConnectionImpl connection = (ConnectionImpl) connectionFactory.getConnection();
         try {
             boolean hasTx = false;
             boolean hasTPNOREPLY = (message.flags & Connection.TPNOREPLY) == Connection.TPNOREPLY;
@@ -82,15 +86,15 @@ public abstract class BlackTieService implements Service {
             int flags = 0;
             String type = null;
             String subtype = null;
-            Session serviceSession = connection.createServiceSession(serviceName, message.cd, message.replyTo);
+            SessionImpl serviceSession = ((ConnectionImpl)connection).createServiceSession(serviceName, message.cd, message.replyTo);
             try {
                 boolean hasTPCONV = (message.flags & Connection.TPCONV) == Connection.TPCONV;
-                Boolean conversational = (Boolean) connection.properties.get("blacktie." + serviceName + ".conversational");
+                Boolean conversational = (Boolean) connectionFactory.getProperties().get("blacktie." + serviceName + ".conversational");
                 log.trace(serviceName);
                 boolean isConversational = conversational == true;
                 if (hasTPCONV && isConversational) {
                     int olen = 4;
-                    X_OCTET odata = new X_OCTET(olen);
+                    X_OCTET odata = new X_OCTET_Impl(olen);
                     odata.setByteArray("ACK".getBytes());
                     long result = serviceSession.tpsend(odata, 0);
                     if (result == -1) {
@@ -106,7 +110,7 @@ public abstract class BlackTieService implements Service {
                 } else {
                     log.error("Session was invoked in an improper manner");
                     int olen = 4;
-                    X_OCTET odata = new X_OCTET(olen);
+                    X_OCTET odata = new X_OCTET_Impl(olen);
                     odata.setByteArray("ERR".getBytes());
                     long result = serviceSession.tpsend(odata, 0);
                     if (result == -1) {
@@ -124,7 +128,7 @@ public abstract class BlackTieService implements Service {
                     buffer = connection.tpalloc(message.type, message.subtype, message.len);
                     buffer.deserialize(message.data);
                 }
-                TPSVCINFO tpsvcinfo = new TPSVCINFO(message.serviceName, buffer, message.flags, (hasTPCONV ? serviceSession
+                TPSVCINFO tpsvcinfo = new TPSVCINFO_Impl(message.serviceName, buffer, message.flags, (hasTPCONV ? serviceSession
                         : null), connection, message.len);
                 log.debug("Prepared the data for passing to the service");
 

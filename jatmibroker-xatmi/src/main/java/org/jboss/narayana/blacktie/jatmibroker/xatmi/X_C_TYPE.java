@@ -26,41 +26,7 @@ import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
 /**
  * The X_C_TYPE buffer supports the broadest set of parameter types.
  */
-public class X_C_TYPE extends Buffer {
-
-    /**
-     * The default ID
-     */
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * The list of types, to contain, int, short, long, byte, float, double and arrays of those types
-     */
-    private static List<Class> types = new ArrayList<Class>();
-
-    /**
-     * Populate the types
-     */
-    static {
-        Class[] x_c_typeType = new Class[] { int.class, short.class, long.class, byte.class, float.class, double.class,
-                int[].class, short[].class, long[].class, byte[].class, float[].class, double[].class, byte[][].class };
-        for (int i = 0; i < x_c_typeType.length; i++) {
-            types.add(x_c_typeType[i]);
-        }
-    }
-
-    /**
-     * The constructor is hidden as the <code>Connection</code> factory method should be used instead.
-     * 
-     * @param subtype The subtype of the buffer
-     * @param properties The properties to read
-     * @throws ConnectionException In case the buffer does not exist
-     * @throws ConfigurationException
-     * @see {@link Connection#tpalloc(String, String)}
-     */
-    X_C_TYPE(String subtype, Properties properties) throws ConnectionException, ConfigurationException {
-        super("X_C_TYPE", subtype, true, types, properties, 0);
-    }
+public interface X_C_TYPE extends Buffer {
 
     /**
      * Get the short value identified by the key.
@@ -69,9 +35,7 @@ public class X_C_TYPE extends Buffer {
      * @return The short value
      * @throws ConnectionException In case the key is not part of the structure.
      */
-    public short getShort(String key) throws ConnectionException {
-        return ((Short) getAttributeValue(key, short.class)).shortValue();
-    }
+    public short getShort(String key) throws ConnectionException;
 
     /**
      * Set the short value
@@ -80,104 +44,53 @@ public class X_C_TYPE extends Buffer {
      * @param value The value to use
      * @throws ConnectionException In case the key is unknown.
      */
-    public void setShort(String key, short value) throws ConnectionException {
-        setAttributeValue(key, short.class, value);
-    }
+    public void setShort(String key, short value) throws ConnectionException;
 
-    public long getLong(String key) throws ConnectionException {
-        return ((Long) getAttributeValue(key, long.class)).longValue();
-    }
+    public long getLong(String key) throws ConnectionException;
 
-    public void setLong(String key, long value) throws ConnectionException {
-        setAttributeValue(key, long.class, value);
-    }
+    public void setLong(String key, long value) throws ConnectionException;
 
-    public byte getByte(String key) throws ConnectionException {
-        return ((Byte) getAttributeValue(key, byte.class)).byteValue();
-    }
+    public byte getByte(String key) throws ConnectionException;
 
-    public void setByte(String key, byte value) throws ConnectionException {
-        setAttributeValue(key, byte.class, value);
-    }
+    public void setByte(String key, byte value) throws ConnectionException;
 
-    public short[] getShortArray(String key) throws ConnectionException {
-        return (short[]) getAttributeValue(key, short[].class);
-    }
+    public short[] getShortArray(String key) throws ConnectionException;
 
-    public void setShortArray(String key, short[] value) throws ConnectionException {
-        setAttributeValue(key, short[].class, value);
-    }
+    public void setShortArray(String key, short[] value) throws ConnectionException;
 
-    public long[] getLongArray(String key) throws ConnectionException {
-        return (long[]) getAttributeValue(key, long[].class);
-    }
+    public long[] getLongArray(String key) throws ConnectionException;
 
-    public void setLongArray(String key, long[] value) throws ConnectionException {
-        setAttributeValue(key, long[].class, value);
-    }
+    public void setLongArray(String key, long[] value) throws ConnectionException;
 
-    public byte[] getByteArray(String key) throws ConnectionException {
-        return (byte[]) getAttributeValue(key, byte[].class);
-    }
+    public byte[] getByteArray(String key) throws ConnectionException;
 
-    public void setByteArray(String key, byte[] value) throws ConnectionException {
-        setAttributeValue(key, byte[].class, value);
-    }
+    public void setByteArray(String key, byte[] value) throws ConnectionException;
 
-    public int getInt(String key) throws ConnectionException {
-        return ((Integer) getAttributeValue(key, int.class)).intValue();
-    }
+    public int getInt(String key) throws ConnectionException;
 
-    public void setInt(String key, int value) throws ConnectionException {
-        setAttributeValue(key, int.class, value);
-    }
+    public void setInt(String key, int value) throws ConnectionException;
 
-    public float getFloat(String key) throws ConnectionException {
-        return ((Float) getAttributeValue(key, float.class)).floatValue();
-    }
+    public float getFloat(String key) throws ConnectionException;
 
-    public void setFloat(String key, float value) throws ConnectionException {
-        setAttributeValue(key, float.class, value);
-    }
+    public void setFloat(String key, float value) throws ConnectionException;
 
-    public double getDouble(String key) throws ConnectionException {
-        return ((Double) getAttributeValue(key, double.class)).floatValue();
-    }
+    public double getDouble(String key) throws ConnectionException;
 
-    public void setDouble(String key, double value) throws ConnectionException {
-        setAttributeValue(key, double.class, value);
-    }
+    public void setDouble(String key, double value) throws ConnectionException;
 
-    public int[] getIntArray(String key) throws ConnectionException {
-        return (int[]) getAttributeValue(key, int[].class);
-    }
+    public int[] getIntArray(String key) throws ConnectionException;
 
-    public void setIntArray(String key, int[] value) throws ConnectionException {
-        setAttributeValue(key, int[].class, value);
-    }
+    public void setIntArray(String key, int[] value) throws ConnectionException;
 
-    public float[] getFloatArray(String key) throws ConnectionException {
-        return (float[]) getAttributeValue(key, float[].class);
-    }
+    public float[] getFloatArray(String key) throws ConnectionException;
 
-    public void setFloatArray(String key, float[] value) throws ConnectionException {
-        setAttributeValue(key, float[].class, value);
-    }
+    public void setFloatArray(String key, float[] value) throws ConnectionException;
 
-    public double[] getDoubleArray(String key) throws ConnectionException {
-        return (double[]) getAttributeValue(key, double[].class);
-    }
+    public double[] getDoubleArray(String key) throws ConnectionException;
 
-    public void setDoubleArray(String key, double[] value) throws ConnectionException {
-        setAttributeValue(key, double[].class, value);
-    }
+    public void setDoubleArray(String key, double[] value) throws ConnectionException;
 
-    public byte[][] getByteArrayArray(String key) throws ConnectionException {
-        return (byte[][]) getAttributeValue(key, byte[][].class);
-    }
+    public byte[][] getByteArrayArray(String key) throws ConnectionException;
 
-    public void setByteArrayArray(String key, byte[][] value) throws ConnectionException {
-        setAttributeValue(key, byte[][].class, value);
-    }
-
+    public void setByteArrayArray(String key, byte[][] value) throws ConnectionException;
 }

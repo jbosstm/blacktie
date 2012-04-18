@@ -8,7 +8,7 @@ public class TX {
     public static final int TX_ROLLBACK_ONLY = -1;// = 2;
 
     public static int tx_begin() {
-        return TX_OK
+        return TX_OK;
     }
 
     public static int tx_open() {

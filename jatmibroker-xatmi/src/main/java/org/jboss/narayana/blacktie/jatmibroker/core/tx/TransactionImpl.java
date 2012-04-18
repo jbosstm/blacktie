@@ -53,7 +53,7 @@ public class TransactionImpl {
         super.finalize();
     }
 
-    public TransactionImpl(Properties properties, int aTimeout) throws TransactionException, NotFound, CannotProceed,
+    public TransactionImpl(int aTimeout) throws TransactionException, NotFound, CannotProceed,
             org.omg.CosNaming.NamingContextPackage.InvalidName, InvalidName, AdapterInactive, ConfigurationException {
         log.debug("TransactionImpl constructor");
 
@@ -65,11 +65,17 @@ public class TransactionImpl {
         control = null;
         terminator = null;
 
-        orbManagement = OrbManagement.getInstance(properties);
-        String toLookup = (String) properties.get("blacktie.trans.factoryid");
-        org.omg.CORBA.Object aObject = orbManagement.getNamingContextExt().resolve_str(toLookup);
-        transactionFactory = TransactionFactoryHelper.narrow(aObject);
-
+        try {
+        	AtmiBrokerEnvXML client = new AtmiBrokerEnvXML();
+            Properties properties = client.getProperties();
+            orbManagement = OrbManagement.getInstance(properties);
+            String toLookup = (String) properties.get("blacktie.trans.factoryid");
+            org.omg.CORBA.Object aObject = orbManagement.getNamingContextExt().resolve_str(toLookup);
+            transactionFactory = TransactionFactoryHelper.narrow(aObject);
+        } catch (org.omg.CORBA.UserException cue) {
+            throw new TransactionException(cue.getMessage(), cue);
+        }
+        
         log.debug(" creating Control");
         control = transactionFactory.create(timeout);
         ThreadActionData.pushAction(this);

@@ -33,12 +33,12 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.narayana.blacktie.administration.core.AdministrationProxy;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.narayana.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.TPSVCINFO;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.X_OCTET;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.impl.BufferImpl;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.mdb.MDBBlacktieService;
 
 @MessageDriven(activationConfig = {
@@ -200,7 +200,7 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements jav
     private byte[] convertLong(long response) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(baos);
-        ByteBuffer bbuf = ByteBuffer.allocate(Buffer.LONG_SIZE);
+        ByteBuffer bbuf = ByteBuffer.allocate(BufferImpl.LONG_SIZE);
         bbuf.order(ByteOrder.BIG_ENDIAN);
         bbuf.putLong(response);
         bbuf.order(ByteOrder.LITTLE_ENDIAN);
