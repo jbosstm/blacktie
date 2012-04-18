@@ -15,12 +15,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.narayana.blacktie.jatmibroker.jab;
+package org.jboss.narayana.blacktie.jatmibroker.core.tx;
 
 /**
- * The JABException is used throughout the JAB library to report issues to the client.
+ * The TransactionException is used throughout the Jatmibroker library to report issues to the client.
  */
-public class JABException extends Exception {
+public class TransactionException extends Exception {
     /**
      * The serialization id.
      */
@@ -32,16 +32,16 @@ public class JABException extends Exception {
      * @param msg The message to include
      * @param cause The root cause of the exception
      */
-    public JABException(String msg, Throwable cause) {
+    public TransactionException(String msg, Throwable cause) {
         super(msg, cause);
     }
 
     /**
-     * The JABException that doesn't need the root cause.
+     * The TransactionException that doesn't need the root cause.
      * 
      * @param msg The message to include
      */
-    public JABException(String msg) {
+    public TransactionException(String msg) {
         super(msg);
     }
 }

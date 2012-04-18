@@ -26,8 +26,8 @@ import org.apache.log4j.Logger;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.narayana.blacktie.jatmibroker.core.transport.JtsTransactionImple;
 import org.jboss.narayana.blacktie.jatmibroker.core.transport.Message;
-import org.jboss.narayana.blacktie.jatmibroker.jab.JABException;
-import org.jboss.narayana.blacktie.jatmibroker.jab.JABTransaction;
+import org.jboss.narayana.blacktie.jatmibroker.core.tx.TransactionException;
+import org.jboss.narayana.blacktie.jatmibroker.core.tx.TransactionImpl;
 
 /**
  * MDB services implementations extend this class as it provides the core service template method. For non MDB services on the
@@ -61,13 +61,13 @@ public abstract class BlackTieService implements Service {
      * @throws ConnectionException In case communication fails
      * @throws ConfigurationException
      * @throws NamingException
-     * @throws JABException
      * @throws SystemException
      * @throws IllegalStateException
      * @throws InvalidTransactionException
+     * @throws TransactionException 
      */
     protected void processMessage(String serviceName, Message message) throws ConnectionException, ConfigurationException,
-            NamingException, InvalidTransactionException, IllegalStateException, SystemException, JABException {
+            NamingException, InvalidTransactionException, IllegalStateException, SystemException, TransactionException {
         log.trace("Service invoked");
         Connection connection = connectionFactory.getConnection();
         try {
@@ -163,10 +163,10 @@ public abstract class BlackTieService implements Service {
                         rval = Connection.TPFAIL;
                     }
                     if (rval == Connection.TPFAIL) {
-                        if (JABTransaction.current() != null) {
+                        if (TransactionImpl.current() != null) {
                             try {
-                                JABTransaction.current().rollback_only();
-                            } catch (JABException e) {
+                                TransactionImpl.current().rollback_only();
+                            } catch (TransactionException e) {
                                 throw new ConnectionException(Connection.TPESYSTEM,
                                         "Could not mark transaction for rollback only");
                             }

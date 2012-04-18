@@ -34,8 +34,8 @@ import java.util.Properties;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.AttributeStructure;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.BufferStructure;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.narayana.blacktie.jatmibroker.jab.JABException;
-import org.jboss.narayana.blacktie.jatmibroker.jab.JABTransaction;
+import org.jboss.narayana.blacktie.jatmibroker.core.tx.TransactionException;
+import org.jboss.narayana.blacktie.jatmibroker.core.tx.TransactionImpl;
 
 /**
  * This class is used to send and receive data to and from clients to services.
@@ -483,10 +483,10 @@ public abstract class Buffer implements Serializable {
                             }
                         }
                     } else {
-                        if (JABTransaction.current() != null) {
+                        if (TransactionImpl.current() != null) {
                             try {
-                                JABTransaction.current().rollback_only();
-                            } catch (JABException e) {
+                                TransactionImpl.current().rollback_only();
+                            } catch (TransactionException e) {
                                 throw new ConnectionException(Connection.TPESYSTEM,
                                         "Could not mark transaction for rollback only");
                             }

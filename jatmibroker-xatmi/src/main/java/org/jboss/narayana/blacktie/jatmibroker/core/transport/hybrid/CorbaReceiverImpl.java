@@ -29,8 +29,8 @@ import org.jboss.narayana.blacktie.jatmibroker.core.transport.JtsTransactionImpl
 import org.jboss.narayana.blacktie.jatmibroker.core.transport.Message;
 import org.jboss.narayana.blacktie.jatmibroker.core.transport.OrbManagement;
 import org.jboss.narayana.blacktie.jatmibroker.core.transport.Receiver;
-import org.jboss.narayana.blacktie.jatmibroker.jab.JABException;
-import org.jboss.narayana.blacktie.jatmibroker.jab.JABTransaction;
+import org.jboss.narayana.blacktie.jatmibroker.core.tx.TransactionException;
+import org.jboss.narayana.blacktie.jatmibroker.core.tx.TransactionImpl;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.omg.CORBA.ORB;
@@ -80,7 +80,7 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
             } catch (AdapterAlreadyExists e) {
                 m_default_poa = poa.find_POA("TODO", true);
             }
-            log.debug("JABSession createCallbackObject");
+            log.debug("CorbaReceiverImpl createCallbackObject");
             activate_object = m_default_poa.activate_object(this);
             log.debug("activated this " + this);
 
@@ -170,8 +170,8 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
                 if (JtsTransactionImple.hasTransaction()) {
                     try {
                         log.debug("Marking rollbackOnly");
-                        JABTransaction.current().rollback_only();
-                    } catch (JABException e) {
+                        TransactionImpl.current().rollback_only();
+                    } catch (TransactionException e) {
                         throw new ConnectionException(Connection.TPESYSTEM, "Could not mark transaction for rollback only");
                     }
                 }
@@ -181,30 +181,30 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
                 if (message != null) {
                     log.debug("Message was available");
                     if (message.rval == EventListener.DISCON_CODE) {
-                        if (JABTransaction.current() != null) {
+                        if (TransactionImpl.current() != null) {
                             try {
                                 log.debug("Marking rollbackOnly as disconnection");
-                                JABTransaction.current().rollback_only();
-                            } catch (JABException e) {
+                                TransactionImpl.current().rollback_only();
+                            } catch (TransactionException e) {
                                 throw new ConnectionException(Connection.TPESYSTEM,
                                         "Could not mark transaction for rollback only");
                             }
                         }
                     } else if (message.rcode == Connection.TPESVCERR) {
-                        if (JABTransaction.current() != null) {
+                        if (TransactionImpl.current() != null) {
                             try {
                                 log.debug("Marking rollbackOnly as svc err");
-                                JABTransaction.current().rollback_only();
-                            } catch (JABException e) {
+                                TransactionImpl.current().rollback_only();
+                            } catch (TransactionException e) {
                                 throw new ConnectionException(Connection.TPESYSTEM,
                                         "Could not mark transaction for rollback only");
                             }
                         }
                     } else if (message.rval == Connection.TPFAIL) {
-                        if (JABTransaction.current() != null) {
+                        if (TransactionImpl.current() != null) {
                             try {
-                                JABTransaction.current().rollback_only();
-                            } catch (JABException e) {
+                                TransactionImpl.current().rollback_only();
+                            } catch (TransactionException e) {
                                 throw new ConnectionException(Connection.TPESYSTEM,
                                         "Could not mark transaction for rollback only");
                             }

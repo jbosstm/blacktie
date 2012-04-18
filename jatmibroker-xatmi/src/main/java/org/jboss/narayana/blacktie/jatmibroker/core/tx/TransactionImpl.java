@@ -15,17 +15,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.narayana.blacktie.jatmibroker.jab;
+package org.jboss.narayana.blacktie.jatmibroker.core.tx;
 
 import java.util.Hashtable;
 import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.narayana.blacktie.jatmibroker.core.conf.AtmiBrokerEnvXML;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.narayana.blacktie.jatmibroker.core.transport.OrbManagement;
-import org.jboss.narayana.blacktie.jatmibroker.core.tx.ThreadActionData;
-import org.jboss.narayana.blacktie.jatmibroker.core.tx.ThreadUtil;
 import org.omg.CORBA.ORBPackage.InvalidName;
 import org.omg.CosNaming.NamingContextPackage.CannotProceed;
 import org.omg.CosNaming.NamingContextPackage.NotFound;
@@ -37,10 +36,9 @@ import org.omg.CosTransactions.TransactionFactoryHelper;
 import org.omg.CosTransactions.Unavailable;
 import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
 
-public class JABTransaction {
-    private static final Logger log = LogManager.getLogger(JABTransaction.class);
+public class TransactionImpl {
+    private static final Logger log = LogManager.getLogger(TransactionImpl.class);
     static TransactionFactory transactionFactory;
-    private JABSession jabSession;
     private int timeout;
     protected Control control;
     private Terminator terminator;
@@ -55,20 +53,18 @@ public class JABTransaction {
         super.finalize();
     }
 
-    public JABTransaction(JABSession aJABSession, int aTimeout) throws TransactionException, NotFound, CannotProceed,
+    public TransactionImpl(Properties properties, int aTimeout) throws TransactionException, NotFound, CannotProceed,
             org.omg.CosNaming.NamingContextPackage.InvalidName, InvalidName, AdapterInactive, ConfigurationException {
-        log.debug("JABTransaction constructor");
+        log.debug("TransactionImpl constructor");
 
         if (current() != null)
             throw new TransactionException("Nested transactions are not supported");
 
-        jabSession = aJABSession;
         timeout = aTimeout;
 
         control = null;
         terminator = null;
 
-        Properties properties = jabSession.getJABSessionAttributes().getProperties();
         orbManagement = OrbManagement.getInstance(properties);
         String toLookup = (String) properties.get("blacktie.trans.factoryid");
         org.omg.CORBA.Object aObject = orbManagement.getNamingContextExt().resolve_str(toLookup);
@@ -82,15 +78,15 @@ public class JABTransaction {
         setTerminator(control);
     }
 
-    public JABTransaction(String controlIOR) throws JABException, ConfigurationException {
-        JABSessionAttributes sessionAttrs = new JABSessionAttributes();
-        JABTransaction curr = current();
+    public TransactionImpl(String controlIOR) throws ConfigurationException, TransactionException {
+        TransactionImpl curr = current();
 
-        jabSession = new JABSession(sessionAttrs);
         timeout = -1;
 
         try {
-            orbManagement = OrbManagement.getInstance(sessionAttrs.getProperties());
+        	AtmiBrokerEnvXML client = new AtmiBrokerEnvXML();
+            Properties properties = client.getProperties();
+            orbManagement = OrbManagement.getInstance(properties);
         } catch (org.omg.CORBA.UserException cue) {
             throw new TransactionException(cue.getMessage(), cue);
         }
@@ -124,8 +120,8 @@ public class JABTransaction {
     }
 
     public boolean equals(java.lang.Object obj) {
-        if (obj instanceof JABTransaction) {
-            JABTransaction other = (JABTransaction) obj;
+        if (obj instanceof TransactionImpl) {
+            TransactionImpl other = (TransactionImpl) obj;
 
             return control.equals(other.control);
         }
@@ -146,23 +142,18 @@ public class JABTransaction {
         return orbManagement.getOrb().object_to_string(control);
     }
 
-    public static JABTransaction current() {
+    public static TransactionImpl current() {
         log.trace("Getting current");
         return ThreadActionData.currentAction();
     }
 
     public Control getControl() {
-        log.debug("JABTransaction getControl");
+        log.debug("TransactionImpl getControl");
         return control;
     }
 
-    public JABSession getSession() {
-        log.debug("JABTransaction getSession");
-        return jabSession;
-    }
-
     public void commit() throws TransactionException {
-        log.debug("JABTransaction commit");
+        log.debug("TransactionImpl commit");
 
         try {
             log.debug("calling commit");
@@ -171,7 +162,7 @@ public class JABTransaction {
             ThreadActionData.popAction();
             log.debug("called commit on terminator");
         } catch (Exception e) {
-            // TODO build an JABTransactionException hierarchy so we can perform
+            // TODO build an TransactionImpl hierarchy so we can perform
             // better
             // error reporting
             // presume abort and dissassociate the tx from the the current
@@ -184,7 +175,7 @@ public class JABTransaction {
     }
 
     public void rollback() throws TransactionException {
-        log.debug("JABTransaction rollback");
+        log.debug("TransactionImpl rollback");
 
         try {
             terminator.rollback();
@@ -202,7 +193,7 @@ public class JABTransaction {
     }
 
     public void rollback_only() throws TransactionException {
-        log.debug("JABTransaction rollback_only");
+        log.debug("TransactionImpl rollback_only");
 
         try {
             control.get_coordinator().rollback_only();
@@ -268,7 +259,7 @@ public class JABTransaction {
         return false;
     }
 
-    public final JABTransaction parent() {
+    public final TransactionImpl parent() {
         return null;
     }
 
@@ -276,10 +267,10 @@ public class JABTransaction {
      * Suspend the transaction association from the invoking thread. When this operation returns, the thread will not be
      * associated with a transaction.
      * 
-     * @return a handle on the current JABTransaction (if any) so that the thread can later resume association if required.
+     * @return a handle on the current TransactionImpl (if any) so that the thread can later resume association if required.
      */
-    public static final JABTransaction suspend() {
-        JABTransaction curr = ThreadActionData.currentAction();
+    public static final TransactionImpl suspend() {
+        TransactionImpl curr = ThreadActionData.currentAction();
 
         if (curr != null)
             ThreadActionData.purgeActions();
@@ -294,7 +285,7 @@ public class JABTransaction {
      * @param act the transaction to associate.
      * @return <code>true</code> if association is successful, <code>false</code> otherwise.
      */
-    public static final boolean resume(JABTransaction act) {
+    public static final boolean resume(TransactionImpl act) {
         if (act == null)
             suspend();
         else

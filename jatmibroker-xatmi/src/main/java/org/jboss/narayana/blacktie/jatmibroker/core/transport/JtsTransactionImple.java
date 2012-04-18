@@ -11,8 +11,8 @@ import javax.transaction.TransactionManager;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.narayana.blacktie.jatmibroker.jab.JABException;
-import org.jboss.narayana.blacktie.jatmibroker.jab.JABTransaction;
+import org.jboss.narayana.blacktie.jatmibroker.core.tx.TransactionException;
+import org.jboss.narayana.blacktie.jatmibroker.core.tx.TransactionImpl;
 import org.omg.CosTransactions.Control;
 import org.omg.CosTransactions.Unavailable;
 
@@ -52,7 +52,7 @@ public class JtsTransactionImple extends TransactionImple {
                 return false;
             }
         } else {
-            return JABTransaction.current() != null;
+            return TransactionImpl.current() != null;
         }
     }
 
@@ -73,18 +73,18 @@ public class JtsTransactionImple extends TransactionImple {
      * @throws SystemException
      * @throws IllegalStateException
      * @throws InvalidTransactionException
-     * @throws JABException
      * @throws ConfigurationException
+     * @throws TransactionException 
      */
     public static void resume(String ior) throws InvalidTransactionException, IllegalStateException, SystemException,
-            JABException, ConfigurationException {
+            ConfigurationException, TransactionException {
         log.debug("resume control");
         if (hasTransactionManager()) {
             Transaction tx = controlToTx(ior);
             tm.resume(tx);
         } else {
-            JABTransaction transaction = new JABTransaction(ior);
-            JABTransaction.resume(transaction);
+            TransactionImpl transaction = new TransactionImpl(ior);
+            TransactionImpl.resume(transaction);
         }
     }
 
@@ -100,7 +100,7 @@ public class JtsTransactionImple extends TransactionImple {
             log.debug("suspending current");
             tm.suspend();
         } else {
-            JABTransaction.current().suspend();
+            TransactionImpl.current().suspend();
         }
     }
 
@@ -154,9 +154,9 @@ public class JtsTransactionImple extends TransactionImple {
     public static String getTransactionIOR() throws org.omg.CORBA.SystemException, SystemException, Unavailable {
         log.debug("getTransactionIOR");
 
-        JABTransaction curr = JABTransaction.current();
+        TransactionImpl curr = TransactionImpl.current();
         if (curr != null) {
-            log.debug("have JABTransaction");
+            log.debug("have JtsTransactionImple");
             return curr.getControlIOR();
         } else if (hasTransaction()) {
             log.debug("have tx mgr");

@@ -112,7 +112,7 @@ quickstarts/security
 
 quickstarts/mdb
     Demonstrates how to write BlackTie services as MDB's: starts a service (implemented as an MDB) running in the 
-    App Server. Then runs a client which uses the JAB api to send requests to the service. The quickstart also shows 
+    App Server. Then runs a client which uses the jatmibroker api to send requests to the service. The quickstart also shows 
     the service making EJB calls to demonstrate transaction propagation.
 
 integration1

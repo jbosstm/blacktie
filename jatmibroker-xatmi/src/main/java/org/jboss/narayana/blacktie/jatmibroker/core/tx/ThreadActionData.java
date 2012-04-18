@@ -35,7 +35,6 @@ import java.util.EmptyStackException;
 import java.util.NoSuchElementException;
 import java.util.Stack;
 
-import org.jboss.narayana.blacktie.jatmibroker.jab.JABTransaction;
 
 /**
  * This class maintains a mapping between a thread and its notion of the current transaction. Essentially this is a stack of
@@ -48,13 +47,13 @@ import org.jboss.narayana.blacktie.jatmibroker.jab.JABTransaction;
 
 public class ThreadActionData {
 
-    public static JABTransaction currentAction() {
+    public static TransactionImpl currentAction() {
         // XXX NOT USED ThreadActionData.setup();
         Stack txs = (Stack) _threadList.get();
 
         if (txs != null) {
             try {
-                return (JABTransaction) txs.peek();
+                return (TransactionImpl) txs.peek();
             } catch (EmptyStackException e) {
             }
         }
@@ -62,7 +61,7 @@ public class ThreadActionData {
         return null;
     }
 
-    public static void pushAction(JABTransaction a) {
+    public static void pushAction(TransactionImpl a) {
         pushAction(a, true);
     }
 
@@ -71,7 +70,7 @@ public class ThreadActionData {
      * the thread's notion of current changes.
      */
 
-    public static void pushAction(JABTransaction a, boolean register) {
+    public static void pushAction(TransactionImpl a, boolean register) {
         Thread t = Thread.currentThread();
         Stack txs = (Stack) _threadList.get();
 
@@ -91,7 +90,7 @@ public class ThreadActionData {
      * Put back the entire hierarchy, removing whatever is already there.
      */
 
-    public static void restoreActions(JABTransaction act) {
+    public static void restoreActions(TransactionImpl act) {
         purgeActions();
 
         if (act != null) {
@@ -100,7 +99,7 @@ public class ThreadActionData {
              */
 
             java.util.Stack s = new java.util.Stack();
-            JABTransaction nextLevel = act.parent();
+            TransactionImpl nextLevel = act.parent();
 
             s.push(act);
 
@@ -116,22 +115,22 @@ public class ThreadActionData {
 
             try {
                 while (!s.empty()) {
-                    pushAction((JABTransaction) s.pop());
+                    pushAction((TransactionImpl) s.pop());
                 }
             } catch (Exception ex) {
             }
         }
     }
 
-    public static JABTransaction popAction() throws EmptyStackException {
+    public static TransactionImpl popAction() throws EmptyStackException {
         return popAction(ThreadUtil.getThreadId(), true);
     }
 
-    public static JABTransaction popAction(boolean unregister) throws EmptyStackException {
+    public static TransactionImpl popAction(boolean unregister) throws EmptyStackException {
         return popAction(ThreadUtil.getThreadId(), unregister);
     }
 
-    public static JABTransaction popAction(String threadId) throws EmptyStackException {
+    public static TransactionImpl popAction(String threadId) throws EmptyStackException {
         return popAction(threadId, true);
     }
 
@@ -139,11 +138,11 @@ public class ThreadActionData {
      * By setting the unregister flag accordingly, information about the thread is not removed from the action.
      */
 
-    public static JABTransaction popAction(String threadId, boolean unregister) throws EmptyStackException {
+    public static TransactionImpl popAction(String threadId, boolean unregister) throws EmptyStackException {
         Stack txs = (Stack) _threadList.get();
 
         if (txs != null) {
-            JABTransaction a = (JABTransaction) txs.pop();
+            TransactionImpl a = (TransactionImpl) txs.pop();
 
             if ((a != null) && (unregister)) {
                 a.removeChildThread(threadId);
@@ -159,15 +158,15 @@ public class ThreadActionData {
         return null;
     }
 
-    public static void purgeAction(JABTransaction act) throws NoSuchElementException {
+    public static void purgeAction(TransactionImpl act) throws NoSuchElementException {
         ThreadActionData.purgeAction(act, Thread.currentThread(), true);
     }
 
-    public static void purgeAction(JABTransaction act, Thread t) throws NoSuchElementException {
+    public static void purgeAction(TransactionImpl act, Thread t) throws NoSuchElementException {
         ThreadActionData.purgeAction(act, t, true);
     }
 
-    public static void purgeAction(JABTransaction act, Thread t, boolean unregister) throws NoSuchElementException {
+    public static void purgeAction(TransactionImpl act, Thread t, boolean unregister) throws NoSuchElementException {
         if ((act != null) && (unregister)) {
             act.removeChildThread(ThreadUtil.getThreadId(t));
         }
@@ -199,7 +198,7 @@ public class ThreadActionData {
         if (txs != null) {
             if (unregister) {
                 while (!txs.empty()) {
-                    JABTransaction act = (JABTransaction) txs.pop();
+                    TransactionImpl act = (TransactionImpl) txs.pop();
 
                     if (act != null) {
                         act.removeChildThread(ThreadUtil.getThreadId(t));

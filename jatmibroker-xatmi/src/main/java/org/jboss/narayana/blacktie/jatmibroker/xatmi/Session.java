@@ -25,8 +25,8 @@ import org.jboss.narayana.blacktie.jatmibroker.core.transport.Message;
 import org.jboss.narayana.blacktie.jatmibroker.core.transport.Receiver;
 import org.jboss.narayana.blacktie.jatmibroker.core.transport.Sender;
 import org.jboss.narayana.blacktie.jatmibroker.core.transport.Transport;
-import org.jboss.narayana.blacktie.jatmibroker.jab.JABException;
-import org.jboss.narayana.blacktie.jatmibroker.jab.JABTransaction;
+import org.jboss.narayana.blacktie.jatmibroker.core.tx.TransactionException;
+import org.jboss.narayana.blacktie.jatmibroker.core.tx.TransactionImpl;
 
 /**
  * A session reference may either be obtained from the tpconnect <code>Connection</code> invocation for a client or retrieved
@@ -346,10 +346,10 @@ public class Session {
         if (sender == null) {
             throw new ConnectionException(Connection.TPEPROTO, "Session had no endpoint to respond to for tpdiscon");
         }
-        if (JABTransaction.current() != null) {
+        if (TransactionImpl.current() != null) {
             try {
-                JABTransaction.current().rollback_only();
-            } catch (JABException e) {
+                TransactionImpl.current().rollback_only();
+            } catch (TransactionException e) {
                 throw new ConnectionException(Connection.TPESYSTEM, "Could not mark transaction for rollback only");
             }
         }
