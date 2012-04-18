@@ -62,7 +62,7 @@ public class TestNestedBuffer extends TestCase {
         // log.info(new String(test.serialize()));
 
         obj = test.btgetattribute("employee", 0);
-        assertTrue("org.jboss.narayana.blacktie.jatmibroker.xatmi.impl.BT_NBF".equals(obj.getClass().getName()));
+        assertTrue("org.jboss.narayana.blacktie.jatmibroker.xatmi.impl.BT_NBF_Impl".equals(obj.getClass().getName()));
         BT_NBF employee = (BT_NBF) obj;
         String name = (String) employee.btgetattribute("name", 0);
         assertTrue("zhfeng".equals(name));
