@@ -277,7 +277,7 @@
         <module>common</module>
         <module>xsd</module>
         <module>idl</module>
-        <module>hornetq-rest</module>
+        <module>messaging</module>
         <module>stompconnect-1.0</module>
         <module>jatmibroker-xatmi</module>
         <module>blacktie-admin-services</module>
