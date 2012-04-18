@@ -20,7 +20,7 @@
 		<relativePath>../common/java/pom.xml</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>integration-tests</artifactId>
+	<artifactId>blacktie-integration-tests</artifactId>
 	<name>Blacktie Java/C C/Java XATMI Tests</name>
 	<packaging>jar</packaging>
 	<description>A BlackTie component</description>

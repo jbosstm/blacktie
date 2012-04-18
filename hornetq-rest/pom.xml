@@ -23,7 +23,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>bt-messaging</artifactId>
+    <artifactId>blacktie-messaging</artifactId>
     <name>BlackTie Messaging (via JMS)</name>
     <packaging>war</packaging>
     <description>Messaging via a REST API to JMS</description>
