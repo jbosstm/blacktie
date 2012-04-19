@@ -29,18 +29,16 @@
 #include "xatmi.h"
 #include "btqueue.h"
 #include "Session.h"
+#include "AtmiBrokerClient.h"
 #include "AtmiBrokerClientControl.h"
 #include "AtmiBrokerServerControl.h"
-#include "AtmiBrokerClient.h"
-#include "AtmiBrokerServer.h"
-#include "AtmiBrokerMem.h"
 #include "AtmiBrokerEnv.h"
-#include "ServiceDispatcher.h"
 
-
+// Logger for XATMIc
+log4cxx::LoggerPtr loggerQueue(log4cxx::Logger::getLogger("XATMIc"));
 
 int btenqueue(char * svc, msg_opts_t* headers, char* idata, long ilen, long flags) {
-	LOG4CXX_TRACE(loggerXATMI, (char*) "tpacall: " << svc << " ilen: " << ilen
+	LOG4CXX_TRACE(loggerQueue, (char*) "tpacall: " << svc << " ilen: " << ilen
 			<< " flags: 0x" << std::hex << flags);
 	int toReturn = -1;
 	setSpecific(TPE_KEY, TSS_TPERESET);
@@ -50,7 +48,7 @@ int btenqueue(char * svc, msg_opts_t* headers, char* idata, long ilen, long flag
 			| TPNOBLOCK);
 
 	if (toCheck != 0) {
-		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
+		LOG4CXX_TRACE(loggerQueue, (char*) "invalid flags remain: " << toCheck);
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
 	} else {
 		bool transactional = !(flags & TPNOTRAN);
@@ -68,30 +66,41 @@ int btenqueue(char * svc, msg_opts_t* headers, char* idata, long ilen, long flag
 				Session* session = NULL;
 				try {
 					session = ptrAtmiBrokerClient->getQueueSession();
-					LOG4CXX_TRACE(loggerXATMI, (char*) "new session: "
+					LOG4CXX_TRACE(loggerQueue, (char*) "new session: "
 							<< session << " transactional: " << transactional);
 
 					if (tperrno != -1) {
 						if (transactional)
 							txxx_suspend();
 
-						LOG4CXX_TRACE(loggerXATMI, (char*) "TPNOREPLY send");
+						MESSAGE message;
+						message.syncRcv = 0;
+
+						int priority = 0;
+						long timeToLive = 0;
+						if (headers != NULL) {
+							priority = headers->priority;
+							timeToLive = headers->ttl;
+						}
+
+						LOG4CXX_TRACE(loggerQueue, (char*) "TPNOREPLY send");
 						toReturn = ::send(session, "", idata, len, 0, flags, 0,
-								0, headers, true, svc);
-						LOG4CXX_TRACE(loggerXATMI, (char*) "TPNOREPLY sent");
+								message, 0, priority, timeToLive, true, svc);
+
+						LOG4CXX_TRACE(loggerQueue, (char*) "TPNOREPLY sent");
 
 						if (toReturn == -1) {
-							LOG4CXX_WARN(loggerXATMI,
+							LOG4CXX_WARN(loggerQueue,
 									(char*) "Queue Session failure");
 						}
 					} else {
-						LOG4CXX_TRACE(loggerXATMI,
+						LOG4CXX_TRACE(loggerQueue,
 								(char*) "tpacall unknown error");
 						setSpecific(TPE_KEY, TSS_TPESYSTEM);
 					}
 				} catch (...) {
 					LOG4CXX_ERROR(
-							loggerXATMI,
+							loggerQueue,
 							(char*) "tpacall failed to connect to service queue: "
 									<< svc);
 					setSpecific(TPE_KEY, TSS_TPENOENT);
@@ -101,7 +110,7 @@ int btenqueue(char * svc, msg_opts_t* headers, char* idata, long ilen, long flag
 					// txx_suspend was called but there was an error so
 					// resume (note we didn't check for TPNOREPLY since we are in
 					// the else arm of if (transactional && (flags & TPNOREPLY))
-					LOG4CXX_DEBUG(loggerXATMI, (char*) "tpacall resume rv="
+					LOG4CXX_DEBUG(loggerQueue, (char*) "tpacall resume rv="
 							<< toReturn);
 					txxx_resume();
 				}
@@ -109,15 +118,15 @@ int btenqueue(char * svc, msg_opts_t* headers, char* idata, long ilen, long flag
 			}
 		}
 	}
-	LOG4CXX_TRACE(loggerXATMI, (char*) "tpacall return: " << toReturn
+	LOG4CXX_TRACE(loggerQueue, (char*) "tpacall return: " << toReturn
 			<< " tperrno: " << tperrno);
 	return toReturn;
 }
 
 
 
-int btdequeue(char * svc, msg_opts_t *pmopts, char ** odata, long *olen, long flags) {
-	LOG4CXX_TRACE(loggerXATMI, (char*) "btdequeue: " << svc <<
+int btdequeue(char * svc, msg_opts_t* headers , char ** odata, long *olen, long flags) {
+	LOG4CXX_TRACE(loggerQueue, (char*) "btdequeue: " << svc <<
 		" flags: 0x" << std::hex << flags);
 	int toReturn = -1;
 
@@ -130,7 +139,7 @@ int btdequeue(char * svc, msg_opts_t *pmopts, char ** odata, long *olen, long fl
 	int len, suspended = 0;
 
 	if (toCheck != 0) {
-		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
+		LOG4CXX_TRACE(loggerQueue, (char*) "invalid flags remain: " << toCheck);
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
 	} else if ((len = ::bufferSize(*odata, *olen) != -1) && clientinit() != -1) {
 		bool transactional = !(flags & TPNOTRAN);
@@ -146,17 +155,20 @@ int btdequeue(char * svc, msg_opts_t *pmopts, char ** odata, long *olen, long fl
 
 		try {
 			Session* session = ptrAtmiBrokerClient->getQueueSession();
-			LOG4CXX_TRACE(loggerXATMI, (char*) "new session: " << session <<
+			LOG4CXX_TRACE(loggerQueue, (char*) "new session: " << session <<
 				" transactional: " << transactional);
 
 			if (session != NULL) {
-				msg_opts_t mopts = {0, 0L};
 				MESSAGE message = {0, 0, 0, 0, 0, 0, 0};
 				message.syncRcv = 1;
 				char* tperr;
 
-				if (pmopts != NULL)
-					mopts.ttl = pmopts->ttl;
+				int priority = 0;
+				long timeToLive = 0;
+				if (headers != NULL) {
+					priority = headers->priority;
+					timeToLive = headers->ttl;
+				}
 
 				if (transactional) {
 					txxx_suspend();
@@ -164,20 +176,20 @@ int btdequeue(char * svc, msg_opts_t *pmopts, char ** odata, long *olen, long fl
 				}
 
 				message.data = NULL;
-				toReturn = ::send(session, "", NULL, 0, 0, flags, 0, message, 0, &mopts, true, svc);
+				toReturn = ::send(session, "", NULL, 0, 0, flags, 0, message, 0, priority, timeToLive, true, svc);
 				// save tperrno (convertMessage may mask it)
 				tperr = (char*) getSpecific(TPE_KEY);
 
-				(void) convertMessage(message, len, odata, olen, 0L);
+				(void) ::convertMessage(message, len, odata, olen, 0L);
 
 				if (tperr != NULL)
 					setSpecific(TPE_KEY, tperr);
 			} else {
-				LOG4CXX_TRACE(loggerXATMI, (char*) "btdequeue session error: " << tperrno);
+				LOG4CXX_TRACE(loggerQueue, (char*) "btdequeue session error: " << tperrno);
 				setSpecific(TPE_KEY, TSS_TPESYSTEM);
 			}
 		} catch (...) {
-			LOG4CXX_ERROR( loggerXATMI, (char*) "btdequeue failed to connect to service queue: " << svc);
+			LOG4CXX_ERROR( loggerQueue, (char*) "btdequeue failed to connect to service queue: " << svc);
 			setSpecific(TPE_KEY, TSS_TPENOENT);
 		}
 
@@ -185,7 +197,7 @@ int btdequeue(char * svc, msg_opts_t *pmopts, char ** odata, long *olen, long fl
 			txxx_resume();
 	}
 
-	LOG4CXX_TRACE(loggerXATMI, (char*) "btdequeue return: " << toReturn
+	LOG4CXX_TRACE(loggerQueue, (char*) "btdequeue return: " << toReturn
 			<< " tperrno: " << tperrno);
 
 	return toReturn;

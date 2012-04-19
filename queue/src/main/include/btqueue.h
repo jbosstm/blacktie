@@ -16,8 +16,8 @@
  * MA  02110-1301, USA.
  */
 
-#ifndef BLACKTIE_XATMI_H
-#define BLACKTIE_XATMI_H
+#ifndef BLACKTIE_QUEUE_H
+#define BLACKTIE_QUEUE_H
 
 #include "atmiBrokerQueueMacro.h"
 
@@ -30,8 +30,8 @@ typedef struct msg_opts {
 	long ttl;	/* maximum no of milliseconds before giving up */
 } msg_opts_t;
 
-extern BLACKTIE_XATMI_DLL int btenqueue(char * svc, msg_opts_t* headers, char* idata, long ilen, long flags); // COMMUNICATION
-extern BLACKTIE_XATMI_DLL int btdequeue(char * svc, msg_opts_t* headers, char ** odata, long *olen, long flags); // COMMUNICATION
+extern BLACKTIE_QUEUE_DLL int btenqueue(char * svc, msg_opts_t* headers, char* idata, long ilen, long flags); // COMMUNICATION
+extern BLACKTIE_QUEUE_DLL int btdequeue(char * svc, msg_opts_t* headers, char ** odata, long *olen, long flags); // COMMUNICATION
 
 #ifdef __cplusplus
 }

@@ -110,6 +110,7 @@ void TestServerinit::test_config_cmdline() {
 }
 
 void TestServerinit::test_requires_id() {
+	btlogger((char*) "TestServerinit::test_requires_id");
 	/* make the -i paramenter mandatory */
 	char* argv3[] = {(char*)"server"};
 	int argc3 = sizeof(argv3)/sizeof(char*);

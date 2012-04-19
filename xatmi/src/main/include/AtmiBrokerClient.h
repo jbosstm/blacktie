@@ -20,6 +20,9 @@
 #ifndef AtmiBroker_CLIENT_H_
 #define AtmiBroker_CLIENT_H_
 
+
+#include "atmiBrokerXatmiMacro.h"
+
 #include <vector>
 
 #include "Connection.h"
@@ -33,7 +36,7 @@ public:
 	AtmiBrokerClient(AtmiBrokerSignalHandler& handler);
 	virtual ~AtmiBrokerClient();
 	Session* createSession(bool isConv, int& id, char* serviceName);
-	Session* getQueueSession();
+	BLACKTIE_XATMI_DLL Session* getQueueSession();
 	Session* getSession(int id);
 	void closeSession(int id);
 	void disconnectSessions();
@@ -47,7 +50,15 @@ protected:
 };
 
 // CLIENT
-extern AtmiBrokerClient* ptrAtmiBrokerClient;
+extern BLACKTIE_XATMI_DLL AtmiBrokerClient* ptrAtmiBrokerClient;
+
+// Required for extensions to handle sending buffers
+extern BLACKTIE_XATMI_DLL int bufferSize(char* data, int suggestedSize);
+extern BLACKTIE_XATMI_DLL int send(Session* session, const char* replyTo, char* idata, long ilen,
+		int correlationId, long flags, long rval, MESSAGE& message, long rcode,
+		int priority, long timeToLive, bool queue, char* queueName);
+extern BLACKTIE_XATMI_DLL int convertMessage(MESSAGE &message, int len, char** odata, long* olen,
+		long flags);
 
 
 #endif
