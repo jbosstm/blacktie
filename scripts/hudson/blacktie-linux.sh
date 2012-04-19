@@ -17,6 +17,9 @@ killall -9 client
 killall -9 cs
 ps -f
 
+# FOR DEBUGGING SUBSEQUENT ISSUES
+free -m
+
 # GET THE TNS NAMES
 TNS_ADMIN=$WORKSPACE/instantclient_11_2/network/admin
 mkdir -p $TNS_ADMIN
