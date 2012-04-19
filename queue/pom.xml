@@ -68,26 +68,6 @@
             <url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
         </license>
     </licenses>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.jboss.narayana.blacktie.plugins</groupId>
-                <artifactId>blacktie-cpp-plugin</artifactId>
-                <configuration>
-                    <src.main.file>BAR</src.main.file>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>generate-test-lib</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>generate-test-lib</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
     <dependencies>
         <dependency>
             <groupId>cppunit.contrib</groupId>
