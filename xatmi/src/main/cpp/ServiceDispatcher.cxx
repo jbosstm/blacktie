@@ -259,7 +259,9 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	LOG4CXX_DEBUG(logger, (char*) "serviceName Will copy: " << message.serviceName);
 	LOG4CXX_DEBUG(logger, (char*) "serviceName Length of name is: " << strlen(message.serviceName));
 	LOG4CXX_DEBUG(logger, (char*) "serviceName Length of existing name is: " << strlen(tpsvcinfo.name));
-	memcpy(tpsvcinfo.name, message.serviceName, XATMI_SERVICE_NAME_LENGTH);
+    int copyUpTo = (strlen(message.serviceName) < XATMI_SERVICE_NAME_LENGTH) ? strlen(message.serviceName) : XATMI_SERVICE_NAME_LENGTH;
+	LOG4CXX_DEBUG(logger, (char*) "Will copy up to: " << copyUpTo);
+	strncpy(tpsvcinfo.name, message.serviceName, copyUpTo);
 	LOG4CXX_DEBUG(logger, (char*) "serviceName Length of new name is: " << strlen(tpsvcinfo.name));
 	//strdup(tpsvcinfo.name, this->serviceName);
 	tpsvcinfo.flags = message.flags;
