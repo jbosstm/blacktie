@@ -39,6 +39,13 @@ void TestExternManageDestination::setUp() {
 	BaseServerTest::setUp();
 }
 
+void TestExternManageDestination::tearDown() {
+	btlogger((char*) "TestExternManageDestination::tearDown");
+
+	// Clean up server
+	BaseServerTest::tearDown();
+}
+
 static void send_one(int id, int pri, const char *type, const char *subtype) {
 	msg_opts_t mopts = {0, 0L};
 	char msg[16];
