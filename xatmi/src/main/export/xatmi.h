@@ -21,6 +21,7 @@
 
 #include "atmiBrokerXatmiMacro.h"
 
+// XATMI SPEC 4.1 Flag Bits
 #define TPNOBLOCK 0x00000001
 #define TPSIGRSTRT 0x00000002
 #define TPNOREPLY 0x00000004
@@ -33,9 +34,11 @@
 #define TPSENDONLY 0x00000800
 #define TPRECVONLY 0x00001000
 
+// XATMI SPEC 4.2 Service Return Value
 #define TPFAIL		0x00000001
 #define TPSUCCESS	0x00000002
 
+// XATMI SPEC 4.3 Service Information Structure
 struct BLACKTIE_XATMI_DLL tpsvcinfo {
 #define XATMI_SERVICE_NAME_LENGTH  128
 	char name[XATMI_SERVICE_NAME_LENGTH];
@@ -46,10 +49,7 @@ struct BLACKTIE_XATMI_DLL tpsvcinfo {
 };
 typedef struct BLACKTIE_XATMI_DLL tpsvcinfo TPSVCINFO;
 
-#define X_OCTET		"X_OCTET"
-#define X_C_TYPE	"X_C_TYPE"
-#define X_COMMON	"X_COMMON"
-
+// XATMI SPEC: 4.5 Error Values
 #define TPEBADDESC 2
 #define TPEBLOCK 3
 #define TPEINVAL 4
@@ -68,42 +68,57 @@ typedef struct BLACKTIE_XATMI_DLL tpsvcinfo TPSVCINFO;
 #define TPEEVENT 22
 #define TPEMATCH 23
 
+// XATMI SPEC 4.6 XATMI Events
 #define TPEV_DISCONIMM 0x0001
 #define TPEV_SVCERR 0x0002
 #define TPEV_SVCFAIL 0x0004
 #define TPEV_SVCSUCC 0x0008
 #define TPEV_SENDONLY 0x0020
 
+// XATMI SPEC 4.7 Typed Buffer Constants
+#define X_OCTET		"X_OCTET"
+#define X_C_TYPE	"X_C_TYPE"
+#define X_COMMON	"X_COMMON"
+
+
 // NOW STARTS THE MAIN OPERATION LIST
-
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+// MEMORY FUNCTIONS
+extern BLACKTIE_XATMI_DLL char* tpalloc(char* type, char* subtype, long size);
+extern BLACKTIE_XATMI_DLL char* tprealloc(char * addr, long size);
+extern BLACKTIE_XATMI_DLL long tptypes(char* ptr, char* type, char* subtype);
+extern BLACKTIE_XATMI_DLL void tpfree(char* ptr);
+
+// RPC COMMUNICATIONS
+extern BLACKTIE_XATMI_DLL int tpcall(char * svc, char* idata, long ilen, char ** odata, long *olen, long flags);
+extern BLACKTIE_XATMI_DLL int tpacall(char * svc, char* idata, long ilen, long flags);
+extern BLACKTIE_XATMI_DLL int tpgetrply(int *idPtr, char ** odata, long *olen, long flags);
+extern BLACKTIE_XATMI_DLL int tpcancel(int id);
+
+// SESSION BASED COMMUNICATIONS
+extern BLACKTIE_XATMI_DLL int tpconnect(char * svc, char* idata, long ilen, long flags);
+extern BLACKTIE_XATMI_DLL int tpsend(int id, char* idata, long ilen, long flags, long *revent);
+extern BLACKTIE_XATMI_DLL int tprecv(int id, char ** odata, long *olen, long flags, long* event);
+extern BLACKTIE_XATMI_DLL int tpdiscon(int id);
+
+// SERVER-SIDE OPERATIONS
+extern BLACKTIE_XATMI_DLL int tpadvertise(char * svcname, void(*func)(TPSVCINFO *));
+extern BLACKTIE_XATMI_DLL int tpunadvertise(char * svcname);
 typedef float(*tpservice)(TPSVCINFO *);
+extern BLACKTIE_XATMI_DLL void tpreturn(int rval, long rcode, char* data, long len, long flags);
 
-extern BLACKTIE_XATMI_DLL char* tpalloc(char* type, char* subtype, long size); // MEMORY
-extern BLACKTIE_XATMI_DLL char* tprealloc(char * addr, long size); // MEMORY
-extern BLACKTIE_XATMI_DLL int tpcall(char * svc, char* idata, long ilen, char ** odata, long *olen, long flags); // COMMUNICATION
-extern BLACKTIE_XATMI_DLL int tpacall(char * svc, char* idata, long ilen, long flags); // COMMUNICATION
-extern BLACKTIE_XATMI_DLL int tpgetrply(int *idPtr, char ** odata, long *olen, long flags); // COMMUNICATION
-extern BLACKTIE_XATMI_DLL int tpcancel(int id); // COMMUNICATION
-extern BLACKTIE_XATMI_DLL long tptypes(char* ptr, char* type, char* subtype); // MEMORY
-extern BLACKTIE_XATMI_DLL void tpfree(char* ptr); // MEMORY
-extern BLACKTIE_XATMI_DLL void tpreturn(int rval, long rcode, char* data, long len, long flags); // TJJ ADDED
-extern BLACKTIE_XATMI_DLL int tpadvertise(char * svcname, void(*func)(TPSVCINFO *)); // SERVER
-extern BLACKTIE_XATMI_DLL int tpunadvertise(char * svcname); // SERVER
+// IMPLEMENTATION OF XATMI SPEC 4.4 GLOBAL VARIABLES
+extern BLACKTIE_XATMI_DLL int _get_tperrno(void);
+extern BLACKTIE_XATMI_DLL long _get_tpurcode(void);
 
-extern BLACKTIE_XATMI_DLL int tpsend(int id, char* idata, long ilen, long flags, long *revent); // COMMUNICATION
-extern BLACKTIE_XATMI_DLL int tprecv(int id, char ** odata, long *olen, long flags, long* event); // COMMUNICATION
-extern BLACKTIE_XATMI_DLL int tpconnect(char * svc, char* idata, long ilen, long flags); // COMMUNICATION
-extern BLACKTIE_XATMI_DLL int tpdiscon(int id); // COMMUNICATION
-
-extern BLACKTIE_XATMI_DLL int _get_tperrno(void); // CLIENT
-extern BLACKTIE_XATMI_DLL long _get_tpurcode(void); // CLIENT
 #ifdef __cplusplus
 }
 #endif
-#define tperrno (_get_tperrno())										// CLIENT
-#define tpurcode (_get_tpurcode())										// CLIENT
+
+// XATMI SPEC 4.4 Global Variables
+#define tperrno (_get_tperrno())
+#define tpurcode (_get_tpurcode())
 #endif // XATMI_H
