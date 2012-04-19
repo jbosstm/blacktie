@@ -45,8 +45,10 @@ public class TestTPConversation extends TestCase {
 	}
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
+		log.info("Calling teardown");
 		server.serverdone();
 		connection.close();
+		log.info("Called teardown");
 	}
 
 	public void test_conversation() throws ConnectionException,
