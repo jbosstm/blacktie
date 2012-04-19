@@ -15,53 +15,37 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
+#include "TestAssert.h"
 
-#ifndef BLACKTIEMEM_H
-#define BLACKTIEMEM_H
+#include "BaseTest.h"
+#include "ThreadLocalStorage.h"
 
-#include <iostream>
-#include <vector>
-#include "log4cxx/logger.h"
-#include "SynchronizableObject.h"
-#define MAX_TYPE_SIZE 8
-#define MAX_SUBTYPE_SIZE 16
-struct _memory_info {
-	char* memoryPtr;
-	char* type;
-	char* subtype;
-	int size;
-	bool forcedDelete;
-};
-typedef _memory_info MemoryInfo;
+#include "xatmi.h"
+extern "C" {
+#include "AtmiBrokerClientControl.h"
+}
 
-class AtmiBrokerMem {
+#include "malloc.h"
 
-public:
+void BaseTest::setUp() {
+	init_ace();
+	// Perform global set up
+	TestFixture::setUp();
+	// previous tests may have left a txn on the thread
+	destroySpecific(TSS_KEY);
+}
 
-	AtmiBrokerMem();
+void BaseTest::tearDown() {
+	// Perform clean up
+	::clientdone(0);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	free(tperrnoS);
+	// previous tests may have left a txn on the thread
+	destroySpecific(TSS_KEY);
 
-	~AtmiBrokerMem();
+	// Perform global clean up
+	TestFixture::tearDown();
+}
 
-	char* tpalloc(char* type, char* subtype, long size, bool serviceAllocated);
-
-	char* tprealloc(char * addr, long size, char* type, char* subtype,
-			bool force);
-
-	void tpfree(char* ptr, bool force);
-
-	long tptypes(char* ptr, char* type, char* subtype);
-
-	static AtmiBrokerMem* get_instance();
-	static void discard_instance();
-
-private:
-
-	static SynchronizableObject* lock;
-	static log4cxx::LoggerPtr logger;
-	std::vector<MemoryInfo> memoryInfoVector;
-
-	static AtmiBrokerMem * ptrAtmiBrokerMem;
-
-};
-
-#endif

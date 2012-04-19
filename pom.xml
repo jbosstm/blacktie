@@ -242,6 +242,12 @@
             <dependency>
                 <groupId>org.jboss.narayana.blacktie</groupId>
                 <classifier>${bpa}</classifier>
+                <artifactId>blacktie-queue</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.narayana.blacktie</groupId>
+                <classifier>${bpa}</classifier>
                 <artifactId>blacktie-nbf</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -300,6 +306,7 @@
         <module>tx</module>
         <module>hybrid</module>
         <module>xatmi</module>
+        <module>queue</module>
         <module>nbf</module>
         <module>codec</module>
         <module>btadmin</module>

@@ -124,7 +124,7 @@
                         </goals>
                         <configuration>
                             <includeScope>runtime</includeScope>
-                            <includes>**/*</includes>
+                            <excludes>include/**</excludes>
                             <markersDirectory>${project.build.directory}/cxx/runtime-markers</markersDirectory>
                             <outputDirectory>${project.build.directory}/cxx/runtime</outputDirectory>
                             <overWriteReleases>false</overWriteReleases>
@@ -333,7 +333,7 @@
                                         </exec>
                                         <echo message="unzip dependencies to runtime"/>
                                         <exec executable="find">
-                                            <arg line="${project.build.directory}/runtime-dependencies -name '*.zip' -exec unzip -q -uo '{}' -d ${project.build.directory}/cxx/runtime ;"/>
+                                            <arg line="${project.build.directory}/runtime-dependencies -name '*.zip' -exec unzip -q -uo '{}' -x include/* -d ${project.build.directory}/cxx/runtime ;"/>
                                         </exec>
                                         <echo message="unzip dependencies to compile"/>
                                         <exec executable="find">

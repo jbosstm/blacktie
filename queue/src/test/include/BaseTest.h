@@ -15,25 +15,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
+#ifndef BaseTest_H
+#define BaseTest_H
 
-#ifndef XXATMI_H
-#define XXATMI_H
+#include "cppunit/TestFixture.h"
+#include <string.h>
+#include "btlogger.h"
 
-#include "atmiBrokerXatmiMacro.h"
+class BaseTest: public CppUnit::TestFixture {
+public:
+	virtual void setUp();
+	virtual void tearDown();
+};
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-typedef struct msg_opts {
-	int priority;	/* msg priority from 0 (lowest) to 9 - only used with btenqueue */
-	long ttl;	/* maximum no of milliseconds before giving up */
-} msg_opts_t;
-
-extern BLACKTIE_XATMI_DLL int btenqueue(char * svc, msg_opts_t* headers, char* idata, long ilen, long flags); // COMMUNICATION
-extern BLACKTIE_XATMI_DLL int btdequeue(char * svc, msg_opts_t* headers, char ** odata, long *olen, long flags); // COMMUNICATION
-
-#ifdef __cplusplus
-}
-#endif
-#endif // XATMI_H
+#endif // BaseTest_H

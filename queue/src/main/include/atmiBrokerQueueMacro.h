@@ -15,53 +15,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
+/* Export/Include macros for Win32 compilation */
+#ifndef BLACKTIE_QUEUE_MACRO
+#define BLACKTIE_QUEUE_MACRO
 
-#ifndef BLACKTIEMEM_H
-#define BLACKTIEMEM_H
+/* Only do defines if we're compiling on Win32 */
+#ifdef WIN32
 
-#include <iostream>
-#include <vector>
-#include "log4cxx/logger.h"
-#include "SynchronizableObject.h"
-#define MAX_TYPE_SIZE 8
-#define MAX_SUBTYPE_SIZE 16
-struct _memory_info {
-	char* memoryPtr;
-	char* type;
-	char* subtype;
-	int size;
-	bool forcedDelete;
-};
-typedef _memory_info MemoryInfo;
+#ifdef _BLACKTIE_QUEUE_DLL
+#define BLACKTIE_QUEUE_DLL __declspec(dllexport)
+#else
+#define BLACKTIE_QUEUE_DLL __declspec(dllimport)
+#endif
 
-class AtmiBrokerMem {
+#else /* Non-win32 platform. Macros need to pre-process away */
 
-public:
+/* quickstarts */
 
-	AtmiBrokerMem();
+#define BLACKTIE_QUEUE_DLL
 
-	~AtmiBrokerMem();
-
-	char* tpalloc(char* type, char* subtype, long size, bool serviceAllocated);
-
-	char* tprealloc(char * addr, long size, char* type, char* subtype,
-			bool force);
-
-	void tpfree(char* ptr, bool force);
-
-	long tptypes(char* ptr, char* type, char* subtype);
-
-	static AtmiBrokerMem* get_instance();
-	static void discard_instance();
-
-private:
-
-	static SynchronizableObject* lock;
-	static log4cxx::LoggerPtr logger;
-	std::vector<MemoryInfo> memoryInfoVector;
-
-	static AtmiBrokerMem * ptrAtmiBrokerMem;
-
-};
+#endif
 
 #endif

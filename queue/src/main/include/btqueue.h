@@ -16,52 +16,24 @@
  * MA  02110-1301, USA.
  */
 
-#ifndef BLACKTIEMEM_H
-#define BLACKTIEMEM_H
+#ifndef BLACKTIE_XATMI_H
+#define BLACKTIE_XATMI_H
 
-#include <iostream>
-#include <vector>
-#include "log4cxx/logger.h"
-#include "SynchronizableObject.h"
-#define MAX_TYPE_SIZE 8
-#define MAX_SUBTYPE_SIZE 16
-struct _memory_info {
-	char* memoryPtr;
-	char* type;
-	char* subtype;
-	int size;
-	bool forcedDelete;
-};
-typedef _memory_info MemoryInfo;
+#include "atmiBrokerQueueMacro.h"
 
-class AtmiBrokerMem {
-
-public:
-
-	AtmiBrokerMem();
-
-	~AtmiBrokerMem();
-
-	char* tpalloc(char* type, char* subtype, long size, bool serviceAllocated);
-
-	char* tprealloc(char * addr, long size, char* type, char* subtype,
-			bool force);
-
-	void tpfree(char* ptr, bool force);
-
-	long tptypes(char* ptr, char* type, char* subtype);
-
-	static AtmiBrokerMem* get_instance();
-	static void discard_instance();
-
-private:
-
-	static SynchronizableObject* lock;
-	static log4cxx::LoggerPtr logger;
-	std::vector<MemoryInfo> memoryInfoVector;
-
-	static AtmiBrokerMem * ptrAtmiBrokerMem;
-
-};
-
+#ifdef __cplusplus
+extern "C" {
 #endif
+
+typedef struct msg_opts {
+	int priority;	/* msg priority from 0 (lowest) to 9 - only used with btenqueue */
+	long ttl;	/* maximum no of milliseconds before giving up */
+} msg_opts_t;
+
+extern BLACKTIE_XATMI_DLL int btenqueue(char * svc, msg_opts_t* headers, char* idata, long ilen, long flags); // COMMUNICATION
+extern BLACKTIE_XATMI_DLL int btdequeue(char * svc, msg_opts_t* headers, char ** odata, long *olen, long flags); // COMMUNICATION
+
+#ifdef __cplusplus
+}
+#endif
+#endif // XATMI_H

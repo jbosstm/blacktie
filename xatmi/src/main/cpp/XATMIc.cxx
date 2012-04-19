@@ -27,7 +27,6 @@
 #include "ThreadLocalStorage.h"
 #include "txx.h"
 #include "xatmi.h"
-#include "btqueue.h"
 #include "Session.h"
 #include "AtmiBrokerClientControl.h"
 #include "AtmiBrokerServerControl.h"
@@ -80,7 +79,7 @@ void setTpurcode(long rcode) {
 
 int send(Session* session, const char* replyTo, char* idata, long ilen,
 		int correlationId, long flags, long rval, MESSAGE& message, long rcode,
-		msg_opts_t* mopts, bool queue, char* queueName) {
+		int priority, long timeToLive, bool queue, char* queueName) {
 	LOG4CXX_DEBUG(loggerXATMI, (char*) "send - ilen: " << ilen << ": "
 			<< "cd: " << correlationId << "flags: " << flags);
 	int toReturn = -1;
@@ -117,9 +116,12 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 				message.control = NULL;
 
 				// see if there are any extra headers
-				if (mopts != NULL) {
-					message.priority = mopts->priority;
-					message.ttl = mopts->ttl;
+				if (priority > -1) {
+					message.priority = priority;
+                }
+
+                if (timeToLive > -1) {
+					message.ttl = timeToLive;
 				}
 
 				if (session->send(queueName, message))
@@ -169,14 +171,15 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 	return toReturn;
 }
 
+
 int send(Session* session, const char* replyTo, char* idata, long ilen,
 		int correlationId, long flags, long rval, long rcode,
-		msg_opts_t* mopts, bool queue, char* queueName) {
+		int priority, long timeToLive, bool queue, char* queueName) {
 	MESSAGE message;
 	message.syncRcv = 0;
 	return ::send(session, replyTo, idata, ilen,
 		correlationId, flags, rval, message, rcode,
-		mopts, queue, queueName);
+		priority, timeToLive, queue, queueName);
 }
 
 static long determineTimeout(long flags) {
@@ -611,7 +614,7 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 									LOG4CXX_TRACE(loggerXATMI,
 											(char*) "TPNOREPLY send");
 									toReturn = ::send(session, "", idata, len, cd,
-											flags, 0, 0, 0, false, NULL);
+											flags, 0, 0, -1, -1, false, NULL);
 									LOG4CXX_TRACE(loggerXATMI,
 											(char*) "TPNOREPLY sent");
 								} else {
@@ -619,7 +622,7 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 											(char*) "expect reply send");
 									toReturn = ::send(session,
 											session->getReplyTo(), idata, len, cd,
-											flags, 0, 0, 0, false, NULL);
+											flags, 0, 0, -1, -1, false, NULL);
 									LOG4CXX_TRACE(loggerXATMI,
 											(char*) "expect reply sent");
 								}
@@ -720,7 +723,7 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 								svc);
 						if (cd != -1) {
 							int sendOk = ::send(session, session->getReplyTo(),
-									idata, len, cd, flags | TPCONV, 0, 0, 0,
+									idata, len, cd, flags | TPCONV, 0, 0, -1, -1,
 									false, NULL);
 							if (sendOk != -1) {
 								long olen = 4;
@@ -1020,7 +1023,7 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 								(char*) "tpsend closed session");
 					} else {
 						toReturn = ::send(session, session->getReplyTo(),
-								idata, len, id, flags, 0, 0, 0, false, NULL);
+								idata, len, id, flags, 0, 0, -1, -1, false, NULL);
 						if (toReturn != -1 && flags & TPRECVONLY) {
 							session->setCanSend(false);
 							session->setCanRecv(true);
@@ -1145,7 +1148,7 @@ void tpreturn(int rval, long rcode, char* idata, long ilen, long flags) {
 					if (idata != NULL) {
 						::tpfree(idata);
 					}
-					::send(session, "", NULL, 0, 0, flags, rval, TPESVCERR, 0,
+					::send(session, "", NULL, 0, 0, flags, rval, TPESVCERR, -1, -1,
 							false, NULL);
 					LOG4CXX_TRACE(loggerXATMI, (char*) "sent TPESVCERR");
 					if (dispatcher != NULL) {
@@ -1176,7 +1179,7 @@ void tpreturn(int rval, long rcode, char* idata, long ilen, long flags) {
 					if (getSpecific(TSS_KEY) != NULL)
 						txx_release_control(txx_unbind((rval == TPFAIL)));
 
-					::send(session, "", idata, len, 0, flags, rval, rcode, 0,
+					::send(session, "", idata, len, 0, flags, rval, rcode, -1, -1,
 							false, NULL);
 					LOG4CXX_TRACE(loggerXATMI, (char*) "sent response");
 				}
@@ -1213,7 +1216,7 @@ int tpdiscon(int id) {
 			// CHECK TO MAKE SURE THE REMOTE SIDE IS "EXPECTING" DISCONNECTS STILL
 			if (session->getLastEvent() == 0) {
 				// SEND THE DISCONNECT TO THE REMOTE SIDE
-				::send(session, "", NULL, 0, id, TPNOTRAN, DISCON, 0, 0, false, NULL);
+				::send(session, "", NULL, 0, id, TPNOTRAN, DISCON, 0, -1, -1, false, NULL);
 			}
 			try {
 				if (getSpecific(TSS_KEY)) {
@@ -1237,157 +1240,5 @@ int tpdiscon(int id) {
 	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpdiscon return: " << toReturn
 			<< " tperrno: " << tperrno);
-	return toReturn;
-}
-
-int btenqueue(char * svc, msg_opts_t* headers, char* idata, long ilen, long flags) {
-	LOG4CXX_TRACE(loggerXATMI, (char*) "tpacall: " << svc << " ilen: " << ilen
-			<< " flags: 0x" << std::hex << flags);
-	int toReturn = -1;
-	setSpecific(TPE_KEY, TSS_TPERESET);
-	flags = flags | TPNOREPLY | TPNOTIME;
-
-	long toCheck = flags & ~(TPNOTRAN | TPNOREPLY | TPNOTIME | TPSIGRSTRT
-			| TPNOBLOCK);
-
-	if (toCheck != 0) {
-		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
-		setSpecific(TPE_KEY, TSS_TPEINVAL);
-	} else {
-		bool transactional = !(flags & TPNOTRAN);
-		if (transactional) {
-			void *ctrl = txx_get_control();
-			if (ctrl == NULL) {
-				transactional = false;
-			}
-			txx_release_control(ctrl);
-		}
-
-		int len = ::bufferSize(idata, ilen);
-		if (len != -1) {
-			if (clientinit() != -1) {
-				Session* session = NULL;
-				try {
-					session = ptrAtmiBrokerClient->getQueueSession();
-					LOG4CXX_TRACE(loggerXATMI, (char*) "new session: "
-							<< session << " transactional: " << transactional);
-
-					if (tperrno != -1) {
-						if (transactional)
-							txxx_suspend();
-
-						LOG4CXX_TRACE(loggerXATMI, (char*) "TPNOREPLY send");
-						toReturn = ::send(session, "", idata, len, 0, flags, 0,
-								0, headers, true, svc);
-						LOG4CXX_TRACE(loggerXATMI, (char*) "TPNOREPLY sent");
-
-						if (toReturn == -1) {
-							LOG4CXX_WARN(loggerXATMI,
-									(char*) "Queue Session failure");
-						}
-					} else {
-						LOG4CXX_TRACE(loggerXATMI,
-								(char*) "tpacall unknown error");
-						setSpecific(TPE_KEY, TSS_TPESYSTEM);
-					}
-				} catch (...) {
-					LOG4CXX_ERROR(
-							loggerXATMI,
-							(char*) "tpacall failed to connect to service queue: "
-									<< svc);
-					setSpecific(TPE_KEY, TSS_TPENOENT);
-				}
-
-				if (transactional) {
-					// txx_suspend was called but there was an error so
-					// resume (note we didn't check for TPNOREPLY since we are in
-					// the else arm of if (transactional && (flags & TPNOREPLY))
-					LOG4CXX_DEBUG(loggerXATMI, (char*) "tpacall resume rv="
-							<< toReturn);
-					txxx_resume();
-				}
-
-			}
-		}
-	}
-	LOG4CXX_TRACE(loggerXATMI, (char*) "tpacall return: " << toReturn
-			<< " tperrno: " << tperrno);
-	return toReturn;
-}
-
-
-
-int btdequeue(char * svc, msg_opts_t *pmopts, char ** odata, long *olen, long flags) {
-	LOG4CXX_TRACE(loggerXATMI, (char*) "btdequeue: " << svc <<
-		" flags: 0x" << std::hex << flags);
-	int toReturn = -1;
-
-	setSpecific(TPE_KEY, TSS_TPERESET);
-	//flags = flags | TPNOREPLY | TPNOTIME;
-	flags = flags | TPNOREPLY;
-
-	//long toCheck = flags & ~(TPNOTRAN | TPNOREPLY | TPNOTIME | TPSIGRSTRT | TPNOBLOCK);
-	long toCheck = flags & ~(TPNOREPLY | TPSIGRSTRT);
-	int len, suspended = 0;
-
-	if (toCheck != 0) {
-		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
-		setSpecific(TPE_KEY, TSS_TPEINVAL);
-	} else if ((len = ::bufferSize(*odata, *olen) != -1) && clientinit() != -1) {
-		bool transactional = !(flags & TPNOTRAN);
-
-		if (transactional) {
-			void *ctrl = txx_get_control();
-
-			if (ctrl == NULL)
-				transactional = false;
-			else
-				txx_release_control(ctrl);
-		}
-
-		try {
-			Session* session = ptrAtmiBrokerClient->getQueueSession();
-			LOG4CXX_TRACE(loggerXATMI, (char*) "new session: " << session <<
-				" transactional: " << transactional);
-
-			if (session != NULL) {
-				msg_opts_t mopts = {0, 0L};
-				MESSAGE message = {0, 0, 0, 0, 0, 0, 0};
-				message.syncRcv = 1;
-				char* tperr;
-
-				if (pmopts != NULL)
-					mopts.ttl = pmopts->ttl;
-
-				if (transactional) {
-					txxx_suspend();
-					suspended = 1;
-				}
-
-				message.data = NULL;
-				toReturn = ::send(session, "", NULL, 0, 0, flags, 0, message, 0, &mopts, true, svc);
-				// save tperrno (convertMessage may mask it)
-				tperr = (char*) getSpecific(TPE_KEY);
-
-				(void) convertMessage(message, len, odata, olen, 0L);
-
-				if (tperr != NULL)
-					setSpecific(TPE_KEY, tperr);
-			} else {
-				LOG4CXX_TRACE(loggerXATMI, (char*) "btdequeue session error: " << tperrno);
-				setSpecific(TPE_KEY, TSS_TPESYSTEM);
-			}
-		} catch (...) {
-			LOG4CXX_ERROR( loggerXATMI, (char*) "btdequeue failed to connect to service queue: " << svc);
-			setSpecific(TPE_KEY, TSS_TPENOENT);
-		}
-
-		if (suspended)
-			txxx_resume();
-	}
-
-	LOG4CXX_TRACE(loggerXATMI, (char*) "btdequeue return: " << toReturn
-			<< " tperrno: " << tperrno);
-
 	return toReturn;
 }

@@ -59,7 +59,6 @@
 	<property name="src.dir" value="src" />
 	<property name="src.main" value="src/main/cpp" />
 	<property name="src.test" value="src/test/cpp" />
-	<property name="src.export" value="src/main/export" />
 	<property name="src.excludes" value="" />
 	<property name="test.excludes" value="" />
 	<property name="lib.type" value="shared" />
@@ -105,9 +104,6 @@
 		</condition>
 		<condition property="lib.convert.pattern" value="*.lib">
 			<isset property="is-msvc"/>
-		</condition>
-		<condition property="export.dir">
-			<available file="${src.export}" />
 		</condition>
 		<condition property="define.dll">
 			<and>
@@ -375,7 +371,6 @@
 				<define name="SunOS" if="isSunOS"/>
 			</defineset>
 
-			<includepath path="${src.export}" if="export.dir" />
 			<includepath path="src/main/include" />
 			<includepath path="${src.idl.main}/include" />
 			<includepath path="target/cxx/compile/include" />
@@ -447,7 +442,6 @@
 			<defineset define="WIN32" if="is-msvc"/>
 
 			<includepath path="src/test/include" />
-			<includepath path="${src.export}" if="export.dir" />
 			<includepath path="src/main/include" />
 			<includepath path="${src.idl.main}/include" />
 			<includepath path="target/cxx/compile/include" />
@@ -489,7 +483,6 @@
 			<defineset define="WIN32" if="is-msvc"/>
 
 			<includepath path="src/test/include" />
-			<includepath path="${src.export}" if="export.dir" />
 			<includepath path="src/main/include" />
 			<includepath path="${src.idl.main}/include" />
 			<includepath path="target/cxx/compile/include" />
@@ -546,7 +539,6 @@
 			<defineset define="PROTOBUF_USE_DLLS" if="is-msvc"/>
 
 			<includepath path="src/test/include" />
-			<includepath path="${src.export}" if="export.dir" />
 			<includepath path="src/main/include" />
 			<includepath path="${src.idl.main}/include" />
 			<includepath path="${src.proto.test}" />
@@ -665,7 +657,7 @@
 	<target name="copy-check">
 		<available property="have-idl" file="${idl.output.dir}" />
 		<available property="have-proto" file="${proto.output.dir}" />
-		<available property="have-exports" file="${src.export}" />
+		<available property="have-includes" file="src/main/include/" type="dir"/>
 		<available file="target/${configuration.type}/${lib.type}" property="have-target-lib-dir" />
 	</target>
 	<target name="copy-idl" if="have-idl">
@@ -673,18 +665,18 @@
 			<fileset dir="${idl.output.dir}"/>
 		</copy>
 	</target>
-	<target name="copy-exports" if="have-exports">
-		<copy todir="target/classes/include" overwrite="true" failonerror="true">
-			<fileset dir="${src.export}"/>
-		</copy>
-	</target>
+    <target name="copy-includes" if="have-includes">
+            <copy todir="target/classes/include" overwrite="true" failonerror="true">
+                    <fileset dir="src/main/include/"/>
+            </copy>
+    </target>
 	<target name="copy-libs" if="have-target-lib-dir">
 		<copy todir="target/classes/lib" overwrite="true" failonerror="false">
 			<fileset dir="target/${configuration.type}/${lib.type}/" includes="*.so,*.so.*,*.dll,*.lib,*.a,*.a*"/>
 		</copy>
 	</target>
 
-	<target name="process-classes" depends="copy-check,package,copy-idl,copy-exports,copy-libs">
+	<target name="process-classes" depends="copy-check,package,copy-idl,copy-includes,copy-libs">
 	</target>
 
 	<target name="package" depends="init">

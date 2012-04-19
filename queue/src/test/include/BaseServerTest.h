@@ -15,53 +15,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
+#ifndef BaseServerTest_H
+#define BaseServerTest_H
 
-#ifndef BLACKTIEMEM_H
-#define BLACKTIEMEM_H
+#include "cppunit/TestFixture.h"
+#include "BaseTest.h"
+#include "xatmi.h"
+#include "AtmiBrokerServerControl.h"
 
-#include <iostream>
-#include <vector>
-#include "log4cxx/logger.h"
-#include "SynchronizableObject.h"
-#define MAX_TYPE_SIZE 8
-#define MAX_SUBTYPE_SIZE 16
-struct _memory_info {
-	char* memoryPtr;
-	char* type;
-	char* subtype;
-	int size;
-	bool forcedDelete;
-};
-typedef _memory_info MemoryInfo;
-
-class AtmiBrokerMem {
-
+class BaseServerTest: public BaseTest {
 public:
-
-	AtmiBrokerMem();
-
-	~AtmiBrokerMem();
-
-	char* tpalloc(char* type, char* subtype, long size, bool serviceAllocated);
-
-	char* tprealloc(char * addr, long size, char* type, char* subtype,
-			bool force);
-
-	void tpfree(char* ptr, bool force);
-
-	long tptypes(char* ptr, char* type, char* subtype);
-
-	static AtmiBrokerMem* get_instance();
-	static void discard_instance();
-
-private:
-
-	static SynchronizableObject* lock;
-	static log4cxx::LoggerPtr logger;
-	std::vector<MemoryInfo> memoryInfoVector;
-
-	static AtmiBrokerMem * ptrAtmiBrokerMem;
-
+	virtual void setUp();
+	virtual void tearDown();
+	void startServer();
 };
 
-#endif
+#endif // BaseServerTest_H

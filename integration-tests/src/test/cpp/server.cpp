@@ -250,15 +250,23 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 			//btlogger((char*) "testTPConversation_service:%s:", sendbuf);
 			int result = ::tpsend(svcinfo->cd, sendbuf, svcinfo->len,
 					TPRECVONLY, &revent);
+			long rlen = 0;
 			if (result != -1) {
-				result = ::tprecv(svcinfo->cd, &rcvbuf, &svcinfo->len, 0,
+				result = ::tprecv(svcinfo->cd, &rcvbuf, &rlen, 0,
 						&revent);
 				if (result == -1 && revent == TPEV_SENDONLY) {
-					char* expectedResult = (char*) malloc(svcinfo->len);
+					char* expectedResult = (char*) malloc(5);
+					memset(expectedResult, '\0', 5);
 					sprintf(expectedResult, "yo%d", i);
+					char* receivedResult = (char*) malloc(rlen + 1);
+					memset(receivedResult, '\0', rlen + 1);
+					memcpy(receivedResult, rcvbuf, rlen);
 					//					char* errorMessage = (char*) malloc(svcinfo->len * 2 + 1);
 					//					sprintf(errorMessage, "%s/%s", expectedResult, rcvbuf);
+
+					btlogger((char*) "Expected %s/%s was received", expectedResult, receivedResult);
 					if (strncmp(expectedResult, rcvbuf, 4) != 0) {
+						btlogger((char*) "Failed for unexpected");
 						free(expectedResult);
 						//						free(errorMessage);
 						fail = true;
@@ -267,10 +275,12 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 					free(expectedResult);
 					//					free(errorMessage);
 				} else {
+					btlogger((char*) "Failed for wrong event");
 					fail = true;
 					break;
 				}
 			} else {
+				btlogger((char*) "Failed as didnt get -1");
 				fail = true;
 				break;
 			}

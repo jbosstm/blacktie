@@ -111,15 +111,16 @@
 			<fileMode>0775</fileMode>
 		</fileSet>
 		<fileSet>
-			<directory>../xatmi/src/main/export/
+			<directory>../xatmi/src/main/include/
 			</directory>
 			<outputDirectory>include</outputDirectory>
 			<includes>
-				<include>*</include>
+				<include>atmiBrokerTxMacro.h</include>
+				<include>xatmi.h</include>
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../tx/src/main/export/
+			<directory>../tx/src/main/include/
 			</directory>
 			<outputDirectory>include</outputDirectory>
 			<includes>
@@ -129,7 +130,16 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../core/src/main/export/
+			<directory>../queue/src/main/include/
+			</directory>
+			<outputDirectory>include</outputDirectory>
+			<includes>
+				<include>atmiBrokerQueueMacro.h</include>
+				<include>btqueue.h</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>../core/src/main/include/
 			</directory>
 			<outputDirectory>include</outputDirectory>
 			<includes>
@@ -138,11 +148,12 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../nbf/src/main/export/
+			<directory>../nbf/src/main/include/
 			</directory>
 			<outputDirectory>include</outputDirectory>
 			<includes>
-				<include>*</include>
+				<include>blacktieNBFMacro.h</include>
+				<include>btnbf.h</include>
 			</includes>
 		</fileSet>
 		<fileSet>
@@ -166,6 +177,17 @@
 		</fileSet>
 		<fileSet>
 			<directory>../nbf/target/debug/shared
+			</directory>
+			<outputDirectory>lib/cxx</outputDirectory>
+			<includes>
+				<include>*.dll</include>
+				<include>*.lib</include>
+				<include>*.so</include>
+				<include>*.a</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>../queue/target/debug/shared
 			</directory>
 			<outputDirectory>lib/cxx</outputDirectory>
 			<includes>

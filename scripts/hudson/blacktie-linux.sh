@@ -10,7 +10,7 @@ fi
 
 # KILL ANY PREVIOUS BUILD REMNANTS
 ps -f
-for i in `ps -eaf | grep java | grep "standalone-full.xml" | grep -v grep | cut -c10-15`; do kill -9 $i; done
+for i in `ps -eaf | grep java | grep "standalone.*xml" | grep -v grep | cut -c10-15`; do kill -9 $i; done
 killall -9 testsuite
 killall -9 server
 killall -9 client
@@ -51,7 +51,7 @@ cd $WORKSPACE
 ./build.sh clean install -Djbossas.ip.addr=$JBOSSAS_IP_ADDR "$@"
 if [ "$?" != "0" ]; then
 	ps -f
-	for i in `ps -eaf | grep java | grep "standalone-full.xml" | grep -v grep | cut -c10-15`; do kill -9 $i; done
+	for i in `ps -eaf | grep java | grep "standalone.*xml" | grep -v grep | cut -c10-15`; do kill -9 $i; done
 	killall -9 testsuite
 	killall -9 server
 	killall -9 client
@@ -62,7 +62,7 @@ fi
 
 # KILL ANY BUILD REMNANTS
 ps -f
-for i in `ps -eaf | grep java | grep "standalone-full.xml" | grep -v grep | cut -c10-15`; do kill -9 $i; done
+for i in `ps -eaf | grep java | grep "standalone.*xml" | grep -v grep | cut -c10-15`; do kill -9 $i; done
 killall -9 testsuite
 killall -9 server
 killall -9 client
