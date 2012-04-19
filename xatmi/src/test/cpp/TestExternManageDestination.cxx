@@ -23,7 +23,7 @@
 
 #include "xatmi.h"
 #include "tx.h"
-#include "btxatmi.h"
+#include "btqueue.h"
 #include "malloc.h"
 
 #include <stdio.h>

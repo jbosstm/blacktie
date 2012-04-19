@@ -30,8 +30,8 @@ typedef struct msg_opts {
 	long ttl;	/* maximum no of milliseconds before giving up */
 } msg_opts_t;
 
-extern BLACKTIE_XATMI_DLL int btenqueue(char * svc, msg_opts_t* ctrl, char* idata, long ilen, long flags); // COMMUNICATION
-extern BLACKTIE_XATMI_DLL int btdequeue(char * svc, msg_opts_t* ctrl, char ** odata, long *olen, long flags); // COMMUNICATION
+extern BLACKTIE_XATMI_DLL int btenqueue(char * svc, msg_opts_t* headers, char* idata, long ilen, long flags); // COMMUNICATION
+extern BLACKTIE_XATMI_DLL int btdequeue(char * svc, msg_opts_t* headers, char ** odata, long *olen, long flags); // COMMUNICATION
 
 #ifdef __cplusplus
 }

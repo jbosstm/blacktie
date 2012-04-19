@@ -27,7 +27,7 @@
 #include "ThreadLocalStorage.h"
 #include "txx.h"
 #include "xatmi.h"
-#include "btxatmi.h"
+#include "btqueue.h"
 #include "Session.h"
 #include "AtmiBrokerClientControl.h"
 #include "AtmiBrokerServerControl.h"
@@ -1240,7 +1240,7 @@ int tpdiscon(int id) {
 	return toReturn;
 }
 
-int btenqueue(char * svc, msg_opts_t* mopts, char* idata, long ilen, long flags) {
+int btenqueue(char * svc, msg_opts_t* headers, char* idata, long ilen, long flags) {
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpacall: " << svc << " ilen: " << ilen
 			<< " flags: 0x" << std::hex << flags);
 	int toReturn = -1;
@@ -1278,7 +1278,7 @@ int btenqueue(char * svc, msg_opts_t* mopts, char* idata, long ilen, long flags)
 
 						LOG4CXX_TRACE(loggerXATMI, (char*) "TPNOREPLY send");
 						toReturn = ::send(session, "", idata, len, 0, flags, 0,
-								0, mopts, true, svc);
+								0, headers, true, svc);
 						LOG4CXX_TRACE(loggerXATMI, (char*) "TPNOREPLY sent");
 
 						if (toReturn == -1) {

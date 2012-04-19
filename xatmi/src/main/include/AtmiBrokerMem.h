@@ -23,7 +23,7 @@
 #include <vector>
 #include "log4cxx/logger.h"
 #include "SynchronizableObject.h"
-#include "btxatmi.h"
+#include "btqueue.h"
 #define MAX_TYPE_SIZE 8
 #define MAX_SUBTYPE_SIZE 16
 struct _memory_info {
