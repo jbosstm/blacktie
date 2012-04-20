@@ -24,7 +24,7 @@
 
 #include "xatmi.h"
 extern "C" {
-#include "AtmiBrokerClientControl.h"
+#include "btclient.h"
 }
 
 void TestClientInit::test_clientinit() {

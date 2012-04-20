@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include "string.h"
 
-#include "AtmiBrokerServerControl.h"
+#include "btserver.h"
 #include "ace/OS_NS_unistd.h"
 #include "xatmi.h"
 #include "btnbf.h"

@@ -115,8 +115,9 @@
 			</directory>
 			<outputDirectory>include</outputDirectory>
 			<includes>
-				<include>atmiBrokerTxMacro.h</include>
+				<include>atmiBrokerXatmiMacro.h</include>
 				<include>xatmi.h</include>
+				<include>btserver.h</include>
 			</includes>
 		</fileSet>
 		<fileSet>

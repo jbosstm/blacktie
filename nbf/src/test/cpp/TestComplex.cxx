@@ -21,7 +21,7 @@
 #include "btlogger.h"
 
 extern "C" {
-#include "AtmiBrokerClientControl.h"
+#include "btclient.h"
 }
 
 #include "TestAssert.h"

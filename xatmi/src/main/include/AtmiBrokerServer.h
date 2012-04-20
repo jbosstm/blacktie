@@ -29,7 +29,7 @@
 
 #include "xatmi.h"
 #include "AtmiBrokerEnvXml.h"
-#include "AtmiBrokerServerControl.h"
+#include "btserver.h"
 #include "ConnectionManager.h"
 #include "Destination.h"
 #include "ServiceDispatcher.h"

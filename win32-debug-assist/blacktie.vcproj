@@ -552,7 +552,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\atmibroker-xatmi\src\main\export\AtmiBrokerClientControl.h"
+					RelativePath="..\atmibroker-xatmi\src\main\export\btclient.h"
 					>
 				</File>
 				<File
@@ -568,7 +568,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\atmibroker-xatmi\src\main\export\AtmiBrokerServerControl.h"
+					RelativePath="..\atmibroker-xatmi\src\main\export\btserver.h"
 					>
 				</File>
 				<File

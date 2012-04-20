@@ -23,7 +23,7 @@ static int initcalled = 0;
 static int donecalled = 0;
 
 extern "C" {
-#include "AtmiBrokerServerControl.h"
+#include "btserver.h"
 #include "btservice.h"
 
 EXPORT_SERVICE int dummyserverinit(int argc, char** argv) {

@@ -19,7 +19,7 @@
 #include "TestExternManageDestination.h"
 #include "BaseServerTest.h"
 
-#include "AtmiBrokerServerControl.h"
+#include "btserver.h"
 
 #include "xatmi.h"
 #include "tx.h"

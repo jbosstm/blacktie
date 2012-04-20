@@ -28,7 +28,7 @@
 #include "AtmiBrokerServer.h"
 #include "AtmiBrokerPoaFac.h"
 #include "AtmiBrokerEnv.h"
-#include "AtmiBrokerServerControl.h"
+#include "btserver.h"
 #include "AtmiBrokerMem.h"
 #include "txx.h"
 #include "OrbManagement.h"

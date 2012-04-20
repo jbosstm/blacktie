@@ -30,8 +30,8 @@
 #include "btqueue.h"
 #include "Session.h"
 #include "AtmiBrokerClient.h"
-#include "AtmiBrokerClientControl.h"
-#include "AtmiBrokerServerControl.h"
+#include "btclient.h"
+#include "btserver.h"
 #include "AtmiBrokerEnv.h"
 
 // Logger for XATMIc

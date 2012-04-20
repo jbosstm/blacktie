@@ -21,7 +21,7 @@
 #include "ace/OS_NS_stdio.h"
 #include "ace/OS_NS_string.h"
 #include "AtmiBrokerServer.h"
-#include "AtmiBrokerClientControl.h"
+#include "btclient.h"
 
 #if defined(__cplusplus)
 extern "C" {

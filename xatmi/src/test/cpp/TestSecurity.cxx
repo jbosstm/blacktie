@@ -40,7 +40,7 @@ extern void test_tpcall_SECURE(TPSVCINFO *svcinfo);;
 #endif
 
 extern "C" {
-#include "AtmiBrokerClientControl.h"
+#include "btclient.h"
 }
 
 

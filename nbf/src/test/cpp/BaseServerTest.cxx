@@ -20,7 +20,7 @@
 #include "BaseTest.h"
 
 extern "C" {
-#include "AtmiBrokerServerControl.h"
+#include "btserver.h"
 }
 
 #include "xatmi.h"

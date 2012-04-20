@@ -21,7 +21,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/TestFixture.h>
 #include "xatmi.h"
-#include "AtmiBrokerServerControl.h"
+#include "btserver.h"
 #include "BaseTest.h"
 
 class TestServerinit: public BaseTest {

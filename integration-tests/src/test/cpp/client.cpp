@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include "string.h"
 
-#include "AtmiBrokerServerControl.h"
+#include "btserver.h"
 #include "xatmi.h"
 
 extern "C"

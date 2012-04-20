@@ -20,7 +20,7 @@
 #include "ace/OS_NS_stdlib.h"
 #include "ace/OS_NS_stdio.h"
 #include "ace/OS_NS_string.h"
-#include "AtmiBrokerServerControl.h"
+#include "btserver.h"
 #include "xatmi.h"
 #include "string.h"
 

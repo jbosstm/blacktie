@@ -21,7 +21,7 @@
 #include "cppunit/TestFixture.h"
 #include "BaseTest.h"
 #include "xatmi.h"
-#include "AtmiBrokerServerControl.h"
+#include "btserver.h"
 
 class BaseServerTest: public BaseTest {
 public:

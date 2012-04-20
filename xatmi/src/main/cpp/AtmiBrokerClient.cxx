@@ -24,7 +24,7 @@
 #include "AtmiBrokerInit.h"
 #include "AtmiBrokerClient.h"
 #include "xatmi.h"
-#include "AtmiBrokerClientControl.h"
+#include "btclient.h"
 #include "AtmiBrokerMem.h"
 #include "AtmiBrokerEnv.h"
 #include "txx.h"

@@ -21,8 +21,8 @@
 
 #include "xatmi.h"
 #include "btlogger.h"
-#include "AtmiBrokerServerControl.h"
-#include "AtmiBrokerClientControl.h"
+#include "btserver.h"
+#include "btclient.h"
 
 void LoopyServerAndClient::setUp() {
 	init_ace();
