@@ -118,6 +118,7 @@
 				<include>atmiBrokerXatmiMacro.h</include>
 				<include>xatmi.h</include>
 				<include>btserver.h</include>
+				<include>btservice.h</include>
 			</includes>
 		</fileSet>
 		<fileSet>
