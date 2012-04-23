@@ -95,6 +95,7 @@ char* DefaultCodecImpl::encode(char* type,
 			int position = attribute->memPosition;
 			int length = attribute->length > 0 ? attribute->length : 1;
 			int memTypeSize = attribute->memSize / length;
+			int wireTypeSize = attribute->wireSize / length;
 			ACE_UINT16 svalue;
 			ACE_UINT32 lvalue;
 			ACE_UINT64 llvalue;
@@ -106,59 +107,31 @@ char* DefaultCodecImpl::encode(char* type,
 					svalue = htons(svalue);
 					LOG4CXX_DEBUG(logger, (char*) "htons short " << i << " value:" << svalue);
 					buf = (char*)&svalue;
-					memcpy(&data_togo[attribute->wirePosition + i * memTypeSize], buf, memTypeSize);
+					memcpy(&data_togo[attribute->wirePosition + i * wireTypeSize], buf, wireTypeSize);
 				}
-			} else if(strcmp(attribute->type, "int") == 0 || strcmp(attribute->type, "int[]") == 0 || strcmp(attribute->type, "float") == 0 || strcmp(attribute->type, "float[]") == 0) {
+			} else if(strcmp(attribute->type, "int") == 0 || strcmp(attribute->type, "int[]") == 0 || strcmp(attribute->type, "float") == 0 || strcmp(attribute->type, "float[]") == 0 || strcmp(attribute->type, "long") == 0 || strcmp(attribute->type, "long[]") == 0) {
 				for(int i = 0; i < length; i++) {
 					lvalue = *(ACE_UINT32*)(&membuffer[position + i * memTypeSize]);
 					lvalue = htonl(lvalue);
 					LOG4CXX_DEBUG(logger, (char*) "htonl " << attribute->type << i << " value:" << lvalue);
 					buf = (char*)&lvalue;
-					memcpy(&data_togo[attribute->wirePosition + i * memTypeSize], buf, memTypeSize);
-				}
-			} else if(strcmp(attribute->type, "long") == 0 || strcmp(attribute->type, "long[]") == 0) {
-				for(int i = 0; i < length; i++) {
-					if(sizeof(long) == 4) {
-						lvalue = *(ACE_UINT32*)(&membuffer[position + i * memTypeSize]);
-						lvalue = htonl(lvalue);
-						LOG4CXX_DEBUG(logger, (char*) "htonl " << attribute->type << i << " value:" << lvalue);
-						buf = (char*)&lvalue;
-						memcpy(&data_togo[attribute->wirePosition + i * memTypeSize], buf, memTypeSize);
-					} else if(sizeof(long) == 8) {
-						llvalue = *(ACE_UINT64*)(&membuffer[position + i * memTypeSize]);
-						llvalue = htonll(llvalue);
-						LOG4CXX_DEBUG(logger, (char*) "htonll " << attribute->type << i << " value:" << llvalue);
-						buf = (char*)&llvalue;
-						memcpy(&data_togo[attribute->wirePosition + i * memTypeSize], buf, memTypeSize);
-					} else {
-						LOG4CXX_ERROR(logger, (char*) "sizeof(double) is not 4 or 8");
-					}
+					memcpy(&data_togo[attribute->wirePosition + i * wireTypeSize], buf, 4);
 				}
 			} else if(strcmp(attribute->type, "double") == 0 || strcmp(attribute->type, "double[]") == 0) {
 				for(int i = 0; i < length; i++) {
-					if(sizeof(double) == 4) {
-						lvalue = *(ACE_UINT32*)(&membuffer[position + i * memTypeSize]);
-						lvalue = htonl(lvalue);
-						LOG4CXX_DEBUG(logger, (char*) "htonl " << attribute->type << i << " value:" << lvalue);
-						buf = (char*)&lvalue;
-						memcpy(&data_togo[attribute->wirePosition + i * memTypeSize], buf, memTypeSize);
-					} else if(sizeof(double) == 8) {
-						llvalue = *(ACE_UINT64*)(&membuffer[position + i * memTypeSize]);
-						llvalue = htonll(llvalue);
-						LOG4CXX_DEBUG(logger, (char*) "htonll " << attribute->type << i << " value:" << llvalue);
-						buf = (char*)&llvalue;
-						memcpy(&data_togo[attribute->wirePosition + i * memTypeSize], buf, memTypeSize);
-					} else {
-						LOG4CXX_ERROR(logger, (char*) "sizeof(double) is not 4 or 8");
-					}
+					llvalue = *(ACE_UINT64*)(&membuffer[position + i * memTypeSize]);
+					llvalue = htonll(llvalue);
+					LOG4CXX_DEBUG(logger, (char*) "htonll " << attribute->type << i << " value:" << llvalue);
+					buf = (char*)&llvalue;
+					memcpy(&data_togo[attribute->wirePosition + i * wireTypeSize], buf, wireTypeSize);
 				}
 			} else {
 				buf = &membuffer[attribute->memPosition];
-				memcpy(&data_togo[attribute->wirePosition], buf, attribute->memSize);
+				memcpy(&data_togo[attribute->wirePosition], buf, attribute->wireSize);
 			}
-			copiedAmount = copiedAmount + attribute->memSize;
+			copiedAmount = copiedAmount + attribute->wireSize;
 			LOG4CXX_TRACE(logger, (char*) "copied: idata into: data_togo: "
-					<< attribute->memSize);
+					<< attribute->wireSize);
 		}
 		if (copiedAmount != buffer->wireSize) {
 			LOG4CXX_TRACE(logger, (char*) "DID NOT FILL THE BUFFER Amount: "
@@ -231,16 +204,19 @@ char* DefaultCodecImpl::decode(char* type,
 			if(strcmp(attribute->type, "short") == 0 || strcmp(attribute->type, "short[]") == 0) {
 				int position = attribute->wirePosition;
 				int length = attribute->length > 0 ? attribute->length : 1;
+				int memTypeSize = attribute->memSize / length;
 				int wireTypeSize = attribute->wireSize / length;
+
 				for(int i = 0; i < length; i++) {
 					ACE_UINT16 value = *((ACE_UINT16*)&membuffer[position + i * wireTypeSize]);
 					value = ntohs(value);
 					LOG4CXX_DEBUG(logger, (char*) "ntohs short " << i << " value:" << value);
-					memcpy(&membuffer[position + i * wireTypeSize], &value, wireTypeSize);
+					memcpy(&membuffer[position + i * memTypeSize], &value, memTypeSize);
 				}
-			} else if(strcmp(attribute->type, "int") == 0 || strcmp(attribute->type, "int[]") == 0 || strcmp(attribute->type, "float") == 0 || strcmp(attribute->type, "float[]") == 0) {
+			} else if(strcmp(attribute->type, "int") == 0 || strcmp(attribute->type, "int[]") == 0 || strcmp(attribute->type, "float") == 0 || strcmp(attribute->type, "float[]") == 0 || strcmp(attribute->type, "long") == 0 || strcmp(attribute->type, "long[]") == 0){
 				int position = attribute->wirePosition;
 				int length = attribute->length > 0 ? attribute->length : 1;
+				int memTypeSize = attribute->memSize / length;
 				int wireTypeSize = attribute->wireSize / length;
 
 				for(int i = 0; i < length; i++) {
@@ -248,62 +224,28 @@ char* DefaultCodecImpl::decode(char* type,
 					ACE_UINT32 value = *((ACE_UINT32*)&membuffer[position + i * wireTypeSize]);
 					value = ntohl(value);
 					LOG4CXX_DEBUG(logger, (char*) "ntohl " << i << attribute->type << " value:" << value);
-					memcpy(&membuffer[position + i * wireTypeSize], &value, wireTypeSize);
+					memset(&membuffer[position + i * memTypeSize], 0, memTypeSize);
+					memcpy(&membuffer[position + i * memTypeSize], &value, 4);
 				}
-			} else if(strcmp(attribute->type, "long") == 0 || strcmp(attribute->type, "long[]") == 0) {
+			} else if(strcmp(attribute->type, "double") == 0 || strcmp(attribute->type, "double[]") == 0){
 				int position = attribute->wirePosition;
 				int length = attribute->length > 0 ? attribute->length : 1;
+				int memTypeSize = attribute->memSize / length;
 				int wireTypeSize = attribute->wireSize / length;
 
 				for(int i = 0; i < length; i++) {
 					LOG4CXX_DEBUG(logger, (char*) "position: " << position << " i: " << i << " wireTypeSize: " << wireTypeSize);
-					if(sizeof(long) == 4) {
-						ACE_UINT32 value = *((ACE_UINT32*)&membuffer[position + i * wireTypeSize]);
-						#ifdef WIN32
-						//on windowns 64bit. sizeof(long) == 4 but java treats long as 8. so if value is zero, we will try to read from the next 4 bytes.
-						if(sizeof(double) == 8 && value == 0) {
-							value = *((ACE_UINT32*)&membuffer[position + i * wireTypeSize + 4]);
-						}
-						#endif
-						value = ntohl(value);
-						LOG4CXX_DEBUG(logger, (char*) "ntohl " << i << attribute->type << " value:" << value);
-						memcpy(&membuffer[position + i * wireTypeSize], &value, wireTypeSize);
-					} else if(sizeof(long) == 8) {
-						ACE_UINT64 value = *((ACE_UINT64*)&membuffer[position + i * wireTypeSize]);
-						value = ntohll(value);
-						LOG4CXX_DEBUG(logger, (char*) "ntohll " << i << attribute->type << " value:" << value);
-						memcpy(&membuffer[position + i * wireTypeSize], &value, wireTypeSize);
-					} else {
-						LOG4CXX_ERROR(logger, (char*) "sizeof(long) is not 4 or 8");
-					}
-				}
-			} else if(strcmp(attribute->type, "double") == 0 || strcmp(attribute->type, "double[]") == 0) {
-				int position = attribute->wirePosition;
-				int length = attribute->length > 0 ? attribute->length : 1;
-				int wireTypeSize = attribute->wireSize / length;
-
-				for(int i = 0; i < length; i++) {
-					LOG4CXX_DEBUG(logger, (char*) "position: " << position << " i: " << i << " wireTypeSize: " << wireTypeSize);
-					if(sizeof(double) == 4) {
-						ACE_UINT32 value = *((ACE_UINT32*)&membuffer[position + i * wireTypeSize]);
-						value = ntohl(value);
-						LOG4CXX_DEBUG(logger, (char*) "ntohl " << i << attribute->type << " value:" << value);
-						memcpy(&membuffer[position + i * wireTypeSize], &value, wireTypeSize);
-					} else if(sizeof(double) == 8) {
-						ACE_UINT64 value = *((ACE_UINT64*)&membuffer[position + i * wireTypeSize]);
-						value = ntohll(value);
-						LOG4CXX_DEBUG(logger, (char*) "ntohll " << i << attribute->type << " value:" << value);
-						memcpy(&membuffer[position + i * wireTypeSize], &value, wireTypeSize);
-					} else {
-						LOG4CXX_ERROR(logger, (char*) "sizeof(double) is not 4 or 8");
-					}
+					ACE_UINT64 value = *((ACE_UINT64*)&membuffer[position + i * wireTypeSize]);
+					value = ntohll(value);
+					LOG4CXX_DEBUG(logger, (char*) "ntohll " << i << attribute->type << " value:" << value);
+					memcpy(&membuffer[position + i * memTypeSize], &value, memTypeSize);
 				}
 			}
 			memcpy(&data_tostay[attribute->memPosition],
 					&membuffer[attribute->wirePosition],
-					attribute->wireSize);
+					attribute->memSize);
 			LOG4CXX_TRACE(logger, (char*) "copied: idata into: data_togo: "
-					<< attribute->wireSize);
+					<< attribute->memSize);
 		}
 		*length = buffer->memSize;
 	}

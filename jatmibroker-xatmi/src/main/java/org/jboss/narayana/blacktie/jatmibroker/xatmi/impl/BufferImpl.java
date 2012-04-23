@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -544,22 +545,37 @@ public abstract class BufferImpl implements Serializable, Buffer {
 
     private void writeLong(DataOutputStream dos, long x) throws IOException {
         ByteBuffer bbuf = ByteBuffer.allocate(LONG_SIZE);
-        //bbuf.order(ByteOrder.BIG_ENDIAN);
+        //bbuf.order(ByteOrder.LITTLE_ENDIAN);
         bbuf.putLong(x);
         //bbuf.order(ByteOrder.LITTLE_ENDIAN);
-        long toWrite = bbuf.getLong(0);
-        dos.writeLong(toWrite);
+        //long toWrite = bbuf.getLong(0);    
+        //bbuf.order(ByteOrder.BIG_ENDIAN);
+        
+        byte[] data = new byte[8];
+        Arrays.fill(data, (byte)0);
+        System.arraycopy(bbuf.array(), 4, data, 0, 4);
+        
+        //dos.write(bbuf.array(), 4, 4);
+        dos.write(data);
         currentPos += LONG_SIZE;
     }
 
     private long readLong(DataInputStream dis) throws IOException {
         currentPos += LONG_SIZE;
-        long x = dis.readLong();
+        //long x = dis.readLong();
+         
         ByteBuffer bbuf = ByteBuffer.allocate(LONG_SIZE);
         //bbuf.order(ByteOrder.LITTLE_ENDIAN);
-        bbuf.putLong(x);
+        byte[] data = new byte[8];
+        Arrays.fill(data, (byte)0);
+        
+        dis.read(data, 4, 4);
         //bbuf.order(ByteOrder.BIG_ENDIAN);
-        return bbuf.getLong(0);
+        bbuf.put(data);
+        long x = bbuf.getLong(0);
+        //read the next 4 bytes
+        dis.read(data, 0, 4);
+        return x;
     }
 
     private void writeInt(DataOutputStream dos, int x) throws IOException {
