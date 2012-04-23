@@ -21,7 +21,7 @@
 struct deposit_t {
 	long acct_no;
 	short amount;
-	short balance;
+	double balance;
 	char status[128];
 	short status_len;
 };

@@ -48,13 +48,13 @@ void TestDefaultCodecImpl::test() {
 	DEPOSIT* deposit = (DEPOSIT*) malloc(sizeof(DEPOSIT));
 	deposit->acct_no = 1234567889;
 	deposit->amount = 100;
-	deposit->balance = 20;
+	deposit->balance = 1.1;
 	strcpy(
 			deposit->status,
 			"1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567");
 	deposit->status_len = 127;
 
-	long expectedWireSize = 142;
+	long expectedWireSize = 148;
 	long wireSize = -1;
 	char* wireBuffer = codec->encode(
 			(char*) "X_C_TYPE", (char*) "DEPOSIT", (char*) deposit, &wireSize);
