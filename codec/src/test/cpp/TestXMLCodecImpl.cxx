@@ -78,7 +78,7 @@ void TestXMLCodecImpl::test_x_c_type() {
 	DEPOSIT* deposit = (DEPOSIT*) malloc(sizeof(DEPOSIT));
 	deposit->acct_no = 1234567889;
 	deposit->amount = 100;
-	deposit->balance = 20;
+	deposit->balance = 1.1;
 	strcpy(
 			deposit->status,
 			"1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567");
