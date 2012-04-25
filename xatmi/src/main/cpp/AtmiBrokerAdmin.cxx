@@ -31,7 +31,11 @@ log4cxx::LoggerPtr loggerAtmiBrokerAdmin(log4cxx::Logger::getLogger(
 void ADMIN(TPSVCINFO* svcinfo) {
 	char* toReturn = NULL;
 	long len = 1;
-	char* req = svcinfo->data;
+	char* req = NULL;
+
+	req = tpalloc((char*) "X_OCTET", NULL, svcinfo->len + 1);
+	memcpy(req, svcinfo->data, svcinfo->len);
+
 	toReturn = tpalloc((char*) "X_OCTET", NULL, len);
 	toReturn[0] = '0';
 
@@ -140,6 +144,10 @@ void ADMIN(TPSVCINFO* svcinfo) {
 		}
 	}
 
+	if(req != NULL) {
+		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "tpfree req");
+		tpfree(req);
+	}
 	LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "service done");
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
 }
