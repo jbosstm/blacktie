@@ -28,7 +28,7 @@ import org.jboss.narayana.blacktie.administration.core.AdministrationProxy;
  */
 public class BlacktieAdminService implements BlacktieAdminServiceMBean {
     private static final Logger log = LogManager.getLogger(BlacktieAdminService.class);
-    private QueueReaper reaper;
+    //private QueueReaper reaper;
     private AdministrationProxy administrationProxy;
 
     /**
@@ -36,8 +36,8 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
      */
     public void start() throws Exception {
         administrationProxy = new AdministrationProxy();
-        reaper = new QueueReaper(administrationProxy);
-        reaper.startThread();
+        //reaper = new QueueReaper(administrationProxy);
+        //reaper.startThread();
 
         log.info("Admin Server Started");
     }
@@ -46,11 +46,11 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
      * Stop the service
      */
     public void stop() throws Exception {
-        reaper.stopThread();
+        //reaper.stopThread();
         administrationProxy.close();
         log.info("Admin Server Stopped");
     }
-
+    
     /**
      * Retrieve the domain name
      */
