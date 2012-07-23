@@ -194,13 +194,13 @@
             </dependency>
             <dependency>
                 <groupId>org.jboss.narayana.blacktie</groupId>
-                <artifactId>blacktie-idl-java</artifactId>
+                <artifactId>blacktie-idl-jacorb</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.narayana.blacktie</groupId>
                 <classifier>${bpa}</classifier>
-                <artifactId>blacktie-idl-cxx</artifactId>
+                <artifactId>blacktie-idl-tao</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
