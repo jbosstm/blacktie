@@ -103,7 +103,7 @@
         <dependency>
             <groupId>org.jboss.narayana.blacktie</groupId>
             <classifier>${bpa}</classifier>
-            <artifactId>blacktie-idl-cxx</artifactId>
+            <artifactId>blacktie-idl-tao</artifactId>
         </dependency>
         <dependency>
             <groupId>expat.contrib</groupId>

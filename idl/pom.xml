@@ -71,7 +71,7 @@
         </license>
     </licenses>
     <modules>
-        <module>cxx</module>
-        <module>java</module>
+        <module>tao</module>
+        <module>jacorb</module>
     </modules>
 </project>
