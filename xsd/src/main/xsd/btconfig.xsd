@@ -242,6 +242,12 @@
 						<xsd:attribute name="RES_EP" type="xsd:string" use="required" />
 					</xsd:complexType>
 				</xsd:element>
+				<xsd:element name="SOCKETSERVER" minOccurs="0" maxOccurs="1">
+					<xsd:complexType>
+						<xsd:attribute name="HOST" type="xsd:string" />
+						<xsd:attribute name="PORT" type="xsd:int" use="required"/>
+					</xsd:complexType>
+				</xsd:element>
 				<xsd:element name="MQ" minOccurs="1" maxOccurs="1">
 					<xsd:complexType>
 						<xsd:attribute name="HOST" type="xsd:string" use="required" />

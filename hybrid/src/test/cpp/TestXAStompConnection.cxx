@@ -172,6 +172,7 @@ void TestXAStompConnection::test() {
 		BT_ASSERT(message.received);
 		BT_ASSERT(strncmp(message.data, "hello", 5) == 0);
 		free(message.data);
+		free(message.xid);
 		btlogger("TestXAStompConnection::test received message");
 	}
 	tx_commit();

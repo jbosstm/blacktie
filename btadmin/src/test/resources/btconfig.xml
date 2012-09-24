@@ -23,99 +23,123 @@
 		<MACHINE id="secure1" hostname="albany"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="1" />
+			serverId="1"
+			argLine =" -p 12341"/>
 		<MACHINE id="secure2" hostname="albany"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="2" />
+			serverId="2" 
+			argLine =" -p 12342"/>
 		<MACHINE id="secure3" ipAddress="127.0.0.1"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="1" />
+			serverId="1"
+			argLine =" -p 12341"/>
 		<MACHINE id="secure4" ipAddress="127.0.0.1"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="2" />
+			serverId="2"
+			argLine =" -p 12342"/>
 		<MACHINE id="secure5" hostname="beacon"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="1" />
+			serverId="1"
+			argLine =" -p 12341"/>
 		<MACHINE id="secure6" hostname="beacon"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="2" />
+			serverId="2"
+			argLine =" -p 12342"/>
 		<MACHINE id="secure7" hostname="catskill"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="1" />
+			serverId="1"
+			argLine =" -p 12341"/>
 		<MACHINE id="secure8" hostname="catskill"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="2" />
+			serverId="2"
+			argLine =" -p 12342"/>
 		<MACHINE id="secure9" hostname="winxp08"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="1" />
+			serverId="1"
+			argLine =" -p 12341"/>
 		<MACHINE id="secure10" hostname="winxp08"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="2" />
+			serverId="2"
+			argLine =" -p 12342"/>
 		<MACHINE id="secure11" hostname="tarrytown"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="1" />
+			serverId="1"
+			argLine =" -p 12341"/>
 		<MACHINE id="secure12" hostname="tarrytown"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="2" />
+			serverId="2"
+			argLine =" -p 12342"/>
 		<MACHINE id="secure13" hostname="sol2"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="1" />
+			serverId="1"
+			argLine =" -p 12341"/>
 		<MACHINE id="secure14" hostname="sol2"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="2" />
+			serverId="2"
+			argLine =" -p 12342"/>
 		<MACHINE id="secure15" hostname="wicket"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="1" />
+			serverId="1"
+			argLine =" -p 12341"/>
 		<MACHINE id="secure16" hostname="wicket"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="2" />
+			serverId="2"
+			argLine =" -p 12342"/>
 		<MACHINE id="secure17" hostname="hoboken.buildnet.ncl.jboss.com"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="1" />
+			serverId="1"
+			argLine =" -p 12341"/>
 		<MACHINE id="secure18" hostname="hoboken.buildnet.ncl.jboss.com"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="2" />
+			serverId="2"
+			argLine =" -p 12342"/>
 		<MACHINE id="secure19" hostname="tenafly.buildnet.ncl.jboss.com"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="1" />
+			serverId="1"
+			argLine =" -p 12341"/>
 		<MACHINE id="secure20" hostname="tenafly.buildnet.ncl.jboss.com"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="2" />
+			serverId="2"
+			argLine =" -p 12342"/>
 		<MACHINE id="secure21" hostname="WIN-5GKPEREVUOO"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="1" />
+			serverId="1"
+			argLine =" -p 12341"/>
 		<MACHINE id="secure22" hostname="WIN-5GKPEREVUOO"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="2" />
+			serverId="2"
+			argLine =" -p 12342"/>
 		<MACHINE id="secure23" hostname="jaime"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="1" />
+			serverId="1"
+			argLine =" -p 12341"/>
 		<MACHINE id="secure24" hostname="jaime"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="2" />
+			serverId="2"
+			argLine =" -p 12342"/>
 	</MACHINES>
 	<SERVERS>
 		<SERVER name="testsui">
@@ -153,8 +177,8 @@
 	</SERVERS>
 	<ORB OPT="-ORBInitRef NameService=corbaloc::${JBOSSAS_IP_ADDR}:3528/NameService -ORBListenEndpoints iiop://${JBOSSAS_IP_ADDR}:0"
 		TRANS_FACTORY_ID="TransactionManagerService.OTS" />
+	<SOCKETSERVER PORT="12343" />
 	<MQ HOST="${JBOSSAS_IP_ADDR}" PORT="61613" USER="guest" PASSWORD="password1@"
 		 RECEIVE_TIMEOUT="10" TIME_TO_LIVE="40"
 		 />
-	
 </ENVIRONMENT>

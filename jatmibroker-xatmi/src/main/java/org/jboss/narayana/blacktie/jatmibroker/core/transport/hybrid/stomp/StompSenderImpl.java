@@ -169,4 +169,8 @@ public class StompSenderImpl implements Sender {
     public Object getSendTo() {
         return destinationName;
     }
+
+    public Object getEndpoint() {
+        return socket;
+    }
 }

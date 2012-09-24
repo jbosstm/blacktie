@@ -148,6 +148,7 @@ void TestAtmiBrokerXml::test_env() {
 		btlogger((char*) "Buffer name: %s", buffer->name);
 	}
 
+	BT_ASSERT(cbConfig.port == 12345);
 	AtmiBrokerEnv::discard_instance();
 
 }

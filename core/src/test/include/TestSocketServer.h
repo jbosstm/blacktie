@@ -15,30 +15,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.narayana.blacktie.jatmibroker.core.conf;
+#ifndef TEST_SOCKET_SERVER_H
+#define TEST_SOCKET_SERVER_H
 
-import java.util.Properties;
+#include <cppunit/extensions/HelperMacros.h>
+#include <cppunit/TestFixture.h>
+#include "apr_thread_proc.h"
+#include "SocketServer.h"
 
-public class AtmiBrokerEnvXML {
-    private Properties prop;
+class TestSocketServer: public CppUnit::TestFixture {
+	CPPUNIT_TEST_SUITE(TestSocketServer);
+	CPPUNIT_TEST(testServer);
+	CPPUNIT_TEST_SUITE_END();
 
-    public AtmiBrokerEnvXML() {
-        prop = new Properties();
-    }
+public:
+	virtual void setUp();
+	virtual void tearDown();
+	void testServer();
 
-    public Properties getProperties() throws ConfigurationException {
-        XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
+private:
+	SocketServer* server;
+	static const int port = 12345;
+	apr_pool_t       *mp;
+	apr_threadattr_t *thd_attr;
+};
 
-        // define BTStompAdmin and BTDomainAdmin
-        prop.put("blacktie.BTStompAdmin.server", "jboss");
-        prop.put("blacktie.BTStompAdmin.conversational", false);
-
-        prop.put("blacktie.BTDomainAdmin.server", "jboss");
-        prop.put("blacktie.BTDomainAdmin.conversational", false);
-        
-        // just for socket server test
-        //prop.setProperty("blacktie.java.socketserver.port", "12340");
-
-        return prop;
-    }
-}
+#endif

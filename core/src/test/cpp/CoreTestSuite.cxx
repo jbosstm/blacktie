@@ -31,3 +31,5 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestUserlog);
 CPPUNIT_TEST_SUITE_REGISTRATION( TestMultiOrb);
 #include "TestSynchronizableObject.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestSynchronizableObject);
+#include "TestSocketServer.h"
+CPPUNIT_TEST_SUITE_REGISTRATION( TestSocketServer);

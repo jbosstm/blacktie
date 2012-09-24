@@ -64,6 +64,11 @@ typedef BLACKTIE_CORE_DLL struct _mq_config {
 	int noReplyTimeToLive;
 }MqConfig;
 
+typedef BLACKTIE_CORE_DLL struct _callback_server_config {
+	char* host;
+	int port;
+}CallbackServerConfig;
+
 typedef BLACKTIE_CORE_DLL struct _orb_config {
 	char* opt;
 	char* transactionFactoryName;
@@ -140,4 +145,5 @@ extern BLACKTIE_CORE_DLL char domain[30];
 extern BLACKTIE_CORE_DLL OrbConfig orbConfig;
 extern BLACKTIE_CORE_DLL TxnConfig txnConfig;
 extern BLACKTIE_CORE_DLL MqConfig mqConfig;
+extern BLACKTIE_CORE_DLL CallbackServerConfig cbConfig;
 #endif

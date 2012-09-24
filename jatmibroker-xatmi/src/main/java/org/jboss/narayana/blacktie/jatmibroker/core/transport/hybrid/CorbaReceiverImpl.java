@@ -258,4 +258,8 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
     public int getCd() {
         return cd;
     }
+
+    public Object getEndpoint() throws ConnectionException {
+        return null;
+    }
 }

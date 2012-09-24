@@ -17,6 +17,7 @@
  */
 package org.jboss.narayana.blacktie.jatmibroker.core.transport.hybrid;
 
+import java.net.Socket;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,6 +27,7 @@ import java.util.Properties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.narayana.blacktie.jatmibroker.core.ResponseMonitor;
+import org.jboss.narayana.blacktie.jatmibroker.core.server.SocketServer;
 import org.jboss.narayana.blacktie.jatmibroker.core.transport.EventListener;
 import org.jboss.narayana.blacktie.jatmibroker.core.transport.OrbManagement;
 import org.jboss.narayana.blacktie.jatmibroker.core.transport.Receiver;
@@ -41,6 +43,7 @@ public class TransportImpl implements Transport {
 
     private static final Logger log = LogManager.getLogger(TransportImpl.class);
     private OrbManagement orbManagement;
+    private SocketServer socketserver;
     private Properties properties;
     private TransportFactory transportFactoryImpl;
     private boolean closed;
@@ -48,9 +51,10 @@ public class TransportImpl implements Transport {
     private Map<Boolean, Map<String, Sender>> senders = new HashMap<Boolean, Map<String, Sender>>();
     private Map<Boolean, Map<String, Receiver>> receivers = new HashMap<Boolean, Map<String, Receiver>>();
 
-    public TransportImpl(OrbManagement orbManagement, Properties properties, TransportFactory transportFactoryImpl) {
+    public TransportImpl(OrbManagement orbManagement, SocketServer socketserver, Properties properties, TransportFactory transportFactoryImpl) {
         log.debug("Creating transport");
         this.orbManagement = orbManagement;
+        this.socketserver = socketserver;
         this.properties = properties;
         this.transportFactoryImpl = transportFactoryImpl;
         log.debug("Created transport");
@@ -122,12 +126,23 @@ public class TransportImpl implements Transport {
             log.error("Already closed");
             throw new ConnectionException(Connection.TPEPROTO, "Already closed");
         }
+        Sender sender;
         String callback_ior = (String) destination;
         log.debug("Creating a sender for: " + callback_ior);
-        org.omg.CORBA.Object serviceFactoryObject = orbManagement.getOrb().string_to_object(callback_ior);
-        CorbaSenderImpl sender = new CorbaSenderImpl(serviceFactoryObject, callback_ior);
+        if(callback_ior.contains("IOR:")) {
+            log.debug(callback_ior + " is for corba");
+            org.omg.CORBA.Object serviceFactoryObject = orbManagement.getOrb().string_to_object(callback_ior);
+            sender = new CorbaSenderImpl(serviceFactoryObject, callback_ior);         
+        } else {
+            log.debug(callback_ior + " is for socket");
+            sender = new SocketSenderImpl(callback_ior);
+        }
         log.debug("Created sender");
         return sender;
+    }
+    
+    public Sender createSender(Receiver receiver) throws ConnectionException {
+        return new SocketSenderImpl((Socket)receiver.getEndpoint(), (String)receiver.getReplyTo());
     }
 
     public Receiver getReceiver(String serviceName, boolean conversational) throws ConnectionException {
@@ -158,13 +173,14 @@ public class TransportImpl implements Transport {
         return toReturn;
     }
 
-    public Receiver createReceiver(int cd, ResponseMonitor responseMonitor) throws ConnectionException {
+    public Receiver createReceiver(int cd, ResponseMonitor responseMonitor, EventListener eventListener) throws ConnectionException {
         if (closed) {
             log.error("Already closed");
             throw new ConnectionException(Connection.TPEPROTO, "Already closed");
         }
         log.debug("Creating a receiver");
-        return new CorbaReceiverImpl(orbManagement, properties, cd, responseMonitor);
+        //return new CorbaReceiverImpl(orbManagement, properties, cd, responseMonitor);
+        return new SocketReceiverImpl(socketserver, properties, cd, responseMonitor, eventListener);
     }
 
     public Receiver createReceiver(EventListener eventListener) throws ConnectionException {
@@ -174,5 +190,13 @@ public class TransportImpl implements Transport {
         }
         log.debug("Creating a receiver with event listener");
         return new CorbaReceiverImpl(eventListener, orbManagement, properties);
+    }
+    
+    public Receiver createReceiver(Sender sender) throws ConnectionException {
+        if(sender == null) {
+            log.debug("no need to create on empty sender");
+            return null;
+        } 
+        return new SocketReceiverImpl((Socket)sender.getEndpoint(), (String)sender.getSendTo(), properties);
     }
 }

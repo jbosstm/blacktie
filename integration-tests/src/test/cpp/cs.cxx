@@ -583,6 +583,7 @@ int run_server(int argc, char **argv) {
 	}
 	btlogger((char*) "Test Server: calling serverdone()");
 	serverdone();
+	clientdone(0);
 	btlogger((char*) "Test Server: returning status %d", exit_status);
 	return exit_status;
 }

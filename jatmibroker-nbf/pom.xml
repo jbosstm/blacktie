@@ -20,7 +20,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>blacktie-jatmibroker-nbf</artifactId>
-    <name>Blacktie Java XATMI Implementation</name>
+    <name>Blacktie Java NBF Implementation</name>
     <packaging>jar</packaging>
     <description>A BlackTie component</description>
     <developers>

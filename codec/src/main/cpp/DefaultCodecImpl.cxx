@@ -149,7 +149,7 @@ char* DefaultCodecImpl::decode(char* type,
 	LOG4CXX_DEBUG(logger, (char*) "convertToMemoryFormat");
 	char* data_tostay = NULL;
 
-	if (strlen(type) == 0) {
+	if (type == NULL || strlen(type) == 0) {
 		LOG4CXX_TRACE(logger, (char*) "Received NULL buffer");
 		*length = 0;
 	} else if (strncmp(type, "BT_NBF", 6) == 0) {

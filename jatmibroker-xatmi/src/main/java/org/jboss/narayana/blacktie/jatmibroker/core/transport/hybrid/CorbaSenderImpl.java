@@ -89,4 +89,8 @@ public class CorbaSenderImpl implements Sender {
     public Object getSendTo() {
         return name;
     }
+
+    public Object getEndpoint() {
+      return queue;
+    }
 }

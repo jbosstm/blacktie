@@ -40,14 +40,14 @@ public class TestConnection extends TestCase {
     public void test() throws ConnectionException, IOException {
         Receiver serviceDispatcher = serviceTransport.getReceiver("JAVA_Converse", false);
         Sender clientSender = clientTransport.getSender("JAVA_Converse", false);
-        Receiver clientReceiver = clientTransport.createReceiver(1, null);
+        Receiver clientReceiver = clientTransport.createReceiver(1, null, null);
         clientSender.send(clientReceiver.getReplyTo(), (short) 1, 1, "hi".getBytes(), 2, 0, 0, 0, "X_OCTET", null);
         Message receive = serviceDispatcher.receive(0);
         receive.ack();
         assertTrue(receive.len == 2);
 
         Sender serviceSender = serviceTransport.createSender(receive.replyTo);
-        Receiver serviceReceiver = serviceTransport.createReceiver(1, null);
+        Receiver serviceReceiver = serviceTransport.createReceiver(1, null, null);
 
         log.info("Chatting");
         for (int i = 0; i < 100; i++) {

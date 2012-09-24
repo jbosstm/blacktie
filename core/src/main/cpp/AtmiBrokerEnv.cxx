@@ -247,6 +247,12 @@ void AtmiBrokerEnv::destroy() {
 	mqConfig.user = NULL;
 	mqConfig.pwd = NULL;
 
+	LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "free cbConfig");
+	if(cbConfig.host != NULL) {
+		free(cbConfig.host);
+		cbConfig.host = NULL;
+	}
+
 	Buffers::iterator it;
 	for (it = buffers.begin(); it != buffers.end(); ++it) {
 		Buffer* buffer = it->second;

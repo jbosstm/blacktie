@@ -20,7 +20,7 @@
 #include <exception>
 
 #include "HybridConnectionImpl.h"
-#include "HybridSessionImpl.h"
+#include "HybridSocketSessionImpl.h"
 #include "AtmiBrokerEnv.h"
 #include "HybridStompEndpointQueue.h"
 
@@ -55,15 +55,16 @@ HybridConnectionImpl::HybridConnectionImpl(char* connectionName,
 	}
 	LOG4CXX_TRACE(logger, (char*) "Pool created");
 
-	this->connection = (CORBA_CONNECTION *) initOrb(connectionName);
+	//this->connection = (CORBA_CONNECTION *) initOrb(connectionName);
 	this->messagesAvailableCallback = messagesAvailableCallback;
 
 	//	this->queueSession = NULL;
+	this->cb_server = NULL;
 }
 
 HybridConnectionImpl::~HybridConnectionImpl() {
 	sessionMapLock->lock();
-	std::map<int, HybridSessionImpl*>::iterator i;
+	std::map<int, HybridSocketSessionImpl*>::iterator i;
 
 	for (i = sessionMap.begin(); i != sessionMap.end(); ++i) {
 		closeSession((*i).first);
@@ -73,7 +74,12 @@ HybridConnectionImpl::~HybridConnectionImpl() {
 	//	queueSession = NULL;
 
 	LOG4CXX_DEBUG(logger, (char*) "destructor: " << connectionName);
-	shutdownBindings(this->connection);
+	//shutdownBindings(this->connection);
+
+	if(cb_server != NULL) {
+		SocketServer::discard_instance();
+		cb_server = NULL;
+	}
 
 	apr_pool_destroy( pool);
 	//apr_terminate();
@@ -252,7 +258,7 @@ void HybridConnectionImpl::disconnect(stomp_connection* connection,
 Session* HybridConnectionImpl::getQueueSession() {
 	Session* queueSession = (Session*) getSpecific(QCN_KEY);
 	if (queueSession == NULL) {
-		queueSession = new HybridSessionImpl(pool);
+		queueSession = new HybridSocketSessionImpl(pool);
 		setSpecific(QCN_KEY, queueSession);
 	}
 	return queueSession;
@@ -264,8 +270,12 @@ Session* HybridConnectionImpl::createSession(bool isConv, char * serviceName) {
 	;
 	LOG4CXX_DEBUG(logger, (char*) "creating session: " << serviceName << ":"
 			<< id);
-	HybridSessionImpl* session = new HybridSessionImpl(isConv,
-			this->connectionName, this->connection, pool, id, serviceName,
+	if(cb_server == NULL) {
+		cb_server = SocketServer::get_instance(cbConfig.port, messagesAvailableCallback);
+		LOG4CXX_TRACE(logger, (char*) "create " << connectionName << " cb_server with port " << cbConfig.port);
+	}
+	HybridSocketSessionImpl* session = new HybridSocketSessionImpl(isConv,
+			this->connectionName, this->cb_server, pool, id, serviceName,
 			messagesAvailableCallback);
 	LOG4CXX_DEBUG(logger, (char*) "session established: " << serviceName << ":"
 			<< id << ":" << session);
@@ -281,9 +291,8 @@ Session* HybridConnectionImpl::createSession(bool isConv, int id,
 	sessionMapLock->lock();
 	LOG4CXX_DEBUG(logger, (char*) "createSession temporaryQueueName: "
 			<< temporaryQueueName);
-	sessionMap[id] = new HybridSessionImpl(isConv, this->connectionName,
-			this->connection, this->pool, id, temporaryQueueName,
-			messagesAvailableCallback);
+	sessionMap[id] = new HybridSocketSessionImpl(isConv, this->connectionName,
+			this->pool, id, temporaryQueueName, messagesAvailableCallback);
 	sessionMapLock->unlock();
 	return sessionMap[id];
 }
@@ -308,7 +317,7 @@ Session* HybridConnectionImpl::getSession(int id) {
 void HybridConnectionImpl::closeSession(int id) {
 	sessionMapLock->lock();
 	if (sessionMap[id]) {
-		HybridSessionImpl* session = sessionMap[id];
+		HybridSocketSessionImpl* session = sessionMap[id];
 		delete session;
 		sessionMap[id] = NULL;
 	}
@@ -319,7 +328,7 @@ void HybridConnectionImpl::disconnectSession(int id) {
 	LOG4CXX_DEBUG(logger, (char*) "disconnectSession " << id);
 	sessionMapLock->lock();
 	if (id < 0) {
-		std::map<int, HybridSessionImpl*>::iterator i;
+		std::map<int, HybridSocketSessionImpl*>::iterator i;
 
 		for (i = sessionMap.begin(); i != sessionMap.end(); ++i) {
 			Session* session = (*i).second;
