@@ -1,3 +1,25 @@
+function fatal {
+  comment_on_pull "Tests failed: $1"
+  echo "$1"
+  exit -1
+}
+
+function comment_on_pull
+{
+    if [ "$COMMENT_ON_PULL" = "" ]; then return; fi
+
+    PULL_NUMBER=$(echo $GIT_BRANCH | awk -F 'pull' '{ print $2 }' | awk -F '/' '{ print $2 }')
+    if [ "$PULL_NUMBER" != "" ]
+    then
+        JSON="{ \"body\": \"$1\" }"
+        curl -d "$JSON" -ujbosstm-bot:$BOT_PASSWORD https://api.github.com/repos/$GIT_ACCOUNT/$GIT_REPO/issues/$PULL_NUMBER/comments
+    else
+        echo "Not a pull request, so not commenting"
+    fi
+}
+
+comment_on_pull "Started testing this pull request: $BUILD_URL"
+
 ulimit -c unlimited
 
 # CHECK IF WORKSPACE IS SET
@@ -32,7 +54,7 @@ fi
 # INITIALIZE JBOSS
 ant -f scripts/hudson/initializeJBoss.xml -Dbasedir=. initializeJBoss -debug
 if [ "$?" != "0" ]; then
-	exit -1
+	fatal "Failed to init JBoss"
 fi
 
 chmod u+x $WORKSPACE/jboss-as-7.1.1.Final/bin/standalone.sh
@@ -42,7 +64,7 @@ chmod u+x $WORKSPACE/jboss-as-7.1.1.Final/bin/add-user.sh
 (cd $WORKSPACE/jboss-as-7.1.1.Final/bin/ && JBOSS_HOME= ./add-user.sh guest password -a --silent=true)
 (cd $WORKSPACE/jboss-as-7.1.1.Final/bin/ && JBOSS_HOME= ./add-user.sh dynsub password -a --silent=true)
 if [ "$?" != "0" ]; then
-	exit -1
+	fatal "Failed to add users"
 fi
 
 # START JBOSS
@@ -60,7 +82,7 @@ if [ "$?" != "0" ]; then
 	killall -9 client
 	killall -9 cs
     ps -f
-	exit -1
+	fatal "Some tests failed"
 fi
 
 # KILL ANY BUILD REMNANTS
@@ -71,3 +93,5 @@ killall -9 server
 killall -9 client
 killall -9 cs
 ps -f
+
+comment_on_pull "All tests passed - Job complete"
