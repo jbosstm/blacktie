@@ -33,11 +33,13 @@ void HttpClient::dup_headers(struct mg_request_info* ri) {
 }
 
 void HttpClient::dispose(struct mg_request_info* ri) {
+#if 0
+// no longer calling HttpClient::dup_headers
     for (int i = 0; i < ri->num_headers; i++) {
         free(ri->http_headers[i].name);
         free(ri->http_headers[i].value);
     }
-
+#endif
 	ri->num_headers = 0;
 }
 
@@ -74,16 +76,7 @@ int HttpClient::send(struct mg_request_info* ri, const char* method, const char*
         int i = 0;
 
         for (; headers[i]; i++) {
-            char *hv = strdup(headers[i]);
-            char *v = strchr(hv, '=');
-
-            if (v != NULL) {
-                *v++ = 0;
-				mg_printf(conn, "%s: %s\r\n", hv, v);
-                free(hv);
-            } else {
-                break;
-            }
+            mg_printf(conn, "%s\r\n", headers[i]);
         }
     }
 
@@ -119,27 +112,26 @@ int HttpClient::send(struct mg_request_info* ri, const char* method, const char*
 	ri->status_code = (scode != NULL ? atoi(scode) : -1);
 	skip(&b, "\r\n");
 
-//	LOG4CXX_DEBUG(httpclientlog, "http resonse " << scode << " as int: " << ri->status_code);
+//	LOG4CXX_TRACE(httpclientlog, "http resonse " << scode << " as int: " << ri->status_code);
 
 	if (strncmp(ri->http_version, "HTTP/", 5) == 0) {
 		ri->http_version += 5;   /* Skip "HTTP/" */
 		parse_http_headers(&b, ri);
 
+#if 0
 		dup_headers(ri);
-
 		for (int i = 0; i < ri->num_headers; i++) {
-//			LOG4CXX_TRACE(httpclientlog, "Header:\t" << ri->http_headers[i].name <<
-//				"=" << ri->http_headers[i].value);
-//			printf("Header:\t%s=%s\n", ri->http_headers[i].name, ri->http_headers[i].value);
+			LOG4CXX_TRACE(httpclientlog, "Header:\t" << ri->http_headers[i].name <<
+				"=" << ri->http_headers[i].value);
+			printf("Header:\t%s=%s\n", ri->http_headers[i].name, ri->http_headers[i].value);
 		}
-
+		dispose(ri);
+#endif
 		if (content != NULL) {
 			const char *clen = get_header(ri, "Content-Length");
 
 			if (clen != NULL)
 				*(content + atoi(clen)) = '\0';
-
-//			printf("Content:%s\n", content);
 		}
 	} else {
 		ri->status_code = 500;
@@ -147,7 +139,6 @@ int HttpClient::send(struct mg_request_info* ri, const char* method, const char*
 	}
 
 	// done with the connection
-	//LOG4CXX_DEBUG(httpclientlog, "closing connection: status=" << ri->status_code);
 	close_connection(conn);
 	free(conn);
 

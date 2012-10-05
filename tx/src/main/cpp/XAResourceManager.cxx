@@ -592,7 +592,9 @@ int XAResourceManager::createResourceAdapter(XID& xid)
 
 	if (tx == NULL)
 		return XAER_PROTO;
-	LOG4CXX_WARN(xarmlogger, (char*) "createResourceAdapter: OTS=" << tx->isOTS());
+
+	LOG4CXX_DEBUG(xarmlogger, (char*) "createResourceAdapter: OTS=" << tx->isOTS());
+
 	if (tx->isOTS())
 		return createServant(xid);
 

@@ -74,6 +74,9 @@ HttpTxManager::~HttpTxManager() {
 		free(_txmUrl);
 	if (_resUrl != NULL)
 		free(_resUrl);
+
+	for (XABranchMap::iterator iter = _branches.begin(); iter != _branches.end(); ++iter)
+		free ((char *) ((*iter).first));
 }
 
 TxManager* HttpTxManager::create(const char *txmUrl, const char *resUrl) {
@@ -125,20 +128,27 @@ char *HttpTxManager::enlist(XAWrapper* resource, TxControl *tx, const char * xid
 	HttpControl *httpTx = dynamic_cast<HttpControl*>(tx);
 	const char *enlistUrl = httpTx->enlistUrl();	
 
-    if (enlistUrl != NULL) {
+	if (enlistUrl != NULL) {
 		const char *host = _ws->get_host();
 		int port = _ws->get_port();
-    	char body[BUFSZ];
-    	const char *fmt = "terminator=http://%s:%d/xid/%s/terminate;durableparticipant=http://%s:%d/xid/%s/status";
+
+    	char hdr[BUFSZ];
+	char *hdrp[] = {hdr, 0};
+    	const char *fmt = "Link: <http://%s:%d/xid/%s/terminate>;rel=\"%s\",<http://%s:%d/xid/%s/status>;rel=\"%s\"";
     	struct mg_request_info ri;
-		(void) ACE_OS::snprintf(body, sizeof (body), fmt, host, port, xid, host, port, xid);
+
+		(void) ACE_OS::snprintf(hdr, sizeof (hdr), fmt, host, port, xid,
+			HttpControl::PARTICIPANT_TERMINATOR,
+			host, port, xid,
+			HttpControl::PARTICIPANT_RESOURCE);
+
 		if (_wc.send(&ri, "POST", enlistUrl, HttpControl::POST_MEDIA_TYPE,
-			NULL, body, strlen(body), NULL, NULL) != 0) {
+			(const char **)hdrp, NULL, 0, NULL, NULL) != 0) {
 			LOG4CXX_DEBUG(httptxlogger, "enlist POST error");
 			return NULL;
 		}
 
-		const char *rurl = _wc.get_header(&ri, "Location");
+		const char *rurl = _wc.get_header(&ri, HttpControl::LOCATION);
 
 		recUrl = (rurl == NULL ? NULL : strdup(rurl));
 
@@ -147,12 +157,23 @@ char *HttpTxManager::enlist(XAWrapper* resource, TxControl *tx, const char * xid
 	
 		_wc.dispose(&ri);
 
-		LOG4CXX_DEBUG(httptxlogger, "Enlisted with: " << body);
-		LOG4CXX_DEBUG(httptxlogger, "Recovery url: " << recUrl);
+		LOG4CXX_DEBUG(httptxlogger, "Enlisted with header: " << hdr);
 	}
 
-	if (recUrl != NULL)
-		_branches[resource->get_name()] = resource;
+	if (recUrl != NULL) {
+		LOG4CXX_DEBUG(httptxlogger, "Enlisted branch " << resource->get_name() << " rec url: "
+			<< recUrl);
+		char *name = strdup(resource->get_name());
+
+		if (name != 0) {
+			_branches[name] = resource;
+		} else {
+			recUrl = 0;
+			LOG4CXX_WARN(httptxlogger, "Enlistment of xid " << xid << " failed - out of memory");
+		}
+	} else {
+		LOG4CXX_WARN(httptxlogger, "Enlistment of xid " << xid << " failed - missing recovery url");
+	}
 
 	return recUrl;
 }
@@ -165,12 +186,18 @@ bool HttpTxManager::recover(XAWrapper *resource)
 	const char *host = _ws->get_host();
 	int port = _ws->get_port();
 	const char* xid = resource->get_name();
-   	char body[BUFSZ];
-   	const char *fmt = "terminator=http://%s:%d/xid/%s/terminate;durableparticipant=http://%s:%d/xid/%s/status";
+    	char hdr[BUFSZ];
+	char *hdrp[] = {hdr, 0};
+    	const char *fmt = "Link: <http://%s:%d/xid/%s/terminate>;rel=\"%s\",<http://%s:%d/xid/%s/status>;rel=\"%s\"";
    	struct mg_request_info ri;
-	(void) ACE_OS::snprintf(body, sizeof (body), fmt, host, port, xid, host, port, xid);
+
+	(void) ACE_OS::snprintf(hdr, sizeof (hdr), fmt, host, port, xid,
+		HttpControl::PARTICIPANT_TERMINATOR,
+		host, port, xid,
+		HttpControl::PARTICIPANT_RESOURCE);
+
 	if (_wc.send(&ri, "PUT", resource->get_recovery_coordinator(),
-		HttpControl::PLAIN_MEDIA_TYPE, NULL, body, strlen(body), NULL, NULL) != 0) {
+		HttpControl::PLAIN_MEDIA_TYPE, (const char **)hdrp, NULL, 0, NULL, NULL) != 0) {
 		LOG4CXX_INFO(httptxlogger, "recovery PUT error");
 		return false;
 	}
@@ -178,8 +205,16 @@ bool HttpTxManager::recover(XAWrapper *resource)
 	_wc.dispose(&ri);
 
 	if (ri.status_code == 200) {
-		LOG4CXX_TRACE(httptxlogger, "recovery: told TM about participant " << xid);
-		_branches[resource->get_name()] = resource;
+		LOG4CXX_DEBUG(httptxlogger, "recovery: told TM about participant "
+			<< resource->get_name() << " xid: " << xid);
+		char *name = strdup(resource->get_name());
+
+		if (name != 0) {
+			_branches[name] = resource;
+		} else {
+			LOG4CXX_WARN(httptxlogger, "Recovery of resource " << resource->get_name() <<
+				" failed - out of memory");
+		}
 	} else {
 		// TODO what about the other HTTP codes
 		// For some codes we need to periodically retry the request
@@ -218,11 +253,13 @@ int HttpTxManager::do_close(void) {
 
 XAWrapper * HttpTxManager::locate_branch(const char * xid)
 {
-	XABranchMap::iterator iter;
+	LOG4CXX_DEBUG(httptxlogger, "locating branch " << xid);
 
-	for (iter = _branches.begin(); iter != _branches.end(); ++iter)
-		if (strcmp(iter->first, xid) == 0)
+	for (XABranchMap::iterator iter = _branches.begin(); iter != _branches.end(); ++iter) {
+		if (strcmp((*iter).first, xid) == 0) {
 			return (*iter).second;
+		}
+	}
 
 	return NULL;
 }

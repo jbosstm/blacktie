@@ -198,50 +198,70 @@ void TestTransactions::test_info()
 }
 
 // test for transaction timeout behaviour
-void TestTransactions::test_timeout()
+void TestTransactions::test_timeout1()
 {
-	long timeout = 10;
-	long delay = 20;
-	btlogger("TestTransactions::test_timeout begin");
-	// cause RMs to sleep during 2PC
-	fault_t fault1 = {0, 102, O_XA_COMMIT, XA_OK, F_DELAY, (void*)&delay};
-	fault_t fault2 = {0, 100, O_XA_PREPARE, XA_OK, F_DELAY, (void*)&delay};
+	long timeout = 5;
+	long delay = 10;
+	btlogger("TestTransactions::test_timeout1 begin");
 
 	BT_ASSERT_EQUAL(TX_OK, tx_open());
 
 	BT_ASSERT_EQUAL(TX_OK, tx_begin());
 
-	// set timeout - the value should not have any effect until the next call to tx_begin
+	// set txn timeout - the value should not have any effect until the next call to tx_begin
 	BT_ASSERT_EQUAL(TX_OK, tx_set_transaction_timeout(timeout));
+	btlogger("TestTransactions::test_timeout1 sleep for %d", delay);
 	doThree(delay);
+	btlogger("TestTransactions::test_timeout1 committing");
 	BT_ASSERT_EQUAL(TX_OK, tx_commit());
 
-	// start another transaction
+	btlogger("TestTransactions::test_timeout1 begin another txn");
+	// start another transaction (the new timeout should now come into effect)
 	BT_ASSERT_EQUAL(TX_OK, tx_begin());
 	// sleep for longer than the timeout
-	btlogger("TestTransactions::test_timeout sleeping");
+	btlogger("TestTransactions::test_timeout1 sleep for %d", delay);
 	doSix(delay);
-	btlogger("TestTransactions::test_timeout testing for rollback on commit");
+	btlogger("TestTransactions::test_timeout1 testing for rollback on commit");
+        // since delay > timeout the transaction should have rolled back
+	btlogger("TestTransactions::test_timeout1 committing");
 	BT_ASSERT_EQUAL(TX_ROLLBACK, tx_commit());
+
+	BT_ASSERT_EQUAL(TX_OK, tx_close());
+	btlogger( (char*) "TestTransactions::test_timeout1 pass");
+}
+
+// test for transaction timeout behaviour
+void TestTransactions::test_timeout2()
+{
+	long timeout = 5;
+	long delay = 10;
+	btlogger("TestTransactions::test_timeout2 begin");
+	// cause RMs to sleep during 2PC
+	fault_t fault1 = {0, 102, O_XA_COMMIT, XA_OK, F_DELAY, (void*)&delay};
+//	fault_t fault2 = {0, 100, O_XA_PREPARE, XA_OK, F_DELAY, (void*)&delay};
+
+	BT_ASSERT_EQUAL(TX_OK, tx_open());
 
 	// cause the RM to delay for delay seconds during commit processing
 	(void) dummy_rm_add_fault(fault1);
-	(void) dummy_rm_add_fault(fault2);
+//	(void) dummy_rm_add_fault(fault2);
 
+	// set txn timeout
+	BT_ASSERT_EQUAL(TX_OK, tx_set_transaction_timeout(timeout));
 
-	btlogger("TestTransactions::test_timeout injecting delay after phase 1");
+	btlogger("TestTransactions::test_timeout2 injecting delay after phase 1");
 	BT_ASSERT_EQUAL(TX_OK, tx_begin());
-	// once the transaction has started 2PC any further delays (beyond the timeout period) should have no effect
-	btlogger("TestTransactions::test_timeout validating that the delay was ignored");
 
-
+        // when the transaction commits the RM will delay during phase 2 for longer than the timeout
+        // but the timeout period only effects the transaction prior to 2PC so the txn should commit ok
+	btlogger("TestTransactions::test_timeout2 validating that the timeout is ignored during 2PC");
 	BT_ASSERT_EQUAL(TX_OK, tx_commit());
 
 	/* cleanup */
 	(void) dummy_rm_del_fault(fault1);
-	(void) dummy_rm_del_fault(fault2);
+//	(void) dummy_rm_del_fault(fault2);
 	BT_ASSERT_EQUAL(TX_OK, tx_close());
-	btlogger( (char*) "TestTransactions::test_timeout pass");
+	btlogger( (char*) "TestTransactions::test_timeout2 pass");
 }
 
 void TestTransactions::test_rollback()
@@ -255,7 +275,7 @@ void TestTransactions::test_rollback()
 
 	BT_ASSERT_EQUAL(TX_OK, tx_open());
 	BT_ASSERT_EQUAL(TX_OK, tx_begin());
-	doFour();
+	doFour(); // calls txx_rollback_only
 	CHECKINFO("set_rollback_only", 1, TX_COMMIT_DECISION_LOGGED, TX_UNCHAINED, 0l, TX_ROLLBACK_ONLY);
 	BT_ASSERT_EQUAL(TX_ROLLBACK, tx_commit());
 
@@ -490,7 +510,7 @@ void TestTransactions::test_recovery()
 
 void TestTransactions::test_wait_for_recovery()
 {
-	int nsecs = 140;
+	int nsecs = 180;
 	int nrecs, nrecs1 = count_log_records();
 	fault_t fault2 = {0, 102, O_XA_COMMIT, XA_OK, F_CB, (void *) recovery_cb2};
 	fault_t fault3 = {0, 102, O_XA_ROLLBACK, XA_OK, F_CB, (void *) recovery_cb2};
@@ -509,7 +529,7 @@ void TestTransactions::test_wait_for_recovery()
 	BT_ASSERT_EQUAL(TX_OK, tx_open());
 	while (rcCnt2 == 0 && nsecs != 0) {
 		if (nsecs-- % 10 == 0) {
-			btlogger("TestTransactions::test_run_recovery sleeping for not more than %d seconds", nsecs);
+			btlogger("TestTransactions::test_run_recovery sleeping for %d seconds", nsecs);
 		}
 		doSix(1);
 	}

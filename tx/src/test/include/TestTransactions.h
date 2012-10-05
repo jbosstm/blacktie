@@ -24,20 +24,23 @@
 
 class TestTransactions: public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE(TestTransactions);
-
+#if 0
+	CPPUNIT_TEST(test_recovery);
+#else
 	CPPUNIT_TEST(test_rclog);
 	CPPUNIT_TEST(test_basic);
 	CPPUNIT_TEST(test_transactions);
 	CPPUNIT_TEST(test_protocol);
 	CPPUNIT_TEST(test_info);
-	CPPUNIT_TEST(test_timeout);
+	CPPUNIT_TEST(test_timeout1);
+	CPPUNIT_TEST(test_timeout2);
 	CPPUNIT_TEST(test_rollback);
 	CPPUNIT_TEST(test_hhazard);
 	CPPUNIT_TEST(test_RM);
 	CPPUNIT_TEST(test_RM_recovery_scan);
 	CPPUNIT_TEST(test_tx_set);
 	CPPUNIT_TEST(test_recovery);
-
+#endif
 	CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -51,7 +54,8 @@ public:
 	void test_info();
 	void test_RM();
 	void test_RM_recovery_scan();
-	void test_timeout();
+	void test_timeout1();
+	void test_timeout2();
 	void test_rollback();
 	void test_hhazard();
 	void test_register_resource();
