@@ -166,9 +166,9 @@
 	</SERVERS>
 	<ORB OPT="-ORBInitRef NameService=corbaloc::${jboss.bind.address}:3528/NameService -ORBListenEndpoints iiop://${jboss.bind.address}:0"
 		TRANS_FACTORY_ID="TransactionManagerService.OTS" />
+	<SOCKETSERVER PORT="12340" />
 	<MQ HOST="${jboss.bind.address}" PORT="61613" USER="guest" PASSWORD="password1@"
 		RECEIVE_TIMEOUT="10" TIME_TO_LIVE="40"  />
-	
 	<ENV_VARIABLES>
 		<ENV_VARIABLE>
 			<NAME>QueueReaperInterval</NAME>
@@ -176,4 +176,3 @@
 		</ENV_VARIABLE>
 	</ENV_VARIABLES>
 </ENVIRONMENT>
-

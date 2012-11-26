@@ -40,6 +40,8 @@ public interface Transport {
      * @throws ConfigurationException
      */
     public Sender createSender(Object replyTo) throws ConnectionException;
+    
+    public Sender createSender(Receiver receiver) throws ConnectionException;
 
     /**
      * Create a receiver on a service queue
@@ -56,7 +58,7 @@ public interface Transport {
      * @return The receiver
      * @throws ConfigurationException
      */
-    public Receiver createReceiver(int cd, ResponseMonitor responseMonitor) throws ConnectionException;
+    public Receiver createReceiver(int cd, ResponseMonitor responseMonitor, EventListener eventListener) throws ConnectionException;
 
     /**
      * Create a receiver giving it the session to receive events upon.
@@ -66,6 +68,12 @@ public interface Transport {
      * @throws ConnectionException Incase the received cannot be created
      */
     public Receiver createReceiver(EventListener session) throws ConnectionException;
+    
+    /**
+     * Create a receiver on a socket sender
+     * @throws ConnectionException
+     */
+    public Receiver createReceiver(Sender sender) throws ConnectionException ;
 
     public void close() throws ConnectionException;
 

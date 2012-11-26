@@ -17,6 +17,7 @@
  */
 package org.jboss.narayana.blacktie.jatmibroker.core.transport;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -24,6 +25,7 @@ import java.util.Properties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
+import org.jboss.narayana.blacktie.jatmibroker.core.server.SocketServer;
 import org.jboss.narayana.blacktie.jatmibroker.core.transport.hybrid.TransportImpl;
 import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
 
@@ -32,6 +34,7 @@ public class TransportFactory {
     private static final Logger log = LogManager.getLogger(TransportFactory.class);
     private Properties properties;
     private OrbManagement orbManagement;
+    private SocketServer socketserver;
     private List<Transport> transports = new ArrayList<Transport>();
 
     private boolean closed;
@@ -47,11 +50,19 @@ public class TransportFactory {
         }
 
         log.debug("Created OrbManagement");
+        
+        try{
+            socketserver = SocketServer.getInstance(properties);
+        } catch (IOException e) {
+            throw new ConfigurationException("Could not create socket server", e);
+        }
+        
+        log.debug("Created SocketServer");
     }
 
     public synchronized Transport createTransport() {
         log.debug("Creating transport from factory: " + this);
-        TransportImpl instance = new TransportImpl(orbManagement, properties, this);
+        TransportImpl instance = new TransportImpl(orbManagement, socketserver, properties, this);
         transports.add(instance);
         log.debug("Created transport from factory: " + this + " transport: " + instance);
         return instance;
@@ -82,6 +93,9 @@ public class TransportFactory {
             }
             transports.clear();
             closed = true;
+        }
+        if(socketserver != null) {
+            SocketServer.discardInstance();
         }
         log.debug("Closed factory: " + getClass().getName());
     }

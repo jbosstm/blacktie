@@ -24,6 +24,7 @@
 #include "string.h"
 
 #include "btserver.h"
+#include "btclient.h"
 #include "ace/OS_NS_unistd.h"
 #include "xatmi.h"
 #include "btnbf.h"
@@ -496,15 +497,16 @@ JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_se
 	int exit_status = -1;
 	btlogger((char*) "serverinit called");
 #ifdef WIN32
-	char* argv[] = {(char*)"server", (char*)"-c", (char*)"win32", (char*)"-i", (char*)"1", (char*)"-s", (char*)"testsui"};
+	char* argv[] = {(char*)"server", (char*)"-c", (char*)"win32", (char*)"-i", (char*)"1", (char*)"-s", (char*)"testsui", (char*)"-p", (char*)"12342"};
 #else
-	char* argv[] = {(char*)"server", (char*)"-c", (char*)"linux", (char*)"-i", (char*)"1", (char*)"-s", (char*)"testsui"};
+	char* argv[] = {(char*)"server", (char*)"-c", (char*)"linux", (char*)"-i", (char*)"1", (char*)"-s", (char*)"testsui", (char*)"-p", (char*)"12342"};
 #endif
 	int argc = sizeof(argv)/sizeof(char*);
 
 	exit_status = serverinit(argc, argv);
 	exit_status = tpadvertise((char*) "BAR", BAR);
 	btlogger((char*) "serverinit returning");
+
 	return;
 }
 
@@ -513,6 +515,7 @@ JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_se
 	int exit_status = -1;
 	btlogger((char*) "serverdone called");
 	exit_status = serverdone();
+	clientdone(0);
 	btlogger((char*) "serverdone returning");
 	return;
 }

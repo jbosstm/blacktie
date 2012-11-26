@@ -31,13 +31,15 @@ extern "C" {
 #endif
 
 #include "log4cxx/logger.h"
-#include "CorbaConnection.h"
+//#include "CorbaConnection.h"
+#include "SocketServer.h"
+#include "apr_thread_proc.h"
 #include "Connection.h"
 #include "Destination.h"
-#include "HybridSessionImpl.h"
+#include "HybridSocketSessionImpl.h"
 #include "SynchronizableObject.h"
 
-class HybridSessionImpl;
+class HybridSocketSessionImpl;
 
 class BLACKTIE_HYBRID_DLL HybridConnectionImpl: public virtual Connection {
 public:
@@ -63,12 +65,15 @@ private:
 	int nextSessionId;
 	static log4cxx::LoggerPtr logger;
 	char* connectionName;
-	std::map<int, HybridSessionImpl*> sessionMap;
+	std::map<int, HybridSocketSessionImpl*> sessionMap;
 	apr_pool_t* pool;
-	CORBA_CONNECTION* connection;
+	//CORBA_CONNECTION* connection;
 	void(*messagesAvailableCallback)(int,bool);
 	SynchronizableObject* sessionMapLock;
 //	HybridSessionImpl* queueSession;
+	SocketServer* cb_server;
+	apr_thread_t     *thead;
+	apr_threadattr_t *thd_attr;
 };
 
 #ifdef __cplusplus

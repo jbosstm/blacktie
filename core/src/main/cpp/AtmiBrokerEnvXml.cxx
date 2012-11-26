@@ -55,6 +55,11 @@ MqConfig mqConfig = {
     0,	// noReplyTimeToLive;
 };
 
+CallbackServerConfig cbConfig = {
+	NULL,  // host
+	0,     // port
+};
+
 char domain[30];
 char* queue_name;
 char* transFactoryId;
@@ -251,6 +256,15 @@ static void XMLCALL startElement
 				mqConfig.timeToLive = atoi(atts[i+1]);
 			} else if(strcmp(atts[i], "NOREPLY_TIME_TO_LIVE") == 0) {
 				mqConfig.noReplyTimeToLive = atoi(atts[i+1]);
+			}
+		}
+	} else if (strcmp(name, "SOCKETSERVER") == 0) {
+		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "processing SOCKETSERVER");
+		for(int i = 0; atts[i]; i += 2) {
+			if(strcmp(atts[i], "HOST") == 0) {
+				cbConfig.host = copy_value(atts[i+1]);
+			} else if(strcmp(atts[i], "PORT") == 0) {
+				cbConfig.port = atoi(atts[i+1]);
 			}
 		}
 	} else if (strcmp(name, "SERVER") == 0) {

@@ -118,6 +118,11 @@
             <artifactId>xercesc</artifactId>
             <type>zip</type>
         </dependency>
+		<dependency>
+            <groupId>apr-1.contrib</groupId>
+            <classifier>${bpa}</classifier>
+            <artifactId>apr-1</artifactId>
+        </dependency>
         <!--
 		<dependency>
 			<groupId>org.jboss.narayana.blacktie</groupId>

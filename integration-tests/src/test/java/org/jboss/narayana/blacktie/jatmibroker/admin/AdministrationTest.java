@@ -60,8 +60,9 @@ public class AdministrationTest extends TestCase {
         connection = connectionFactory.getConnection();
     }
 
-    public void tearDown() {
+    public void tearDown() throws Exception {
         runServer.serverdone();
+		connection.close();
     }
 
     public void testShutdown() throws Exception {

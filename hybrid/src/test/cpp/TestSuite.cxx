@@ -19,3 +19,5 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( TestStompConnection );
 #include "TestXAStompConnection.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestXAStompConnection );
+#include "TestSocketSession.h"
+CPPUNIT_TEST_SUITE_REGISTRATION( TestSocketSession);

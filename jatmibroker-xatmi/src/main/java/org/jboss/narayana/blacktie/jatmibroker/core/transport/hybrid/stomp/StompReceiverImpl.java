@@ -192,4 +192,8 @@ public class StompReceiverImpl implements Receiver {
     public int getCd() throws ConnectionException {
         throw new ConnectionException(Connection.TPEPROTO, "Tried to retrieve the cd on mom receiver");
     }
+
+    public Object getEndpoint() throws ConnectionException {
+        return socket;
+    }
 }

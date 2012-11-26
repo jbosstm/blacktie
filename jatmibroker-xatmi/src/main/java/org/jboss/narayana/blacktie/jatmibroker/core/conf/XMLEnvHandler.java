@@ -44,6 +44,7 @@ public class XMLEnvHandler extends DefaultHandler {
     private final String SERVICE_NAME = "SERVICE";
     private final String ORB = "ORB";
     private final String MQ = "MQ";
+    private final String SOCKETSERVER = "SOCKETSERVER";
     private final String MACHINE = "MACHINE";
     private final String MACHINE_REF = "MACHINE-REF";
 
@@ -361,6 +362,15 @@ public class XMLEnvHandler extends DefaultHandler {
                     prop.setProperty("StompConnectHost", avalue);
                 } else if (atts.getLocalName(i).equals("PORT")) {
                     prop.setProperty("StompConnectPort", avalue);
+                }
+            }
+        } else if(SOCKETSERVER.equals(localName)) {
+            for (int i = 0; i < atts.getLength(); i++) {
+                avalue = getenv(atts.getValue(i));
+                if (atts.getLocalName(i).equals("PORT")) {
+                    prop.setProperty("blacktie.java.socketserver.port", avalue);
+                } else if (atts.getLocalName(i).equals("HOST")) {
+                    prop.setProperty("blacktie.java.socketserver.host", avalue);
                 }
             }
         } else if (MACHINE.equals(localName)) {

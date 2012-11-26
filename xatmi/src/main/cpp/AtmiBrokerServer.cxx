@@ -28,6 +28,7 @@
 #include "AtmiBrokerServer.h"
 #include "AtmiBrokerPoaFac.h"
 #include "AtmiBrokerEnv.h"
+#include "AtmiBrokerEnvXml.h"
 #include "btserver.h"
 #include "AtmiBrokerMem.h"
 #include "txx.h"
@@ -65,6 +66,7 @@ int errorBootAdminService = 0;
 char configDir[256];
 char server[30];
 int serverid = -1;
+int cbport = 0;
 
 int passedArgc = -1;
 char** passedArgv = NULL;
@@ -87,7 +89,7 @@ int serverrun() {
 }
 
 void parsecmdline(int argc, char** argv) {
-	ACE_Get_Opt getopt(argc, argv, ACE_TEXT("c:i:s:"));
+	ACE_Get_Opt getopt(argc, argv, ACE_TEXT("c:i:s:p:"));
 	int c;
 
 	configFromCmdline = false;
@@ -105,6 +107,9 @@ void parsecmdline(int argc, char** argv) {
 			break;
 		case 's':
 			ACE_OS::strncpy(server, getopt.opt_arg(), 30);
+			break;
+		case 'p':
+			cbport = atoi(getopt.opt_arg());
 			break;
 		}
 	}
@@ -177,6 +182,10 @@ int serverinit(int argc, char** argv) {
 				env->putenv((char *) (sname.str().c_str()));
 				env->putenv((char *) (sid.str().c_str()));
 
+				if(cbport > 0) {
+					LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "set callback server port by cmdline with " << cbport);
+					cbConfig.port = cbport;
+				}
 				LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 						(char*) "serverinit called");
 				ptrServer = new AtmiBrokerServer();
