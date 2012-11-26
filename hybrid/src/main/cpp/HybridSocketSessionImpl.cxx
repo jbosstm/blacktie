@@ -31,6 +31,10 @@
 
 #include <time.h>
 
+#ifdef WIN32
+#define strtok_r(s,d,p) strtok_s(s,d,p)
+#endif
+
 log4cxx::LoggerPtr HybridSocketSessionImpl::logger(log4cxx::Logger::getLogger(
 		"HybridSocketSessionImpl"));
 
