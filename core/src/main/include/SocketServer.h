@@ -34,7 +34,7 @@
 #define MSG_HEADER_SIZE     4
 #define MAX_CLIENT_SIZE     128
 
-typedef struct _serv_buffer {
+typedef BLACKTIE_CORE_DLL struct _serv_buffer {
 	apr_socket_t *sock;
 	apr_pool_t   *context;
 	char         *buf;
@@ -42,7 +42,7 @@ typedef struct _serv_buffer {
 	apr_size_t   rcvlen;
 } serv_buffer_t;
 
-typedef struct _client_ctx {
+typedef BLACKTIE_CORE_DLL struct _client_ctx {
 	apr_thread_mutex_t  *mutex;
 	apr_thread_cond_t   *cond;
 	std::queue<MESSAGE> data;
@@ -52,7 +52,7 @@ typedef struct _client_ctx {
 	Session             *session;
 } client_ctx_t;
 
-class SocketServer {
+class BLACKTIE_CORE_DLL SocketServer {
 	public:
 		SocketServer(int port, apr_pool_t* context, void(*messagesAvailableCallback)(int, bool));
 		~SocketServer();
@@ -83,6 +83,6 @@ class SocketServer {
 		int do_dispatch(serv_buffer_t *buffer);
 };
 
-bool unpack_message(MESSAGE* msg, int* sid, void* buf, size_t sz);
+BLACKTIE_CORE_DLL bool unpack_message(MESSAGE* msg, int* sid, void* buf, size_t sz);
 
 #endif
