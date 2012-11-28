@@ -70,10 +70,13 @@ class BLACKTIE_CORE_DLL SocketServer {
 		int  client_num;
 		int  port;
 		bool finish;
+		bool running;
 		apr_pool_t     *context;
 		apr_socket_t   *sock;
 		apr_sockaddr_t *localsa;
 		apr_thread_mutex_t *mutex;
+		apr_thread_mutex_t *startup;
+		apr_thread_cond_t  *startup_cond;
 		client_ctx_t   client_list[MAX_CLIENT_SIZE];
 		void(*messagesAvailableCallback)(int, bool);
 		static SocketServer* ptrSocketServer;

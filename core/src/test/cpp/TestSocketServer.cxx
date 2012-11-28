@@ -63,6 +63,10 @@ static void* APR_THREAD_FUNC wait_cb(apr_thread_t *thd, void* data) {
 }
 
 void TestSocketServer::setUp() {
+#ifdef WIN32
+	apr_status_t rv = apr_initialize();
+	BT_ASSERT(rv == APR_SUCCESS);
+#endif
 	apr_pool_create(&mp, NULL);
 	apr_threadattr_create(&thd_attr, mp);
 	server = SocketServer::get_instance(port, messagesAvailableCallback);
@@ -92,10 +96,8 @@ void TestSocketServer::testServer() {
 	rv = apr_socket_create(&s, sa->family, SOCK_STREAM, APR_PROTO_TCP, mp);
 	BT_ASSERT(rv == APR_SUCCESS);
 
-	//apr_socket_opt_set(s, APR_SO_NONBLOCK, 1);
+	apr_socket_opt_set(s, APR_SO_NONBLOCK, 1);
 	apr_socket_timeout_set(s, DEF_SOCK_TIMEOUT);
-
-	ACE_OS::sleep(1);
 
 	rv = apr_socket_connect(s, sa);
 	BT_ASSERT(rv == APR_SUCCESS);

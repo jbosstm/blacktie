@@ -99,9 +99,12 @@ SocketServer::SocketServer(int port, apr_pool_t* context, void(*messagesAvailabl
 	this->sock    = NULL;
 	this->localsa = NULL;
 	this->finish  = false;
+	this->running = false;
 	this->messagesAvailableCallback = messagesAvailableCallback;
 
 	apr_thread_mutex_create(&this->mutex, APR_THREAD_MUTEX_UNNESTED, context);
+	apr_thread_mutex_create(&this->startup, APR_THREAD_MUTEX_UNNESTED, context);
+	apr_thread_cond_create(&this->startup_cond, context);
 
 	for(int i = 0; i < MAX_CLIENT_SIZE; i++) {
 		client_list[i].used = false;
@@ -122,11 +125,13 @@ int SocketServer::run() {
 
 	if (apr_sockaddr_info_get(&localsa, NULL, APR_INET, port, 0, context) != APR_SUCCESS) {
 		LOG4CXX_WARN(loggerSocketServer, (char*) "could not get sockaddr");
+		apr_thread_cond_signal(this->startup_cond);
 		return -1;
 	}
 
 	if (apr_socket_create(&sock, localsa->family, SOCK_STREAM, APR_PROTO_TCP, context) != APR_SUCCESS) {
 		LOG4CXX_WARN(loggerSocketServer, (char*) "could not create socket");
+		apr_thread_cond_signal(this->startup_cond);
 		return -1;
 	}
 
@@ -138,12 +143,14 @@ int SocketServer::run() {
 		apr_socket_close(sock);
 		apr_strerror(stat, buf, sizeof buf);
 		LOG4CXX_WARN(loggerSocketServer, "could not bind on port " << port << ": " << buf);
+		apr_thread_cond_signal(this->startup_cond);
 		return -1;
 	}
 
 	if (apr_socket_listen(sock, 5) != APR_SUCCESS) {
 		apr_socket_close(sock);
 		LOG4CXX_WARN(loggerSocketServer, "could not listen");
+		apr_thread_cond_signal(this->startup_cond);
 		return -1;
 	}
 
@@ -153,6 +160,11 @@ int SocketServer::run() {
 	apr_pollset_add(pollset, &pfd);
 
 	LOG4CXX_DEBUG(loggerSocketServer, "running callback server on port " << port);
+
+	apr_thread_mutex_lock(this->startup);
+	this->running = true;
+	apr_thread_cond_signal(this->startup_cond);
+	apr_thread_mutex_unlock(this->startup);
 
 	while (!finish) {
 		rv = apr_pollset_poll(pollset, DEF_POLL_TIMEOUT, &num, &ret_pfd);
@@ -178,6 +190,18 @@ int SocketServer::run() {
 client_ctx_t* SocketServer::register_client(int sid, Session* session) {
 	int i;
 	client_ctx_t* result = NULL;
+
+	apr_thread_mutex_lock(this->startup);
+	if(!running) {
+		apr_thread_cond_wait(this->startup_cond, this->startup);
+	}
+	apr_thread_mutex_unlock(this->startup);
+
+	//double check the server is running
+	if (!running) {
+		LOG4CXX_ERROR(loggerSocketServer, "server on port " << port << " is not running");
+		return NULL;
+	}
 
 	LOG4CXX_DEBUG(loggerSocketServer, "register_client sid: " << sid);
 	if(client_list != NULL && client_num < MAX_CLIENT_SIZE) {
