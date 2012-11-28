@@ -95,7 +95,8 @@ void TestSocketServer::testServer() {
 	//apr_socket_opt_set(s, APR_SO_NONBLOCK, 1);
 	apr_socket_timeout_set(s, DEF_SOCK_TIMEOUT);
 
-	sleep(1);
+	ACE_OS::sleep(1);
+
 	rv = apr_socket_connect(s, sa);
 	BT_ASSERT(rv == APR_SUCCESS);
 
