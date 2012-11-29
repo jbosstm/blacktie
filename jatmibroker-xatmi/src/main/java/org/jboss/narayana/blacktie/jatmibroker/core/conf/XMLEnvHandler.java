@@ -35,7 +35,7 @@ import org.xml.sax.helpers.DefaultHandler;
 public class XMLEnvHandler extends DefaultHandler {
     private static final Logger log = LogManager.getLogger(XMLEnvHandler.class);
     private final static String envVarPatStr = "(.*)\\$\\{(.*)\\}(.*)";
-    private static java.util.regex.Matcher matcher;
+    private static java.util.regex.Pattern pattern;
 
     private final String DOMAIN = "DOMAIN";
     private final String BUFFER = "BUFFER";
@@ -78,8 +78,8 @@ public class XMLEnvHandler extends DefaultHandler {
         prop.put("blacktie.domain.serverLaunchers", serverLaunchers);
         prop.setProperty("blacktie.domain.version", "5.0.0.M2-SNAPSHOT");
 
-        if (matcher == null) {
-            matcher = java.util.regex.Pattern.compile(envVarPatStr).matcher("");
+        if (pattern == null) {
+            pattern = java.util.regex.Pattern.compile(envVarPatStr);
         }
     }
 
@@ -104,7 +104,8 @@ public class XMLEnvHandler extends DefaultHandler {
         String[] matches = new String[3];
         matches[0] = "";
         matches[2] = "";
-        matcher.reset(inputStr);
+        java.util.regex.Matcher matcher = pattern.matcher(inputStr);
+        //matcher.reset(inputStr);
 
         if (matcher.find()) {
             StringBuilder sb = new StringBuilder();
