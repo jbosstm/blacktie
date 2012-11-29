@@ -29,6 +29,7 @@ static void* APR_THREAD_FUNC run_server(apr_thread_t *thd, void *data) {
 	SocketServer* server = (SocketServer*)data;
 	btlogger("start server");
 	server->run();
+	apr_thread_exit(thd, APR_SUCCESS);
 	return NULL;
 }
 
@@ -36,6 +37,7 @@ static void* APR_THREAD_FUNC run_queue(apr_thread_t *thd, void *data) {
 	HybridSocketEndpointQueue* queue = (HybridSocketEndpointQueue*)data;
 	btlogger("start queue");
 	queue->run();
+	apr_thread_exit(thd, APR_SUCCESS);
 	return NULL;
 }
 
