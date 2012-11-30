@@ -17,6 +17,9 @@
  */
 package org.jboss.narayana.blacktie.btadmin.commands;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -51,6 +54,14 @@ public class Shutdown implements Command {
      * The ID of the server, will be 0 (all) if not provided
      */
     private int id = 0;
+
+    /**
+     * The Operation System type which used to check server alive
+     */
+    private static String OS = System.getProperty("os.name").toLowerCase();
+
+    private int checkPeriodMillis = 2 * 1000;
+    private int numChecks = 10;
 
     /**
      * Show the usage of the command
@@ -107,9 +118,29 @@ public class Shutdown implements Command {
             Iterator<ServerToStop> iterator = serversToStop.iterator();
             while (iterator.hasNext()) {
                 ServerToStop next = iterator.next();
-                Boolean result = connection.shutdown(next.getName(), next.getId());
+                String name = next.getName();
+                int id = next.getId();
+                Boolean result = connection.shutdown(name, id);
+                boolean shutdown = false;
                 if (result) {
-                    log.info("Server shutdown successfully: " + next.getName() + " with id: " + next.getId());
+                    log.info("Server shutdown successfully: " + name + " with id: " + id);
+                    log.info("waiting for " + name + ":" + id + " shutdown complete");
+                    for (int i = 0; i < numChecks; i++) {
+                        if(checkServerAlive(name, id)) {
+                            try{
+                                Thread.sleep(checkPeriodMillis);
+                            } catch (Exception e) {}
+                            log.info(name + ":" + id + " is still alive, sleeping for a further " + checkPeriodMillis + "ms");
+                        }  else {
+                            log.info(name + ":" + id + " shutdown complete");
+                            shutdown = true;
+                            break;
+                        }
+                    }
+                    if(shutdown == false) {
+                        log.error(name + ":" + id + " has not shutdown complete");
+                        throw new CommandFailedException(-1);
+                    }
                 } else {
                     log.error("Server could not be shutdown (may already be stopped)");
                     throw new CommandFailedException(-1);
@@ -120,6 +151,47 @@ public class Shutdown implements Command {
             throw new CommandFailedException(-1);
 
         }
+    }
+
+    private boolean checkServerAlive(String name, int id) {
+        String cmd = null;
+        ProcessBuilder pb = null;
+        boolean toReturn = false;
+        if(OS.indexOf("linux") >= 0){
+            log.debug(OS + " check for linux");
+            if(id != 0) {
+                cmd = "ps -ef | grep \"\\\\-i " + id + " \\\\-s " + name + "\" | grep -v grep";
+            } else {
+                cmd = "ps -ef | grep \"\\\\-s " + name + "\" | grep -v grep";
+            }
+            log.debug(cmd);
+            pb = new ProcessBuilder("/bin/sh", "-c", cmd);
+        } else if(OS.indexOf("win") >= 0) {
+            log.debug(OS + " check for windows ");
+            return false;
+        } else {
+            log.warn(OS + " no check");
+            return false;
+        }
+
+        try {
+            Process p = pb.start();
+            p.waitFor();
+            if(p.exitValue() == 0) {
+                log.debug("check cmd " + cmd + " output");
+                InputStream is = p.getInputStream();
+                BufferedReader ein = new BufferedReader(new InputStreamReader(is));
+                String res = ein.readLine();
+                if(res != null) {
+                    log.debug("cmd " + cmd + " output: " + res);
+                    toReturn = true; 
+                }
+                is.close();
+            }
+        } catch (Exception e) {
+            log.error("run " + cmd + " failed with " + e);
+        }
+        return toReturn;
     }
 
     private class ServerToStop {
