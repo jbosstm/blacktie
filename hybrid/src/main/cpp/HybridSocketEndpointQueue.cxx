@@ -213,7 +213,7 @@ MESSAGE HybridSocketEndpointQueue::receive(long time) {
 			} else if(rv != APR_SUCCESS){
 				LOG4CXX_ERROR(logger, (char*) "apr_thread_cond_timedwait failed with " << rv);
 			}
-			break;
+			if(rv != APR_SUCCESS) break;
 		} else if(time == 0) {
 			LOG4CXX_DEBUG(logger, (char*) "blocking waiting with time 0");
 			rv = apr_thread_cond_wait(ctx->cond, ctx->mutex);
