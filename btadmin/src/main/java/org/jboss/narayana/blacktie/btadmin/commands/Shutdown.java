@@ -168,7 +168,13 @@ public class Shutdown implements Command {
             pb = new ProcessBuilder("/bin/sh", "-c", cmd);
         } else if(OS.indexOf("win") >= 0) {
             log.debug(OS + " check for windows ");
-            return false;
+            if(id != 0) {
+                cmd = "wmic process get commandline | findstr \"\\-i " + id + " \\-s " + name + "\" | findstr /v findstr";
+            } else {
+                cmd = "wmic process get commandline | findstr \"\\-s " + name + "\" | findstr /v findstr";
+            }
+            log.debug(cmd);
+            pb = new ProcessBuilder("cmd", "/c", cmd);
         } else {
             log.warn(OS + " no check");
             return false;
