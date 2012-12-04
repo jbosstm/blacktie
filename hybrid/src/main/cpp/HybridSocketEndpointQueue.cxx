@@ -335,9 +335,12 @@ void HybridSocketEndpointQueue::run() {
 	apr_status_t rv;
 	apr_int32_t num;
 	const apr_pollfd_t *ret_pfd;
+	int connect_times = 0;
 
 	while(!shutdown || !send_queue.empty()) {
 		rv = apr_pollset_poll(pollset, DEF_POLL_TIMEOUT, &num, &ret_pfd);
+		connect_times ++;
+
 		if (rv == APR_SUCCESS) {
 			for (int i = 0; i < num; i++) {
 				if (ret_pfd[i].rtnevents & APR_POLLOUT) {
@@ -386,6 +389,11 @@ void HybridSocketEndpointQueue::run() {
 					}
 				}
 			}
+		}
+
+		if(_connected == false && shutdown == true && connect_times >= 5) {
+			LOG4CXX_WARN(logger, (char*) "can not connect to " << addr << ":" << port << " after " << DEF_POLL_TIMEOUT * connect_times << " seconds");
+			break;
 		}
 	}
 	if(socket != NULL) apr_socket_close(socket);
