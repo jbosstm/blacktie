@@ -170,7 +170,7 @@ bool HybridSocketEndpointQueue::connect() {
 			LOG4CXX_DEBUG(logger, (char*) "connected and wait for message");
 			return true;
 		} else if (APR_STATUS_IS_EINPROGRESS(rv)) {
-			apr_pollfd_t pfd = { pool, APR_POLL_SOCKET, APR_POLLOUT, 0, { NULL }, NULL };
+			apr_pollfd_t pfd = { pool, APR_POLL_SOCKET, APR_POLLOUT|APR_POLLERR, 0, { NULL }, NULL };
 			pfd.desc.s = socket;
 			apr_pollset_add(pollset, &pfd);
 			LOG4CXX_DEBUG(logger, (char*) "connecting and wait for connected");
@@ -335,15 +335,16 @@ void HybridSocketEndpointQueue::run() {
 	apr_status_t rv;
 	apr_int32_t num;
 	const apr_pollfd_t *ret_pfd;
-	int connect_times = 0;
 
 	while(!shutdown || !send_queue.empty()) {
 		rv = apr_pollset_poll(pollset, DEF_POLL_TIMEOUT, &num, &ret_pfd);
-		connect_times ++;
 
 		if (rv == APR_SUCCESS) {
 			for (int i = 0; i < num; i++) {
-				if (ret_pfd[i].rtnevents & APR_POLLOUT) {
+				if (ret_pfd[i].rtnevents & APR_POLLERR) {
+					LOG4CXX_WARN(logger, (char*) "connect to " << addr << ":" << port << " failed");
+					return;
+				} else if (ret_pfd[i].rtnevents & APR_POLLOUT) {
 					if(ret_pfd[i].desc.s == socket && _connected == false) {
 						LOG4CXX_DEBUG(logger, (char*) "connected");
 						send_lock.lock();
@@ -366,7 +367,7 @@ void HybridSocketEndpointQueue::run() {
 						queue_lock.notify();
 						queue_lock.unlock();
 
-						apr_pollfd_t pfd = { pool, APR_POLL_SOCKET, APR_POLLOUT, 0, { NULL }, NULL };
+						apr_pollfd_t pfd = { pool, APR_POLL_SOCKET, APR_POLLOUT|APR_POLLERR, 0, { NULL }, NULL };
 						pfd.desc.s = socket;
 						apr_pollset_remove(pollset, &pfd);
 						LOG4CXX_DEBUG(logger, (char*) "remove socket for connected");
@@ -389,11 +390,6 @@ void HybridSocketEndpointQueue::run() {
 					}
 				}
 			}
-		}
-
-		if(_connected == false && shutdown == true && connect_times >= 5) {
-			LOG4CXX_WARN(logger, (char*) "can not connect to " << addr << ":" << port << " after " << DEF_POLL_TIMEOUT * connect_times << " seconds");
-			break;
 		}
 	}
 	if(socket != NULL) apr_socket_close(socket);
