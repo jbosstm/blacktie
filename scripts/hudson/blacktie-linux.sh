@@ -52,23 +52,16 @@ else
 fi
 
 # INITIALIZE JBOSS
-ant -f scripts/hudson/initializeJBoss.xml -Dbasedir=. initializeJBoss -debug
+ant -f scripts/hudson/initializeJBoss.xml -DJBOSS_HOME=$JBOSS_HOME -Dbasedir=. initializeJBoss -debug
 if [ "$?" != "0" ]; then
 	fatal "Failed to init JBoss"
 fi
+export JBOSS_HOME=$WORKSPACE/jboss-as/
 
-chmod u+x $WORKSPACE/jboss-as-7.1.1.Final/bin/standalone.sh
-chmod u+x $WORKSPACE/jboss-as-7.1.1.Final/bin/add-user.sh
-
-(cd $WORKSPACE/jboss-as-7.1.1.Final/bin/ && JBOSS_HOME= ./add-user.sh admin password1@ --silent=true)
-(cd $WORKSPACE/jboss-as-7.1.1.Final/bin/ && JBOSS_HOME= ./add-user.sh guest password1@ -a --silent=true)
-(cd $WORKSPACE/jboss-as-7.1.1.Final/bin/ && JBOSS_HOME= ./add-user.sh dynsub password1@ -a --silent=true)
-if [ "$?" != "0" ]; then
-	fatal "Failed to add users"
-fi
+chmod u+x $JBOSS_HOME/bin/standalone.sh
 
 # START JBOSS
-$WORKSPACE/jboss-as-7.1.1.Final/bin/standalone.sh -c standalone-full.xml -Djboss.bind.address=$JBOSSAS_IP_ADDR -Djboss.bind.address.unsecure=$JBOSSAS_IP_ADDR&
+$JBOSS_HOME/bin/standalone.sh -c standalone-full.xml -Djboss.bind.address=$JBOSSAS_IP_ADDR -Djboss.bind.address.unsecure=$JBOSSAS_IP_ADDR&
 sleep 5
 
 # BUILD BLACKTIE
