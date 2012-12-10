@@ -12,12 +12,15 @@ import org.jboss.narayana.blacktie.administration.Authentication;
 import org.jboss.narayana.blacktie.administration.BlacktieAdministration;
 import org.jboss.narayana.blacktie.administration.BlacktieStompAdministrationService;
 import org.jboss.narayana.blacktie.administration.core.AdministrationProxy;
+import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
+import org.jboss.narayana.blacktie.jatmibroker.core.transport.Message;
+import org.jboss.narayana.blacktie.jatmibroker.core.tx.TransactionException;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.BlackTieService;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.mdb.MDBBlacktieService;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.resolver.api.DependencyResolvers;
-import org.jboss.shrinkwrap.resolver.api.maven.MavenDependencyResolver;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -27,17 +30,18 @@ public class AdvertiseUnadvertiseTest {
 
     @Deployment
     public static Archive<?> createTestArchive() {
-        // Path is set to ../pom.xml as we are configuring surefire to run from the target folder, by default it runs in / of
-        // the project
-        MavenDependencyResolver resolver = DependencyResolvers.use(MavenDependencyResolver.class).loadMetadataFromPom(
-                "../pom.xml");
         final String ManifestMF = "Manifest-Version: 1.0\n"
                 + "Dependencies: org.jboss.jts,org.jboss.as.controller-client,org.jboss.dmr\n";
         return ShrinkWrap
                 .create(WebArchive.class, "test.war")
                 .addClasses(BlacktieStompAdministrationService.class, Authentication.class, AdministrationProxy.class,
                         BlacktieAdministration.class)
-                .addAsLibraries(resolver.artifact("org.jboss.narayana.blacktie:blacktie-jatmibroker-xatmi").resolveAsFiles())
+                        .addPackage(MDBBlacktieService.class.getPackage())
+                        .addPackage(BlackTieService.class.getPackage())
+                        .addPackage(TransactionException.class.getPackage())
+                        .addPackage(ConfigurationException.class.getPackage())
+                        .addPackage(Message.class.getPackage())
+                        .addAsResource("btconfig.xsd")
                 .addAsResource("btconfig.xml").setManifest(new StringAsset(ManifestMF));
     }
 

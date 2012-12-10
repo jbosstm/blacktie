@@ -1,10 +1,16 @@
-call:comment_on_pull "Started testing this pull request: %BUILD_URL%"
+call:comment_on_pull "Started testing pull request: %BUILD_URL%"
 
 set NOPAUSE=true
 
+rem Do not use the CI setting of JBOSS_HOME
+if not exist %JBOSS_HOME% echo %JBOSS_HOME% does not exist & exit -1
+rmdir /S /Q %WORKSPACE%\jboss-as
+copy %JBOSS_HOME% %WORKSPACE%\jboss-as
+set JBOSS_HOME=%WORKSPACE%\jboss-as
+
 rem SHUTDOWN ANY PREVIOUS BUILD REMNANTS
-if exist jboss-as-7.1.1.Final call %WORKSPACE%\jboss-as-7.1.1.Final\bin\jboss-cli.bat --connect command=:shutdown && cd .
-if exist jboss-as-7.1.1.Final @ping 127.0.0.1 -n 10 -w 1000 > nul
+if exist %JBOSS_HOME%\bin\jboss-cli.bat call %JBOSS_HOME%\bin\jboss-cli.bat --connect command=:shutdown && cd .
+if exist %JBOSS_HOME%\bin\jboss-cli.bat @ping 127.0.0.1 -n 10 -w 1000 > nul
 tasklist
 taskkill /F /IM mspdbsrv.exe
 taskkill /F /IM testsuite.exe
@@ -15,20 +21,11 @@ tasklist
 
 rem INITIALIZE JBOSS
 cd %WORKSPACE%
-call ant -f scripts/hudson/initializeJBoss.xml -Dbasedir=. initializeDatabase initializeJBoss -debug
+call ant -f scripts/hudson/initializeJBoss.xml -DJBOSS_HOME=%JBOSS_HOME% -Dbasedir=. initializeDatabase initializeJBoss -debug
 IF %ERRORLEVEL% NEQ 0 call:comment_on_pull "Build failed %BUILD_URL%" & exit -1
-
-cd %WORKSPACE%\jboss-as-7.1.1.Final\bin\
-call add-user admin password1@ --silent=true
-IF %ERRORLEVEL% NEQ 0 call:comment_on_pull "Build failed %BUILD_URL%" & exit -1
-call add-user guest password1@ -a --silent=true
-IF %ERRORLEVEL% NEQ 0 call:comment_on_pull "Build failed %BUILD_URL%" & exit -1
-call add-user dynsub password1@ -a --silent=true
-IF %ERRORLEVEL% NEQ 0 call:comment_on_pull "Build failed %BUILD_URL%" & exit -1
-
 
 rem START JBOSS
-cd %WORKSPACE%\jboss-as-7.1.1.Final\bin
+cd %JBOSS_HOME%\bin
 start /B standalone.bat -c standalone-full.xml -Djboss.bind.address=%JBOSSAS_IP_ADDR% -Djboss.bind.address.unsecure=%JBOSSAS_IP_ADDR%
 echo "Started server"
 @ping 127.0.0.1 -n 20 -w 1000 > nul
@@ -36,10 +33,10 @@ echo "Started server"
 rem BUILD BLACKTIE
 cd %WORKSPACE%
 call build.bat clean install "-Djbossas.ip.addr=%JBOSSAS_IP_ADDR%"
-IF %ERRORLEVEL% NEQ 0 call:comment_on_pull "Build failed %BUILD_URL%" & echo "Failing build 2" & tasklist & call %WORKSPACE%\jboss-as-7.1.1.Final\bin\jboss-cli.bat --connect command=:shutdown & @ping 127.0.0.1 -n 10 -w 1000 > nul & exit -1
+IF %ERRORLEVEL% NEQ 0 call:comment_on_pull "Build failed %BUILD_URL%" & echo "Failing build 2" & tasklist & call %JBOSS_HOME%\bin\jboss-cli.bat --connect command=:shutdown & @ping 127.0.0.1 -n 10 -w 1000 > nul & exit -1
 
 rem SHUTDOWN ANY PREVIOUS BUILD REMNANTS
-tasklist & call %WORKSPACE%\jboss-as-7.1.1.Final\bin\jboss-cli.bat --connect command=:shutdown & @ping 127.0.0.1 -n 10 -w 1000 > nul
+tasklist & call %JBOSS_HOME%\bin\jboss-cli.bat --connect command=:shutdown & @ping 127.0.0.1 -n 10 -w 1000 > nul
 echo "Finished build"
 
 call:comment_on_pull "Tests Passed: %BUILD_URL%"
