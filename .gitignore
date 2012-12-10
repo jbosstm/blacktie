@@ -1,7 +1,6 @@
 target/
 instantclient_11_2/
-jboss-as-7.1.1.Final.zip
-jboss-as-7.1.1.Final/
+jboss-as/
 jbossesb-4.9.zip
 jbossesb-4.9/
 .classpath
