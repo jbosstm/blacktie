@@ -210,10 +210,21 @@ MESSAGE HybridSocketEndpointQueue::receive(long time) {
 			rv = apr_thread_cond_timedwait(ctx->cond, ctx->mutex, APR_USEC_PER_SEC * time);
 			if(rv == APR_TIMEUP) {
 				LOG4CXX_WARN(logger, (char*) "no message receive session " << ctx->sid << " for " << time << " seconds");
+				break;
 			} else if(rv != APR_SUCCESS){
 				LOG4CXX_ERROR(logger, (char*) "apr_thread_cond_timedwait failed with " << rv);
+				break;
+			} else {
+				LOG4CXX_DEBUG(logger, (char*) "double check ctx->data size after wait");
+				int size = ctx->data.size();
+				LOG4CXX_DEBUG(logger, (char*) "ctx->data size is " << size);
+				if(size > 0) {
+					LOG4CXX_DEBUG(logger, (char*) "ctx->data has message to return");
+					break;
+				} else {
+					LOG4CXX_DEBUG(logger, (char*) "ctx->data has no message and should wait again");
+				}
 			}
-			if(rv != APR_SUCCESS) break;
 		} else if(time == 0) {
 			LOG4CXX_DEBUG(logger, (char*) "blocking waiting with time 0");
 			rv = apr_thread_cond_wait(ctx->cond, ctx->mutex);
