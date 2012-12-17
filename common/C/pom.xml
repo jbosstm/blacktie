@@ -264,6 +264,9 @@
         									<goal>
         										unpack-dependencies
         									</goal>
+        									<goal>
+        										copy-dependencies
+        									</goal>
         								</goals>
         							</pluginExecutionFilter>
         							<action>
@@ -290,6 +293,10 @@
         									<goal>
         										generate-proto-sources
         									</goal>
+        									<goal>
+        										generate-test-lib
+        									</goal>
+        									<goal>process-classes</goal>
         								</goals>
         							</pluginExecutionFilter>
         							<action>
@@ -309,19 +316,6 @@
         								</versionRange>
         								<goals>
         									<goal>run</goal>
-        								</goals>
-        							</pluginExecutionFilter>
-        							<action>
-        								<ignore></ignore>
-        							</action>
-        						</pluginExecution>
-        						<pluginExecution>
-        							<pluginExecutionFilter>
-        								<groupId></groupId>
-        								<artifactId></artifactId>
-        								<versionRange>[,)</versionRange>
-        								<goals>
-        									<goal></goal>
         								</goals>
         							</pluginExecutionFilter>
         							<action>
