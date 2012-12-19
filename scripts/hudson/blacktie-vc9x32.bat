@@ -3,7 +3,7 @@ call:comment_on_pull "Started testing this pull request: %BUILD_URL%"
 set NOPAUSE=true
 
 rem SHUTDOWN ANY PREVIOUS BUILD REMNANTS
-if exist jboss-as-7.1.1.Final call %WORKSPACE%\jboss-as-7.1.1.Final\bin\jboss-cli.bat --connect command=:shutdown && cd .
+FOR /F "usebackq token=5" %%i in (`"netstat -ano|findstr 9999.*LISTENING"`) DO @set JBOSSAS_PID=%%i & @taskkill /F /PID %JBOSSAS_PID%
 if exist jboss-as-7.1.1.Final @ping 127.0.0.1 -n 10 -w 1000 > nul
 tasklist
 taskkill /F /IM mspdbsrv.exe
@@ -36,10 +36,10 @@ echo "Started server"
 rem BUILD BLACKTIE
 cd %WORKSPACE%
 call build.bat clean install "-Djbossas.ip.addr=%JBOSSAS_IP_ADDR%"
-IF %ERRORLEVEL% NEQ 0 call:comment_on_pull "Build failed %BUILD_URL%" & echo "Failing build 2" & tasklist & call %WORKSPACE%\jboss-as-7.1.1.Final\bin\jboss-cli.bat --connect command=:shutdown & @ping 127.0.0.1 -n 10 -w 1000 > nul & exit -1
+IF %ERRORLEVEL% NEQ 0 call:comment_on_pull "Build failed %BUILD_URL%" & echo "Failing build 2" & tasklist & FOR /F "usebackq token=5" %%i in (`"netstat -ano|findstr 9999.*LISTENING"`) DO @set JBOSSAS_PID=%%i & @taskkill /F /PID %JBOSSAS_PID% & @ping 127.0.0.1 -n 10 -w 1000 > nul & exit -1
 
 rem SHUTDOWN ANY PREVIOUS BUILD REMNANTS
-tasklist & call %WORKSPACE%\jboss-as-7.1.1.Final\bin\jboss-cli.bat --connect command=:shutdown & @ping 127.0.0.1 -n 10 -w 1000 > nul
+tasklist & FOR /F "usebackq token=5" %%i in (`"netstat -ano|findstr 9999.*LISTENING"`) DO @set JBOSSAS_PID=%%i & @taskkill /F /PID %JBOSSAS_PID% & @ping 127.0.0.1 -n 10 -w 1000 > nul
 echo "Finished build"
 
 call:comment_on_pull "Tests Passed: %BUILD_URL%"
