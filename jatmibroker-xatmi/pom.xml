@@ -128,6 +128,17 @@
                     <inherited>true</inherited>
                 </configuration>
             </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Dependencies>org.jboss.jts</Dependencies>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
         </plugins>
     </build>
     <dependencyManagement>

@@ -246,9 +246,9 @@
 			<scope>test</scope>
 		</dependency>
         <dependency>
-            <groupId>org.jboss.jbossts</groupId>
-            <artifactId>jbossjts</artifactId>
-			<scope>test</scope>
+            <groupId>org.jboss.narayana.jts</groupId>
+            <artifactId>narayana-jts-jacorb</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jboss.spec.javax.transaction</groupId>
