@@ -68,17 +68,6 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<configuration>
-					<archive>
-						<manifestEntries>
-							<Dependencies>org.jboss.jts</Dependencies>
-						</manifestEntries>
-					</archive>
-				</configuration>
-			</plugin>
-			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<source>1.5</source>
@@ -200,5 +189,10 @@
 			<artifactId>jboss-as-arquillian-container-remote</artifactId>
 			<scope>test</scope>
 		</dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
 </project>
