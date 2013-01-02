@@ -66,6 +66,7 @@
 				<exclude>org.jboss.narayana.blacktie:blacktie-codeGeneration</exclude>
 				<exclude>org.jboss.narayana.blacktie:blacktie-admin-services-ear:ear</exclude>
 				<exclude>org.codehaus.stomp:blacktie-stompconnect</exclude>
+				<exclude>org.jboss.logmanager:log4j-jboss-logmanager:jar</exclude>
 				<exclude>*:javadoc</exclude>
 				<exclude>*:jdocbook</exclude>
 			</excludes>
