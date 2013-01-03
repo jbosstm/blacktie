@@ -30,6 +30,11 @@ else
   exit
 fi
 
+if [ -z "${JBOSSAS_IP_ADDR+x}" ]; then
+  echo JBOSSAS_IP_ADDR not set
+  JBOSSAS_IP_ADDR=localhost
+fi
+
 # KILL ANY PREVIOUS BUILD REMNANTS
 ps -f
 for i in `ps -eaf | grep java | grep "standalone.*xml" | grep -v grep | cut -c10-15`; do kill -9 $i; done

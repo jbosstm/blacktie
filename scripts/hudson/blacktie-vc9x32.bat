@@ -12,6 +12,10 @@ taskkill /F /IM client.exe
 taskkill /F /IM cs.exe
 tasklist
 
+if not defined WORKSPACE echo "WORKSPACE not set" & exit -1
+
+if not defined JBOSSAS_IP_ADDR echo "JBOSSAS_IP_ADDR not set" & JBOSSAS_IP_ADDR=localhost
+
 rem INITIALIZE JBOSS
 cd %WORKSPACE%
 call ant -f scripts/hudson/initializeJBoss.xml -DJBOSS_HOME=%JBOSS_HOME% -Dbasedir=. initializeJBoss -debug
