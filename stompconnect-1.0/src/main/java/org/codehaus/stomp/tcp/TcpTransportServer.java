@@ -34,7 +34,6 @@ import javax.net.ServerSocketFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.stomp.jms.StompConnect;
-import org.codehaus.stomp.util.IOExceptionSupport;
 
 /**
  * @version $Revision: 52 $
@@ -111,13 +110,13 @@ public class TcpTransportServer implements Runnable {
             this.serverSocket = serverSocketFactory.createServerSocket(bind.getPort(), backlog, addr);
             this.serverSocket.setSoTimeout(2000);
         } catch (IOException e) {
-            throw IOExceptionSupport.create("Failed to bind to server socket: " + bind + " due to: " + e, e);
+            throw new IOException("Failed to bind to server socket: " + bind + " due to: " + e, e);
         }
         try {
             connectURI = new URI(bind.getScheme(), bind.getUserInfo(), bind.getHost(), serverSocket.getLocalPort(),
                     bind.getPath(), bind.getQuery(), bind.getFragment());
         } catch (URISyntaxException e) {
-            throw IOExceptionSupport.create(e);
+        	throw new IOException(e.getMessage(), e);
         }
 
         log.info("Listening for connections at: " + connectURI);
