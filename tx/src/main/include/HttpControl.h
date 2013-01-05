@@ -46,6 +46,7 @@ protected:
 	bool isActive(const char *msg, bool expect);
 
 private:
+	apr_pool_t *_pool;
 	HttpClient _wc;
 	char *_txnUrl;
 	char *_endUrl;
@@ -53,7 +54,7 @@ private:
 	char *_xid;
 
 	bool headRequest();
-	int decode_headers(struct mg_request_info *ri);
+	int decode_headers(http_request_info *ri);
 	int do_end(int how);
 
 public:

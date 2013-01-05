@@ -30,13 +30,17 @@
 
 void TestTransport::setUp()
 {
-	init_ace();
+	//init_ace();
+
+	apr_status_t rc = apr_initialize();
+	BT_ASSERT (rc == APR_SUCCESS);
 
 	TestFixture::setUp();
 }
 
 void TestTransport::tearDown()
 {
+	apr_terminate();
 	TestFixture::tearDown();
 }
 
@@ -101,11 +105,9 @@ void TestTransport::test_basic()
 	btlogger_debug("TestTransport::test_basic begin");
 	int i;
 	int cnt = 2;
-	const char *qname = "http://localhost:9090/bt-messaging-5.0.0.M2-SNAPSHOT/queues/jms.queue.testQueue";
-	apr_status_t rc = apr_initialize();
+	const char *qname = "http://localhost:8080/blacktie-messaging-5.0.0.M2-SNAPSHOT/queues/jms.queue.testQueue";
+	
 	HttpSessionImpl s1(qname);
-
-	BT_ASSERT (rc == APR_SUCCESS);
 
 	if ((i = s1.status()) != 0) {
 		btlogger("Skipping HTTP messaging tests. Reason: service not available %d (" \
@@ -149,8 +151,6 @@ void TestTransport::test_basic()
 			BT_ASSERT(ok);
 			free_message(rmsgs[i]);
 		}
-
-	apr_terminate();
 
 	btlogger_debug("TestTransport::test_basic pass");
 }

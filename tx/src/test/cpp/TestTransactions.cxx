@@ -18,6 +18,12 @@
 #include <string>
 #include <sstream>
 
+#ifdef WIN32
+#define _NTTMAPI_
+#endif
+
+#include "apr_general.h"
+
 #include "TestAssert.h"
 #include "TestTransactions.h"
 #include "txi.h"
@@ -44,6 +50,7 @@ extern UTILITIES_DLL struct xa_switch_t testxasw;
 
 void TestTransactions::setUp()
 {
+	apr_initialize();
 	fault_t fault = {-1};
 	init_ace();
 
@@ -63,6 +70,7 @@ void TestTransactions::tearDown()
 	TestFixture::tearDown();
 
 	destroyEnv();
+	apr_terminate();
 }
 
 

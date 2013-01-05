@@ -61,6 +61,12 @@ ant -f scripts/hudson/initializeJBoss.xml -DJBOSS_HOME=$JBOSS_HOME -Dbasedir=. i
 if [ "$?" != "0" ]; then
 	fatal "Failed to init JBoss"
 fi
+
+#wget -P $JBOSS_HOME/standalone/deployments/ -N http://172.17.131.2/job/narayana-populateM2-taconic/lastSuccessfulBuild/artifact/rest-tx/webservice/target/restat-web-5.0.0.M2-SNAPSHOT.war
+#if [ "$?" != "0" ]; then
+#	fatal "Failed to get restat-web war"
+#fi
+
 export JBOSS_HOME=$WORKSPACE/jboss-as/
 
 chmod u+x $JBOSS_HOME/bin/standalone.sh

@@ -16,5 +16,7 @@
  * MA  02110-1301, USA.
  */
 #include "TestTransport.h"
+#include "TestHttpServer.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTransport);
+//CPPUNIT_TEST_SUITE_REGISTRATION( TestHttpServer);

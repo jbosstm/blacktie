@@ -79,14 +79,29 @@
                             <addClasspath>true</addClasspath>
                         </manifest>
                     </archive>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-    <properties>
-        <test.skip>true</test.skip>
-    </properties>
-    <dependencies>
+				</configuration>
+			</plugin>
+			<!--
+			<plugin>
+				<groupId>org.jboss.as.plugins</groupId>
+				<artifactId>jboss-as-maven-plugin</artifactId>
+				<version>7.3.Final</version>
+				<executions>
+					<execution>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>deploy</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			-->
+		</plugins>
+	</build>
+	<properties>
+		<test.skip>true</test.skip>
+	</properties>
+	<dependencies>
         <dependency>
             <groupId>org.hornetq.rest</groupId>
             <artifactId>hornetq-rest</artifactId>

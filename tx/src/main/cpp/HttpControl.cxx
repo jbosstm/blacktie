@@ -21,7 +21,7 @@
 #include "ThreadLocalStorage.h"
 #include "HttpControl.h"
 #include "TxManager.h"
-#include "mongoose.h"
+#include "Http.h"
 
 #include "ace/ACE.h"
 #include "ace/OS_NS_stdio.h"
@@ -148,6 +148,13 @@ HttpControl::HttpControl(long timeout, int tid) : TxControl(timeout, tid),
 	_txnUrl(NULL), _endUrl(NULL), _enlistUrl(NULL), _xid(NULL)
 {
 	FTRACE(httpclogger, "ENTER new HTTPTXCONTROL: " << this);
+
+	int rc = apr_pool_create(&_pool, NULL);
+	if (rc != APR_SUCCESS) {
+		LOG4CXX_WARN(httpclogger, "can not create pool");
+		apr_pool_destroy(_pool);
+		throw new std::exception();
+	}
 }
 
 HttpControl::HttpControl(char* txn, long ttl, int tid) : TxControl(ttl, tid),
@@ -157,6 +164,13 @@ HttpControl::HttpControl(char* txn, long ttl, int tid) : TxControl(ttl, tid),
 	_txnUrl = strdup(txn);
 	_xid = last_path(_txnUrl);
 	LOG4CXX_TRACE(httpclogger, "_txnUrl=" << _txnUrl);
+
+	int rc = apr_pool_create(&_pool, NULL);
+	if (rc != APR_SUCCESS) {
+		LOG4CXX_WARN(httpclogger, "can not create pool");
+		apr_pool_destroy(_pool);
+		throw new std::exception();
+	}
 }
 
 HttpControl::~HttpControl()
@@ -164,12 +178,13 @@ HttpControl::~HttpControl()
 	FTRACE(httpclogger, "ENTER delete HTTPTXCONTROL: " << this);
 	suspend();
 	LOG4CXX_TRACE(httpclogger, "freeing _txnUrl=" << _txnUrl);
+	if (_pool) apr_pool_destroy(_pool); 
 	if (_txnUrl) free (_txnUrl);
 	if (_endUrl) free (_endUrl);
 	if (_enlistUrl) free (_enlistUrl);
 }
 
-int HttpControl::decode_headers(struct mg_request_info *ri) {
+int HttpControl::decode_headers(http_request_info *ri) {
 	for (int i = 0; i < ri->num_headers; i++) {
 		char *n = ri->http_headers[i].name;
 		char *v = ri->http_headers[i].value;
@@ -205,10 +220,10 @@ int HttpControl::decode_headers(struct mg_request_info *ri) {
 int HttpControl::start(const char* txnMgrUrl) {
 	FTRACE(httpclogger, "ENTER");
 	char content[32];
-	struct mg_request_info ri;
+	http_request_info ri;
 	(void) sprintf(content, "%s=%ld", TIMEOUT_PROPERTY, _ttl * 1000);
 
-	if (_wc.send(&ri, "POST", txnMgrUrl, POST_MEDIA_TYPE, NULL, content, strlen(content),
+	if (_wc.send(_pool, &ri, "POST", txnMgrUrl, POST_MEDIA_TYPE, NULL, content, strlen(content),
 		NULL, NULL) != 0) {
 		LOG4CXX_DEBUG(httpclogger, "transaction POST failure");
 		return -1;
@@ -220,12 +235,12 @@ int HttpControl::start(const char* txnMgrUrl) {
 bool HttpControl::headRequest()
 {
 	FTRACE(httpclogger, "ENTER");
-	struct mg_request_info ri;
+	http_request_info ri;
 
 	if (_txnUrl == NULL)
 		return false;
 
-	if (_wc.send(&ri, "HEAD", _txnUrl, TX_STATUS_MEDIA_TYPE, NULL, NULL, 0, NULL, NULL) != 0) {
+	if (_wc.send(_pool, &ri, "HEAD", _txnUrl, TX_STATUS_MEDIA_TYPE, NULL, NULL, 0, NULL, NULL) != 0) {
 		LOG4CXX_DEBUG(httpclogger, "HTTP HEAD error");
 		return false;
 	}
@@ -249,7 +264,7 @@ int HttpControl::do_end(bool commit, bool reportHeuristics)
 int HttpControl::do_end(int how)
 {
 	TX_GUARD("end", true);
-	struct mg_request_info ri;
+	http_request_info ri;
 	char * resp;
 	char content[64];
 	char *p = &content[0];
@@ -274,7 +289,7 @@ int HttpControl::do_end(int how)
 	}
 
 	(void) ACE_OS::snprintf(p, sizeof (content), "%s%s", TXSTATUS, status);
-	if (_wc.send(&ri, "PUT", _endUrl, TX_STATUS_MEDIA_TYPE, NULL, p, strlen(p), &resp, &nread) != 0) {
+	if (_wc.send(_pool, &ri, "PUT", _endUrl, TX_STATUS_MEDIA_TYPE, NULL, p, strlen(p), &resp, &nread) != 0) {
 		LOG4CXX_DEBUG(httpclogger, "do_end: HTTP PUT error");
 
 		return TX_FAIL;
@@ -371,8 +386,8 @@ int HttpControl::get_status()
 	if (_rbonly)
 		return TX_ROLLBACK_ONLY;
 
-	struct mg_request_info ri;
-	if (_wc.send(&ri, "GET", _txnUrl, TX_STATUS_MEDIA_TYPE, NULL, NULL, 0, NULL, NULL) != 0) {
+	http_request_info ri;
+	if (_wc.send(_pool, &ri, "GET", _txnUrl, TX_STATUS_MEDIA_TYPE, NULL, NULL, 0, NULL, NULL) != 0) {
 		LOG4CXX_DEBUG(httpclogger, "HTTP GET status error");
 
 		return TX_ERROR;

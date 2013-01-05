@@ -19,29 +19,31 @@
 #define _HTTPCLIENT_H
 
 #include "httpTransportMacro.h"
-#include "mongoose.h"
+#include "Http.h"
 
 class BLACKTIE_HTTP_TRANSPORT_DLL HttpClient {
 public:
 	HttpClient() : HTTP_PROTO_VERSION("1.1") {};
 	virtual ~HttpClient() {};
 
-	int send(struct mg_request_info* ri,
+	int send(apr_pool_t*, http_request_info* ri,
 		const char* method, const char* uri, const char* mediaType,
 		const char* headers[], const char *body, size_t blen, char **resp, size_t* rcnt);
-	void dispose(struct mg_request_info* ri);
+	void dispose(http_request_info* ri);
 
-	const char *get_header(const struct mg_request_info *ri, const char *name);
-	int parse_url(const char *url, char *host, int *port);
+	const char *get_header(http_request_info *ri, const char *name);
+	int parse_url(const char* uri, char* addr, int* port);
 	void url_encode(const char *src, char *dst, size_t dst_len);
 
-	int write(struct mg_connection *conn, const void *buf, size_t len);
-	void close_connection(struct mg_connection *conn);
+	int write(http_conn_ctx *conn, const void *buf, size_t len);
+	int http_print(http_conn_ctx *conn, const char* fmt, ...);
+	void close_connection(http_conn_ctx *conn);
 
 	const char *HTTP_PROTO_VERSION;
 
 private:
-	void dup_headers(struct mg_request_info* ri);
-
+	void dup_headers(http_request_info* ri);
+	http_conn_ctx* get_connection(apr_pool_t*, char* addr, int port);
 };
+
 #endif //_HTTPCLIENT_H
