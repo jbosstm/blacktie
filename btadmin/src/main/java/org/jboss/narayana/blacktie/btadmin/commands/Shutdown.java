@@ -182,6 +182,10 @@ public class Shutdown implements Command {
 
         try {
             Process p = pb.start();
+            if(OS.indexOf("win") >= 0) {
+                //wmic is blocking for stdin. so we need to close it.
+                p.getOutputStream().close();
+            }
             p.waitFor();
             if(p.exitValue() == 0) {
                 log.debug("check cmd " + cmd + " output");
