@@ -207,7 +207,7 @@
             <type>ear</type>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.stomp</groupId>
+            <groupId>org.jboss.narayana.blacktie</groupId>
             <artifactId>blacktie-stompconnect</artifactId>
         </dependency>
     </dependencies>
