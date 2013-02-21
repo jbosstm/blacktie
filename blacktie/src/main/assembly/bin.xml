@@ -52,7 +52,7 @@
 		</dependencySet>
 		<dependencySet>
 			<includes>
-				<include>org.codehaus.stomp:blacktie-stompconnect</include>
+				<include>org.jboss.narayana.blacktie:blacktie-stompconnect</include>
 			</includes>
 			<useProjectArtifact>false</useProjectArtifact>
 			<unpack>false</unpack>
@@ -65,7 +65,7 @@
 				<exclude>org.jboss.narayana.blacktie:btadmin</exclude>
 				<exclude>org.jboss.narayana.blacktie:blacktie-codeGeneration</exclude>
 				<exclude>org.jboss.narayana.blacktie:blacktie-admin-services-ear:ear</exclude>
-				<exclude>org.codehaus.stomp:blacktie-stompconnect</exclude>
+				<exclude>org.jboss.narayana.blacktie:blacktie-stompconnect</exclude>
 				<exclude>org.jboss.logmanager:log4j-jboss-logmanager:jar</exclude>
 				<exclude>*:javadoc</exclude>
 				<exclude>*:jdocbook</exclude>

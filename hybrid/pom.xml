@@ -92,7 +92,7 @@
             <artifactId>blacktie-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.stomp</groupId>
+            <groupId>org.jboss.narayana.blacktie</groupId>
             <artifactId>blacktie-stompconnect</artifactId>
             <scope>provided</scope>
         </dependency>

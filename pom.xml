@@ -160,7 +160,7 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.codehaus.stomp</groupId>
+                <groupId>org.jboss.narayana.blacktie</groupId>
                 <artifactId>blacktie-stompconnect</artifactId>
                 <version>${project.version}</version>
             </dependency>
