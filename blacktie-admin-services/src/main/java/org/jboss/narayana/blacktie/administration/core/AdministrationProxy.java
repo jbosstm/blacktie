@@ -52,13 +52,17 @@ public class AdministrationProxy implements BlacktieAdministration {
 
     public AdministrationProxy() throws ConfigurationException {
         log.debug("Administration Proxy");
+                
+        beanServerConnection = java.lang.management.ManagementFactory.getPlatformMBeanServer();
+        log.debug("Created Administration Proxy");
+    }
+    
+    public void onConstruct() throws ConfigurationException {
+        log.info("onConstruct load btconfig.xml");
         XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
         servers = (List<String>) prop.get("blacktie.domain.servers");
         ConnectionFactory cf = ConnectionFactory.getConnectionFactory();
         connection = cf.getConnection();
-
-        beanServerConnection = java.lang.management.ManagementFactory.getPlatformMBeanServer();
-        log.debug("Created Administration Proxy");
     }
 
     private Response callAdminService(String serverName, int id, String command) throws ConnectionException,

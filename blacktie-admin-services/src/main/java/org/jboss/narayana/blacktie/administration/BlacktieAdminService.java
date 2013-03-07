@@ -39,6 +39,7 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
         //reaper = new QueueReaper(administrationProxy);
         //reaper.startThread();
 
+        administrationProxy.onConstruct();
         log.info("Admin Server Started");
     }
 

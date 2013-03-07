@@ -20,6 +20,8 @@ package org.jboss.narayana.blacktie.jatmibroker.xatmi;
 import javax.naming.NamingException;
 import javax.transaction.InvalidTransactionException;
 import javax.transaction.SystemException;
+import javax.annotation.PostConstruct;
+
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -49,13 +51,24 @@ public abstract class BlackTieService implements Service {
     private String name;
 
     protected BlackTieService(String name) throws ConfigurationException {
-        connectionFactory = ConnectionFactory.getConnectionFactory();
+        //connectionFactory = ConnectionFactory.getConnectionFactory();
         this.name = name;
     }
 
     public String getName() {
         return name;
     }
+
+    @PostConstruct
+    public void init() {
+        log.info("init PostConstruct");
+        try {
+            connectionFactory = ConnectionFactory.getConnectionFactory();
+        } catch (ConfigurationException e) {
+            log.warn("init failed with " + e);
+        }
+    }
+
 
     /**
      * Entry points should pass control to this method as soon as reasonably possible.
@@ -72,8 +85,11 @@ public abstract class BlackTieService implements Service {
      * @throws TransactionException 
      */
     protected void processMessage(String serviceName, Message message) throws ConnectionException, ConfigurationException,
-            NamingException, InvalidTransactionException, IllegalStateException, SystemException, TransactionException {
+    NamingException, InvalidTransactionException, IllegalStateException, SystemException, TransactionException {
         log.trace("Service invoked");
+        if(connectionFactory == null) {
+            connectionFactory = ConnectionFactory.getConnectionFactory();
+        }
         ConnectionImpl connection = (ConnectionImpl) connectionFactory.getConnection();
         try {
             boolean hasTx = false;
@@ -96,8 +112,8 @@ public abstract class BlackTieService implements Service {
                 if (hasTPCONV && isConversational) {
                     X_OCTET odata = new X_OCTET_Impl(null);
                     byte[] ack = new byte[4];
-            		byte[] bytes = "ACK".getBytes();
-            		System.arraycopy(bytes, 0, ack, 0, 3);
+                    byte[] bytes = "ACK".getBytes();
+                    System.arraycopy(bytes, 0, ack, 0, 3);
                     odata.setByteArray(ack);
                     long result = serviceSession.tpsend(odata, 0);
                     if (result == -1) {
@@ -114,8 +130,8 @@ public abstract class BlackTieService implements Service {
                     log.error("Session was invoked in an improper manner");
                     X_OCTET odata = new X_OCTET_Impl(null);
                     byte[] ack = new byte[4];
-            		byte[] bytes = "ERR".getBytes();
-            		System.arraycopy(bytes, 0, ack, 0, 3);
+                    byte[] bytes = "ERR".getBytes();
+                    System.arraycopy(bytes, 0, ack, 0, 3);
                     odata.setByteArray(bytes);
                     long result = serviceSession.tpsend(odata, 0);
                     if (result == -1) {
