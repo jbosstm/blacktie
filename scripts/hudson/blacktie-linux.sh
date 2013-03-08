@@ -57,7 +57,7 @@ else
 fi
 
 # INITIALIZE JBOSS
-ant -f scripts/hudson/initializeJBoss.xml -DJBOSS_HOME=$JBOSS_HOME -Dbasedir=. initializeJBoss -debug
+ant -f scripts/hudson/initializeJBoss.xml -DJBOSS_HOME=$JBOSS_HOME -Dbasedir=. initializeJBoss
 if [ "$?" != "0" ]; then
 	fatal "Failed to init JBoss"
 fi
