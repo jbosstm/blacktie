@@ -141,17 +141,6 @@
 			</plugin>
         </plugins>
     </build>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.jboss.as</groupId>
-                <artifactId>jboss-as-parent</artifactId>
-                <version>7.1.0.Final</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
     <dependencies>
         <!-- REQUIRED FOR AIX TO GET JAXP-RI -->
         <!--
@@ -169,18 +158,17 @@
         </dependency>
 		<dependency>
 			<groupId>org.jboss.spec.javax.ejb</groupId>
-			<artifactId>jboss-ejb-api_3.1_spec</artifactId>
+			<artifactId>jboss-ejb-api_3.2_spec</artifactId>
 			<scope>provided</scope>
 		</dependency>
         <dependency>
-            <groupId>org.jboss.jbossts</groupId>
-            <artifactId>jbossjts</artifactId>
+            <groupId>org.jboss.narayana.jts</groupId>
+            <artifactId>narayana-jts-jacorb</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>jacorb</groupId>
             <artifactId>jacorb</artifactId>
-            <version>2.3.1jboss.patch01-brew</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

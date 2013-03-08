@@ -26,12 +26,12 @@
 
     This script automates the some steps of the release build and packaging process
     to reduce the opportunities for users to get it wrong. For example, it works from
-    a fresh svn checkout to ensure locally modified files in a dev's svn working copy
+    a fresh checkout to ensure locally modified files in a dev's working copy
     don't sneak into the release bundle.
 
     usage:
 
-      Tag the release in svn.
+      Tag the release in scm.
         or you can do a snapshot release direct from trunk, see properties below.
 
       Check the version of JBossAS referenced in pom.xml is sane.
@@ -65,18 +65,17 @@
             you need permissions to webdav upload to the server for this to work
             http://www.jboss.org/community/docs/DOC-11381  -->
   <!--
-    <property name="svnbase" value="https://svn.jboss.org/repos/blacktie"/>
     <property name="tag" value="trunk"/>
     <property name="version" value="5.0.0.M2-SNAPSHOT"/>
 -->
   <!-- a working directory for the process. Can contain output from previous releases if you like to keep them archived locally. -->
-  <!--property name="workdir" location="/tmp/blacktie_releases"/-->
+  <property name="workdir" location="/tmp/blacktie_releases"/>
   <!-- where to get the source -->
-  <property name="svnbase" value="https://svn.jboss.org/repos/blacktie/tags"/>
-  <!-- The tag as it appears under svnbase -->
-  <property name="tag" value="5_0_0_M1"/>
+  <property name="gitbase" value="git@github.com:jbosstm/blacktie.git"/>
+  <!-- The tag as it appears under gitbase -->
+  <property name="tag" value="5.0.0.M2-SNAPSHOT"/>
   <!-- The file name base for the user downloadable files. Derive it from the tag -->
-  <property name="version" value="5.0.0.M1"/>
+  <property name="version" value="5.0.0.M2-SNAPSHOT"/>
   <!-- the location the web site content is copied to -->
   <property name="downloads.dir" value="${user.home}/blacktie/filemgmt.jboss.org/downloads_htdocs/blacktie/"/>
   <property name="docs.dir" value="${user.home}/blacktie/filemgmt.jboss.org/docs_htdocs/blacktie/"/>
@@ -111,10 +110,15 @@
       </condition>
     </fail>
     <mkdir dir="${workdir}"/>
-    <!-- pull the source code from svn -->
-    <exec executable="svn" dir="${workdir}">
+    <!-- pull the source code from scm -->
+    <exec executable="git" dir="${workdir}">
+      <arg value="clone"/>
+      <arg value="${gitbase}"/>
+      <arg value="${tag}"/>
+    </exec>
+    <exec executable="git" dir="${workdir}/${tag}">
       <arg value="checkout"/>
-      <arg value="${svnbase}/${tag}"/>
+      <arg value="${tag}"/>
     </exec>
   </target>
   <target name="dist" depends="dist-init" description="build the end-user release bundles (src and binary)">
