@@ -127,3 +127,5 @@ void testtpsend_tpsendonly_service(TPSVCINFO *svcinfo) {
 	result = ::tprecv(svcinfo->cd, &rcvbuf, &rcvlen, 0, &revent);
 	btlogger((char*) "result=%d", result);
 }
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPSend);
+

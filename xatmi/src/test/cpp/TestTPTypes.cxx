@@ -285,3 +285,6 @@ void TestTPTypes::test_tptypes_large_subtype() {
 	BT_ASSERT(strncmp(subtype, "abcdefghijklmnop", 16) == 0);
 	free(subtype);
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPTypes);
+

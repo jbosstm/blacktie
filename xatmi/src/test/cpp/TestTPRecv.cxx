@@ -88,3 +88,5 @@ void TestTPRecv::test_tprecv_sendonly() {
 void testtprecv_service(TPSVCINFO *svcinfo) {
 	btlogger((char*) "testtprecv_service");
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPRecv);

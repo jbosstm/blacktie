@@ -109,6 +109,7 @@
                     <configuration.type>${configuration.type}</configuration.type>
                     <test.output.type>${test.output.type}</test.output.type>
                     <test.excludes>${test.excludes}</test.excludes>
+                    <test.includes>${test.includes}</test.includes>
                 </configuration>
                 <executions>
                     <execution>
@@ -137,6 +138,9 @@
                     <family>windows</family>
                 </os>
             </activation>
+            <properties>
+	        <test.includes>*</test.includes>
+            </properties>
         </profile>
         <profile>
             <id>linux</id>
@@ -145,6 +149,9 @@
                     <family>unix</family>
                 </os>
             </activation>
+            <properties>
+	        <test.includes>*</test.includes>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
