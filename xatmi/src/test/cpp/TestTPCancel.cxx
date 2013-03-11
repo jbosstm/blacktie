@@ -121,3 +121,5 @@ void testtpcancel_service(TPSVCINFO *svcinfo) {
 		tpreturn(TPSUCCESS, 0, toReturn, len, 0);
 	}
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPCancel);

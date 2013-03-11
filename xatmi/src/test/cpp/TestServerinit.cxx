@@ -126,3 +126,5 @@ void TestServerinit::test_requires_id() {
 void test_service(TPSVCINFO *svcinfo) {
 	btlogger((char*) "test_service");
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestServerinit);

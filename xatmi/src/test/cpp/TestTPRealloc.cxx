@@ -424,3 +424,5 @@ void TestTPRealloc::test_tprealloc_multi_x_c_type() {
 		BT_ASSERT(toTest >= (int) sizeof(ACCT_INFO));
 	}
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPRealloc);

@@ -129,3 +129,4 @@ void testtpfreeservice_service(TPSVCINFO *svcinfo) {
 	// Return the data
 	tpreturn(TPSUCCESS, 0, toReturn, 1, 0);
 }
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPFreeService);
