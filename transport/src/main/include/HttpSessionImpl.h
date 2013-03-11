@@ -50,12 +50,13 @@ private:
 	char *_sqname;
 	char *_rqname;
 	HttpClient _wc;
+	apr_pool_t     *pool;
 
-	void decode_headers(struct mg_request_info* ri);
+	void decode_headers(http_request_info* ri);
 	int qinfo(const char *qname);
 	int remove_consumer();
 	int create_consumer(bool autoack);
-	char* try_get_message(struct mg_request_info* ri, long time, size_t *sz);
+	char* try_get_message(http_request_info* ri, long time, size_t *sz);
 	bool get(MESSAGE&, long time);
 	void put_message(const char *msg);
 };

@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2011, Red Hat, Inc., and others contributors as indicated
+ * Copyright 2008, Red Hat, Inc., and others contributors as indicated
  * by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -15,18 +15,37 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef HTTPREQUESTHANDLER_H
-#define HTTPREQUESTHANDLER_H
+#ifndef HTTP_H
+#define HTTP_H
+
+#include "apr_network_io.h"
 
 #include "httpTransportMacro.h"
-#include "HttpServer.h"
 
-class BLACKTIE_HTTP_TRANSPORT_DLL HttpRequestHandler {
-public:
-    virtual ~HttpRequestHandler() {};
-	virtual void unregistering() {};
+typedef BLACKTIE_HTTP_TRANSPORT_DLL struct _http_conn_ctx {
+	apr_pool_t*   pool;
+	apr_socket_t* sock;
+	char*         data;
+	apr_size_t    len;
+	apr_size_t    rcvlen;
+} http_conn_ctx;
 
-    virtual bool handle_request(
-		http_conn_ctx *conn, const http_request_info *ri, const char *content, size_t len) = 0;
-};
-#endif // HTTPREQUESTHANDLER_H
+typedef BLACKTIE_HTTP_TRANSPORT_DLL struct _http_request_info {
+	apr_pool_t*   pool;
+	char*         method;
+	char*         uri;
+	char*         query_strings;
+	char*         version;
+	int           num_headers;
+	int           status_code;
+	struct http_header {
+		char* name;
+		char* value;
+	} http_headers[64];
+} http_request_info;
+
+int  check_http_end(const char* method, char* s, int i, int* clen);
+void parse_http_request(char* data, http_request_info* request);
+int  parse_http_headers(char* data, http_request_info* ri);
+
+#endif

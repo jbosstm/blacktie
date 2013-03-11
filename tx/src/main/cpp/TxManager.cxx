@@ -27,7 +27,7 @@
 
 #define TX_GUARD(cond) {	\
 	FTRACE(txmlogger, "ENTER"); \
-	if (_connection == NULL) { \
+	if (isOTS() && _connection == NULL) { \
 		LOG4CXX_DEBUG(txmlogger, (char*) "Cannot connect to an ORB"); \
 		return TX_ERROR; \
 	} \
@@ -89,16 +89,6 @@ TxManager::TxManager() : _isOpen(false), _whenReturn(TX_COMMIT_DECISION_LOGGED),
 {
 	FTRACE(txmlogger, "ENTER: " << this);
 //	AtmiBrokerEnv::get_instance();
-
-	try {
-		// TODO move _connection code to OTSTxManager
-		_connection = ::initOrb((char*) "ots");
-		LOG4CXX_DEBUG(txmlogger, (char*) "new CONNECTION: " << _connection);
-	} catch (CORBA::SystemException & e) {
-		LOG4CXX_WARN(txmlogger, (char*) "Failed to connect to ORB for TM: " << e._name() << " minor code: " << e.minor());
-	} catch (...) {
-		LOG4CXX_WARN(txmlogger, (char*) "Unknown error looking up ORB for TM");
-	}
 	_lock = new SynchronizableObject();
 }
 
@@ -113,8 +103,6 @@ void TxManager::dispose()
 	FTRACE(txmlogger, "ENTER");
 	if (_lock != NULL) {
 		(void) close();
-		LOG4CXX_DEBUG(txmlogger, (char*) "deleting CONNECTION: " << _connection);
-		shutdownBindings(_connection);
 //		AtmiBrokerEnv::discard_instance();
 		delete _lock;
 		_lock = NULL;
@@ -571,7 +559,10 @@ bool TxManager::isCdTransactional(int cd)
 }
 
 CORBA::ORB_ptr TxManager::getOrb() {
-	return _connection->orbRef;
+	if(isOTS())
+		return _connection->orbRef;
+	else
+		return NULL;
 }
 
 char * TxManager::current_to_string(long* ttl) {

@@ -267,6 +267,12 @@ static bool unpack_message(MESSAGE* msg, void* buf, size_t sz) {
 }
 
 HttpSessionImpl::HttpSessionImpl(const char *qname) : _HEADERS(msg_headers, msg_headers + nelems), _status(-1) {
+	int rc = apr_pool_create(&pool, NULL);
+	if (rc != APR_SUCCESS) {
+		btlogger_warn("OOM: pool create\n");
+		apr_pool_destroy(pool);
+		throw new std::exception();
+	}
 
 	(void) qinfo(qname);
 
@@ -278,6 +284,8 @@ HttpSessionImpl::~HttpSessionImpl() {
 	disconnect();
 	if (_sqname)
 		free(_sqname);
+	if(pool)
+		apr_pool_destroy(pool);
 }
 
 
@@ -332,24 +340,16 @@ bool HttpSessionImpl::send(char* destinationName, MESSAGE &message) {
 }
 
 bool HttpSessionImpl::send(MESSAGE &message) {
-	struct mg_request_info ri;
+	http_request_info ri;
 	std::string nm = _HEADERS[CREATE_HDR];
-	apr_pool_t *pool = NULL;
-	int rc = apr_pool_create(&pool, NULL);
 	size_t sz;
 
-	if (rc != APR_SUCCESS) {
-		btlogger_debug("OOM: pool create\n");
-		apr_pool_destroy(pool);
-		throw new std::exception();
-	}
 
 	void *msg = pack_message(pool, &message, &sz);
 //btlogger_debug("XXX packed: %s\n", (char *) msg);
 
-	rc = _wc.send(&ri, "POST", nm.c_str(), "*/*", NULL, (char *) msg, sz, NULL, NULL);
+	int rc = _wc.send(pool, &ri, "POST", nm.c_str(), "*/*", NULL, (char *) msg, sz, NULL, NULL);
 
-	apr_pool_destroy(pool);
 
 	if (rc != 0 || ri.status_code != 201) {
 		btlogger_warn("Error %d sending message. Status: %d\n", rc, ri.status_code);
@@ -372,7 +372,7 @@ void HttpSessionImpl::dump_headers() {
 		btlogger_debug("Header: %s=%s\n", i->first.c_str(), i->second.c_str());
 }
 
-void HttpSessionImpl::decode_headers(struct mg_request_info* ri) {
+void HttpSessionImpl::decode_headers(http_request_info* ri) {
 	for (int i = 0; i < ri->num_headers; i++) {
 		_HEADERS[ri->http_headers[i].name] = ri->http_headers[i].value;
 //		btlogger_debug("decoded %s=%s\n", ri->http_headers[i].name, ri->http_headers[i].value);
@@ -383,9 +383,9 @@ void HttpSessionImpl::decode_headers(struct mg_request_info* ri) {
 }
 
 int HttpSessionImpl::qinfo(const char *qname) {
-	struct mg_request_info ri;
+	http_request_info ri;
 
-	if ((_status = _wc.send(&ri, "HEAD", qname, "*/*", NULL, NULL, 0, NULL, NULL)) != 0) {
+	if ((_status = _wc.send(pool, &ri, "HEAD", qname, "*/*", NULL, NULL, 0, NULL, NULL)) != 0) {
 		btlogger_warn("send failure %d\n", errno);
 		_wc.dispose(&ri);
 		return -1;
@@ -397,11 +397,11 @@ int HttpSessionImpl::qinfo(const char *qname) {
 }
 
 int HttpSessionImpl::remove_consumer() {
-	struct mg_request_info ri;
+	http_request_info ri;
 	std::string consumer = _HEADERS[CONSUMER];
 
 	if (consumer.size() > 0) {
-		_wc.send(&ri, "DELETE", consumer.c_str(), "*/*", NULL, NULL, 0, NULL, NULL);
+		_wc.send(pool, &ri, "DELETE", consumer.c_str(), "*/*", NULL, NULL, 0, NULL, NULL);
 		_wc.dispose(&ri);
 
 		switch (ri.status_code) {
@@ -423,7 +423,7 @@ int HttpSessionImpl::remove_consumer() {
 }
 
 int HttpSessionImpl::create_consumer(bool autoack) {
-	struct mg_request_info ri;
+	http_request_info ri;
 	const char *body = autoack ? NULL : "autoAck=false";
 	size_t bodysz = autoack ? 0 : strlen(body);
 	const char* mt = "application/x-www-form-urlencoded";
@@ -433,7 +433,7 @@ int HttpSessionImpl::create_consumer(bool autoack) {
 		remove_consumer();
 
 	consumer = _HEADERS[PULL_CONSUMERS];
-	if (_wc.send(&ri, "POST", consumer.c_str(), mt, NULL, body, bodysz, NULL, NULL) == 0)
+	if (_wc.send(pool, &ri, "POST", consumer.c_str(), mt, NULL, body, bodysz, NULL, NULL) == 0)
 		decode_headers(&ri);
 	else
 		_wc.dispose(&ri);
@@ -441,17 +441,17 @@ int HttpSessionImpl::create_consumer(bool autoack) {
 	return ri.status_code;
 }
 
-char* HttpSessionImpl::try_get_message(struct mg_request_info* ri, long time, size_t *sz) {
+char* HttpSessionImpl::try_get_message(http_request_info* ri, long time, size_t *sz) {
 	std::string nm = _HEADERS[CONSUME_NEXT];
 	const char *mt = "application/x-www-form-urlencoded";
 	char hdr[32];
 	char* headers[] = {hdr, NULL};
 	char *resp;
 
-	sprintf(hdr, "Accept-Wait=%ld", time);
+	sprintf(hdr, "Accept-Wait: %ld", time);
 
 	btlogger_debug("consuming via resource: %s\n", nm.c_str());
-	if (_wc.send(ri, "POST", nm.c_str(), mt, (const char**) headers, NULL, 0, &resp, sz) == 0) {
+	if (_wc.send(pool, ri, "POST", nm.c_str(), mt, (const char**) headers, NULL, 0, &resp, sz) == 0) {
 		if (ri->status_code == 200 || ri->status_code == 412)
 			decode_headers(ri);
 		else
@@ -462,7 +462,7 @@ char* HttpSessionImpl::try_get_message(struct mg_request_info* ri, long time, si
 }
 
 bool HttpSessionImpl::get(MESSAGE& msg, long time) {
-	struct mg_request_info ri;
+	http_request_info ri;
 	size_t sz;
 	char * resp = try_get_message(&ri, time, &sz);
 
@@ -515,14 +515,14 @@ bool HttpSessionImpl::get(MESSAGE& msg, long time) {
 
 // TODO delete this method
 void HttpSessionImpl::put_message(const char *msg) {
-	struct mg_request_info ri;
+	http_request_info ri;
 	std::string nm = _HEADERS[CREATE_HDR];
 
 	int cnt = 0, i;
 	(void) sscanf(msg + 1, "%d %d", &cnt, &i);
 
 	if (cnt <= 0) {
-		if (_wc.send(&ri, "POST", nm.c_str(), "*/*", NULL, msg, strlen(msg), NULL, NULL) == 0 &&
+		if (_wc.send(pool, &ri, "POST", nm.c_str(), "*/*", NULL, msg, strlen(msg), NULL, NULL) == 0 &&
 			ri.status_code == 201)
 			decode_headers(&ri);
 	} else {
@@ -530,7 +530,7 @@ void HttpSessionImpl::put_message(const char *msg) {
 			char m[32];
 			sprintf(m, "MSG %d", i++);
 			btlogger_debug("%s\n", m);
-			if (_wc.send(&ri, "POST", nm.c_str(), "*/*", NULL, m, strlen(msg), NULL, NULL) != 0)
+			if (_wc.send(pool, &ri, "POST", nm.c_str(), "*/*", NULL, m, strlen(msg), NULL, NULL) != 0)
 				btlogger_warn("message send error:  %d\n", ri.status_code);
 			else if (ri.status_code == 201)
 				decode_headers(&ri);

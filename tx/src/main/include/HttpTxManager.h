@@ -38,7 +38,7 @@ public:
 
 	int associate_transaction(char* txn, long ttl);
 	char *enlist(XAWrapper* xaw, TxControl *tx, const char * xid);
-	bool handle_request(struct mg_connection *conn, const struct mg_request_info *ri,
+	bool handle_request(http_conn_ctx *conn, const http_request_info *ri,
 		const char *content, size_t len);
 	bool recover(XAWrapper*);
 
@@ -53,8 +53,9 @@ protected:
 	int do_close(void);
 
 private:
-    typedef std::map<const char*, XAWrapper*> XABranchMap;
+    typedef std::map<std::string, XAWrapper*> XABranchMap;
     XABranchMap _branches;
+	apr_pool_t *_pool;
 	HttpServer *_ws;
 	HttpClient _wc;
 

@@ -15,10 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-//#include "TestTransactions.h"
-//CPPUNIT_TEST_SUITE_REGISTRATION( TestTransactions);
-#include "TestOrbAdditions.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestOrbAdditions);
-
 #include "TestTransactions.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTransactions);
+#include "TestOrbAdditions.h"
+CPPUNIT_TEST_SUITE_REGISTRATION( TestOrbAdditions);

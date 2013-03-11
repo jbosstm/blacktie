@@ -46,6 +46,7 @@ protected:
 	bool isActive(const char *msg, bool expect);
 
 private:
+	apr_pool_t *_pool;
 	HttpClient _wc;
 	char *_txnUrl;
 	char *_endUrl;
@@ -53,7 +54,7 @@ private:
 	char *_xid;
 
 	bool headRequest();
-	int decode_headers(struct mg_request_info *ri);
+	int decode_headers(http_request_info *ri);
 	int do_end(int how);
 
 public:
@@ -91,9 +92,30 @@ public:
 	static const int RUNNING_STATUS;
 	static const int READONLY_STATUS;
 
-	static const char * STATUS_MEDIA_TYPE;
+	static const char * TX_STATUS_MEDIA_TYPE;
 	static const char * POST_MEDIA_TYPE;
 	static const char * PLAIN_MEDIA_TYPE;
+	static const char * TX_LIST_MEDIA_TYPE;
+	static const char * TX_STATUS_EXT_MEDIA_TYPE;
+
+	static const char * TIMEOUT_PROPERTY;
+
+	// HTTP Header names
+	static const char * LOCATION;
+	// Transaction links
+	static const char * TXN_TERMINATOR;// transaction-terminator URI
+	static const char * TXN_PARTICIPANT;// transaction-enlistment URI
+	static const char * VOLATILE_PARTICIPANT;// transaction-enlistment URI
+	// Transaction statistics
+	static const char * TXN_STATISTICS;// transaction-statistics URI
+	// Two phase aware participants
+	static const char * PARTICIPANT_RESOURCE;// participant-resource URI
+	static const char * PARTICIPANT_TERMINATOR;// participant-terminator URI
+	// Two phase unaware participants
+	static const char * PARTICIPANT_PREPARE;// participant-prepare URI
+	static const char * PARTICIPANT_COMMIT;// participant-commit URI
+	static const char * PARTICIPANT_ROLLBACK;// participant-rollback URI
+	static const char * PARTICIPANT_COMMIT_ONE_PHASE;// participant-commit-one-phase URI
 };
 } //	namespace tx
 } //namespace atmibroker

@@ -21,6 +21,7 @@
 #include "ace/OS_NS_stdio.h"
 #include "ace/ACE.h"
 #include "ace/OS_NS_string.h"
+#include "apr_thread_proc.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -44,13 +45,7 @@ static char * parse_wid(HttpClient &wc, const char *s) {
 	char *wid = 0;
 
 	if (b && e && (b += sizeof (XIDPAT) - 1) < e) {
-		char *buf = ACE::strndup(b, e - b);
-
-		if (buf) {
-			wid = (char *) malloc(1024);
-			wc.url_encode(buf, wid, 1024);
-			free(buf);
-		}
+		wid = ACE::strndup(b, e - b);
 	}
 
 	return wid;
@@ -58,8 +53,15 @@ static char * parse_wid(HttpClient &wc, const char *s) {
 
 HttpTxManager::HttpTxManager(const char *txmUrl, const char *resUrl) :
 	TxManager() {
+	FTRACE(httptxlogger, "ENTER HttpTxManager constructor");
 	_txmUrl = strdup(txmUrl);
 	_resUrl = strdup(resUrl);
+	int rc = apr_pool_create(&_pool, NULL);
+	if (rc != APR_SUCCESS) {
+		LOG4CXX_WARN(httptxlogger, "can not create pool");
+		apr_pool_destroy(_pool);
+		throw new std::exception();
+	}
 	FTRACE(httptxlogger, "ENTER inst create " << this);
 }
 
@@ -70,6 +72,8 @@ HttpTxManager::~HttpTxManager() {
 		do_close();
 	}
 
+	if(_pool != NULL)
+		apr_pool_destroy(_pool);
 	if (_txmUrl != NULL)
 		free(_txmUrl);
 	if (_resUrl != NULL)
@@ -125,20 +129,27 @@ char *HttpTxManager::enlist(XAWrapper* resource, TxControl *tx, const char * xid
 	HttpControl *httpTx = dynamic_cast<HttpControl*>(tx);
 	const char *enlistUrl = httpTx->enlistUrl();	
 
-    if (enlistUrl != NULL) {
+	if (enlistUrl != NULL) {
 		const char *host = _ws->get_host();
 		int port = _ws->get_port();
-    	char body[BUFSZ];
-    	const char *fmt = "terminator=http://%s:%d/xid/%s/terminate;durableparticipant=http://%s:%d/xid/%s/status";
-    	struct mg_request_info ri;
-		(void) ACE_OS::snprintf(body, sizeof (body), fmt, host, port, xid, host, port, xid);
-		if (_wc.send(&ri, "POST", enlistUrl, HttpControl::POST_MEDIA_TYPE,
-			NULL, body, strlen(body), NULL, NULL) != 0) {
+
+    	char hdr[BUFSZ];
+	char *hdrp[] = {hdr, 0};
+    	const char *fmt = "Link: <http://%s:%d/xid/%s/terminate>;rel=\"%s\",<http://%s:%d/xid/%s/status>;rel=\"%s\"";
+    	http_request_info ri;
+
+		(void) ACE_OS::snprintf(hdr, sizeof (hdr), fmt, host, port, xid,
+			HttpControl::PARTICIPANT_TERMINATOR,
+			host, port, xid,
+			HttpControl::PARTICIPANT_RESOURCE);
+
+		if (_wc.send(_pool, &ri, "POST", enlistUrl, HttpControl::POST_MEDIA_TYPE,
+			(const char **)hdrp, NULL, 0, NULL, NULL) != 0) {
 			LOG4CXX_DEBUG(httptxlogger, "enlist POST error");
 			return NULL;
 		}
 
-		const char *rurl = _wc.get_header(&ri, "Location");
+		const char *rurl = _wc.get_header(&ri, HttpControl::LOCATION);
 
 		recUrl = (rurl == NULL ? NULL : strdup(rurl));
 
@@ -147,12 +158,16 @@ char *HttpTxManager::enlist(XAWrapper* resource, TxControl *tx, const char * xid
 	
 		_wc.dispose(&ri);
 
-		LOG4CXX_DEBUG(httptxlogger, "Enlisted with: " << body);
-		LOG4CXX_DEBUG(httptxlogger, "Recovery url: " << recUrl);
+		LOG4CXX_DEBUG(httptxlogger, "Enlisted with header: " << hdr);
 	}
 
-	if (recUrl != NULL)
+	if (recUrl != NULL) {
+		LOG4CXX_DEBUG(httptxlogger, "Enlisted branch " << resource->get_name() << " rec url: "
+			<< recUrl);
 		_branches[resource->get_name()] = resource;
+	} else {
+		LOG4CXX_WARN(httptxlogger, "Enlistment of xid " << xid << " failed - missing recovery url");
+	}
 
 	return recUrl;
 }
@@ -165,12 +180,18 @@ bool HttpTxManager::recover(XAWrapper *resource)
 	const char *host = _ws->get_host();
 	int port = _ws->get_port();
 	const char* xid = resource->get_name();
-   	char body[BUFSZ];
-   	const char *fmt = "terminator=http://%s:%d/xid/%s/terminate;durableparticipant=http://%s:%d/xid/%s/status";
-   	struct mg_request_info ri;
-	(void) ACE_OS::snprintf(body, sizeof (body), fmt, host, port, xid, host, port, xid);
-	if (_wc.send(&ri, "PUT", resource->get_recovery_coordinator(),
-		HttpControl::PLAIN_MEDIA_TYPE, NULL, body, strlen(body), NULL, NULL) != 0) {
+    	char hdr[BUFSZ];
+	char *hdrp[] = {hdr, 0};
+    	const char *fmt = "Link: <http://%s:%d/xid/%s/terminate>;rel=\"%s\",<http://%s:%d/xid/%s/status>;rel=\"%s\"";
+   	http_request_info ri;
+
+	(void) ACE_OS::snprintf(hdr, sizeof (hdr), fmt, host, port, xid,
+		HttpControl::PARTICIPANT_TERMINATOR,
+		host, port, xid,
+		HttpControl::PARTICIPANT_RESOURCE);
+
+	if (_wc.send(_pool, &ri, "PUT", resource->get_recovery_coordinator(),
+		HttpControl::PLAIN_MEDIA_TYPE, (const char **)hdrp, NULL, 0, NULL, NULL) != 0) {
 		LOG4CXX_INFO(httptxlogger, "recovery PUT error");
 		return false;
 	}
@@ -178,16 +199,28 @@ bool HttpTxManager::recover(XAWrapper *resource)
 	_wc.dispose(&ri);
 
 	if (ri.status_code == 200) {
-		LOG4CXX_TRACE(httptxlogger, "recovery: told TM about participant " << xid);
-		_branches[resource->get_name()] = resource;
+		LOG4CXX_DEBUG(httptxlogger, "recovery: told TM about participant "
+			<< resource->get_name() << " xid: " << xid);
+
+		return true;
 	} else {
 		// TODO what about the other HTTP codes
 		// For some codes we need to periodically retry the request
 		LOG4CXX_WARN(httptxlogger, "TM failed recovery request: " << ri.status_code <<
 			" for participant " << xid);
+		_branches[resource->get_name()] = resource;
 	}
 
 	return false;
+}
+
+static apr_thread_t     *thread;
+static apr_threadattr_t *thd_attr;
+
+static void* APR_THREAD_FUNC run_server(apr_thread_t *thd, void *data) {
+	HttpServer* server = (HttpServer*)data;
+	server->run();
+	return NULL;
 }
 
 int HttpTxManager::do_open(void) {
@@ -198,9 +231,11 @@ int HttpTxManager::do_open(void) {
 
 	FTRACE(httptxlogger, "ENTER: opening HTTP server: host: " <<
 		host << " port: " << port << " handler: " << this);
-	_ws = new HttpServer(host, port);
+	_ws = new HttpServer(host, port, _pool);
+	_ws->add_request_handler(this);
 
-	_ws->add(this);
+	apr_threadattr_create(&thd_attr, _pool);
+	apr_thread_create(&thread, thd_attr, run_server, (void*)_ws, _pool);
 
 	return TX_OK;
 }
@@ -208,7 +243,10 @@ int HttpTxManager::do_open(void) {
 int HttpTxManager::do_close(void) {
 	if (_ws != NULL) {
 		FTRACE(httptxlogger, "ENTER: closing HTTP server: handler " << this);
-		_ws->remove(this);
+		//_ws->remove(this);
+		_ws->shutdown();
+		apr_status_t rv;
+		if(thread) apr_thread_join(&rv, thread);
 		delete _ws;
 		_ws = NULL;
 	}
@@ -218,16 +256,18 @@ int HttpTxManager::do_close(void) {
 
 XAWrapper * HttpTxManager::locate_branch(const char * xid)
 {
-	XABranchMap::iterator iter;
+	LOG4CXX_DEBUG(httptxlogger, "locating branch " << xid);
 
-	for (iter = _branches.begin(); iter != _branches.end(); ++iter)
-		if (strcmp(iter->first, xid) == 0)
+	for (XABranchMap::iterator iter = _branches.begin(); iter != _branches.end(); ++iter) {
+		if ((*iter).first == xid) {
 			return (*iter).second;
+		}
+	}
 
 	return NULL;
 }
 
-static int mongoose_printf(HttpClient &wc, struct mg_connection *conn, const char *fmt, ...) {
+static int http_printf(HttpClient &wc, http_conn_ctx *conn, const char *fmt, ...) {
 	char buf[BUFSZ];
 	int len;
 	va_list ap;
@@ -240,16 +280,13 @@ static int mongoose_printf(HttpClient &wc, struct mg_connection *conn, const cha
 }
 
 bool HttpTxManager::handle_request(
-	struct mg_connection *conn, const struct mg_request_info *ri, const char *content, size_t len)
+	http_conn_ctx *conn, const http_request_info *ri, const char *content, size_t len)
 {
 	int code = 400;
 	const char* codestr = HTTP_400;
 	const char *status = "";
+	bool result = true;
 	size_t plen = strlen(HttpControl::TXSTATUS);
-
-	LOG4CXX_DEBUG(httptxlogger, "tm_request: method: " << ri->request_method << " uri: " << ri->uri <<
-		" status_code: " << ri->status_code << " num_headers: " << ri->num_headers <<
-		" qs: " << ri->query_string << " content: " << content);
 
 	for (int i = 0; i < ri->num_headers; i++)
 		LOG4CXX_DEBUG(httptxlogger, "\t" << ri->http_headers[i].name <<
@@ -372,7 +409,8 @@ bool HttpTxManager::handle_request(
 					break;
 				case -999:
 					LOG4CXX_INFO(httptxlogger, "closing connection to TM");
-					_wc.close_connection(conn);
+					//_wc.close_connection(conn);
+					result = false; 
 					status = "GARBAGE";
 					codestr = HTTP_409;
 					code = res;
@@ -399,13 +437,13 @@ bool HttpTxManager::handle_request(
 	if (code == -999) {
 		LOG4CXX_DEBUG(httptxlogger, "skipping response");
 	} else if (code == 200 || code == 409) {
-		mongoose_printf(_wc, conn, "HTTP/1.1 %d %s\r\n"
+		http_printf(_wc, conn, "HTTP/1.1 %d %s\r\n"
 			"Content-Length: %d\r\n"
 			"Content-Type: application/txstatus\r\n\r\n"
 			"%s%s",
 			200, "OK", strlen(status), HttpControl::TXSTATUS, status);
 	} else {
-		mongoose_printf(_wc, conn, "HTTP/1.1 %d %s\r\n"
+		http_printf(_wc, conn, "HTTP/1.1 %d %s\r\n"
 			"Content-Length: %d\r\n"
 			"Content-Type: application/txstatus\r\n\r\n"
 //			"Connection: %s\r\n\r\n"	// "keep-alive" or "close"
@@ -413,7 +451,8 @@ bool HttpTxManager::handle_request(
 			code, codestr, strlen(status), HttpControl::TXSTATUS, status);
 	}
 
-	return true;
+	LOG4CXX_DEBUG(httptxlogger, "handler_request return " << result);
+	return result;
 }
 
 }

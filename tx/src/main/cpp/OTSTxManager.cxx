@@ -35,12 +35,22 @@ namespace atmibroker {
 log4cxx::LoggerPtr otstxlogger(log4cxx::Logger::getLogger("TxOTSTxManager"));
 
 OTSTxManager::OTSTxManager(char *transFactoryId) : TxManager() {
+	try {
+		_connection = ::initOrb((char*) "ots");
+		LOG4CXX_DEBUG(otstxlogger, (char*) "new CONNECTION: " << _connection);
+	} catch (CORBA::SystemException & e) {
+		LOG4CXX_WARN(otstxlogger, (char*) "Failed to connect to ORB for TM: " << e._name() << " minor code: " << e.minor());
+	} catch (...) {
+		LOG4CXX_WARN(otstxlogger, (char*) "Unknown error looking up ORB for TM");
+	}
 	_transFactoryId = strdup(transFactoryId);
 }
 
 OTSTxManager::~OTSTxManager() {
 	if (_transFactoryId)
 		free(_transFactoryId);
+	LOG4CXX_DEBUG(otstxlogger, (char*) "deleting CONNECTION: " << _connection);
+	shutdownBindings(_connection);
 }
 
 TxManager* OTSTxManager::create(char *transFactoryId) {
