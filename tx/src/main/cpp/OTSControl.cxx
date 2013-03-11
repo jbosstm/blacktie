@@ -268,7 +268,7 @@ bool OTSControl::get_xid(XID& xid)
 		CosTransactions::otid_t otid = pcv->current.otid;
 
 		int otidlen = (int) otid.tid.length();
-		char JBOSSTS_NODE_SEPARATOR = '-';
+		//char JBOSSTS_NODE_SEPARATOR = '-';
 		char *tid, *p; // copy of the ots tid
 
 		p = tid = (char*) malloc(otidlen);

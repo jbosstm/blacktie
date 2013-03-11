@@ -20,7 +20,7 @@
 #include "log4cxx/logger.h"
 #include "NBFParser.h"
 
-log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("BTNbf"));
+static log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("BTNbf"));
 
 int find_string(char* buf, const char* str, int index) {
 	int i;
@@ -86,7 +86,7 @@ void del_string(char* buf, int pos, int len) {
 		buf[i] = buf[j];
 	}
 	for(i = n - len; i < n; i++) {
-		buf[i] = NULL;
+		buf[i] = '\0';
 	}
 }
 

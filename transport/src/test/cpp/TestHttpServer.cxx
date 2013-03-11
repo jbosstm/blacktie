@@ -1,6 +1,6 @@
-/*
+ /*
  * JBoss, Home of Professional Open Source
- * Copyright 2011, Red Hat, Inc., and others contributors as indicated
+ * Copyright 2008, Red Hat, Inc., and others contributors as indicated
  * by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -15,18 +15,28 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef HTTPREQUESTHANDLER_H
-#define HTTPREQUESTHANDLER_H
 
-#include "httpTransportMacro.h"
-#include "HttpServer.h"
+#include "TestAssert.h"
+#include "TestHttpServer.h"
+#include "btlogger.h"
 
-class BLACKTIE_HTTP_TRANSPORT_DLL HttpRequestHandler {
-public:
-    virtual ~HttpRequestHandler() {};
-	virtual void unregistering() {};
+void TestHttpServer::setUp()
+{
+	TestFixture::setUp();
+}
 
-    virtual bool handle_request(
-		http_conn_ctx *conn, const http_request_info *ri, const char *content, size_t len) = 0;
-};
-#endif // HTTPREQUESTHANDLER_H
+void TestHttpServer::tearDown()
+{
+	TestFixture::tearDown();
+}
+
+void TestHttpServer::test()
+{
+	btlogger("TestHttpServer::test");
+	apr_pool_t* pool;
+	apr_pool_create(&pool, NULL);
+	HttpServer* server = new HttpServer((char*)"localhost", 8081, pool);
+	server->run();
+	delete server;
+	btlogger("TestHttpServer::test");
+}

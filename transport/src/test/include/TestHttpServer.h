@@ -15,49 +15,24 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef _TESTTRANSACTIONS_H
-#define _TESTTRANSACTIONS_H
+
+#ifndef TEST_HTTP_SERVER_H
+#define TEST_HTTP_SERVER_H
 
 #include <cppunit/extensions/HelperMacros.h>
 #include "cppunit/TestFixture.h"
-#include <string.h>
+#include "HttpServer.h"
 
-class TestTransactions: public CppUnit::TestFixture {
-	CPPUNIT_TEST_SUITE(TestTransactions);
-	CPPUNIT_TEST(test_rclog);           
-	CPPUNIT_TEST(test_basic);
-	CPPUNIT_TEST(test_transactions);
-	CPPUNIT_TEST(test_protocol);
-	CPPUNIT_TEST(test_info);
-	CPPUNIT_TEST(test_timeout1);
-	CPPUNIT_TEST(test_timeout2);
-	CPPUNIT_TEST(test_rollback);
-	CPPUNIT_TEST(test_hhazard);
-	CPPUNIT_TEST(test_RM);
-	CPPUNIT_TEST(test_RM_recovery_scan);
-	CPPUNIT_TEST(test_tx_set);
-	CPPUNIT_TEST(test_recovery); 
+class TestHttpServer: public CppUnit::TestFixture {
+	CPPUNIT_TEST_SUITE(TestHttpServer);
+	CPPUNIT_TEST(test);
 	CPPUNIT_TEST_SUITE_END();
 
 public:
 	void setUp();
 	void tearDown();
 
-	void test_rclog();
-	void test_basic();
-	void test_transactions();
-	void test_protocol();
-	void test_info();
-	void test_RM();
-	void test_RM_recovery_scan();
-	void test_timeout1();
-	void test_timeout2();
-	void test_rollback();
-	void test_hhazard();
-	void test_register_resource();
-	void test_tx_set();
-	void test_recovery();
-	void test_wait_for_recovery();
+	void test();
 };
 
 #endif

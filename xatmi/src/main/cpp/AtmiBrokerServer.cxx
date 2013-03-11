@@ -42,6 +42,7 @@
 #include "ace/Signal.h"
 #include "ThreadLocalStorage.h"
 #include "xatmi.h"
+#include "apr_general.h"
 
 // WORK AROUND FOR NO tx.h
 #define TX_OK              0
@@ -126,6 +127,7 @@ const char* getConfiguration() {
 }
 
 int serverinit(int argc, char** argv) {
+	apr_initialize();
 	AtmiBrokerInitSingleton::instance();
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	int toReturn = 0;

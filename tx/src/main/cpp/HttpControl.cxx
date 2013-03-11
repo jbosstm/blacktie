@@ -21,7 +21,7 @@
 #include "ThreadLocalStorage.h"
 #include "HttpControl.h"
 #include "TxManager.h"
-#include "mongoose.h"
+#include "Http.h"
 
 #include "ace/ACE.h"
 #include "ace/OS_NS_stdio.h"
@@ -40,14 +40,33 @@ namespace atmibroker {
 
 static long BT_XID_FORMAT = 131077;
 
-static const char * DUR_PARTICIPANT = "rel=\"durableparticipant";
-static const char * TERMINATOR = "rel=\"terminator";
+const char * HttpControl::LOCATION = "location";
 
-const char * HttpControl::STATUS_MEDIA_TYPE = "application/txstatus";
+// Transaction links
+const char * HttpControl::TXN_TERMINATOR = "terminator"; // transaction-terminator URI
+const char * HttpControl::TXN_PARTICIPANT = "durable-participant"; // transaction-enlistment URI
+const char * HttpControl::VOLATILE_PARTICIPANT = "volatile-participant"; // transaction-enlistment URI
+
+const char * HttpControl::TXN_STATISTICS = "statistics"; // transaction-statistics URI
+
+// Two phase aware participants
+const char * HttpControl::PARTICIPANT_RESOURCE = "participant"; // participant-resource URI
+const char * HttpControl::PARTICIPANT_TERMINATOR = "terminator"; // participant-terminator URI
+// Two phase unaware participants
+const char * HttpControl::PARTICIPANT_PREPARE = "prepare"; // participant-prepare URI
+const char * HttpControl::PARTICIPANT_COMMIT = "commit"; // participant-commit URI
+const char * HttpControl::PARTICIPANT_ROLLBACK = "rollback"; // participant-rollback URI
+const char * HttpControl::PARTICIPANT_COMMIT_ONE_PHASE = "commit-one-phase"; // participant-commit-one-phase
+
+const char * HttpControl::TX_STATUS_MEDIA_TYPE = "application/txstatus";
 const char * HttpControl::POST_MEDIA_TYPE = "application/x-www-form-urlencoded";
 const char * HttpControl::PLAIN_MEDIA_TYPE = "text/plain";
+const char * HttpControl::TX_LIST_MEDIA_TYPE = "application/txlist";
+const char * HttpControl::TX_STATUS_EXT_MEDIA_TYPE = "application/txstatusext+xml";
 
-const char * HttpControl::TXSTATUS = "txStatus=";
+const char * HttpControl::TIMEOUT_PROPERTY = "timeout";
+
+const char * HttpControl::TXSTATUS = "txstatus=";
 
 const char HttpControl::ABORT_ONLY[] = "TransactionRollbackOnly";
 const char HttpControl::ABORTING[] = "TransactionRollingBack";
@@ -83,6 +102,8 @@ const int HttpControl::PREPARED_STATUS = 11;
 const int HttpControl::RUNNING_STATUS = 12;
 const int HttpControl::READONLY_STATUS = 13;
 
+static const char * DUR_PARTICIPANT = "rel=\"durable-participant";
+static const char * TERMINATOR = "rel=\"terminator";
 
 typedef std::map<std::string, int> StatusMap;
 
@@ -127,6 +148,13 @@ HttpControl::HttpControl(long timeout, int tid) : TxControl(timeout, tid),
 	_txnUrl(NULL), _endUrl(NULL), _enlistUrl(NULL), _xid(NULL)
 {
 	FTRACE(httpclogger, "ENTER new HTTPTXCONTROL: " << this);
+
+	int rc = apr_pool_create(&_pool, NULL);
+	if (rc != APR_SUCCESS) {
+		LOG4CXX_WARN(httpclogger, "can not create pool");
+		apr_pool_destroy(_pool);
+		throw new std::exception();
+	}
 }
 
 HttpControl::HttpControl(char* txn, long ttl, int tid) : TxControl(ttl, tid),
@@ -136,6 +164,13 @@ HttpControl::HttpControl(char* txn, long ttl, int tid) : TxControl(ttl, tid),
 	_txnUrl = strdup(txn);
 	_xid = last_path(_txnUrl);
 	LOG4CXX_TRACE(httpclogger, "_txnUrl=" << _txnUrl);
+
+	int rc = apr_pool_create(&_pool, NULL);
+	if (rc != APR_SUCCESS) {
+		LOG4CXX_WARN(httpclogger, "can not create pool");
+		apr_pool_destroy(_pool);
+		throw new std::exception();
+	}
 }
 
 HttpControl::~HttpControl()
@@ -143,12 +178,13 @@ HttpControl::~HttpControl()
 	FTRACE(httpclogger, "ENTER delete HTTPTXCONTROL: " << this);
 	suspend();
 	LOG4CXX_TRACE(httpclogger, "freeing _txnUrl=" << _txnUrl);
+	if (_pool) apr_pool_destroy(_pool); 
 	if (_txnUrl) free (_txnUrl);
 	if (_endUrl) free (_endUrl);
 	if (_enlistUrl) free (_enlistUrl);
 }
 
-int HttpControl::decode_headers(struct mg_request_info *ri) {
+int HttpControl::decode_headers(http_request_info *ri) {
 	for (int i = 0; i < ri->num_headers; i++) {
 		char *n = ri->http_headers[i].name;
 		char *v = ri->http_headers[i].value;
@@ -164,7 +200,10 @@ int HttpControl::decode_headers(struct mg_request_info *ri) {
 		} else if (strcmp(n, "Link") == 0) {
 			char *ep = strchr(v, ';');
 
+			LOG4CXX_DEBUG(httpclogger, "check header: check link: " << ep);
 			if (ep != 0 && ++v < --ep) {
+				LOG4CXX_DEBUG(httpclogger, "check header: cmp " << v
+					<< " with " << DUR_PARTICIPANT);
 				if (strstr(v, DUR_PARTICIPANT) != 0)
 					_enlistUrl = ACE::strndup(v, ep - v);
 				else if (strstr(v, TERMINATOR) != 0)
@@ -181,10 +220,11 @@ int HttpControl::decode_headers(struct mg_request_info *ri) {
 int HttpControl::start(const char* txnMgrUrl) {
 	FTRACE(httpclogger, "ENTER");
 	char content[32];
-	struct mg_request_info ri;
-	(void) sprintf(content, "timeout=%ld", _ttl * 1000);
+	http_request_info ri;
+	(void) sprintf(content, "%s=%ld", TIMEOUT_PROPERTY, _ttl * 1000);
 
-	if (_wc.send(&ri, "POST", txnMgrUrl, POST_MEDIA_TYPE, NULL, content, strlen(content), NULL, NULL) != 0) {
+	if (_wc.send(_pool, &ri, "POST", txnMgrUrl, POST_MEDIA_TYPE, NULL, content, strlen(content),
+		NULL, NULL) != 0) {
 		LOG4CXX_DEBUG(httpclogger, "transaction POST failure");
 		return -1;
 	}
@@ -195,12 +235,12 @@ int HttpControl::start(const char* txnMgrUrl) {
 bool HttpControl::headRequest()
 {
 	FTRACE(httpclogger, "ENTER");
-	struct mg_request_info ri;
+	http_request_info ri;
 
 	if (_txnUrl == NULL)
 		return false;
 
-	if (_wc.send(&ri, "HEAD", _txnUrl, STATUS_MEDIA_TYPE, NULL, NULL, 0, NULL, NULL) != 0) {
+	if (_wc.send(_pool, &ri, "HEAD", _txnUrl, TX_STATUS_MEDIA_TYPE, NULL, NULL, 0, NULL, NULL) != 0) {
 		LOG4CXX_DEBUG(httpclogger, "HTTP HEAD error");
 		return false;
 	}
@@ -224,7 +264,7 @@ int HttpControl::do_end(bool commit, bool reportHeuristics)
 int HttpControl::do_end(int how)
 {
 	TX_GUARD("end", true);
-	struct mg_request_info ri;
+	http_request_info ri;
 	char * resp;
 	char content[64];
 	char *p = &content[0];
@@ -249,7 +289,7 @@ int HttpControl::do_end(int how)
 	}
 
 	(void) ACE_OS::snprintf(p, sizeof (content), "%s%s", TXSTATUS, status);
-	if (_wc.send(&ri, "PUT", _endUrl, STATUS_MEDIA_TYPE, NULL, p, strlen(p), &resp, &nread) != 0) {
+	if (_wc.send(_pool, &ri, "PUT", _endUrl, TX_STATUS_MEDIA_TYPE, NULL, p, strlen(p), &resp, &nread) != 0) {
 		LOG4CXX_DEBUG(httpclogger, "do_end: HTTP PUT error");
 
 		return TX_FAIL;
@@ -260,7 +300,7 @@ int HttpControl::do_end(int how)
 
 	if (ri.status_code == 404) {
 		rc = TX_ROLLBACK;
-	} else if (ri.status_code >= 400 && ri.status_code < 500) {
+	} else if (ri.status_code >= 400 && ri.status_code < 500 && ri.status_code != 412) {
 		rc = TX_PROTOCOL_ERROR;
 	} else if (ri.status_code >= 500) {
 		rc = TX_FAIL;
@@ -346,8 +386,8 @@ int HttpControl::get_status()
 	if (_rbonly)
 		return TX_ROLLBACK_ONLY;
 
-	struct mg_request_info ri;
-	if (_wc.send(&ri, "GET", _txnUrl, STATUS_MEDIA_TYPE, NULL, NULL, 0, NULL, NULL) != 0) {
+	http_request_info ri;
+	if (_wc.send(_pool, &ri, "GET", _txnUrl, TX_STATUS_MEDIA_TYPE, NULL, NULL, 0, NULL, NULL) != 0) {
 		LOG4CXX_DEBUG(httpclogger, "HTTP GET status error");
 
 		return TX_ERROR;
