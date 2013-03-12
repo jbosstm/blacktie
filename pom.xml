@@ -132,6 +132,22 @@
 		<artifactId>jboss-jms-api_1.1_spec</artifactId>
                 <version>1.0.1.Final</version>
             </dependency>
+            <dependency>
+                <groupId>org.jboss.remoting3</groupId>
+                <artifactId>jboss-remoting</artifactId>
+                <version>3.2.15.GA</version>
+            </dependency>
+	    <dependency>
+                <groupId>org.jboss.xnio</groupId>
+                <artifactId>xnio-api</artifactId>
+                <version>3.1.0.Beta9</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.xnio</groupId>
+                <artifactId>xnio-nio</artifactId>
+                <version>3.1.0.Beta9</version>
+            </dependency>
+
 		<dependency>
 			<groupId>org.jboss.arquillian.junit</groupId>
 			<artifactId>arquillian-junit-container</artifactId>
