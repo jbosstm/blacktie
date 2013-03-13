@@ -210,3 +210,5 @@ void TestRollbackOnly::test_no_tpreturn() {
 	BT_ASSERT(tx_commit() == TX_ROLLBACK);
 }
 
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestRollbackOnly);

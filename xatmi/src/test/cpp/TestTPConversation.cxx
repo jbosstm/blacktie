@@ -236,3 +236,5 @@ void testTPConversation_short_service(TPSVCINFO *svcinfo) {
 	strcpy(sendbuf, "hi1");
 	tpreturn(TPSUCCESS, 0, sendbuf, sendlen, 0);
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPConversation);

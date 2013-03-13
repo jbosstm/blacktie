@@ -82,3 +82,5 @@ void TestTPService::test_tpservice_notpreturn() {
 void testtpservice_service(TPSVCINFO *svcinfo) {
 	btlogger((char*) "testtpservice_service");
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPService);

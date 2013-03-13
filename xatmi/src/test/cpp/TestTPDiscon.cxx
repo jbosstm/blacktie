@@ -97,3 +97,5 @@ void testtpdiscon_service(TPSVCINFO *svcinfo) {
 	btlogger((char*) "testtpdiscon_service");
 	::sleeper(2);
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPDiscon);

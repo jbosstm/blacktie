@@ -165,3 +165,5 @@ void testtpacall_service(TPSVCINFO *svcinfo) {
 	strcpy(toReturn, "testtpacall_service");
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPACall);

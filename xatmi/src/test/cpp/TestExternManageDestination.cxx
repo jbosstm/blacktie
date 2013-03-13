@@ -108,3 +108,5 @@ void test_extern_service(TPSVCINFO *svcinfo) {
 	strcpy(toReturn, "testone");
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestExternManageDestination);

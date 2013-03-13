@@ -57,3 +57,5 @@ void TestClientInit::test_config_env() {
 	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=.");
 	BT_ASSERT(valToTest == -1);
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestClientInit);
