@@ -65,6 +65,10 @@
 			workingDirectory="." argLine="foo" serverId="1" />
 		<MACHINE id="myserv24" hostname="jaime" pathToExecutable="notExist"
 			workingDirectory="." argLine="foo" serverId="2" />
+		<MACHINE id="myserv25" hostname="haverstraw.buildnet.ncl.jboss.com" pathToExecutable="notExist"
+			workingDirectory="." argLine="foo" serverId="1" />
+		<MACHINE id="myserv26" hostname="haverstraw.buildnet.ncl.jboss.com" pathToExecutable="notExist"
+			workingDirectory="." argLine="foo" serverId="2" />
 	</MACHINES>
 	<SERVERS>
 		<SERVER name='myserv'>
