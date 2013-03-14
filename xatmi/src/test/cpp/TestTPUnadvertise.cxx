@@ -132,3 +132,6 @@ void testtpunadvertise_service(TPSVCINFO *svcinfo) {
 	tpreturn(TPSUCCESS, 0, toReturn, 25, 0);
 	delete toReturn;
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPUnadvertise);
+

@@ -167,6 +167,7 @@
                     <export.dll>${export.dll}</export.dll>
                     <blacktie.configuration.dir>${blacktie.configuration.dir}</blacktie.configuration.dir>
                     <jbossas.ip.addr>${jbossas.ip.addr}</jbossas.ip.addr>
+                    <test.includes>${test.includes}</test.includes>
                     <test.excludes>${test.excludes}</test.excludes>
                     <use.valgrind>${use.valgrind}</use.valgrind>
                 </configuration>
@@ -339,6 +340,7 @@
             </activation>
             <properties>
                 <use.valgrind>false</use.valgrind>
+	        <test.includes>*</test.includes>
             </properties>
         </profile>
         <profile>
@@ -350,6 +352,7 @@
             </activation>
             <properties>
                 <use.valgrind>true</use.valgrind>
+	        <test.includes>*</test.includes>
             </properties>
             <build>
                 <plugins>

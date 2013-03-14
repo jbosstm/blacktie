@@ -57,3 +57,5 @@ void TestUnadvertise::testUnadvertise() {
 	cd = callBAR(TPENOENT);
 	BT_ASSERT(cd != 0);
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestUnadvertise );

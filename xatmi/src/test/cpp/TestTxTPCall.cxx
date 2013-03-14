@@ -188,3 +188,5 @@ void TestTxTPCall::test_tpcancel_with_tx() {
 	BT_ASSERT(tx_commit() == TX_OK);
 	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "inTx=true") == 0);
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTxTPCall);

@@ -94,3 +94,5 @@ int TestTimeToLive::callTTL() {
 	int cd = ::tpcall((char*) "TTL", (char *) sendbuf, 7, (char**)&rcvbuf, &rcvlen, 0);
 	return cd;
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTimeToLive );
