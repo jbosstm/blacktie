@@ -189,7 +189,7 @@
             <dependency>
                 <groupId>org.jboss.narayana.jts</groupId>
                 <artifactId>narayana-jts-jacorb</artifactId>
-                <version>${project.version}</version>
+                <version>5.0.0.M2</version>
             </dependency>
             <dependency>
                 <groupId>cppunit.contrib</groupId>
