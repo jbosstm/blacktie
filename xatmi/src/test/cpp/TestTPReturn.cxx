@@ -192,3 +192,6 @@ void testtpreturn_service_opensession2(TPSVCINFO *svcinfo) {
 	btlogger((char*) "testtpreturn_service_opensession2");
 	tpreturn(TPSUCCESS, 0, svcinfo->data, svcinfo->len, 0);
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPReturn);
+

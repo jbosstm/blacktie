@@ -170,3 +170,5 @@ void testtpconnect_service(TPSVCINFO *svcinfo) {
 	btlogger((char*) "testtpconnect_service");
 	tpreturn(TPSUCCESS, 0, NULL, 0, 0);
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPConnect);

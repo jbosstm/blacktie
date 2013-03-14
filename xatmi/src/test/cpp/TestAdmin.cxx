@@ -125,3 +125,5 @@ void TestAdmin::testServerPauseAndResume() {
 	BT_ASSERT(callBAR(0) == 0);
 	btlogger((char*)"call BAR OK");
 }
+CPPUNIT_TEST_SUITE_REGISTRATION( TestAdmin );
+

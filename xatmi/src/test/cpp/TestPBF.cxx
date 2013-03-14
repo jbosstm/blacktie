@@ -249,3 +249,5 @@ void pbf_service(TPSVCINFO *svcinfo) {
 	}
 	tpreturn(TPSUCCESS, 23, toReturn, len, 0);
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestPBF);

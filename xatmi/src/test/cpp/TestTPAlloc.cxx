@@ -201,3 +201,5 @@ void TestTPAlloc::test_tpalloc_x_c_type_unknown_subtype() {
 	free(tperrnoS);
 	BT_ASSERT(m_allocated == NULL);
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPAlloc);

@@ -64,3 +64,5 @@ void TestAdvertise::testAdvertise() {
 	cd = callBAR(0);
 	BT_ASSERT(cd == 0);
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestAdvertise );

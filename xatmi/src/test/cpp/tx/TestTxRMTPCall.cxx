@@ -50,3 +50,5 @@ void TestTxRMTPCall::tearDown() {
 void TestTxRMTPCall::test0() {
 	BT_ASSERT(run_tests(products) == 0);
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTxRMTPCall);

@@ -269,3 +269,5 @@ void TestTPFree::test_tpfree_free_free_x_c_type() {
 	 BT_ASSERT(tperrno == 0);
 	 */
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPFree);

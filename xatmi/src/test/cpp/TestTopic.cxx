@@ -80,3 +80,5 @@ void TestTopic::test_tpacall_topic_without_noreply() {
 void test_topic_service(TPSVCINFO *svcinfo) {
 	btlogger((char*) "test_topic_service");
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTopic);

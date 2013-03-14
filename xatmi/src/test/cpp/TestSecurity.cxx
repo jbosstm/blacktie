@@ -163,3 +163,5 @@ void test_tpcall_SECURE(TPSVCINFO * svcinfo) {
 
 	tpreturn(TPSUCCESS, 0, buffer, sendlen, 0);
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestSecurity );

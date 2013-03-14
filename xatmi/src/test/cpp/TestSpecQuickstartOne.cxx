@@ -126,3 +126,5 @@ void debit_credit_svc(TPSVCINFO *svcinfo) {
 	/* send reply and return from service routine */
 	tpreturn(rval, 0, (char *) dc_ptr, 0, 0);
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestSpecQuickstartOne);

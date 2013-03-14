@@ -193,3 +193,5 @@ void testtpadvertise_service_2(TPSVCINFO *svcinfo) {
 	// Changed length from 0L to svcinfo->len
 	tpreturn(TPSUCCESS, 0, toReturn, 25, 0);
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPAdvertise);

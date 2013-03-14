@@ -374,3 +374,5 @@ void test_tpgetrply_TPGETANY_two(TPSVCINFO *svcinfo) {
 	::sleeper(2);
 	tpreturn(TPSUCCESS, 0, toReturn, sendlen, 0);
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPGetRply);

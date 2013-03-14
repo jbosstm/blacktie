@@ -541,3 +541,5 @@ void test_tpcall_TPNOTIME(TPSVCINFO *svcinfo) {
 	::sleeper(60);
 	tpreturn(TPSUCCESS, 0, svcinfo->data, svcinfo->len, 0);
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPCall);

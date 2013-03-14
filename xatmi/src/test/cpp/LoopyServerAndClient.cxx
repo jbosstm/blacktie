@@ -143,3 +143,5 @@ void LoopyServerAndClient::testLoopyAdvertise() {
 	BT_ASSERT(result != -1);
 	BT_ASSERT(tperrno == 0);
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( LoopyServerAndClient);

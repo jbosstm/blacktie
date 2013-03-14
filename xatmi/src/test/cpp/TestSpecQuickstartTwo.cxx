@@ -108,3 +108,5 @@ void inquiry_svc(TPSVCINFO *svcinfo) {
 	/* terminate connection */
 	tpreturn(rval, 0, NULL, 0, 0);
 }
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestSpecQuickstartTwo);
