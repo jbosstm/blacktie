@@ -20,7 +20,7 @@
     <groupId>org.jboss.narayana.blacktie</groupId>
     <artifactId>blacktie-all</artifactId>
     <packaging>pom</packaging>
-    <version>5.0.0.M2</version>
+    <version>5.0.0.M3-SNAPSHOT</version>
     <name>BlackTie all files</name>
     <description>BlackTie all files</description>
     <url>http://www.jboss.org/blacktie</url>
@@ -189,7 +189,7 @@
             <dependency>
                 <groupId>org.jboss.narayana.jts</groupId>
                 <artifactId>narayana-jts-jacorb</artifactId>
-                <version>5.0.0.M2</version>
+                <version>5.0.0.M3-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>cppunit.contrib</groupId>
