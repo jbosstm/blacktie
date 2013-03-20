@@ -73,9 +73,8 @@
   <!-- where to get the source -->
   <property name="gitbase" value="git@github.com:jbosstm/blacktie.git"/>
   <!-- The tag as it appears under gitbase -->
+  <property name="pageName" value="5_0_0_M3-SNAPSHOT"/>
   <property name="tag" value="5.0.0.M3-SNAPSHOT"/>
-  <!-- The file name base for the user downloadable files. Derive it from the tag -->
-  <property name="version" value="5.0.0.M3-SNAPSHOT"/>
   <!-- the location the web site content is copied to -->
   <property name="downloads.dir" value="${user.home}/blacktie/filemgmt.jboss.org/downloads_htdocs/blacktie/"/>
   <property name="docs.dir" value="${user.home}/blacktie/filemgmt.jboss.org/docs_htdocs/blacktie/"/>
@@ -127,11 +126,11 @@
       <arg line="clean -gs tools/maven/conf/settings.xml -Dbpa=${bpa}"/>
     </exec>
     <!-- package the full source release (all src tree) -->
-    <delete file="${workdir}/blacktie-${version}-src.zip"/>
-    <zip basedir="${workdir}" destfile="${workdir}/blacktie-${version}-src.zip" includes="${tag}/**" excludes="${tag}/repository/**"/>
+    <delete file="${workdir}/blacktie-${tag}-src.zip"/>
+    <zip basedir="${workdir}" destfile="${workdir}/blacktie-${tag}-src.zip" includes="${tag}/**" excludes="${tag}/repository/**"/>
     <!-- build the binary releases -->
     <exec dir="${workdir}/${tag}" executable="tools/maven/bin/mvn" failonerror="true">
-      <arg line="install -DskipTests -gs tools/maven/conf/settings.xml -Dbpa=${bpa}"/>
+      <arg line="deploy -DskipTests -gs tools/maven/conf/settings.xml -Dbpa=${bpa}"/>
     </exec>
   </target>
   <!-- copy the release into the downloads dir tree (http://www.jboss.org/blacktie web site content) -->
@@ -145,7 +144,7 @@
     </fail>
     <fail>
       <condition>
-        <available file="${downloads.dir}/${version}" type="dir"/>
+        <available file="${downloads.dir}/${tag}" type="dir"/>
       </condition>
     </fail>
     <fail>
@@ -157,7 +156,7 @@
     </fail>
     <fail>
       <condition>
-        <available file="${docs.dir}/${version}" type="dir"/>
+        <available file="${docs.dir}/${tag}" type="dir"/>
       </condition>
     </fail>
     
@@ -170,22 +169,23 @@
     <mkdir dir="tmp-docs-dir"/>
     
     <copy todir="tmp-downloads-dir/src">
-      <fileset dir="${workdir}" includes="blacktie-${version}-src.zip"/>
+      <fileset dir="${workdir}" includes="blacktie-${tag}-src.zip"/>
     </copy>
     <copy todir="tmp-downloads-dir/binary">
-      <fileset dir="${user.home}" includes="blacktie-${version}-bin.*"/>
+      <fileset dir="${user.home}" includes="blacktie-${tag}-vc9x32-bin.zip"/>
+      <fileset dir="${workdir}" includes="blacktie/${tag}/blacktie/target/blacktie-${tag}-centos54x64-bin.tar.gz"/>
     </copy>
     <copy todir="tmp-downloads-dir/xsd">
-      <fileset dir="${workdir}/${tag}/blacktie-xsd/src/main/xsd/">
+      <fileset dir="${workdir}/${tag}/xsd/src/main/xsd/">
         <include name="*.xsd"/>
       </fileset>
     </copy>
-    <copy file="${workdir}/${tag}/blacktie-jatmibroker-xatmi/target/blacktie-jatmibroker-xatmi-${version}-javadoc.jar" todir="tmp-downloads-dir/api/blacktie-jatmibroker-xatmi"/>
-    <unzip src="${workdir}/${tag}/blacktie-jatmibroker-xatmi/target/blacktie-jatmibroker-xatmi-${version}-javadoc.jar" dest="tmp-docs-dir/api/jatmibroker"/>
-    <move todir="${downloads.dir}/${version}" verbose="true">
+    <copy file="${workdir}/${tag}/jatmibroker-xatmi/target/blacktie-jatmibroker-xatmi-${tag}-javadoc.jar" todir="tmp-downloads-dir/api/blacktie-jatmibroker-xatmi"/>
+    <unzip src="${workdir}/${tag}/jatmibroker-xatmi/target/blacktie-jatmibroker-xatmi-${tag}-javadoc.jar" dest="tmp-docs-dir/api/jatmibroker"/>
+    <move todir="${downloads.dir}/${tag}" verbose="true">
       <fileset dir="tmp-downloads-dir"/>
     </move>
-    <move todir="${docs.dir}/${version}" verbose="true">
+    <move todir="${docs.dir}/${tag}" verbose="true">
       <fileset dir="tmp-docs-dir"/>
     </move>
   </target>
@@ -198,15 +198,24 @@
     <exec executable="date" outputproperty="date">
       <arg line="+'%FT%H:%M:%S.000Z'"/>
     </exec>
-    <length property="full-src-length" file="${workdir}/blacktie-${version}-src.zip"/>
-    <length property="full-bin-length" file="${workdir}/blacktie-${version}-bin.zip"/>
-    <copy file="magnolia-release-download-page-template.xml" tofile="${workdir}/website.downloads.${version}.xml" filtering="true" overwrite="true">
+    <length property="src-length" file="${workdir}/blacktie-${tag}-src.zip"/>
+    <length property="centos54x64-bin-length" file="${downloads.dir}/${tag}/binary/blacktie-${tag}-centos54x64-bin.tar.gz"/>
+    <length property="vc9x32-bin-length" file="${downloads.dir}/${tag}/binary/blacktie-${tag}-vc9x32-bin.zip"/>
+    <copy file="magnolia-release-download-page-template.xml" tofile="${workdir}/website.downloads.${pageName}.xml" filtering="true" overwrite="true">
       <filterset>
+        <filter token="pageName" value="${pageName}"/>
         <filter token="tag" value="${tag}"/>
-        <filter token="version" value="${version}"/>
         <filter token="date" value="${date}"/>
-        <filter token="full-src-length" value="${full-src-length}"/>
-        <filter token="full-bin-length" value="${full-bin-length}"/>
+        <filter token="src-length" value="${src-length}"/>
+        <filter token="centos54x64-bin-length" value="${centos54x64-bin-length}"/>
+        <filter token="vc9x32-bin-length" value="${vc9x32-bin-length}"/>
+      </filterset>
+    </copy>
+    <copy file="magnolia-release-documentation-page-template.xml" tofile="${workdir}/website.documentation.${pageName}.xml" filtering="true" overwrite="true">
+      <filterset>
+        <filter token="pageName" value="${pageName}"/>
+        <filter token="tag" value="${tag}"/>
+        <filter token="date" value="${date}"/>
       </filterset>
     </copy>
   </target>
