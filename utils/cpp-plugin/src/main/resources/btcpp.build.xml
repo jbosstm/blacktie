@@ -60,7 +60,7 @@
 	<property name="src.main" value="src/main/cpp" />
 	<property name="src.test" value="src/test/cpp" />
 	<property name="src.excludes" value="" />
-	<property name="test.includes" value="" />
+	<property name="test.includes" value="*" />
 	<property name="test.excludes" value="" />
 	<property name="lib.type" value="shared" />
 	<property name="runtime" value="dynamic" />
