@@ -43,6 +43,7 @@ class BLACKTIE_HTTP_TRANSPORT_DLL HttpServer {
 		void shutdown() {this->finish = true;};
 		int  run();
 		void add_request_handler(HttpRequestHandler* handler);
+		bool wait_for_server_startup();
 
 	private:
 		char* host;
@@ -53,6 +54,8 @@ class BLACKTIE_HTTP_TRANSPORT_DLL HttpServer {
 		apr_socket_t   *sock;
 		apr_sockaddr_t *localsa;
 		apr_thread_mutex_t *mutex;
+		apr_thread_mutex_t *startup;
+		apr_thread_cond_t  *startup_cond;
 		HttpRequestHandler* _handler;
 		apr_socket_t*   clients[MAX_CLIENT_SIZE];
 

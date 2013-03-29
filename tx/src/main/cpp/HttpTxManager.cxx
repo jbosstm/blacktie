@@ -237,6 +237,10 @@ int HttpTxManager::do_open(void) {
 	apr_threadattr_create(&thd_attr, _pool);
 	apr_thread_create(&thread, thd_attr, run_server, (void*)_ws, _pool);
 
+	if (_ws->wait_for_server_startup() == false) {
+		LOG4CXX_WARN(httptxlogger, "http sever has not start");
+	}
+
 	return TX_OK;
 }
 
