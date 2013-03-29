@@ -38,7 +38,10 @@ HttpServer::HttpServer(char* host, int port, apr_pool_t* pool) {
 	this->sock    = NULL;
 	this->localsa = NULL;
 	this->finish  = false;
+	this->running = false;
 	this->_handler = NULL;
+	apr_thread_mutex_create(&this->startup, APR_THREAD_MUTEX_UNNESTED, pool);
+	apr_thread_cond_create(&this->startup_cond, pool);
 	for(int i = 0; i < MAX_CLIENT_SIZE; i++) {
 		clients[i] = NULL;
 	}
@@ -57,6 +60,22 @@ HttpServer::~HttpServer() {
 
 void HttpServer::add_request_handler(HttpRequestHandler* handler) {
 	_handler = handler;
+}
+
+bool HttpServer::wait_for_server_startup() {
+	apr_thread_mutex_lock(this->startup);
+	while(!running) {
+		apr_thread_cond_wait(this->startup_cond, this->startup);
+	}
+	apr_thread_mutex_unlock(this->startup);
+
+	//double check the server is running
+	if (!running) {
+		LOG4CXX_ERROR(loggerHttpServer, "server on port " << port << " is not running");
+		return false;
+	}
+
+	return true;
 }
 
 int HttpServer::run() {
@@ -100,6 +119,10 @@ int HttpServer::run() {
 	apr_pollset_add(pollset, &pfd);
 
 	LOG4CXX_DEBUG(loggerHttpServer, "running http server on port " << port);
+	apr_thread_mutex_lock(this->startup);
+	this->running = true;
+	apr_thread_cond_signal(this->startup_cond);
+	apr_thread_mutex_unlock(this->startup);
 
 	while (!finish) {
 		rv = apr_pollset_poll(pollset, DEF_POLL_TIMEOUT, &num, &ret_pfd);
