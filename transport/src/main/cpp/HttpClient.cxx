@@ -110,8 +110,8 @@ int HttpClient::send(apr_pool_t* pool, http_request_info* ri, const char* method
 	ri->num_headers = 0;
 	memset(host, 0, 1025);
 
-	(void) parse_url(uri, host, &port);
-	LOG4CXX_DEBUG(logger, "connected to TM on " << host << ":" << port << " URI=" << uri);
+	int ilen = parse_url(uri, host, &port);
+	LOG4CXX_DEBUG(logger, "connected to TM on " << host << ":" << port << " URI=" << uri + ilen);
 
 	memset(buf, 0, 4096);
 	http_conn_ctx* conn = get_connection(pool, host, port);
@@ -126,9 +126,9 @@ int HttpClient::send(apr_pool_t* pool, http_request_info* ri, const char* method
 		return errno;
 	}
 
-//	LOG4CXX_DEBUG(httpclientlog, "connected to TM on " << host << ":" << port << " " << method << " " << uri);
-	http_print(conn, "%s %s HTTP/%s\r\n", method, uri, HTTP_PROTO_VERSION);
-	http_print(conn, "Host: %s\r\n", host);
+//	LOG4CXX_DEBUG(httpclientlog, "connected to TM on " << host << ":" << port << " " << method << " " << uri + ilen);
+	http_print(conn, "%s %s HTTP/%s\r\n", method, uri + ilen, HTTP_PROTO_VERSION);
+	http_print(conn, "Host: %s:%d\r\n", host, port);
 	http_print(conn, "%s: %d\r\n", "Content-Length", blen);
 	http_print(conn, "%s: %s\r\n", "Content-Type", mediaType);
 
@@ -248,7 +248,7 @@ const char *HttpClient::get_header(http_request_info *ri, const char *name) {
 }
 
 int HttpClient::parse_url(const char *url, char *host, int *port) {
-	int len;
+	int len = 0;
 
 	if (sscanf(url, "%*[htps]://%1024[^:]:%d%n", host, port, &len) == 2 ||
 			sscanf(url, "%1024[^:]:%d%n", host, port, &len) == 2) {
@@ -259,6 +259,8 @@ int HttpClient::parse_url(const char *url, char *host, int *port) {
 		*port = 80;
 	}
 
+	LOG4CXX_DEBUG(logger, (char*) "len: " << len);
+	LOG4CXX_DEBUG(logger, (char*) "url: " << url + len);
 	return len;
 }
 
