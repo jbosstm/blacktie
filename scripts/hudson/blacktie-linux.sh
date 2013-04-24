@@ -72,7 +72,7 @@ export JBOSS_HOME=$WORKSPACE/jboss-as/
 chmod u+x $JBOSS_HOME/bin/standalone.sh
 
 # START JBOSS
-export JAVA_OPTS="$JAVA_OPTS -Xmx1024m -XX:MaxPermSize=512m"
+export JAVA_OPTS="$JAVA_OPTS -Xmx256m -XX:MaxPermSize=256m"
 $JBOSS_HOME/bin/standalone.sh -c standalone-full.xml -Djboss.bind.address=$JBOSSAS_IP_ADDR -Djboss.bind.address.unsecure=$JBOSSAS_IP_ADDR&
 sleep 5
 
