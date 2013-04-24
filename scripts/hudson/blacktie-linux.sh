@@ -30,6 +30,14 @@ else
   exit
 fi
 
+if [ -n "${JBOSS_HOME+x}" ]; then
+  echo JBOSS_HOME is set
+else
+  echo JBOSS_HOME not set
+  exit
+fi
+
+
 if [ -z "${JBOSSAS_IP_ADDR+x}" ]; then
   echo JBOSSAS_IP_ADDR not set
   JBOSSAS_IP_ADDR=localhost
