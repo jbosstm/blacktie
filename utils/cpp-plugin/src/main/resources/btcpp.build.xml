@@ -595,7 +595,6 @@
 			<arg value="-v" />
 			<arg value="-d" />
 			<arg value="--track-origins=yes" />
-			<arg value="--show-reachable=yes" />
 			<arg value="--leak-resolution=low" />
 			<arg value="--num-callers=40" />
 			<arg value="../testsuite" />
