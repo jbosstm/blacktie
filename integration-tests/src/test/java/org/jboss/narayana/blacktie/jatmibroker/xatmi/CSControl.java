@@ -98,7 +98,7 @@ public abstract class CSControl extends TestCase {
             if (property != null && new Boolean(property)) {
                 command = ("valgrind --tool=memcheck --leak-check=full --log-file=server-"
                         + name
-                        + "-valgrind.log -v -d --track-origins=yes --show-reachable=false --leak-resolution=low --num-callers=40 "
+                        + "-valgrind.log -v -d --track-origins=yes --show-reachable=no --leak-resolution=low --num-callers=40 "
                         + CS_EXE + " -s testsui -p 12342 -i " + nextSid).split(" ");
             } else {
                 command = (CS_EXE + " -s testsui -p 12342 -i " + nextSid).split(" ");
@@ -128,7 +128,7 @@ public abstract class CSControl extends TestCase {
             if (property != null && new Boolean(property)) {
                 command = ("valgrind --tool=memcheck --leak-check=full --log-file=client-"
                         + name
-                        + "-valgrind.log -v -d --track-origins=yes --show-reachable=false --leak-resolution=low --num-callers=40 "
+                        + "-valgrind.log -v -d --track-origins=yes --show-reachable=no --leak-resolution=low --num-callers=40 "
                         + CS_EXE + " " + name).split(" ");
             } else {
                 command = (CS_EXE + " " + name).split(" ");
