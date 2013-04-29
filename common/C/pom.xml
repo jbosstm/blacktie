@@ -351,7 +351,7 @@
                 </os>
             </activation>
             <properties>
-                <use.valgrind>false</use.valgrind>
+                <use.valgrind>true</use.valgrind>
 	        <test.includes>*</test.includes>
             </properties>
             <build>
