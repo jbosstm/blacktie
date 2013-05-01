@@ -330,6 +330,7 @@ int SocketServer::do_recv(serv_buffer_t *buffer, apr_pollset_t *pollset, apr_soc
 		pfd.desc.s = sock;
 		apr_pollset_remove(pollset, &pfd);
 		apr_socket_shutdown(sock,APR_SHUTDOWN_READ);
+#ifndef WIN32
 		for(int i = 0; i < MAX_CLIENT_SIZE; i++) {
 			if(client_list[i].used && sock == client_list[i].sock) {
 				LOG4CXX_DEBUG(loggerSocketServer, (char*) "client " << i << " sock " << sock << " disconnect "); 
@@ -341,6 +342,7 @@ int SocketServer::do_recv(serv_buffer_t *buffer, apr_pollset_t *pollset, apr_soc
 				break;
 			}
 		}
+#endif
 	}
 
 	return rv;
