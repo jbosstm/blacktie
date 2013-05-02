@@ -330,17 +330,6 @@ int SocketServer::do_recv(serv_buffer_t *buffer, apr_pollset_t *pollset, apr_soc
 		pfd.desc.s = sock;
 		apr_pollset_remove(pollset, &pfd);
 		apr_socket_shutdown(sock,APR_SHUTDOWN_READ);
-		for(int i = 0; i < MAX_CLIENT_SIZE; i++) {
-			if(client_list[i].used && sock == client_list[i].sock) {
-				LOG4CXX_DEBUG(loggerSocketServer, (char*) "client " << i << " sock " << sock << " disconnect "); 
-				Session* session = client_list[i].session;
-				if(session != NULL) {
-					LOG4CXX_DEBUG(loggerSocketServer, (char*) "session " << session << " set TPEV_DESCONIMM"); 
-					session->setLastEvent(TPEV_DISCONIMM);
-				}
-				break;
-			}
-		}
 	}
 
 	return rv;
