@@ -66,14 +66,13 @@ private:
 	static log4cxx::LoggerPtr logger;
 	char* connectionName;
 	std::map<int, HybridSocketSessionImpl*> sessionMap;
+	std::map<int, apr_thread_t*> threadMap;
 	apr_pool_t* pool;
 	//CORBA_CONNECTION* connection;
 	void(*messagesAvailableCallback)(int,bool);
 	SynchronizableObject* sessionMapLock;
 //	HybridSessionImpl* queueSession;
 	SocketServer* cb_server;
-	apr_thread_t     *thead;
-	apr_threadattr_t *thd_attr;
 };
 
 #ifdef __cplusplus
