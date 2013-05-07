@@ -139,7 +139,7 @@ public class CommandHandler implements java.lang.reflect.InvocationHandler {
         String remainder = commandName.substring(1);
         String capitalized = firstLetter.toUpperCase() + remainder;
         String className = "org.jboss.narayana.blacktie.btadmin.commands." + capitalized;
-        log.trace("Will execute the " + className + " command");
+        log.debug("Will execute the " + className + " command");
         Command command = (Command) Class.forName(className).newInstance();
         log.debug("Command was known");
         return command;
