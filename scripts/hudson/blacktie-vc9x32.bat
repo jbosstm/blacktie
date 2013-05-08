@@ -14,7 +14,7 @@ tasklist
 
 if not defined WORKSPACE echo "WORKSPACE not set" & exit -1
 
-if not defined JBOSSAS_IP_ADDR echo "JBOSSAS_IP_ADDR not set" & JBOSSAS_IP_ADDR=localhost
+if not defined JBOSSAS_IP_ADDR echo "JBOSSAS_IP_ADDR not set" & for /f "delims=" %%a in ('hostname') do @set JBOSSAS_IP_ADDR=%%a
 
 rem INITIALIZE JBOSS
 cd %WORKSPACE%
