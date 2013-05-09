@@ -63,6 +63,7 @@ HybridSocketEndpointQueue::HybridSocketEndpointQueue(HybridSocketSessionImpl* se
 	LOG4CXX_TRACE(logger, (char*) "create id is " << id);
 	this->session = session;
 	this->messagesAvailableCallback = messagesAvailableCallback;
+	this->socket_is_read = false;
 	apr_thread_mutex_create(&ctx->mutex, APR_THREAD_MUTEX_UNNESTED, pool);
 	apr_thread_cond_create(&ctx->cond, pool);
 }
@@ -80,6 +81,7 @@ HybridSocketEndpointQueue::HybridSocketEndpointQueue(HybridSocketSessionImpl* se
 	LOG4CXX_TRACE(logger, (char*) "create id from ctx->sid is " << id);
 	this->session = session;
 	this->messagesAvailableCallback = messagesAvailableCallback;
+	this->socket_is_read = true;
 }
 // ~EndpointQueue destructor.
 //
@@ -167,12 +169,14 @@ bool HybridSocketEndpointQueue::connect() {
 			apr_pollfd_t pfd = { pool, APR_POLL_SOCKET, APR_POLLIN, 0, { NULL }, buf};
 			pfd.desc.s = socket;
 			apr_pollset_add(pollset, &pfd);
+			socket_is_read = true;
 			LOG4CXX_DEBUG(logger, (char*) "connected and wait for message");
 			return true;
 		} else if (APR_STATUS_IS_EINPROGRESS(rv)) {
 			apr_pollfd_t pfd = { pool, APR_POLL_SOCKET, APR_POLLOUT|APR_POLLERR, 0, { NULL }, NULL };
 			pfd.desc.s = socket;
 			apr_pollset_add(pollset, &pfd);
+			socket_is_read = false;
 			LOG4CXX_DEBUG(logger, (char*) "connecting and wait for connected");
 			return true;
 		} else {
@@ -185,9 +189,14 @@ bool HybridSocketEndpointQueue::connect() {
 }
 
 void HybridSocketEndpointQueue::disconnect() {
-	LOG4CXX_DEBUG(logger, (char*) "disconnect");
-	//_connected = false;
-	shutdown = true;
+	if(!shutdown) {
+		LOG4CXX_DEBUG(logger, (char*) "disconnect");
+		shutdown = true;
+		if(send_queue.empty() && socket != NULL) {
+			LOG4CXX_DEBUG(logger, (char*) "socket shutdown write");
+			apr_socket_shutdown(socket, APR_SHUTDOWN_WRITE);
+		}
+	}
 }
 
 const char * HybridSocketEndpointQueue::getName() {
@@ -301,6 +310,11 @@ bool HybridSocketEndpointQueue::_send(const char* replyto, long rval, long rcode
 	if(rval == COE_DISCON && socket != NULL) {
 		apr_socket_shutdown(socket, APR_SHUTDOWN_WRITE);
 	}
+
+	if(rval != 0) {
+		LOG4CXX_DEBUG(logger, (char*)"rval is " << rval << " and set socket_is_read false");
+		socket_is_read = false;
+	}
 	return toReturn;
 }
 
@@ -346,8 +360,10 @@ void HybridSocketEndpointQueue::run() {
 	apr_status_t rv;
 	apr_int32_t num;
 	const apr_pollfd_t *ret_pfd;
+	bool isConv = (session != NULL && session->getIsConv());
 
-	while(!shutdown || !send_queue.empty()) {
+	LOG4CXX_DEBUG(logger, (char*) "queue run start " << this);
+	while(!shutdown || !send_queue.empty() || (socket_is_read && isConv)) {
 		rv = apr_pollset_poll(pollset, DEF_POLL_TIMEOUT, &num, &ret_pfd);
 
 		if (rv == APR_SUCCESS) {
@@ -392,6 +408,7 @@ void HybridSocketEndpointQueue::run() {
 						apr_pollfd_t pfd_s = { pool, APR_POLL_SOCKET, APR_POLLIN, 0, { NULL }, buf};
 						pfd_s.desc.s = socket;
 						apr_pollset_add(pollset, &pfd_s);
+						socket_is_read = true;
 						LOG4CXX_DEBUG(logger, (char*) "add socket in pollset");
 					}
 				} else if (ret_pfd[i].rtnevents & APR_POLLIN) {
@@ -403,6 +420,8 @@ void HybridSocketEndpointQueue::run() {
 			}
 		}
 	}
+	LOG4CXX_DEBUG(logger, (char*) "queue run end " << this);
+	LOG4CXX_DEBUG(logger, (char*) "shutdown: " << shutdown << " socket_is_read " << socket_is_read);
 	if(socket != NULL) apr_socket_close(socket);
 }
 
@@ -479,6 +498,8 @@ int HybridSocketEndpointQueue::do_recv(serv_buffer_t *buffer, apr_pollset_t *pol
 		pfd.desc.s = sock;
 		apr_pollset_remove(pollset, &pfd);
 		apr_socket_shutdown(sock,APR_SHUTDOWN_READ);
+		socket_is_read = false;
+		LOG4CXX_DEBUG(logger, (char*) "set socket_is_read false");
 	}
 
 	return rv;
