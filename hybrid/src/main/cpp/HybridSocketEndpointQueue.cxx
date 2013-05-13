@@ -55,15 +55,16 @@ HybridSocketEndpointQueue::HybridSocketEndpointQueue(HybridSocketSessionImpl* se
 	this->port = port;
 	this->socket = NULL;
 	apr_pollset_create(&this->pollset, 1, pool, 0);
-	//this->ctx = (client_ctx_t*)apr_palloc(pool, sizeof(client_ctx_t));
 	this->ctx = &this->queue_ctx;
 	ctx->sock = NULL;
 	ctx->sid = id;
+	ctx->socket_is_close = true;
 	this->id = id;
 	LOG4CXX_TRACE(logger, (char*) "create id is " << id);
 	this->session = session;
 	this->messagesAvailableCallback = messagesAvailableCallback;
 	apr_thread_mutex_create(&ctx->mutex, APR_THREAD_MUTEX_UNNESTED, pool);
+	apr_thread_mutex_create(&ctx->socket_close_mutex, APR_THREAD_MUTEX_UNNESTED, pool);
 	apr_thread_cond_create(&ctx->cond, pool);
 }
 
@@ -157,6 +158,7 @@ bool HybridSocketEndpointQueue::connect() {
 		if(rv == APR_SUCCESS){
 			LOG4CXX_DEBUG(logger, (char*) "connect to " << addr << ":" << port << " ok");
 			_connected = true;
+			ctx->socket_is_close = false;
 
 			serv_buffer_t *buf = (serv_buffer_t*)apr_palloc(pool, sizeof(serv_buffer_t));
 			buf->sock = socket;
@@ -262,45 +264,57 @@ MESSAGE HybridSocketEndpointQueue::receive(long time) {
 	return message;
 }
 
+bool HybridSocketEndpointQueue::socketIsClose() {
+	return ctx != NULL && ctx->socket_is_close;
+}
+
 bool HybridSocketEndpointQueue::_send(const char* replyto, long rval, long rcode, char* data, int msglen, long correlationId, long flags, const char* type, const char* subtype) {
 	bool toReturn = false;
-	int rc = APR_SUCCESS;
-	char *buf = apr_psprintf(pool, "%ld\n%ld\n%ld\n%ld\n%ld\n%ld\n%s\n%s\n%s\n",
-			(long)id, (long)correlationId, (long)rcode, (long)msglen, (long)flags, 
-			(long)rval, 
-			(replyto == NULL || strlen(replyto) == 0) ? "(null)" : replyto, 
-			(type == NULL || strlen(type) == 0) ? "(null)": type, 
-			(subtype == NULL || strlen(subtype) == 0) ? "(null)" : subtype);
 
-	//LOG4CXX_DEBUG(logger, (char*)"buf: " << buf);
+	apr_thread_mutex_lock(ctx->socket_close_mutex);
+	if (socketIsClose()) {
+		LOG4CXX_DEBUG(logger, (char*) "socket is close and can not send message");
+	} else {
+		int rc = APR_SUCCESS;
+		char *buf = apr_psprintf(pool, "%ld\n%ld\n%ld\n%ld\n%ld\n%ld\n%s\n%s\n%s\n",
+				(long)id, (long)correlationId, (long)rcode, (long)msglen, (long)flags, 
+				(long)rval, 
+				(replyto == NULL || strlen(replyto) == 0) ? "(null)" : replyto, 
+				(type == NULL || strlen(type) == 0) ? "(null)": type, 
+				(subtype == NULL || strlen(subtype) == 0) ? "(null)" : subtype);
 
-	apr_size_t len = strlen(buf) + msglen;
-	int sendlen = htonl(len);
+		//LOG4CXX_DEBUG(logger, (char*)"buf: " << buf);
 
-	if(rc == APR_SUCCESS) {
-		len = sizeof(sendlen);
-		rc = apr_socket_send(socket, (char*)&sendlen, &len);
+		apr_size_t len = strlen(buf) + msglen;
+		int sendlen = htonl(len);
+
+		if(rc == APR_SUCCESS) {
+			len = sizeof(sendlen);
+			rc = apr_socket_send(socket, (char*)&sendlen, &len);
+		}
+
+		if(rc == APR_SUCCESS) {
+			len = strlen(buf);
+			rc = apr_socket_send(socket, buf, &len);
+		}
+
+		if(rc == APR_SUCCESS && msglen > 0) {
+			len = msglen;
+			rc = apr_socket_send(socket, data, &len);
+		}
+
+		if(data != NULL) delete[] data;
+
+		if(rc == APR_SUCCESS) {
+			toReturn = true;
+		}
+
+		if(rval == COE_DISCON && socket != NULL) {
+			apr_socket_shutdown(socket, APR_SHUTDOWN_WRITE);
+			ctx->socket_is_close = true;
+		}
 	}
-
-	if(rc == APR_SUCCESS) {
-		len = strlen(buf);
-		rc = apr_socket_send(socket, buf, &len);
-	}
-
-	if(rc == APR_SUCCESS && msglen > 0) {
-		len = msglen;
-		rc = apr_socket_send(socket, data, &len);
-	}
-
-	if(data != NULL) delete[] data;
-
-	if(rc == APR_SUCCESS) {
-		toReturn = true;
-	}
-
-	if(rval == COE_DISCON && socket != NULL) {
-		apr_socket_shutdown(socket, APR_SHUTDOWN_WRITE);
-	}
+	apr_thread_mutex_unlock(ctx->socket_close_mutex);
 
 	return toReturn;
 }
@@ -361,6 +375,7 @@ void HybridSocketEndpointQueue::run() {
 						LOG4CXX_DEBUG(logger, (char*) "connected");
 						send_lock.lock();
 						_connected = true;
+						ctx->socket_is_close = false;
 						send_lock.unlock();
 
 						queue_lock.lock();
@@ -480,6 +495,7 @@ int HybridSocketEndpointQueue::do_recv(serv_buffer_t *buffer, apr_pollset_t *pol
 		pfd.desc.s = sock;
 		apr_pollset_remove(pollset, &pfd);
 		apr_socket_shutdown(sock,APR_SHUTDOWN_READ);
+		ctx->socket_is_close = true;
 	}
 
 	return rv;
