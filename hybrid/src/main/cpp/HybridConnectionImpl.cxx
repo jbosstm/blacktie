@@ -70,17 +70,6 @@ HybridConnectionImpl::~HybridConnectionImpl() {
 		closeSession((*i).first);
 	}
 
-	std::map<int, apr_thread_t*>::iterator t;
-	for (t = threadMap.begin(); t != threadMap.end(); ++t) {
-		if ((*t).second != NULL) {
-			LOG4CXX_DEBUG(logger, (char*) "waiting for session " << (*t).first << " thread closing");
-			apr_status_t rv;
-			apr_thread_join(&rv, (*t).second);
-			sessionMap[(*t).first] = NULL;
-			LOG4CXX_DEBUG(logger, (char*) "session " << (*t).first << " thread closed");
-		}
-	}
-
 	//	delete queueSession;
 	//	queueSession = NULL;
 
@@ -325,29 +314,12 @@ Session* HybridConnectionImpl::getSession(int id) {
 	return toReturn;
 }
 
-static void* APR_THREAD_FUNC delete_session(apr_thread_t *thd, void *data) {
-	HybridSocketSessionImpl* session = (HybridSocketSessionImpl*)data;
-	if(session != NULL) {
-		delete session;
-	}
-	return NULL;
-}
-
 void HybridConnectionImpl::closeSession(int id) {
 	sessionMapLock->lock();
-	if (sessionMap[id] && threadMap[id] == NULL) {
+	if (sessionMap[id]) {
 		HybridSocketSessionImpl* session = sessionMap[id];
-		if(session->getIsConv()) {
-			apr_thread_t     *thread;
-			apr_threadattr_t *thd_attr;
-			apr_threadattr_create(&thd_attr, pool);
-			apr_thread_create(&thread, thd_attr, delete_session, (void*)session, pool);
-			threadMap[id] = thread;
-			LOG4CXX_DEBUG(logger, (char*) "session " << id << " delete thread is " << thread);
-		} else {
-			delete session;
-			sessionMap[id] = NULL;
-		}
+		delete session;
+		sessionMap[id] = NULL;
 	}
 	sessionMapLock->unlock();
 }

@@ -65,7 +65,6 @@ private:
 	client_ctx_t* ctx;
 	bool _connected;
 	bool shutdown;
-	bool socket_is_read;
 	char* addr;
 	int port;
 	CodecFactory factory;
