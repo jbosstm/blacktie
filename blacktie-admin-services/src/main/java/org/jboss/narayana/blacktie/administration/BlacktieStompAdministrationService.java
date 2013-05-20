@@ -149,7 +149,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService imple
                 if (managementAddress.equals("0.0.0.0")) {
                     managementAddress = "localhost";
                 }
-                client = ModelControllerClient.Factory.create(InetAddress.getByName(managementAddress), 9999,
+                client = ModelControllerClient.Factory.create("remote", InetAddress.getByName(managementAddress), 9999,
                         getCallbackHandler());
             }
         }
