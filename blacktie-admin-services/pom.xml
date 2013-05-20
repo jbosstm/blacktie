@@ -155,8 +155,8 @@
 			<artifactId>blacktie-jatmibroker-xatmi</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jboss.as</groupId>
-			<artifactId>jboss-as-controller-client</artifactId>
+			<groupId>org.wildfly</groupId>
+			<artifactId>wildfly-controller-client</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
@@ -185,8 +185,8 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.jboss.as</groupId>
-			<artifactId>jboss-as-arquillian-container-remote</artifactId>
+			<groupId>org.wildfly</groupId>
+			<artifactId>wildfly-arquillian-container-remote</artifactId>
 			<scope>test</scope>
 		</dependency>
         <dependency>
