@@ -193,7 +193,7 @@ HybridSocketSessionImpl::HybridSocketSessionImpl(apr_pool_t* pool) {
 	this->sendTo = NULL;
 	this->lastEvent = 0;
 	this->lastRCode = 0;
-	this->serviceName = NULL;
+	this->serviceName = serviceName;
 	this->codec = NULL;
 
 	this->remoteEndpoint = NULL;

@@ -50,6 +50,8 @@ typedef BLACKTIE_CORE_DLL struct _client_ctx {
 	int                 sid;
 	bool                used;
 	Session             *session;
+	apr_thread_mutex_t  *socket_close_mutex;
+	bool                socket_is_close;
 } client_ctx_t;
 
 class BLACKTIE_CORE_DLL SocketServer {

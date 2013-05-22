@@ -60,10 +60,12 @@ void TestTPConnect::setUp() {
 
 void TestTPConnect::tearDown() {
 	btlogger((char*) "TestTPConnect::tearDown");
+
 	// Do local work
 	if (cd != -1) {
 		::tpdiscon( cd);
 	}
+
 	if (cd2 != -1) {
 		::tpdiscon( cd2);
 	}
@@ -141,7 +143,7 @@ void TestTPConnect::test_tpconnect_nodata() {
 }
 
 void TestTPConnect::test_tpconnect_tpgetrply() {
-	btlogger((char*) "test_tpconnect");
+	btlogger((char*) "test_tpconnect_tpgetrply");
 	cd = ::tpconnect((char*) "TestTPConnect", sendbuf, sendlen, TPRECVONLY);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
