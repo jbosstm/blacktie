@@ -209,11 +209,13 @@ client_ctx_t* SocketServer::register_client(int sid, Session* session) {
 		for(i = 0; i < MAX_CLIENT_SIZE; i++) {
 			if(client_list[i].used == false) {
 				apr_thread_mutex_create(&client_list[i].mutex, APR_THREAD_MUTEX_UNNESTED, context);
+				apr_thread_mutex_create(&client_list[i].socket_close_mutex, APR_THREAD_MUTEX_UNNESTED, context);
 				apr_thread_cond_create(&client_list[i].cond, context);
 				client_list[i].sid = sid;
 				client_list[i].session = session;
 				client_list[i].used = true;
 				client_list[i].sock = NULL;
+				client_list[i].socket_is_close = true;
 				result = &client_list[i];
 				client_num++;
 				break;
@@ -242,6 +244,7 @@ void SocketServer::unregister_client(int sid) {
 			client_list[i].session = NULL;
 			client_list[i].used = false;
 			client_list[i].sock = NULL;
+			client_list[i].socket_is_close = true;
 			client_num --;
 			break;
 		}
@@ -329,7 +332,23 @@ int SocketServer::do_recv(serv_buffer_t *buffer, apr_pollset_t *pollset, apr_soc
 		apr_pollfd_t pfd = { buffer->context, APR_POLL_SOCKET, APR_POLLIN, 0, { NULL }, buffer};
 		pfd.desc.s = sock;
 		apr_pollset_remove(pollset, &pfd);
-		apr_socket_shutdown(sock,APR_SHUTDOWN_READ);
+		bool socketClose = false;
+		for(int i = 0; i < MAX_CLIENT_SIZE; i++) {
+			if(client_list[i].used && sock == client_list[i].sock) {
+				apr_thread_mutex_lock(client_list[i].socket_close_mutex);
+				LOG4CXX_DEBUG(loggerSocketServer, (char*) "client[" << i << "] socket " << sock << " close");
+				client_list[i].socket_is_close = true;
+				apr_socket_shutdown(sock,APR_SHUTDOWN_READ);
+				socketClose = true;
+				apr_thread_mutex_unlock(client_list[i].socket_close_mutex);
+				break;
+			}
+		}
+
+		if (!socketClose) {
+			LOG4CXX_DEBUG(loggerSocketServer, (char*) "socket " << sock << " is not register and close now");
+			apr_socket_shutdown(sock,APR_SHUTDOWN_READ);
+		}
 	}
 
 	return rv;
@@ -364,6 +383,7 @@ int SocketServer::do_dispatch(serv_buffer_t* buffer) {
 			}
 			client_list[i].data.push(*msg);
 			client_list[i].sock = buffer->sock;
+			client_list[i].socket_is_close = false;
 			this->messagesAvailableCallback(sid, false);
 			apr_thread_cond_signal(client_list[i].cond);
 			apr_thread_mutex_unlock(client_list[i].mutex);

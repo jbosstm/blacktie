@@ -65,7 +65,6 @@ private:
 	client_ctx_t* ctx;
 	bool _connected;
 	bool shutdown;
-	bool socket_is_read;
 	char* addr;
 	int port;
 	CodecFactory factory;
@@ -80,6 +79,7 @@ private:
 
 	int do_recv(serv_buffer_t *buffer, apr_pollset_t *pollset, apr_socket_t *sock);
 	bool _send(const char* replyto, long rval, long rcode, char* data, int len, long correlationId, long flags, const char* type, const char* subtype);
+	bool socketIsClose();
 };
 
 #endif
