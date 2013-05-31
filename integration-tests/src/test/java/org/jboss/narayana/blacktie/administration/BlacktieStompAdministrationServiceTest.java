@@ -44,7 +44,7 @@ public class BlacktieStompAdministrationServiceTest extends TestCase {
      * @throws ConnectionException
      */
     public void xtest() throws ConnectionException, ConfigurationException {
-        processStompCommand("tpadvertise,foo,FOOTest,5.0.0.M3-SNAPSHOT,", 1);
+        processStompCommand("tpadvertise,foo,FOOTest,5.0.0.M3,", 1);
         try {
             connection.tpacall("FOOTest", null, Connection.TPNOREPLY);
         } catch (ConnectionException e) {
@@ -59,7 +59,7 @@ public class BlacktieStompAdministrationServiceTest extends TestCase {
             // EXPECTED
         }
 
-        processStompCommand("tpadvertise,foo,FOOTest,5.0.0.M3-SNAPSHOT,", 1);
+        processStompCommand("tpadvertise,foo,FOOTest,5.0.0.M3,", 1);
 
         try {
             connection.tpacall("FOOTest", null, Connection.TPNOREPLY);
@@ -70,7 +70,7 @@ public class BlacktieStompAdministrationServiceTest extends TestCase {
     }
 
     public void testUnknownService() throws ConnectionException, ConfigurationException {
-        processStompCommand("tpadvertise,foo,UNKNOWN_SERVICE,5.0.0.M3-SNAPSHOT,", 0);
+        processStompCommand("tpadvertise,foo,UNKNOWN_SERVICE,5.0.0.M3,", 0);
     }
 
     public void testWrongVersionService() throws ConnectionException, ConfigurationException {
