@@ -67,7 +67,7 @@ fi
 # INITIALIZE JBOSS
 ant -f scripts/hudson/initializeJBoss.xml -DJBOSS_HOME=$JBOSS_HOME -Dbasedir=. initializeJBoss
 if [ "$?" != "0" ]; then
-	fatal "Failed to init JBoss"
+	fatal "Failed to init JBoss: $BUILD_URL"
 fi
 
 #wget -P $JBOSS_HOME/standalone/deployments/ -N http://172.17.131.2/job/narayana-populateM2-taconic/lastSuccessfulBuild/artifact/rest-tx/webservice/target/restat-web-5.0.0.M2-SNAPSHOT.war
@@ -95,7 +95,7 @@ if [ "$?" != "0" ]; then
 	killall -9 client
 	killall -9 cs
     ps -f
-	fatal "Some tests failed"
+	fatal "Some tests failed: $BUILD_URL"
 fi
 
 # KILL ANY BUILD REMNANTS
@@ -107,4 +107,4 @@ killall -9 client
 killall -9 cs
 ps -f
 
-comment_on_pull "All tests passed - Job complete"
+comment_on_pull "All tests passed - Job complete: $BUILD_URL"

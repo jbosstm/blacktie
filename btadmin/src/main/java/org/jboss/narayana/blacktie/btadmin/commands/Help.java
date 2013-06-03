@@ -126,7 +126,7 @@ public class Help implements Command {
         List<File> dirs = new ArrayList<File>();
         while (resources.hasMoreElements()) {
             URL resource = resources.nextElement();
-            dirs.add(new File(resource.getFile()));
+            dirs.add(new File(java.net.URLDecoder.decode(resource.getFile().toString())));
         }
         ArrayList<Class> classes = new ArrayList<Class>();
         for (File directory : dirs) {
