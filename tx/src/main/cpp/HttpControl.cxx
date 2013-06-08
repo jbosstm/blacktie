@@ -295,8 +295,12 @@ int HttpControl::do_end(int how)
 		return TX_FAIL;
 	}
 
-	LOG4CXX_DEBUG(httpclogger, "do_end: HTTP status: " << ri.status_code <<
-		" resp: " << resp << " nread: " << nread);
+	LOG4CXX_DEBUG(httpclogger, "do_end: HTTP status: " << ri.status_code << " nread: " << nread);
+	if(resp) {
+		LOG4CXX_DEBUG(httpclogger, "do_end: HTTP resp: " << resp);
+	} else {
+		LOG4CXX_DEBUG(httpclogger, "do_end: HTTP resp content is empty");
+	}
 
 	if (ri.status_code == 404) {
 		rc = TX_ROLLBACK;
