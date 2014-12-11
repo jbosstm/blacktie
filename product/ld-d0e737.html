@@ -1,1 +1,22 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?> <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> <html xmlns="http://www.w3.org/1999/xhtml"><head><title xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory">Long Description</title><link rel="stylesheet" href="css/jbossorg.css" type="text/css"/><meta xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" name="generator" content="DocBook XSL Stylesheets V1.74.0"/></head><body><p> The diagram shows a <em class="firstterm">top-level coordinator</em> and an <em class="firstterm">interposed coordinator</em> . The top-level coordinator is responsible for driving the original, top-level transaction to completion or rollback. The interposed coordinator manages its participants in a subordinate transaction, but it cannot act autonomously. From the point of view of the parent coordinator, it appears to be another participant in the top-level transaction. The interposed coordinator operates as an intermediary. It forwards incoming <code class="systemitem">prepare</code> and <code class="systemitem">commit</code> / <code class="systemitem">rollback</code> messages to its participants, combining their responses and returning them back to its parent coordinator. </p></body></html>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory">Long Description</title><link rel="stylesheet" href="css/jbossorg.css" type="text/css"/><meta xmlns:rf="java:org.jboss.highlight.XhtmlRendererFactory" name="generator" content="DocBook XSL Stylesheets V1.74.0"/></head><body><p>
+                        The diagram shows a
+                        <em class="firstterm">top-level coordinator</em>
+                        and an
+                        <em class="firstterm">interposed
+                            coordinator</em>
+                        . The top-level coordinator is responsible for driving the original, top-level transaction
+                        to completion or rollback. The interposed coordinator manages its participants in a subordinate transaction, but
+                        it cannot act autonomously. From the point of view of the parent coordinator, it appears to be another
+                        participant in the top-level transaction. The interposed coordinator operates as an intermediary. It forwards
+                        incoming
+                        <code class="systemitem">prepare</code>
+                        and
+                        <code class="systemitem">commit</code>
+                        /
+                        <code class="systemitem">rollback</code>
+                        messages to its participants, combining their responses and returning them back to its parent
+                        coordinator.
+                    </p></body></html>
