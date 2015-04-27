@@ -2,6 +2,7 @@ com.arjuna.ats.arjuna
 com.arjuna.ats.arjuna.common
 com.arjuna.ats.arjuna.coordinator
 com.arjuna.ats.arjuna.coordinator.abstractrecord
+com.arjuna.ats.arjuna.coordinator.internal
 com.arjuna.ats.arjuna.coordinator.listener
 com.arjuna.ats.arjuna.exceptions
 com.arjuna.ats.arjuna.logging
