@@ -1,0 +1,5 @@
+org.jboss.narayana.blacktie.jatmibroker.codec
+org.jboss.narayana.blacktie.jatmibroker.xatmi
+org.jboss.narayana.blacktie.jatmibroker.xatmi.impl
+org.jboss.narayana.blacktie.jatmibroker.xatmi.mdb
+org.jboss.narayana.blacktie.jatmibroker.xatmi.server
