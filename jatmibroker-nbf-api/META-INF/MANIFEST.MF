@@ -1,7 +1,6 @@
 Manifest-Version: 1.0
 Implementation-Title: Blacktie Java NBF Implementation
-Implementation-Version: 5.2.13.Final
-Build-Timestamp: Fri, 29 Jan 2016 11:32:01 +0000
+Implementation-Version: 5.2.14.Final
 Archiver-Version: Plexus Archiver
 Java-Version: 1.8.0_65
 Built-By: tom
@@ -18,9 +17,9 @@ Scm-Url: http://viewvc.jboss.org/cgi-bin/viewvc.cgi/blacktie/trunk/bla
 Implementation-Vendor: JBoss by Red Hat
 Os-Version: 10.0
 Scm-Revision: UNKNOWN
-Created-By: Apache Maven
+Created-By: Apache Maven 3.3.9
 Build-Jdk: 1.8.0_65
-Specification-Version: 5.2.13.Final
+Specification-Version: 5.2.14.Final
 Implementation-URL: http://www.jboss.org/blacktie/blacktie-jatmibroker
  -nbf
 
