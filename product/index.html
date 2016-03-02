@@ -174,7 +174,7 @@ public class ExClient
                         Guarantees global uniqueness for an individual transaction.
                     </p></dd><dt><span class="term">Transaction Coordinator Location</span></dt><dd><p>
                         The endpoint address participants contact to enroll.
-                    </p></dd></dl></div><div class="figure"><a id="d0e487"/><p class="title"><strong>Figure 1.1. Context Flow</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/transactions-overview-fig-web-services-context-flow.png" alt="Context Flow" longdesc="C:\Users\tom\tmp\narayana\5.2.14.Final\sources\documentation\product\target\docbook\publish\en-US\html_single\ld-d0e490.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.2.14.Final\sources\documentation\product\target\docbook\publish\en-US\html_single\ld-d0e490.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/></div><div class="section" title="1.4. Participants"><div class="titlepage"><div><div><h2 class="title"><a id="d0e496"/>1.4. Participants</h2></div></div></div><p>
+                    </p></dd></dl></div><div class="figure"><a id="d0e487"/><p class="title"><strong>Figure 1.1. Context Flow</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/transactions-overview-fig-web-services-context-flow.png" alt="Context Flow" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\product\target\docbook\publish\en-US\html_single\ld-d0e490.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\product\target\docbook\publish\en-US\html_single\ld-d0e490.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/></div><div class="section" title="1.4. Participants"><div class="titlepage"><div><div><h2 class="title"><a id="d0e496"/>1.4. Participants</h2></div></div></div><p>
             The coordinator cannot know the details of how every transactional service is implemented; in fact it is not necessary
             for it to do so in order to negotiate a transactional outcome. It treats each service taking part in a
             transaction as a participant and communicates with it according to some predefined participant coordination
@@ -200,7 +200,7 @@ public class ExClient
             other actions. If the coordinator fails before delivery of this message, these resources remain blocked.
             However, if crashed machines eventually recover, crash recovery mechanisms can be employed to unblock the
             protocol and terminate the action.
-        </p><div class="figure"><a id="two-phase-commit-overview"/><p class="title"><strong>Figure 1.2. Two-Phase Commit Overview</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/transactions-overview-fig-two-phase-commit-overview.png" alt="Two-Phase Commit Overview" longdesc="C:\Users\tom\tmp\narayana\5.2.14.Final\sources\documentation\product\target\docbook\publish\en-US\html_single\ld-d0e513.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.2.14.Final\sources\documentation\product\target\docbook\publish\en-US\html_single\ld-d0e513.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h2>Note</h2><p>
+        </p><div class="figure"><a id="two-phase-commit-overview"/><p class="title"><strong>Figure 1.2. Two-Phase Commit Overview</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/transactions-overview-fig-two-phase-commit-overview.png" alt="Two-Phase Commit Overview" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\product\target\docbook\publish\en-US\html_single\ld-d0e513.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\product\target\docbook\publish\en-US\html_single\ld-d0e513.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h2>Note</h2><p>
                 During two-phase commit transactions, coordinators and resources keep track of activity in non-volatile data stores so
                 that they can recover in the case of a failure.
             </p></div></div><div class="section" title="1.6. The Synchronization Protocol"><div class="titlepage"><div><div><h2 class="title"><a id="d0e536"/>1.6. The Synchronization Protocol</h2></div></div></div><p>
@@ -367,7 +367,7 @@ public class ExClient
             <a class="xref" href="#fig-interpositions" title="Figure 1.3. Interpositions">Figure 1.3, “Interpositions”</a>
             for a graphical
             representation of this concept.
-        </p><div class="figure"><a id="fig-interpositions"/><p class="title"><strong>Figure 1.3. Interpositions</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/transactions-overview-fig-interpositions.png" alt="Interpositions" longdesc="C:\Users\tom\tmp\narayana\5.2.14.Final\sources\documentation\product\target\docbook\publish\en-US\html_single\ld-d0e737.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.2.14.Final\sources\documentation\product\target\docbook\publish\en-US\html_single\ld-d0e737.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
+        </p><div class="figure"><a id="fig-interpositions"/><p class="title"><strong>Figure 1.3. Interpositions</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/transactions-overview-fig-interpositions.png" alt="Interpositions" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\product\target\docbook\publish\en-US\html_single\ld-d0e737.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\product\target\docbook\publish\en-US\html_single\ld-d0e737.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
             Interposition is particularly useful for Web Services transactions, as a way of limiting the amount of
             network
             traffic required for coordination. For example, if communications between the top-level coordinator and a web
@@ -438,7 +438,7 @@ public class ExClient
             in Narayana
         </a></span></dt><dt><span class="section"><a href="#d0e1395">2.2.3. The default RecoveryCoordinator in JacOrb</a></span></dt></dl></dd><dt><span class="section"><a href="#d0e1423">2.3. Configuration Options</a></span></dt><dd><dl><dt><span class="section"><a href="#d0e1426">2.3.1. Recovery Protocol in OTS - Overview</a></span></dt></dl></dd></dl></div><div class="section" title="2.1. Architecture of the Recovery Manager"><div class="titlepage"><div><div><h2 class="title"><a id="d0e826"/>2.1. Architecture of the Recovery Manager</h2></div></div></div><div class="section" title="2.1.1. Crash Recovery Overview"><div class="titlepage"><div><div><h3 class="title"><a id="d0e829"/>2.1.1. Crash Recovery Overview</h3></div></div></div><p>The main architectural components within Crash Recovery are
             illustrated in the diagram below:
-        </p><div class="figure"><a id="d0e834"/><p class="title"><strong>Figure 2.1. Recovery Manager Architecture</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/failure-recovery-fig1-crashrecoveryarchitecture.png" alt="Recovery Manager Architecture" longdesc="C:\Users\tom\tmp\narayana\5.2.14.Final\sources\documentation\product\target\docbook\publish\en-US\html_single\ld-d0e837.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.2.14.Final\sources\documentation\product\target\docbook\publish\en-US\html_single\ld-d0e837.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>The Recovery Manager is a daemon process1 responsible for
+        </p><div class="figure"><a id="d0e834"/><p class="title"><strong>Figure 2.1. Recovery Manager Architecture</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/failure-recovery-fig1-crashrecoveryarchitecture.png" alt="Recovery Manager Architecture" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\product\target\docbook\publish\en-US\html_single\ld-d0e837.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\product\target\docbook\publish\en-US\html_single\ld-d0e837.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>The Recovery Manager is a daemon process1 responsible for
             performing crash recovery. Only one Recovery Manager runs per
             node. The Object Store provides persistent data storage for
             transactions to log data. During normal transaction processing
@@ -818,7 +818,7 @@ public class ExClient
             XAResourceRecovery interface are dynamically loaded, as controlled
             by properties with names beginning
             “com.arjuna.ats.jta.recovery.XAResourceRecovery”.
-        </p><div class="figure"><a id="d0e1062"/><p class="title"><strong>Figure 2.2. Resource-initiated recovery and XA Recovery</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/failure-recovery-fig2-resourceinitiatedrecovery.png" alt="Resource-initiated recovery and XA Recovery" longdesc="C:\Users\tom\tmp\narayana\5.2.14.Final\sources\documentation\product\target\docbook\publish\en-US\html_single\ld-d0e1065.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.2.14.Final\sources\documentation\product\target\docbook\publish\en-US\html_single\ld-d0e1065.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>The XARecoveryModule will use the XAResourceRecovery
+        </p><div class="figure"><a id="d0e1062"/><p class="title"><strong>Figure 2.2. Resource-initiated recovery and XA Recovery</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/failure-recovery-fig2-resourceinitiatedrecovery.png" alt="Resource-initiated recovery and XA Recovery" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\product\target\docbook\publish\en-US\html_single\ld-d0e1065.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\product\target\docbook\publish\en-US\html_single\ld-d0e1065.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>The XARecoveryModule will use the XAResourceRecovery
             implementation to get a XAResource to the target datasource. On
             each invocation of periodicWorkSecondPass, the recovery module
             will issue an XAResource.recover request – this will (as described
@@ -5350,7 +5350,7 @@ uba.close();
     of how to use our software. This chapter will give you a brief overview where to find them and what technologies
     they demonstrate.
   </p><div class="section" title="4.7.1. WS-AT Multi-Service"><div class="titlepage"><div><div><h3 class="title"><a id="ref-WSATMultiService"/>4.7.1. WS-AT Multi-Service</h3></div></div></div><p>
-      Quickstart URL: <a class="ulink" href="https://github.com/jbosstm/quickstart/tree/5.2.14.Final/XTS/wsat-jta-multi_service">https://github.com/jbosstm/quickstart/tree/5.2.14.Final/XTS/wsat-jta-multi_service</a>
+      Quickstart URL: <a class="ulink" href="https://github.com/jbosstm/quickstart/tree/5.3.0.Final/XTS/wsat-jta-multi_service">https://github.com/jbosstm/quickstart/tree/5.3.0.Final/XTS/wsat-jta-multi_service</a>
     </p><p>
       This quickstart uses JTA to manage WS-AT applications. The quickstart is composed of a client (the test) and two
       Web services (FirstServiceAT and SecondServiceAT). Both services are invoked by the test from within the same JTA
@@ -5363,7 +5363,7 @@ uba.close();
       Each service uses JPA to persist its data (the value of a counter). Therefore, the service class is annotated with
       javax.ejb.TransactionAttribute which tells XTS to automatically bridge WS-AT transaction to JTA.
     </p></div><div class="section" title="4.7.2. WS-AT Multi-Hop"><div class="titlepage"><div><div><h3 class="title"><a id="ref-WSATMultiHop"/>4.7.2. WS-AT Multi-Hop</h3></div></div></div><p>
-      Quickstart URL: <a class="ulink" href="https://github.com/jbosstm/quickstart/tree/5.2.14.Final/XTS/wsat-jta-multi_hop">https://github.com/jbosstm/quickstart/tree/5.2.14.Final/XTS/wsat-jta-multi_hop</a>
+      Quickstart URL: <a class="ulink" href="https://github.com/jbosstm/quickstart/tree/5.3.0.Final/XTS/wsat-jta-multi_hop">https://github.com/jbosstm/quickstart/tree/5.3.0.Final/XTS/wsat-jta-multi_hop</a>
     </p><p>
       This quickstart uses JTA to manage WS-AT applications. The quickstart is composed of a client (the test) and two
       Web services (FirstServiceAT and SecondServiceAT).
@@ -5380,26 +5380,26 @@ uba.close();
       SecondServiceAT. SecondServiceAT also uses JPA for persistence, so the incoming WS-AT transaction is again bridged
       to JTA.
     </p></div><div class="section" title="4.7.3. XTS with SSL"><div class="titlepage"><div><div><h3 class="title"><a id="d0e6410"/>4.7.3. XTS with SSL</h3></div></div></div><p>
-      Quickstart URL: <a class="ulink" href="https://github.com/jbosstm/quickstart/tree/5.2.14.Final/XTS/ssl">https://github.com/jbosstm/quickstart/tree/5.2.14.Final/XTS/ssl</a>
+      Quickstart URL: <a class="ulink" href="https://github.com/jbosstm/quickstart/tree/5.3.0.Final/XTS/ssl">https://github.com/jbosstm/quickstart/tree/5.3.0.Final/XTS/ssl</a>
     </p><p>
       This example walks you through the steps required to setup two servers (client and server) that communicate via
       Web services over a secure connection. The example show how this can be done for WS-Atomic Transaction, but the
       same applies for WS Business Activity.
     </p></div><div class="section" title="4.7.4. Raw XTS API Demo"><div class="titlepage"><div><div><h3 class="title"><a id="d0e6419"/>4.7.4. Raw XTS API Demo</h3></div></div></div><p>
-      Quickstart URL: <a class="ulink" href="https://github.com/jbosstm/quickstart/tree/5.2.14.Final/XTS/raw-xts-api-demo">https://github.com/jbosstm/quickstart/tree/5.2.14.Final/XTS/raw-xts-api-demo</a>
+      Quickstart URL: <a class="ulink" href="https://github.com/jbosstm/quickstart/tree/5.3.0.Final/XTS/raw-xts-api-demo">https://github.com/jbosstm/quickstart/tree/5.3.0.Final/XTS/raw-xts-api-demo</a>
     </p><p>
       This example demonstrates the whole range of XTS possibilities, including WS-AT and WS-BA.
     </p><p>
       This example uses the Raw XTS API. It is only recommended for scenarios where the WS-AT to JTA integration is not
       appropriate; or where the Compensating Transactions API support for WS-BA is not appropriate.
     </p></div><div class="section" title="4.7.5. Non-transactional Resource with Compensating Transactions API"><div class="titlepage"><div><div><h3 class="title"><a id="ref-CompensationsNonTransactionalResource"/>4.7.5. Non-transactional Resource with Compensating Transactions API</h3></div></div></div><p>
-      Quickstart URL: <a class="ulink" href="https://github.com/jbosstm/quickstart/tree/5.2.14.Final/compensating-transactions/non-transactional_resource">https://github.com/jbosstm/quickstart/tree/5.2.14.Final/compensating-transactions/non-transactional_resource</a>
+      Quickstart URL: <a class="ulink" href="https://github.com/jbosstm/quickstart/tree/5.3.0.Final/compensating-transactions/non-transactional_resource">https://github.com/jbosstm/quickstart/tree/5.3.0.Final/compensating-transactions/non-transactional_resource</a>
     </p><p>
       This example demonstrates the simple use case of our API for developing applications that use Compensating
       Transactions. It shows how a non-transactional activity (such as sending an email, or printing a document) can be
       coordinated in a compensating transaction.
     </p></div><div class="section" title="4.7.6. Travel Agent with Compensating Transactions API"><div class="titlepage"><div><div><h3 class="title"><a id="ref-CompensationsTravelAgent"/>4.7.6. Travel Agent with Compensating Transactions API</h3></div></div></div><p>
-      Quickstart URL: <a class="ulink" href="https://github.com/jbosstm/quickstart/tree/5.2.14.Final/compensating-transactions/travel-agent">https://github.com/jbosstm/quickstart/tree/5.2.14.Final/compensating-transactions/travel-agent</a>
+      Quickstart URL: <a class="ulink" href="https://github.com/jbosstm/quickstart/tree/5.3.0.Final/compensating-transactions/travel-agent">https://github.com/jbosstm/quickstart/tree/5.3.0.Final/compensating-transactions/travel-agent</a>
     </p><p>
       This example demonstrates the more complex use case of our API for developing applications that use Compensating
       Transactions. It shows how a long running compensating transaction can be composed of a series of short-running
