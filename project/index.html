@@ -240,7 +240,8 @@ public class ExClient
 
     protected StateManager ();
     protected StateManager (Uid id);
-};</pre></div></div><br class="example-break"/><p>
+};
+</pre></div></div><br class="example-break"/><p>
             Objects are assumed to be of three possible flavors.
         </p><div class="variablelist" title="Three Flavors of Objects"><p class="title"><strong>Three Flavors of Objects</strong></p><dl><dt><span class="term">Recoverable</span></dt><dd><p>
                         <code class="classname">StateManager</code>
@@ -330,7 +331,7 @@ return true;
             store and activated on demand. The fundamental life cycle of a persistent object in TXOJ is shown in
             <a class="xref" href="#txoj-lifecycle" title="Figure 1.2. Life cycle of a persistent Object in TXOJ">Figure 1.2, “Life cycle of a persistent Object in TXOJ”</a>
             .
-        </p><div class="figure"><a id="txoj-lifecycle"/><p class="title"><strong>Figure 1.2. Life cycle of a persistent Object in TXOJ</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/core-txoj-lifecycle.png" alt="Life cycle of a persistent Object in TXOJ" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e603.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e603.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h2>Note</h2><p>
+        </p><div class="figure"><a id="txoj-lifecycle"/><p class="title"><strong>Figure 1.2. Life cycle of a persistent Object in TXOJ</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/core-txoj-lifecycle.png" alt="Life cycle of a persistent Object in TXOJ" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e603.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e603.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h2>Note</h2><p>
                 During its life time, a persistent object may be made active then passive many times.
             </p></div></div><div class="section" title="1.1.6. The concurrency controller"><div class="titlepage"><div><div><h3 class="title"><a id="d0e644"/>1.1.6. The concurrency controller</h3></div></div></div><p>
             The concurrency controller is implemented by the class
@@ -406,7 +407,8 @@ public abstract class LockManager extends StateManager
     protected LockManager (Uid storeUid, int ot, int objectModel);
 
     protected void terminate ();
-};</pre><p>
+};
+</pre><p>
             The
             <code class="classname">LockManager</code>
             class is primarily responsible for managing requests to set a lock on an
@@ -482,7 +484,8 @@ public abstract class LockManager extends StateManager
     objct2.op(...);
     . . .
     OTS.current().commit(true);  /* (iv) tx commits &amp; objects deactivated */
-}              /* (v) */</pre><div class="variablelist"><dl><dt><span class="term">Creation of bindings to persistent objects</span></dt><dd><p>
+}              /* (v) */
+</pre><div class="variablelist"><dl><dt><span class="term">Creation of bindings to persistent objects</span></dt><dd><p>
                             This could involve the creation of stub objects and a call to remote objects. Here, we
                             re-bind to an
                             existing persistent object identified by
@@ -589,7 +592,8 @@ public abstract class LockManager extends StateManager
         // actual state change operations follow 
         ...
     }
-}</pre></div></div><br class="example-break"/><div class="procedure" title="Procedure 1.1.  Steps followed by the operation setlock"><a id="d0e942"/><p class="title"><strong>Procedure 1.1. 
+}
+</pre></div></div><br class="example-break"/><div class="procedure" title="Procedure 1.1.  Steps followed by the operation setlock"><a id="d0e942"/><p class="title"><strong>Procedure 1.1. 
                 Steps followed by the operation
                 <code class="methodname">setlock</code>
             </strong></p><p>
@@ -701,7 +705,8 @@ public abstract class LockManager extends StateManager
     public synchronized void packFloat (float f) throws IOException;
     public synchronized void packDouble (double d) throws IOException;
     public synchronized void packString (String s) throws IOException;
-};</pre><pre class="programlisting">public class InputBuffer
+};
+</pre><pre class="programlisting">public class InputBuffer
 {
     public InputBuffer ();
 
@@ -721,7 +726,8 @@ public abstract class LockManager extends StateManager
     public synchronized float unpackFloat () throws IOException;
     public synchronized double unpackDouble () throws IOException;
     public synchronized String unpackString () throws IOException;
-};</pre><p>
+};
+</pre><p>
                     The
                     <code class="classname">InputBuffer</code>
                     and
@@ -757,7 +763,8 @@ public abstract class LockManager extends StateManager
     public int size ();
     public Uid stateUid ();
     public String type ();
-};</pre><p>
+};
+</pre><p>
                     The
                     <code class="classname">InputObjectState</code>
                     and
@@ -821,7 +828,8 @@ public abstract class LockManager extends StateManager
     public abstract boolean write_uncommitted (Uid u, String name,
                                                OutputObjectState os) throws ObjectStoreException;
     . . .
-};</pre></div></div><br class="example-break"/><p>
+};
+</pre></div></div><br class="example-break"/><p>
                 When a transactional object is committing, it must make certain state changes persistent, so it can
                 recover in
                 the event of a failure and either continue to commit, or rollback. When using
@@ -934,7 +942,8 @@ public class ObjectModel
 {
     public static final int SINGLE;
     public static final int MULTIPLE;
-};</pre></div></div><br class="example-break"/><p>
+};
+</pre></div></div><br class="example-break"/><p>
                     If an object is recoverable or persistent,
                     <code class="classname">StateManager</code>
                     will invoke the operations
@@ -990,7 +999,8 @@ public class ObjectModel
         {
             return false;
         }
-}</pre></div></div><br class="example-break"/><p>
+}
+</pre></div></div><br class="example-break"/><p>
                     In order to support crash recovery for persistent objects, all
                     <code class="methodname">save_state</code>
                     and
@@ -1049,11 +1059,11 @@ public class ObjectModel
                                 and all clients must address their invocations to this server. This model provides better performance,
                                 but represents a single point of failure, and in a multi-threaded environment may not protect the
                                 object from corruption if a single thread fails.
-                            </p><div class="figure"><a id="d0e1358"/><p class="title"><strong>Figure 1.3. Single Object Model</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/single_object_model.png" alt="Single Object Model" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e1361.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e1361.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/></dd><dt><span class="term">Multiple</span></dt><dd><p>
+                            </p><div class="figure"><a id="d0e1358"/><p class="title"><strong>Figure 1.3. Single Object Model</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/single_object_model.png" alt="Single Object Model" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e1361.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e1361.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/></dd><dt><span class="term">Multiple</span></dt><dd><p>
                                 Logically, a single instance of the object exists, but copies of it are distributed across different
                                 JVMs. The performance of this model is worse than the SINGLE model, but it provides better failure
                                 isolation.
-                            </p><div class="figure"><a id="d0e1373"/><p class="title"><strong>Figure 1.4. Multiple Object Model</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/multiple_object_model.png" alt="Multiple Object Model" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e1376.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e1376.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/></dd></dl></div><p>
+                            </p><div class="figure"><a id="d0e1373"/><p class="title"><strong>Figure 1.4. Multiple Object Model</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/multiple_object_model.png" alt="Multiple Object Model" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e1376.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e1376.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/></dd></dl></div><p>
                     The default model is SINGLE. The programmer can override this on a per-object basis by using the appropriate
                     constructor.
                 </p></div><div class="section" title="1.2.1.3.3. Summary"><div class="titlepage"><div><div><h5 class="title"><a id="d0e1384"/>1.2.1.3.3. Summary</h5></div></div></div><p>
@@ -1257,7 +1267,8 @@ public String type ()
     public abstract boolean remove_state (Uid u, String tname);
     public abstract boolean write_committed (Uid u, String tName,
                                              OutputObjectState state);
-};</pre></div></div><br class="example-break"/><div class="section" title="1.2.2.1. Selecting a lock store implementation"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1542"/>1.2.2.1. Selecting a lock store implementation</h4></div></div></div><p>
+};
+</pre></div></div><br class="example-break"/><div class="section" title="1.2.2.1. Selecting a lock store implementation"><div class="titlepage"><div><div><h4 class="title"><a id="d0e1542"/>1.2.2.1. Selecting a lock store implementation</h4></div></div></div><p>
                 ArjunaCore comes with support for several different object store implementations. If the object model being
                 used is
                 SINGLE, then no lock store is required for maintaining locks, since the information about the object is not
@@ -1377,7 +1388,8 @@ public abstract class LockManager extends StateManager
     protected LockManager (Uid storeUid);
     protected LockManager (Uid storeUid, int ObjectType, int objectModel);
     . . .
-};</pre></div></div><br class="example-break"/><p>
+};
+</pre></div></div><br class="example-break"/><p>
                 The
                 <code class="methodname">setlock</code>
                 operation must be parametrized with the type of lock required (READ or
@@ -1482,7 +1494,8 @@ public class Lock extends StateManager
     public boolean save_state (OutputObjectState os, int ObjectType);
     public String type ();
     . . .
-};</pre></div></div><br class="example-break"/><p>
+};
+</pre></div></div><br class="example-break"/><p>
                 The
                 <code class="classname">Lock</code>
                 class provides a
@@ -1742,7 +1755,7 @@ public class Lock extends StateManager
             executed from anywhere within another atomic action and behaves exactly like a normal top-level action. Its
             results are made permanent when it commits and will not be undone if any of the actions within which it was
             originally nested abort.
-        </p><div class="figure"><a id="d0e1975"/><p class="title"><strong>Figure 1.5. Independent Top-Level Action</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/independent_top_level_action.png" alt="Independent Top-Level Action" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e1978.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e1978.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
+        </p><div class="figure"><a id="d0e1975"/><p class="title"><strong>Figure 1.5. Independent Top-Level Action</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/independent_top_level_action.png" alt="Independent Top-Level Action" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e1978.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e1978.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
             Top-level actions can be used within an application by declaring and using instances of the class
             <code class="classname">TopLevelTransaction</code>
             . They are used in exactly the same way as other transactions.
@@ -1798,7 +1811,8 @@ public class Lock extends StateManager
       A.rollback();
 
    return result;
-}</pre><pre class="programlisting">public int get (int index)  // assume -1 means error
+}
+</pre><pre class="programlisting">public int get (int index)  // assume -1 means error
 {
    AtomicAction A = new AtomicAction();
 
@@ -1816,7 +1830,8 @@ public class Lock extends StateManager
       A.rollback();
 
    return -1;
-}</pre></div></div><br class="example-break"/></div><div class="section" title="1.3.7. Garbage collecting objects"><div class="titlepage"><div><div><h3 class="title"><a id="d0e2027"/>1.3.7. Garbage collecting objects</h3></div></div></div><p>
+}
+</pre></div></div><br class="example-break"/></div><div class="section" title="1.3.7. Garbage collecting objects"><div class="titlepage"><div><div><h3 class="title"><a id="d0e2027"/>1.3.7. Garbage collecting objects</h3></div></div></div><p>
             Java objects are deleted when the garbage collector determines that they are no longer required. Deleting an
             object that is currently under the control of a transaction must be approached with caution since if the object is
             being manipulated within a transaction its fate is effectively determined by the transaction. Therefore,
@@ -2029,7 +2044,8 @@ public Test (String s)
 {
     s1 = s;
     s2 = s;
-}</pre></div></div><br class="example-break"/><p>
+}
+</pre></div></div><br class="example-break"/><p>
                     Here, both
                     <code class="varname">s1</code>
                     and
@@ -2079,7 +2095,8 @@ public Test (String s)
         </p><div class="example"><a id="d0e2304"/><p class="title"><strong>Example 1.21. 
                 <code class="methodname">activate</code>
             </strong></p><div class="example-contents"><pre class="programlisting">boolean activate ()
-boolean activate (String storeRoot)</pre><p>
+boolean activate (String storeRoot)
+</pre><p>
                 Activate loads an object from the object store. The object’s UID must already have been set via the constructor
                 and the object must exist in the store. If the object is successfully read then restore_state is called to build
                 the object in memory. Activate is idempotent so that once an object has been activated further calls are
@@ -2088,7 +2105,8 @@ boolean activate (String storeRoot)</pre><p>
             </p></div></div><br class="example-break"/><div class="example"><a id="d0e2314"/><p class="title"><strong>Example 1.22. 
                 <code class="methodname">deactivate</code>
             </strong></p><div class="example-contents"><pre class="programlisting">boolean deactivate ()
-boolean deactivate (String storeRoot)</pre><p>
+boolean deactivate (String storeRoot)
+</pre><p>
                 The inverse of activate. First calls save_state to build the compacted image of the object which is then saved
                 in the object store. Objects are only saved if they have been modified since they were activated. The parameter
                 represents the root name of the object store into which the object should be saved. A value of null
@@ -2096,7 +2114,8 @@ boolean deactivate (String storeRoot)</pre><p>
                 the default store.
             </p></div></div><br class="example-break"/><div class="example"><a id="d0e2324"/><p class="title"><strong>Example 1.23. 
                 <code class="methodname">modified</code>
-            </strong></p><div class="example-contents"><pre class="programlisting">void modified ()</pre><p>
+            </strong></p><div class="example-contents"><pre class="programlisting">void modified ()
+</pre><p>
                 Must be called prior to modifying the object in memory. If it is not called, the object will not be
                 saved in the
                 object store by
@@ -2169,7 +2188,8 @@ boolean deactivate (String storeRoot)</pre><p>
 
     private int[QUEUE_SIZE] elements;
     private int numberOfElements;
-};</pre></div></div><br class="example-break"/></div><div class="section" title="1.5.2. Constructors and finalizers"><div class="titlepage"><div><div><h3 class="title"><a id="d0e2386"/>1.5.2. Constructors and finalizers</h3></div></div></div><p>
+};
+</pre></div></div><br class="example-break"/></div><div class="section" title="1.5.2. Constructors and finalizers"><div class="titlepage"><div><div><h3 class="title"><a id="d0e2386"/>1.5.2. Constructors and finalizers</h3></div></div></div><p>
             Using an existing persistent object requires the use of a special constructor
             that takes the Uid of the persistent object, as shown in
             <a class="xref" href="#example-TransactionalQueue" title="Example 1.25.  Class TransactionalQueue">Example 1.25, “
@@ -2213,7 +2233,8 @@ The constructor that creates a new persistent object is similar:
             System.err.println(“Object construction error: “+e);
             System.exit(1);
         }
-}</pre></div></div><br class="example-break"/><p>
+}
+</pre></div></div><br class="example-break"/><p>
             The use of an atomic action within the constructor for a new object follows the guidelines outlined earlier and
             ensures that the object’s state will be written to the object store when the appropriate top level atomic action
             commits (which will either be the action A or some enclosing action active when the TransactionalQueue was
@@ -2266,7 +2287,8 @@ The constructor that creates a new persistent object is similar:
         {
             return false;
         }
-}</pre></div></div><br class="example-break"/><div class="example"><a id="d0e2442"/><p class="title"><strong>Example 1.27. 
+}
+</pre></div></div><br class="example-break"/><div class="example"><a id="d0e2442"/><p class="title"><strong>Example 1.27. 
                     Method
                     <code class="methodname">restore_state</code>
                 </strong></p><div class="example-contents"><pre class="programlisting">public boolean restore_state (InputObjectState os, int ObjectType)
@@ -2352,7 +2374,8 @@ The constructor that creates a new persistent object is similar:
         {
             throw new QueueError();
         }
-}       </pre></div></div><br class="example-break"/></div><div class="section" title="1.5.3.3.  queueSize method"><div class="titlepage"><div><div><h4 class="title"><a id="d0e2485"/>1.5.3.3. 
+}       
+</pre></div></div><br class="example-break"/></div><div class="section" title="1.5.3.3.  queueSize method"><div class="titlepage"><div><div><h4 class="title"><a id="d0e2485"/>1.5.3.3. 
                 <code class="methodname">queueSize</code>
                 method
             </h4></div></div></div><div class="example"><a id="d0e2491"/><p class="title"><strong>Example 1.30. 
@@ -2385,7 +2408,8 @@ The constructor that creates a new persistent object is similar:
         }
 
     return size;
-}       </pre></div></div><br class="example-break"/></div><div class="section" title="1.5.3.4.  inspectValue and setValue methods"><div class="titlepage"><div><div><h4 class="title"><a id="d0e2499"/>1.5.3.4. 
+}       
+</pre></div></div><br class="example-break"/></div><div class="section" title="1.5.3.4.  inspectValue and setValue methods"><div class="titlepage"><div><div><h4 class="title"><a id="d0e2499"/>1.5.3.4. 
                 <code class="methodname">inspectValue</code>
                 and
                 <code class="methodname">setValue</code>
@@ -2451,7 +2475,8 @@ The constructor that creates a new persistent object is similar:
         }
 
     return val;
-}</pre></div></div><br class="example-break"/></div></div><div class="section" title="1.5.4. The client"><div class="titlepage"><div><div><h3 class="title"><a id="d0e2524"/>1.5.4. The client</h3></div></div></div><p>
+}
+</pre></div></div><br class="example-break"/></div></div><div class="section" title="1.5.4. The client"><div class="titlepage"><div><div><h3 class="title"><a id="d0e2524"/>1.5.4. The client</h3></div></div></div><p>
             Rather than show all of the code for the client, this example concentrates on a representative portion. Before
             invoking operations on the object, the client must first bind to the object. In the local case this simply
             requires the client to create an instance of the object.
@@ -2487,7 +2512,8 @@ The constructor that creates a new persistent object is similar:
         {
             System.err.println(“Caught unexpected exception!”);
         }
-}</pre></div></div><br class="example-break"/></div><div class="section" title="1.5.5. Comments"><div class="titlepage"><div><div><h3 class="title"><a id="d0e2534"/>1.5.5. Comments</h3></div></div></div><p>
+}
+</pre></div></div><br class="example-break"/></div><div class="section" title="1.5.5. Comments"><div class="titlepage"><div><div><h3 class="title"><a id="d0e2534"/>1.5.5. Comments</h3></div></div></div><p>
             Since the
             <code class="systemitem">queue</code>
             object is persistent, the state of the object survives any failures of
@@ -2653,7 +2679,8 @@ The constructor that creates a new persistent object is similar:
             </p><div class="example"><a id="d0e2634"/><p class="title"><strong>Example 1.33. Recovery Environment Bean XML</strong></p><div class="example-contents"><pre class="programlisting">&lt;entry key="RecoveryEnvironmentBean.recoveryExtensions"&gt;
   com.arjuna.ats.internal.arjuna.recovery.AtomicActionRecoveryModule
   com.arjuna.ats.internal.txoj.recovery.TORecoveryModule
-&lt;/entry&gt;</pre></div></div><br class="example-break"/></div><div class="section" title="1.6.2.4. Expired entry removal"><div class="titlepage"><div><div><h4 class="title"><a id="d0e2639"/>1.6.2.4. Expired entry removal</h4></div></div></div><p>The operation of the recovery subsystem will cause some entries to be made in the ObjectStore that
+&lt;/entry&gt;
+</pre></div></div><br class="example-break"/></div><div class="section" title="1.6.2.4. Expired entry removal"><div class="titlepage"><div><div><h4 class="title"><a id="d0e2639"/>1.6.2.4. Expired entry removal</h4></div></div></div><p>The operation of the recovery subsystem will cause some entries to be made in the ObjectStore that
                 will not be removed in normal
                 progress.
                 The RecoveryManager has a facility for scanning for these and removing items that are very old. Scans and removals are
@@ -2691,7 +2718,8 @@ The constructor that creates a new persistent object is similar:
                 process.
             </p><p>The Expiry Scanner properties for these are:</p><div class="example"><a id="d0e2650"/><p class="title"><strong>Example 1.34. Recovery Environment Bean XML</strong></p><div class="example-contents"><pre class="programlisting">&lt;entry key="RecoveryEnvironmentBean.expiryScanners"&gt;
   com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner
-&lt;/entry&gt;</pre></div></div><br class="example-break"/><p>To illustrate the behavior of a recovery module, the following pseudo code describes the basic
+&lt;/entry&gt;
+</pre></div></div><br class="example-break"/><p>To illustrate the behavior of a recovery module, the following pseudo code describes the basic
                 algorithm used for Atomic Action
                 transactions and Transactional Objects for java.
             </p><div class="example"><a id="d0e2657"/><p class="title"><strong>Example 1.35. AtomicAction pseudo code</strong></p><div class="example-contents"><pre class="programlisting">First Pass:
@@ -2789,6 +2817,7 @@ public class TestRecoveryModule {
 	protected static boolean _commit = true;
 	protected static boolean _crash = false;
 }
+
         </pre></div></div><br class="example-break"/><p>The registered participant has the following behavior: </p><div class="itemizedlist"><ul class="itemizedlist"><li class="listitem"><p>During the prepare phase, it writes a simple message - “I’m prepared”- on the disk such The
                         message is written in a well known file
                     </p></li><li class="listitem"><p>During the commit phase, it writes another message - “I’m committed”- in the same file used
@@ -2855,6 +2884,7 @@ public class SimpleRecord extends AbstractRecord {
 	}
 	// …
 }
+
         </pre></div></div><br class="example-break"/><p>The role of the Recovery Module in such application consists to read the content of the file used to
                 store the status of the participant,
                 to determine that status and print a message indicating if a recovery action is needed or not.
@@ -2915,12 +2945,14 @@ public class SimpleRecoveryModule implements RecoveryModule {
 		}
 	}
 }
+
         </pre></div></div><br class="example-break"/><p>The recovery module should now be deployed in order to be called by the Recovery Manager. To do so, we
                 just need to add an entry in the
                 the config file for the extension:
             </p><div class="example"><a id="d0e2727"/><p class="title"><strong>Example 1.40. Recovery Environment Bean Recovery Extensions XML</strong></p><div class="example-contents"><pre class="programlisting">&lt;entry key="RecoveryEnvironmentBean.recoveryExtenstions"&gt;
   com.arjuna.demo.recoverymodule.SimpleRecoveryModule
-&lt;/entry&gt;</pre></div></div><br class="example-break"/><p>Once started, the Recovery Manager will automatically load the listed Recovery modules.</p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h2>Note</h2><p>The
+&lt;/entry&gt;
+</pre></div></div><br class="example-break"/><p>Once started, the Recovery Manager will automatically load the listed Recovery modules.</p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h2>Note</h2><p>The
                     source of the code can be retrieved under the trailmap directory of the Narayana
                     installation.
                 </p></div></div><div class="section" title="1.6.3.2. Another scenario"><div class="titlepage"><div><div><h4 class="title"><a id="d0e2737"/>1.6.3.2. Another scenario</h4></div></div></div><p>As mentioned, the basic application presented above does not present the complete process to recover
@@ -3295,7 +3327,8 @@ public class SimpleRecoveryModule implements RecoveryModule {
             The Expiry Scanner properties for these are:
         </p><pre class="programlisting"> &lt;entry key="RecoveryEnvironmentBean.expiryScannerClassNames"&gt;
     com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner
-&lt;/entry&gt;</pre></div></div><div class="section" title="2.1.6. Errors and Exceptions"><div class="titlepage"><div><div><h3 class="title"><a id="d0e3112"/>2.1.6. Errors and Exceptions</h3></div></div></div><p>
+&lt;/entry&gt;
+</pre></div></div><div class="section" title="2.1.6. Errors and Exceptions"><div class="titlepage"><div><div><h3 class="title"><a id="d0e3112"/>2.1.6. Errors and Exceptions</h3></div></div></div><p>
         This section covers the types and causes of errors and exceptions which may be thrown or reported during a
         transactional application.
     </p><div class="variablelist" title="Errors and Exceptions"><p class="title"><strong>Errors and Exceptions</strong></p><dl><dt><span class="term">
@@ -3400,7 +3433,8 @@ public class SimpleRecoveryModule implements RecoveryModule {
             <code class="interfacename">java.sql.Driver</code>
             interface. If the database is not transactional, ACID properties
             cannot be guaranteed.
-        </p><div class="section" title="2.2.1.2.1. Loading drivers"><div class="titlepage"><div><div><h5 class="title"><a id="d0e3253"/>2.2.1.2.1. Loading drivers</h5></div></div></div><div class="example"><a id="d0e3256"/><p class="title"><strong>Example 2.1. Instantiating and using the driver within an application</strong></p><div class="example-contents"><pre class="programlisting">TransactionalDriver arjunaJDBC2Driver = new TransactionalDriver(); </pre></div></div><br class="example-break"/><div class="example"><a id="d0e3261"/><p class="title"><strong>Example 2.2. Registering the drivers with the JDBC driver manager using the Java system properties</strong></p><div class="example-contents"><pre class="programlisting">Properties p = System.getProperties(); 
+        </p><div class="section" title="2.2.1.2.1. Loading drivers"><div class="titlepage"><div><div><h5 class="title"><a id="d0e3253"/>2.2.1.2.1. Loading drivers</h5></div></div></div><div class="example"><a id="d0e3256"/><p class="title"><strong>Example 2.1. Instantiating and using the driver within an application</strong></p><div class="example-contents"><pre class="programlisting">TransactionalDriver arjunaJDBC2Driver = new TransactionalDriver(); 
+</pre></div></div><br class="example-break"/><div class="example"><a id="d0e3261"/><p class="title"><strong>Example 2.2. Registering the drivers with the JDBC driver manager using the Java system properties</strong></p><div class="example-contents"><pre class="programlisting">Properties p = System.getProperties(); 
 
 switch (dbType)
 {
@@ -3770,7 +3804,8 @@ ResultSet res1 = stmt.executeQuery("SELECT * FROM test_table");
                 sysEx.printStackTrace();
                 System.exit(0);
             }
-    }</pre></div></div><br class="example-break"/></div><div class="section" title="2.2.2.2. Failure recovery example with BasicXARecovery"><div class="titlepage"><div><div><h4 class="title"><a id="d0e3501"/>2.2.2.2. Failure recovery example with BasicXARecovery</h4></div></div></div><p>
+    }
+</pre></div></div><br class="example-break"/></div><div class="section" title="2.2.2.2. Failure recovery example with BasicXARecovery"><div class="titlepage"><div><div><h4 class="title"><a id="d0e3501"/>2.2.2.2. Failure recovery example with BasicXARecovery</h4></div></div></div><p>
             This class implements the
             <code class="interfacename">XAResourceRecovery</code>
             interface for XAResources. The parameter supplied in
@@ -3960,7 +3995,8 @@ private static final String jndiTag = "JNDI_";
  * DB_JNDI_DatabasePassword=tester DB_JNDI_DatabaseName=empay
  * DB_JNDI_Host=qa02 DB_JNDI_Port=20000
  */
-private static final char BREAKCHARACTER = ';'; // delimiter for parameters</pre><p>
+private static final char BREAKCHARACTER = ';'; // delimiter for parameters
+</pre><p>
                 You can use the class
                 <code class="classname">com.arjuna.ats.internal.jdbc.recovery.JDBC2RecoveryConnection</code>
                 to
@@ -4035,7 +4071,8 @@ private static final char BREAKCHARACTER = ';'; // delimiter for parameters</pre
             propagated via
             JRMP invocations to the server, the transaction propagation context factory needs to be explicitly set for the
             JRMP invoker proxy. This is done as follows:
-        </p><pre class="programlisting">JRMPInvokerProxy.setTPCFactory( new com.arjuna.ats.internal.jbossatx.jts.PropagationContextManager() );</pre></div></div></div><div class="section" title="2.3. Installation"><div class="titlepage"><div><div><h2 class="title"><a id="d0e3625"/>2.3. Installation</h2></div></div></div><div class="section" title="2.3.1. Preparing Your System"><div class="titlepage"><div><div><h3 class="title"><a id="d0e3628"/>2.3.1. Preparing Your System</h3></div></div></div><div class="procedure" title="Procedure 2.2. Pre-Installation Steps"><a id="d0e3631"/><p class="title"><strong>Procedure 2.2. Pre-Installation Steps</strong></p><p>
+        </p><pre class="programlisting">JRMPInvokerProxy.setTPCFactory( new com.arjuna.ats.internal.jbossatx.jts.PropagationContextManager() );
+</pre></div></div></div><div class="section" title="2.3. Installation"><div class="titlepage"><div><div><h2 class="title"><a id="d0e3625"/>2.3. Installation</h2></div></div></div><div class="section" title="2.3.1. Preparing Your System"><div class="titlepage"><div><div><h3 class="title"><a id="d0e3628"/>2.3.1. Preparing Your System</h3></div></div></div><div class="procedure" title="Procedure 2.2. Pre-Installation Steps"><a id="d0e3631"/><p class="title"><strong>Procedure 2.2. Pre-Installation Steps</strong></p><p>
             Before installing the Narayana
             software, we recommend the following administrative steps be taken, assuming a default configuration for Narayana.
         </p><ol class="procedure" type="1"><li class="step" title="Install the distribution into the required location."><p class="title"><strong>Install the distribution into the required location.</strong></p><p>
@@ -4319,7 +4356,8 @@ utx.begin();
 
 // perform transactional work
 
-utx.commit(); </pre></div></div><br class="example-break"/></div><div class="section" title="2.4.4.2. TransactionManager"><div class="titlepage"><div><div><h4 class="title"><a id="d0e4044"/>2.4.4.2. TransactionManager</h4></div></div></div><p>The TransactionManager interface allows the application server to control transaction boundaries on
+utx.commit();
+ </pre></div></div><br class="example-break"/></div><div class="section" title="2.4.4.2. TransactionManager"><div class="titlepage"><div><div><h4 class="title"><a id="d0e4044"/>2.4.4.2. TransactionManager</h4></div></div></div><p>The TransactionManager interface allows the application server to control transaction boundaries on
                 behalf of the application being
                 managed.
             </p><p>In Narayana,
@@ -4898,7 +4936,8 @@ utx.commit(); </pre></div></div><br class="example-break"/></div><div class="sec
             The Expiry Scanner properties for these are:
         </p><pre class="programlisting"> &lt;entry key="RecoveryEnvironmentBean.expiryScannerClassNames"&gt;
     com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner
-&lt;/entry&gt;</pre></div></div><div class="section" title="3.1.5. ORB-specific Configurations"><div class="titlepage"><div><div><h3 class="title"><a id="d0e4798"/>3.1.5. ORB-specific Configurations</h3></div></div></div><div class="section" title="3.1.5.1. JacORB"><div class="titlepage"><div><div><h4 class="title"><a id="d0e4801"/>3.1.5.1. JacORB</h4></div></div></div><p>
+&lt;/entry&gt;
+</pre></div></div><div class="section" title="3.1.5. ORB-specific Configurations"><div class="titlepage"><div><div><h3 class="title"><a id="d0e4798"/>3.1.5. ORB-specific Configurations</h3></div></div></div><div class="section" title="3.1.5.1. JacORB"><div class="titlepage"><div><div><h4 class="title"><a id="d0e4801"/>3.1.5.1. JacORB</h4></div></div></div><p>
             For JacORB to function correctly it needs a valid
             <code class="filename">jacorb.properties</code>
             or
@@ -5039,7 +5078,7 @@ utx.commit(); </pre></div></div><br class="example-break"/></div><div class="sec
                     Until they receive this message, these resources are unavailable for use by other actions. If the coordinator
                     fails before delivery of this message, these resources remain blocked. However, if crashed machines eventually
                     recover, crash recovery mechanisms can be employed to unblock the protocol and terminate the action.
-                </p></li></ol></div><div class="figure"><a id="img-commit-protocol"/><p class="title"><strong>Figure 3.1. Two-Phase Commit</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-img-2phase.png" alt="Two-Phase Commit" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e4979.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e4979.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/></div><div class="section" title="3.2.1.3. Transactional proxies"><div class="titlepage"><div><div><h4 class="title"><a id="d0e4985"/>3.2.1.3. Transactional proxies</h4></div></div></div><p>
+                </p></li></ol></div><div class="figure"><a id="img-commit-protocol"/><p class="title"><strong>Figure 3.1. Two-Phase Commit</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-img-2phase.png" alt="Two-Phase Commit" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e4979.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e4979.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/></div><div class="section" title="3.2.1.3. Transactional proxies"><div class="titlepage"><div><div><h4 class="title"><a id="d0e4985"/>3.2.1.3. Transactional proxies</h4></div></div></div><p>
             The action coordinator maintains a transaction context where resources taking part in the action need to be
             registered. Resources must obey the transaction commit protocol to guarantee ACID properties. Typically, the
             resource provides specific operations which the action can invoke during the commit/abort protocol. However, some
@@ -5242,7 +5281,7 @@ utx.commit(); </pre></div></div><br class="example-break"/></div><div class="sec
                 .
             </p><div class="figure"><a id="jbossts-class-hierarchy"/><p class="title"><strong>Figure 3.2. 
                     class hierarchy
-                </strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-jbossts-class-hierarchy.png" alt="class hierarchy" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e5165.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e5165.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
+                </strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-jbossts-class-hierarchy.png" alt="class hierarchy" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e5165.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e5165.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
                 Your main responsibilities are specifying the scope of transactions and setting appropriate locks within
                 objects. 
                 guarantees that transactional objects will be registered with, and be driven by, the
@@ -5432,7 +5471,8 @@ utx.commit(); </pre></div></div><br class="example-break"/></div><div class="sec
     public void run ();
 
     protected OTS_Thread ();
-};</pre></div></div><br class="example-break"/><p>
+};
+</pre></div></div><br class="example-break"/><p>
             Call the
             <code class="methodname">run</code>
             method of
@@ -5484,7 +5524,7 @@ utx.commit(); </pre></div></div><br class="example-break"/></div><div class="sec
             mentioned in the
             <code class="classname">com.arjuna.ats.jts.common.Environment</code>
             class.
-        </p><div class="figure"><a id="d0e5444"/><p class="title"><strong>Figure 3.3. OTS architecture</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-ots_architecture.png" alt="OTS architecture" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e5447.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e5447.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/></div><div class="section" title="3.2.3.2. Action programming models"><div class="titlepage"><div><div><h4 class="title"><a id="d0e5453"/>3.2.3.2. Action programming models</h4></div></div></div><p>
+        </p><div class="figure"><a id="d0e5444"/><p class="title"><strong>Figure 3.3. OTS architecture</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-ots_architecture.png" alt="OTS architecture" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e5447.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e5447.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/></div><div class="section" title="3.2.3.2. Action programming models"><div class="titlepage"><div><div><h4 class="title"><a id="d0e5453"/>3.2.3.2. Action programming models</h4></div></div></div><p>
             A client application program can manage a transaction using direct or indirect context management.
         </p><div class="itemizedlist"><ul class="itemizedlist"><li class="listitem"><p>
                     <em class="firstterm">Indirect context management</em>
@@ -5886,7 +5926,8 @@ interface TransactionFactory
     Control get_control ();   
     Control suspend ();
     void resume (in Control which) raises (InvalidControl);
-};</pre></div></div><br class="example-break"/><div class="section" title="3.2.3.6.1. Nested transactions"><div class="titlepage"><div><div><h5 class="title"><a id="d0e6044"/>3.2.3.6.1. Nested transactions</h5></div></div></div><p>
+};
+</pre></div></div><br class="example-break"/><div class="section" title="3.2.3.6.1. Nested transactions"><div class="titlepage"><div><div><h5 class="title"><a id="d0e6044"/>3.2.3.6.1. Nested transactions</h5></div></div></div><p>
                 Subtransactions are a useful mechanism for two reasons:
             </p><div class="variablelist"><dl><dt><span class="term">fault-tolerance</span></dt><dd><p>
                             If a subtransaction rolls back, the enclosing transaction does not also need to roll back. This preserves
@@ -5971,7 +6012,8 @@ interface TransactionFactory
    t = c.get_terminator();          // get terminator
    t.commit(false);              // so it can be used to commit
    ...
-}</pre></div></div><br class="example-break"/><p>
+}
+</pre></div></div><br class="example-break"/><p>
                 The next example rewrites the same program to use indirect context management and implicit propagation. This
                 example is considerably simpler, because the application only needs to start and either commit or abort actions.
             </p><div class="example"><a id="d0e6138"/><p class="title"><strong>Example 3.6. Indirect context management and implicit propagation</strong></p><div class="example-contents"><pre class="programlisting">{
@@ -5982,7 +6024,8 @@ interface TransactionFactory
    ...
    current.commit(false);        // simple commit
    ...
-}</pre></div></div><br class="example-break"/><p>
+}
+</pre></div></div><br class="example-break"/><p>
                 The last example illustrates the flexibility of OTS by using both direct and indirect context management in
                 conjunction with explicit and implicit transaction propagation.
             </p><div class="example"><a id="d0e6145"/><p class="title"><strong>Example 3.7. Direct and direct context management with explicitly and implicit propagation</strong></p><div class="example-contents"><pre class="programlisting">{
@@ -6001,7 +6044,8 @@ interface TransactionFactory
    ...
    current.rollback();           // oops! rollback
    ...
-}</pre></div></div><br class="example-break"/></div></div><div class="section" title="3.2.3.7. Transaction controls"><div class="titlepage"><div><div><h4 class="title"><a id="d0e6150"/>3.2.3.7. Transaction controls</h4></div></div></div><p>
+}
+</pre></div></div><br class="example-break"/></div></div><div class="section" title="3.2.3.7. Transaction controls"><div class="titlepage"><div><div><h4 class="title"><a id="d0e6150"/>3.2.3.7. Transaction controls</h4></div></div></div><p>
             The
             <code class="interfacename">Control</code>
             interface allows a program to explicitly manage or propagate a
@@ -6508,10 +6552,10 @@ interface TransactionFactory
                         </td></tr></tbody></table></div></div><br class="table-break"/><div class="figure"><a id="d0e6805"/><p class="title"><strong>Figure 3.4. 
                 Creation of a top-level transaction using
                 <code class="interfacename">Current</code>
-            </strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-top_level_transaction_current.png" alt="Creation of a top-level transaction using Current" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e6811.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e6811.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><div class="figure"><a id="d0e6820"/><p class="title"><strong>Figure 3.5. 
+            </strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-top_level_transaction_current.png" alt="Creation of a top-level transaction using Current" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e6811.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e6811.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><div class="figure"><a id="d0e6820"/><p class="title"><strong>Figure 3.5. 
                 Creation of a transaction using
                 <code class="interfacename">Current</code>
-            </strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-subtransaction_current.png" alt="Creation of a transaction using Current" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e6826.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e6826.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><div class="section" title="3.2.3.11.1.  specifics"><div class="titlepage"><div><div><h5 class="title"><a id="current-jbossts-specific"/>3.2.3.11.1. 
+            </strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-subtransaction_current.png" alt="Creation of a transaction using Current" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e6826.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e6826.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><div class="section" title="3.2.3.11.1.  specifics"><div class="titlepage"><div><div><h5 class="title"><a id="current-jbossts-specific"/>3.2.3.11.1. 
                 specifics
             </h5></div></div></div><p>
                 Ideally, you should Obtain
@@ -6592,7 +6636,8 @@ interface TransactionFactory
     void commit_one_phase () raises (HeuristicRollback, HeuristicMixed,
                                     HeuristicHazard);
     void forget ();
-};</pre></div></div><br class="example-break"/><p>
+};
+</pre></div></div><br class="example-break"/><p>
             The
             <code class="interfacename">Resource</code>
             interface defines the operations invoked by the transaction
@@ -6634,7 +6679,7 @@ interface TransactionFactory
         </p><div class="figure"><a id="d0e6959"/><p class="title"><strong>Figure 3.6. 
                 <code class="interfacename">Resource</code>
                 and nested transactions
-            </strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-resource_nested_transactions.png" alt="Resource and nested transactions" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e6965.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e6965.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
+            </strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-resource_nested_transactions.png" alt="Resource and nested transactions" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e6965.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e6965.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
             Do not register a given
             <code class="interfacename">Resource</code>
             with the same transaction more than once, or it
@@ -6729,7 +6774,8 @@ interface TransactionFactory
 {
     void commit_subtransaction (in Coordinator parent);
     void rollback_subtransaction ();
-};</pre></div></div><br class="example-break"/><p>
+};
+</pre></div></div><br class="example-break"/><p>
             A recoverable object is only informed of the completion of a nested transaction if it registers a
             <code class="interfacename">SubtransactionAwareResource</code>
             . Register the object with either the
@@ -6771,10 +6817,10 @@ interface TransactionFactory
                     </p></dd></dl></div><div class="figure"><a id="d0e7139"/><p class="title"><strong>Figure 3.7. 
                 Method
                 <code class="methodname">register_subtran_aware</code>
-            </strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-register_subtran_aware.png" alt="Method register_subtran_aware" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e7145.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e7145.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><div class="figure"><a id="d0e7154"/><p class="title"><strong>Figure 3.8. 
+            </strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-register_subtran_aware.png" alt="Method register_subtran_aware" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e7145.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e7145.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><div class="figure"><a id="d0e7154"/><p class="title"><strong>Figure 3.8. 
                 Method
                 <code class="methodname">register_resource</code>
-            </strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-register_resource.png" alt="Method register_resource" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e7160.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e7160.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
+            </strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-register_resource.png" alt="Method register_resource" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e7160.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e7160.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
             In either case, the resource cannot affect the outcome of the transaction completion. It can only act on the
             transaction's decision, after the decision is made. However, if the resource cannot respond appropriately,
             it can
@@ -6816,7 +6862,8 @@ interface TransactionFactory
 {
    void before_completion ();
    void after_completion (in Status s);
-};</pre></div></div><br class="example-break"/><p>
+};
+</pre></div></div><br class="example-break"/><p>
             The method
             <code class="methodname">before_completion</code>
             is called before the two-phase commit protocol starts, and
@@ -6842,7 +6889,7 @@ interface TransactionFactory
             <code class="interfacename">SubtransactionAwareResource</code>
             , and Synchronization, the following UML relationship
             diagram can be drawn:
-        </p><div class="figure"><a id="d0e7239"/><p class="title"><strong>Figure 3.9. Relationship between Control, Resource, SubtransactionAwareResource, and Synchronization</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-interface_relationship.png" alt="Relationship between Control, Resource, SubtransactionAwareResource, and Synchronization" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e7242.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e7242.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><div class="section" title="3.2.3.14.1.  specifics"><div class="titlepage"><div><div><h5 class="title"><a id="d0e7248"/>3.2.3.14.1. 
+        </p><div class="figure"><a id="d0e7239"/><p class="title"><strong>Figure 3.9. Relationship between Control, Resource, SubtransactionAwareResource, and Synchronization</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-interface_relationship.png" alt="Relationship between Control, Resource, SubtransactionAwareResource, and Synchronization" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e7242.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e7242.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><div class="section" title="3.2.3.14.1.  specifics"><div class="titlepage"><div><div><h5 class="title"><a id="d0e7248"/>3.2.3.14.1. 
                 specifics
             </h5></div></div></div><p>
                 Synchronizations must be called before the top-level transaction commit protocol starts, and after it
@@ -6886,7 +6933,7 @@ interface TransactionFactory
                 <code class="interfacename">Control</code>
                 and the resources registered with
                 it
-            </strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-control_and_resources.png" alt="Relationship between a transaction Control and the resources registered with it" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e7290.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e7290.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
+            </strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-control_and_resources.png" alt="Relationship between a transaction Control and the resources registered with it" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e7290.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e7290.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
             In
             <a class="xref" href="#subtransaction-commit" title="Figure 3.11. Subtransaction commit">Figure 3.11, “Subtransaction commit”</a>
             , a subtransaction with both
@@ -6905,14 +6952,14 @@ interface TransactionFactory
             do. Only the
             <code class="classname">Resources</code>
             are automatically propagated to the parent transaction.
-        </p><div class="figure"><a id="subtransaction-commit"/><p class="title"><strong>Figure 3.11. Subtransaction commit</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-subtransaction-commit.png" alt="Subtransaction commit" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e7327.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e7327.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
+        </p><div class="figure"><a id="subtransaction-commit"/><p class="title"><strong>Figure 3.11. Subtransaction commit</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-subtransaction-commit.png" alt="Subtransaction commit" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e7327.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e7327.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
             <a class="xref" href="#subtransaction-rollback" title="Figure 3.12. Subtransaction rollback">Figure 3.12, “Subtransaction rollback”</a>
             illustrates the impact of a subtransaction rolling back. Any registered
             resources are discarded, and all
             <code class="classname">SubtransactionAwareResources</code>
             are informed of the
             transaction outcome.
-        </p><div class="figure"><a id="subtransaction-rollback"/><p class="title"><strong>Figure 3.12. Subtransaction rollback</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-subtransaction-rollback.png" alt="Subtransaction rollback" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e7343.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e7343.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
+        </p><div class="figure"><a id="subtransaction-rollback"/><p class="title"><strong>Figure 3.12. Subtransaction rollback</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-subtransaction-rollback.png" alt="Subtransaction rollback" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e7343.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e7343.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
             <a class="xref" href="#top-level-commit" title="Figure 3.13. Top-level commit">Figure 3.13, “Top-level commit”</a>
             shows the activity diagram for committing a top-level
             transaction. Subtransactions within the top-level transaction which have also successfully committed propagate
@@ -6927,7 +6974,7 @@ interface TransactionFactory
             is
             called. Because of indirect context management, when the transaction commits, the transaction service changes the
             invoking thread’s transaction context.
-        </p><div class="figure"><a id="top-level-commit"/><p class="title"><strong>Figure 3.13. Top-level commit</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-top-level-commit.png" alt="Top-level commit" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e7368.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e7368.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><div class="figure"><a id="d0e7374"/><p class="title"><strong>Figure 3.14. Top-level rollback</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-top-level-rollback.png" alt="Top-level rollback" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e7377.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e7377.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/></div><div class="section" title="3.2.3.16.  The TransactionalObject interface"><div class="titlepage"><div><div><h4 class="title"><a id="d0e7383"/>3.2.3.16. 
+        </p><div class="figure"><a id="top-level-commit"/><p class="title"><strong>Figure 3.13. Top-level commit</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-top-level-commit.png" alt="Top-level commit" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e7368.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e7368.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><div class="figure"><a id="d0e7374"/><p class="title"><strong>Figure 3.14. Top-level rollback</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-top-level-rollback.png" alt="Top-level rollback" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e7377.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e7377.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/></div><div class="section" title="3.2.3.16.  The TransactionalObject interface"><div class="titlepage"><div><div><h4 class="title"><a id="d0e7383"/>3.2.3.16. 
             The
             <code class="interfacename">TransactionalObject</code>
             interface
@@ -7037,7 +7084,7 @@ interface TransactionFactory
                 <code class="interfacename">Resource</code>
                 and
                 <code class="interfacename">RecoveryCoordinator</code>
-            </strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-resource-and-recoverycoordinator.png" alt="Resource and RecoveryCoordinator" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e7505.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e7505.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/></div><div class="section" title="3.2.3.19. Checked transaction behavior"><div class="titlepage"><div><div><h4 class="title"><a id="d0e7511"/>3.2.3.19. Checked transaction behavior</h4></div></div></div><p>
+            </strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-resource-and-recoverycoordinator.png" alt="Resource and RecoveryCoordinator" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e7505.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e7505.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/></div><div class="section" title="3.2.3.19. Checked transaction behavior"><div class="titlepage"><div><div><h4 class="title"><a id="d0e7511"/>3.2.3.19. Checked transaction behavior</h4></div></div></div><p>
             The OTS supports both checked and unchecked transaction behavior.
         </p><div class="itemizedlist" title="Integrity constraints of checked transactions"><p class="title"><strong>Integrity constraints of checked transactions</strong></p><ul class="itemizedlist"><li class="listitem"><p>
                     A transaction will not commit until all transactional objects involved in the transaction have completed their
@@ -7158,7 +7205,8 @@ public CheckedAction ();
 
 public synchronized void check (boolean isCommit, Uid actUid,
                                 BasicList list);
-};</pre></div></div><br class="example-break"/><p>
+};
+</pre></div></div><br class="example-break"/><p>
                 When a thread attempts to terminate the transaction and there active threads exist within it, the system
                 invokes
                 the
@@ -7351,7 +7399,8 @@ public synchronized void check (boolean isCommit, Uid actUid,
     // the client issues requests, some of which involve
     // transactional objects;
     BankAccount1.makeDeposit(deposit);
-    ...</pre><p>
+    ...
+</pre><p>
                     A transaction originator uses indirect context management and implicit transaction
                     propagation.
                     <code class="classname">txn_crt</code>
@@ -7380,7 +7429,8 @@ public synchronized void check (boolean isCommit, Uid actUid,
     c = TFactory.create(0);
     t = c.get_terminator();
     pgtx = c.get_coordinator().get_txcontext();
-    ...</pre><p>
+    ...
+</pre><p>
                     This transaction originator uses direct context management and explicit transaction propagation. The
                     client
                     uses a factory object supporting the
@@ -7557,7 +7607,8 @@ void makeDeposit (float amt)
     num_transactions++;
     ...
     // end of transactional operation
-};</pre></div></div><br class="example-break"/><div class="example"><a id="d0e8061"/><p class="title"><strong>Example 3.15. Transactional object</strong></p><div class="example-contents"><pre class="programlisting">/*  A BankAccount2 is an object with external resources that inherits from the TransactionalObject interface: */
+};
+</pre></div></div><br class="example-break"/><div class="example"><a id="d0e8061"/><p class="title"><strong>Example 3.15. Transactional object</strong></p><div class="example-contents"><pre class="programlisting">/*  A BankAccount2 is an object with external resources that inherits from the TransactionalObject interface: */
 interface BankAccount2: CosTransactions::TransactionalObject
 {
     ...
@@ -7581,7 +7632,8 @@ void makeDeposit(float amt)
     balance = balance + amt;
     res1.set_balance(balance);
     res2.increment_num_transactions();
-} // end of transactional operation</pre></div></div><br class="example-break"/></div></div><div class="section" title="3.2.4.6. Failure models"><div class="titlepage"><div><div><h4 class="title"><a id="d0e8066"/>3.2.4.6. Failure models</h4></div></div></div><p>
+} // end of transactional operation
+</pre></div></div><br class="example-break"/></div></div><div class="section" title="3.2.4.6. Failure models"><div class="titlepage"><div><div><h4 class="title"><a id="d0e8066"/>3.2.4.6. Failure models</h4></div></div></div><p>
             The Transaction Service provides atomic outcomes for transactions in the presence of application, system or
             communication failures. From the viewpoint of each user object role, two types of failure are relevant:
         </p><div class="itemizedlist"><ul class="itemizedlist"><li class="listitem"><p>
@@ -7778,7 +7830,8 @@ void makeDeposit(float amt)
     CosTransactions::SubtransactionAwareResource
 {
     CosTransactions::Vote prepare_subtransaction ();
-};</pre></div></div><br class="example-break"/><p>
+};
+</pre></div></div><br class="example-break"/><p>
             During the first phase of the commit protocol the
             <code class="methodname">prepare_subtransaction</code>
             method is
@@ -7824,7 +7877,8 @@ void makeDeposit(float amt)
     boolean shouldAlter (in OTSAbstractRecord record);
     boolean shouldMerge (in OTSAbstractRecord record);
     boolean shouldReplace (in OTSAbstractRecord record);
-};</pre></div></div><br class="example-break"/><div class="informaltable"><table border="1"><colgroup><col width="150px"/><col width="290px"/></colgroup><tbody><tr><td>typeId</td><td>
+};
+</pre></div></div><br class="example-break"/><div class="informaltable"><table border="1"><colgroup><col width="150px"/><col width="290px"/></colgroup><tbody><tr><td>typeId</td><td>
                             <p>
                                 returns the record type of the instance. This is one of the values of the enumerated
                                 type
@@ -7961,7 +8015,8 @@ void makeDeposit(float amt)
     public void
         registerSynchronization(Synchronization s) throws SystemException,
                                                           Inactive;
-};</pre></div></div><br class="example-break"/><div class="table"><a id="d0e8531"/><p class="title"><strong>Table 3.7. AtomicTransaction's Methods</strong></p><div class="table-contents"><table summary="AtomicTransaction's Methods" border="1"><colgroup><col width="150px"/><col width="290px"/></colgroup><tbody><tr><td>begin</td><td>
+};
+</pre></div></div><br class="example-break"/><div class="table"><a id="d0e8531"/><p class="title"><strong>Table 3.7. AtomicTransaction's Methods</strong></p><div class="table-contents"><table summary="AtomicTransaction's Methods" border="1"><colgroup><col width="150px"/><col width="290px"/></colgroup><tbody><tr><td>begin</td><td>
                             <p>Starts an action</p>
                         </td></tr><tr><td>commit</td><td>
                             <p>Commits an action</p>
@@ -8054,7 +8109,8 @@ void makeDeposit(float amt)
 
     public void unregisterTransaction () throws InvalidTransaction,
                                                 SystemException;
-};</pre></div></div><br class="example-break"/><p>
+};
+</pre></div></div><br class="example-break"/><p>
             A transaction context can be propagated between client and server in two ways: either as a reference to the
             client’s transaction Control, or explicitly sent by the client. Therefore, there are two ways in which the
             interposed transaction hierarchy can be created and registered. For example, consider the class Example which is
@@ -8077,7 +8133,8 @@ void makeDeposit(float amt)
     inter.unregisterTransaction();  // should catch exceptions!
 
     // return value dependant upon outcome
-}</pre></div></div><br class="example-break"/><p>
+}
+</pre></div></div><br class="example-break"/><p>
             if the
             <code class="interfacename">Control</code>
             passed to the
@@ -8127,7 +8184,8 @@ module Demo
     {
         void work() raises (DemoException);
     };
-};</pre></div></div><br class="example-break"/><div class="section" title="3.2.6.1.1. Example implementation of the interface"><div class="titlepage"><div><div><h5 class="title"><a id="d0e8705"/>3.2.6.1.1. Example implementation of the interface</h5></div></div></div><p>
+};
+</pre></div></div><br class="example-break"/><div class="section" title="3.2.6.1.1. Example implementation of the interface"><div class="titlepage"><div><div><h5 class="title"><a id="d0e8705"/>3.2.6.1.1. Example implementation of the interface</h5></div></div></div><p>
                 This section deals with the pieces needed to implement the example interface.
             </p><div class="section" title="3.2.6.1.1.1. Resource"><div class="titlepage"><div><div><h6 class="title"><a id="d0e8710"/>3.2.6.1.1.1. Resource</h6></div></div></div><p>
                     The example overrides the methods of the
@@ -8180,7 +8238,8 @@ module Demo
 32       {
 33           System.out.println("forget called");
 34       }
-35   }    </pre></div></div><br class="example-break"/></div><div class="section" title="3.2.6.1.1.2. Transactional implementation"><div class="titlepage"><div><div><h6 class="title"><a id="d0e8740"/>3.2.6.1.1.2. Transactional implementation</h6></div></div></div><p>
+35   }    
+</pre></div></div><br class="example-break"/></div><div class="section" title="3.2.6.1.1.2. Transactional implementation"><div class="titlepage"><div><div><h6 class="title"><a id="d0e8740"/>3.2.6.1.1.2. Transactional implementation</h6></div></div></div><p>
                     At this stage, the
                     <code class="filename">Demo.idl</code>
                     has been processed by the ORB’s idl compiler to generate the
@@ -8367,7 +8426,7 @@ module Demo
                             coordinator calls the interposed coordinator, which in turn calls the
                             <code class="methodname">commit_one_phase</code>
                             method for the resource.
-                        </p></li></ul></div><div class="figure"><a id="d0e8855"/><p class="title"><strong>Figure 3.16. Sequence Diagram</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-sequence-diagram.png" alt="Sequence Diagram" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e8858.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e8858.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/></div><div class="section" title="3.2.6.1.1.6. Interpretation of output"><div class="titlepage"><div><div><h6 class="title"><a id="d0e8864"/>3.2.6.1.1.6. Interpretation of output</h6></div></div></div><p>
+                        </p></li></ul></div><div class="figure"><a id="d0e8855"/><p class="title"><strong>Figure 3.16. Sequence Diagram</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/jts-sequence-diagram.png" alt="Sequence Diagram" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e8858.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e8858.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/></div><div class="section" title="3.2.6.1.1.6. Interpretation of output"><div class="titlepage"><div><div><h6 class="title"><a id="d0e8864"/>3.2.6.1.1.6. Interpretation of output</h6></div></div></div><p>
                     The server process first stringifies the servant instance, and writes the servant IOR to a temporary file. The
                     first line of output is the sanity check that the operation was successful.
                 </p><p>
@@ -14391,7 +14450,9 @@ Connection connection = arjunaJDBC2Driver.connect("jdbc:arjuna:
             file. Contents of each file are below.
         </p><div class="example"><a id="d0e12996"/><p class="title"><strong>Example 3.27. RecoverManager-properties.xml</strong></p><div class="example-contents"><pre class="programlisting">&lt;entry key="RecoveryEnvironmentBean.recoveryActivatorClassNames"&gt;
   com.arjuna.ats.internal.jts.orbspecific.recovery.RecoveryEnablement
-&lt;/entry&gt;</pre></div></div><br class="example-break"/><div class="example"><a id="d0e13001"/><p class="title"><strong>Example 3.28. orportability-properties.xml</strong></p><div class="example-contents"><pre class="programlisting">&lt;entry key="com.arjuna.orbportability.orb.PostInit2"&gt;com.arjuna.ats.internal.jts.recovery.RecoveryInit&lt;/entry&gt;</pre></div></div><br class="example-break"/><p>
+&lt;/entry&gt;
+</pre></div></div><br class="example-break"/><div class="example"><a id="d0e13001"/><p class="title"><strong>Example 3.28. orportability-properties.xml</strong></p><div class="example-contents"><pre class="programlisting">&lt;entry key="com.arjuna.orbportability.orb.PostInit2"&gt;com.arjuna.ats.internal.jts.recovery.RecoveryInit&lt;/entry&gt;
+</pre></div></div><br class="example-break"/><p>
             These entries cause instances of the named classes to be loaded. The named classes then load
             the ORB-specific
             classes needed and perform other initialization. This enables failure recovery
@@ -14790,7 +14851,8 @@ public class BasicXARecovery implements XAConnectionRecovery
      */
 
     private static final char BREAKCHARACTER = ';';  // delimiter for parameters
-}</pre></div></div><br class="example-break"/><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h2>Multiple recovery domains and resource-initiated recovery</h2><p>
+}
+</pre></div></div><br class="example-break"/><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h2>Multiple recovery domains and resource-initiated recovery</h2><p>
                     <code class="methodname">XAResource.recover</code>
                     returns the list of all transactions that are in-doubt with in the
                     datasource. If multiple
@@ -15023,7 +15085,8 @@ public class BasicXARecovery implements XAConnectionRecovery
   com.arjuna.ats.internal.jts.recovery.contact.ExpiredContactScanner
   com.arjuna.ats.internal.jts.recovery.transactions.ExpiredToplevelScanner
   com.arjuna.ats.internal.jts.recovery.transactions.ExpiredServerScanner
-&lt;/entry&gt;</pre></div></div><br class="example-break"/><p>
+&lt;/entry&gt;
+</pre></div></div><br class="example-break"/><p>
                 There are two
                 <code class="classname">ExpiryScannner</code>
                 s for the assumed complete transactions, because there are
@@ -15220,7 +15283,8 @@ public class BasicXARecovery implements XAConnectionRecovery
 	public void run();
 
 	public void run(String name);
-} </pre></div></div><br class="example-break"/><p>We shall now describe the various methods of the ORB class.</p><div class="itemizedlist"><ul class="itemizedlist"><li class="listitem"><p>
+}
+ </pre></div></div><br class="example-break"/><p>We shall now describe the various methods of the ORB class.</p><div class="itemizedlist"><ul class="itemizedlist"><li class="listitem"><p>
                     <code class="literal">initORB</code>
                     : given the various parameters, this method initialises the ORB and retains a reference to
                     it within the ORB class. This method should be
@@ -15347,7 +15411,8 @@ public class ChildOA extends OA {
 	public boolean shutdownObject(org.omg.CORBA.Object obj);
 
 	public boolean shutdownObject(Servant obj);
-} </pre></div></div><br class="example-break"/><p>We shall now describe the various methods of the OA class.</p><div class="itemizedlist"><ul class="itemizedlist"><li class="listitem"><p>
+}
+ </pre></div></div><br class="example-break"/><p>We shall now describe the various methods of the OA class.</p><div class="itemizedlist"><ul class="itemizedlist"><li class="listitem"><p>
                     <code class="literal">initPOA</code>
                     : this method activates the POA, if this method is called on the RootPOA the POA with the
                     name RootPOA will be activated.
@@ -15407,7 +15472,8 @@ public abstract class OAAttribute {
 	public abstract void initialise(String[] params);
 
 	public boolean postOAInit();
-}; </pre></div></div><br class="example-break"/><p>
+};
+ </pre></div></div><br class="example-break"/><p>
                 By default, the
                 <code class="literal">postORBInit/postOAInit</code>
                 methods return true, which means that any
@@ -15440,7 +15506,8 @@ public abstract class OAAttribute {
 
 public abstract class PostShutdown {
 	public abstract void work();
-} </pre></div></div><br class="example-break"/></div><div class="section" title="3.3.2.1.3. Specifying the ORB to use"><div class="titlepage"><div><div><h5 class="title"><a id="d0e13748"/>3.3.2.1.3. Specifying the ORB to use</h5></div></div></div><p>
+}
+ </pre></div></div><br class="example-break"/></div><div class="section" title="3.3.2.1.3. Specifying the ORB to use"><div class="titlepage"><div><div><h5 class="title"><a id="d0e13748"/>3.3.2.1.3. Specifying the ORB to use</h5></div></div></div><p>
                 JDK releases from 1.2.2 onwards include a minimum ORB implementation from Sun. If using
                 such
                 a JDK in conjunction with another ORB it is necessary to tell the JVM which ORB to use.
@@ -15585,7 +15652,8 @@ public abstract class PostShutdown {
 			String serviceName, Object[] params)
 			throws InvalidName, IOException, CannotProceed,
 			NotFound;
-} </pre></div></div><br class="example-break"/><p>There are currently several different object location and binding mechanisms supported
+}
+ </pre></div></div><br class="example-break"/><p>There are currently several different object location and binding mechanisms supported
                 by
                 Services (not all of which are supported by all ORBs, in which case a suitable exception
                 will be thrown):
@@ -15705,7 +15773,8 @@ public abstract class PostShutdown {
 	ORBInterface.initORB(args, null);
 	ORBInterface.initOA();
 	//	. . .
-} </pre></div></div><br class="example-break"/><p>The ORBInterface class has operations orb() and boa()/poa()/rootPoa() for returning references to the orb
+}
+ </pre></div></div><br class="example-break"/><p>The ORBInterface class has operations orb() and boa()/poa()/rootPoa() for returning references to the orb
             and boa/child POA/root POA
             respectively after initialization has been performed. If the ORB being used does not support the BOA (e.g., Sun’s JDK 1.2) then
             boa() does not
@@ -16002,7 +16071,7 @@ public abstract class PostShutdown {
         The main components involved in using and defining transactional Web Services using XTS are illustrated in
         <a class="xref" href="#fig-web-services-transaction" title="Figure 4.1. Components Involved in an XTS Transaction">Figure 4.1, “Components Involved in an XTS Transaction”</a>
         .
-    </p><div class="figure"><a id="fig-web-services-transaction"/><p class="title"><strong>Figure 4.1. Components Involved in an XTS Transaction</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/xts-fig-web-services-transaction.png" alt="Components Involved in an XTS Transaction" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e14418.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e14418.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><div class="section" title="4.2.1. The Coordinator"><div class="titlepage"><div><div><h3 class="title"><a id="d0e14447"/>4.2.1. The Coordinator</h3></div></div></div><p>
+    </p><div class="figure"><a id="fig-web-services-transaction"/><p class="title"><strong>Figure 4.1. Components Involved in an XTS Transaction</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/xts-fig-web-services-transaction.png" alt="Components Involved in an XTS Transaction" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e14418.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e14418.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><div class="section" title="4.2.1. The Coordinator"><div class="titlepage"><div><div><h3 class="title"><a id="d0e14447"/>4.2.1. The Coordinator</h3></div></div></div><p>
             
             Every transaction is associated with a coordinator, which is responsible
             for governing the outcome of the transaction. When a client begins a Web
@@ -16046,7 +16115,7 @@ public abstract class PostShutdown {
                         Guarantees global uniqueness for an individual transaction.
                     </p></dd><dt><span class="term">Transaction Coordinator Location</span></dt><dd><p>
                         The endpoint address participants contact to enroll.
-                    </p></dd></dl></div><div class="figure"><a id="d0e14488"/><p class="title"><strong>Figure 4.2. Web Services and Context Flow</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/xts-fig-web-services-context-flow.png" alt="Web Services and Context Flow" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e14491.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e14491.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/></div><div class="section" title="4.2.3. Participants"><div class="titlepage"><div><div><h3 class="title"><a id="d0e14497"/>4.2.3. Participants</h3></div></div></div><p>
+                    </p></dd></dl></div><div class="figure"><a id="d0e14488"/><p class="title"><strong>Figure 4.2. Web Services and Context Flow</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/xts-fig-web-services-context-flow.png" alt="Web Services and Context Flow" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e14491.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e14491.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/></div><div class="section" title="4.2.3. Participants"><div class="titlepage"><div><div><h3 class="title"><a id="d0e14497"/>4.2.3. Participants</h3></div></div></div><p>
             The coordinator cannot know the details of how every transactional service is implemented. In fact this
             knowledge
             is not even necessary for it to negotiate a transactional outcome. It treats each service taking part in a
@@ -16089,7 +16158,7 @@ public abstract class PostShutdown {
             general flow of a two-phase commit transaction is described in
             <a class="xref" href="#two-phase-commit-overview" title="Figure 4.3. Two-Phase Commit Overview">Figure 4.3, “Two-Phase Commit Overview”</a>
             .
-        </p><div class="figure"><a id="two-phase-commit-overview"/><p class="title"><strong>Figure 4.3. Two-Phase Commit Overview</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/xts-fig-two-phase-commit-overview.png" alt="Two-Phase Commit Overview" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e14563.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e14563.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h2>Note</h2><p>
+        </p><div class="figure"><a id="two-phase-commit-overview"/><p class="title"><strong>Figure 4.3. Two-Phase Commit Overview</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/xts-fig-two-phase-commit-overview.png" alt="Two-Phase Commit Overview" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e14563.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e14563.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h2>Note</h2><p>
                 During two-phase commit transactions, coordinators and resources keep track of activity in non-volatile data stores
                 so that they can recover in the case of a failure.
             </p></div></div><div class="section" title="4.2.6. The Synchronization Protocol"><div class="titlepage"><div><div><h3 class="title"><a id="d0e14586"/>4.2.6. The Synchronization Protocol</h3></div></div></div><p>
@@ -16260,7 +16329,7 @@ public abstract class PostShutdown {
             <a class="xref" href="#fig-interpositions" title="Figure 4.4. Interpositions">Figure 4.4, “Interpositions”</a>
             for a graphical
             representation of this concept.
-        </p><div class="figure"><a id="fig-interpositions"/><p class="title"><strong>Figure 4.4. Interpositions</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/xts-fig-interpositions.png" alt="Interpositions" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e14790.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e14790.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
+        </p><div class="figure"><a id="fig-interpositions"/><p class="title"><strong>Figure 4.4. Interpositions</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/xts-fig-interpositions.png" alt="Interpositions" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e14790.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e14790.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
             Interposition is particularly useful for Web Services transactions, as a way of limiting the amount of
             network
             traffic required for coordination. For example, if communications between the top-level coordinator and a web
@@ -16353,7 +16422,7 @@ public abstract class PostShutdown {
             as shown in
             <a class="xref" href="#fig-ws-c-architecture" title="Figure 4.5. WS-C Architecture">Figure 4.5, “WS-C Architecture”</a>
             .
-        </p><div class="figure"><a id="fig-ws-c-architecture"/><p class="title"><strong>Figure 4.5. WS-C Architecture</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/xts-fig-ws-c-overview.png" alt="WS-C Architecture" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e14956.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e14956.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
+        </p><div class="figure"><a id="fig-ws-c-architecture"/><p class="title"><strong>Figure 4.5. WS-C Architecture</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/xts-fig-ws-c-overview.png" alt="WS-C Architecture" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e14956.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e14956.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
             Whatever coordination protocol is used, and in whatever domain it is deployed, the same generic requirements are
             present.
         </p><div class="itemizedlist" title="Generic Requirements for WS-C"><a id="list-requirements-for-wsc"/><p class="title"><strong>Generic Requirements for WS-C</strong></p><ul class="itemizedlist"><li class="listitem"><p>Instantiation, or activation, of a new coordinator for the specific coordination protocol, for a
@@ -16367,7 +16436,7 @@ public abstract class PostShutdown {
             component of the overall application. These four WS-C roles and their relationships are shown in
             <a class="xref" href="#fig-wsc-four-roles" title="Figure 4.6. Four Roles in WS-C">Figure 4.6, “Four Roles in WS-C”</a>
             .
-        </p><div class="figure"><a id="fig-wsc-four-roles"/><p class="title"><strong>Figure 4.6. Four Roles in WS-C</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/xts-fig-wsc-four-roles.png" alt="Four Roles in WS-C" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e14991.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e14991.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><div class="section" title="4.3.1.1. Activation"><div class="titlepage"><div><div><h4 class="title"><a id="d0e14997"/>4.3.1.1. Activation</h4></div></div></div><p>
+        </p><div class="figure"><a id="fig-wsc-four-roles"/><p class="title"><strong>Figure 4.6. Four Roles in WS-C</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/xts-fig-wsc-four-roles.png" alt="Four Roles in WS-C" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e14991.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e14991.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><div class="section" title="4.3.1.1. Activation"><div class="titlepage"><div><div><h4 class="title"><a id="d0e14997"/>4.3.1.1. Activation</h4></div></div></div><p>
                 The WS-C framework exposes an Activation Service which supports the creation of coordinators for
                 specific
                 coordination protocols and retrieval of associated contexts. Activation services are invoked synchronously using an
@@ -16383,7 +16452,8 @@ public abstract class PostShutdown {
     &lt;wsdl:input message="wscoor:CreateCoordinationContext"/&gt; 
     &lt;wsdl:output message="wscoor:CreateCoordinationContextResponse"/&gt; 
   &lt;/wsdl:operation&gt; 
-&lt;/wsdl:portType&gt; </pre></div></div><br class="example-break"/></div><div class="section" title="4.3.1.2. Registration"><div class="titlepage"><div><div><h4 class="title"><a id="d0e15010"/>4.3.1.2. Registration</h4></div></div></div><p>
+&lt;/wsdl:portType&gt; 
+</pre></div></div><br class="example-break"/></div><div class="section" title="4.3.1.2. Registration"><div class="titlepage"><div><div><h4 class="title"><a id="d0e15010"/>4.3.1.2. Registration</h4></div></div></div><p>
                 The context returned by the activation service includes the URL of a Registration Service. When a web service
                 receieves a service request accompanied by a transaction context, it contacts the Registration Service to enroll as a
                 participant in the transaction. The registration request includes a participant protocol defining the
@@ -16404,7 +16474,8 @@ public abstract class PostShutdown {
     &lt;wsdl:input message="wscoor:Register"/&gt; 
     &lt;wsdl:output message="wscoor:RegisterResponse"/&gt; 
   &lt;/wsdl:operation&gt; 
-&lt;/wsdl:portType&gt; </pre></div></div><br class="example-break"/><p>
+&lt;/wsdl:portType&gt; 
+</pre></div></div><br class="example-break"/><p>
                 Once a participant is registered with a coordinator through the registration service, it receives coordination
                 messages from the coordinator. Typical messages include such things as “prepare to complete” and “complete” messages,
                 if a two-phase protocol is used. Where the coordinator’s protocol supports it, participants can also send messages
@@ -16434,7 +16505,7 @@ public abstract class PostShutdown {
                 WS-Transaction is layered upon the WS-Coordination protocol, as shown in
                 <a class="xref" href="#wsc-wst-interop" title="Figure 4.7. WS-Coordination, WS-Transaction, and WS-Business Activity">Figure 4.7, “WS-Coordination, WS-Transaction, and WS-Business Activity”</a>
                 .
-            </p><div class="figure"><a id="wsc-wst-interop"/><p class="title"><strong>Figure 4.7. WS-Coordination, WS-Transaction, and WS-Business Activity</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/xts-fig-wsc-wst-interop.png" alt="WS-Coordination, WS-Transaction, and WS-Business Activity" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e15068.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e15068.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
+            </p><div class="figure"><a id="wsc-wst-interop"/><p class="title"><strong>Figure 4.7. WS-Coordination, WS-Transaction, and WS-Business Activity</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/xts-fig-wsc-wst-interop.png" alt="WS-Coordination, WS-Transaction, and WS-Business Activity" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e15068.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e15068.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
                 WS-C provides a generic framework for specific coordination protocols, like WS-Transaction, used in a modular
                 fashion. WS-C provides only context management, allowing contexts to be created and activities to be registered with
                 those contexts. WS-Transaction leverages the context management framework provided by WS-C in two ways.
@@ -16477,7 +16548,7 @@ public abstract class PostShutdown {
                 participant handles the underlying WS-Transaction protocols, as shown in
                 <a class="xref" href="#ws-trans-global-view" title="Figure 4.8. WS-Transaction Global View">Figure 4.8, “WS-Transaction Global View”</a>
                 .
-            </p><div class="figure"><a id="ws-trans-global-view"/><p class="title"><strong>Figure 4.8. WS-Transaction Global View</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/xts-ws-trans-global-view.png" alt="WS-Transaction Global View" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e15113.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e15113.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
+            </p><div class="figure"><a id="ws-trans-global-view"/><p class="title"><strong>Figure 4.8. WS-Transaction Global View</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/xts-ws-trans-global-view.png" alt="WS-Transaction Global View" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e15113.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e15113.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
                 A transaction-aware web service encapsulates the business logic or work that needs to be conducted within the scope
                 of a transaction. This work cannot be confirmed by the application unless the transaction also commits.
                 Thus, control
@@ -16493,7 +16564,7 @@ public abstract class PostShutdown {
                 <a class="xref" href="#ws-trans-services-participants" title="Figure 4.9. WS-Transaction Web Services and Participants">Figure 4.9, “WS-Transaction Web Services and Participants”</a>
                 , however, shows a close-up view of a single web service,
                 and a client application with their associated participants.
-            </p><div class="figure"><a id="ws-trans-services-participants"/><p class="title"><strong>Figure 4.9. WS-Transaction Web Services and Participants</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/xts-fig-ws-trans-services-participants.png" alt="WS-Transaction Web Services and Participants" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e15130.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e15130.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
+            </p><div class="figure"><a id="ws-trans-services-participants"/><p class="title"><strong>Figure 4.9. WS-Transaction Web Services and Participants</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/xts-fig-ws-trans-services-participants.png" alt="WS-Transaction Web Services and Participants" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e15130.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e15130.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
                 The transaction-aware web service employs a back end database accessed via a JDBC driver, which sends SQL statements
                 to the database for processing. However, those statements should only commit if the enclosing web service transaction
                 does. For this to work, the web service must employ transaction bridging. Transaction bridging registers
@@ -16667,7 +16738,7 @@ public abstract class PostShutdown {
                     shows the state transitions of a WS-Atomic Transaction and
                     the message exchanges between coordinator and participant. Messages generated by the coordinator are represented by
                     solid lines, while the participants' messages use dashed lines.
-                </p><div class="figure"><a id="two-pc-participant-state-transitions"/><p class="title"><strong>Figure 4.10. WS-Atomic Two-Phase Participant State Transitions</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/xts-fig-2pc-participant-state-transitions.png" alt="WS-Atomic Two-Phase Participant State Transitions" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e15292.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e15292.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
+                </p><div class="figure"><a id="two-pc-participant-state-transitions"/><p class="title"><strong>Figure 4.10. WS-Atomic Two-Phase Participant State Transitions</strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/xts-fig-2pc-participant-state-transitions.png" alt="WS-Atomic Two-Phase Participant State Transitions" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e15292.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e15292.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
                     Once the Durable2PC protocol completes, the
                     <code class="systemitem">Completion</code>
                     protocol that originally began the
@@ -16688,7 +16759,7 @@ public abstract class PostShutdown {
                     <a class="xref" href="#fig-at-model" title="Figure 4.11. ">Figure 4.11, “”</a>
                     illustrates the intricate interweaving of individual protocols comprising the AT as
                     a whole.
-                </p><div class="figure"><a id="fig-at-model"/><p class="title"><strong>Figure 4.11. </strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/xts-fig-at-model.png" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e15316.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e15316.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/></div><div class="section" title="4.3.2.3.2. Business Activities"><div class="titlepage"><div><div><h5 class="title"><a id="d0e15323"/>4.3.2.3.2. Business Activities</h5></div></div></div><p>
+                </p><div class="figure"><a id="fig-at-model"/><p class="title"><strong>Figure 4.11. </strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/xts-fig-at-model.png" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e15316.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e15316.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/></div><div class="section" title="4.3.2.3.2. Business Activities"><div class="titlepage"><div><div><h5 class="title"><a id="d0e15323"/>4.3.2.3.2. Business Activities</h5></div></div></div><p>
                     Most B2B applications require transactional support in order to guarantee consistent outcome and correct
                     execution. These applications often involve long-running computations, loosely coupled systems, and components that
                     do not share data, location, or administration. It is difficult to incorporate atomic transactions within such
@@ -16818,14 +16889,14 @@ public abstract class PostShutdown {
                     participant and the message exchanges between
                     coordinator and participant. Messages generated by the coordinator are shown with solid lines, while the
                     participants' messages are illustrated with dashed lines.
-                </p><div class="figure"><a id="fig-bawpc-state-transitions"/><p class="title"><strong>Figure 4.12. </strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/xts-fig-bawpc-state-transitions.png" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e15447.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e15447.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
+                </p><div class="figure"><a id="fig-bawpc-state-transitions"/><p class="title"><strong>Figure 4.12. </strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/xts-fig-bawpc-state-transitions.png" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e15447.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e15447.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/><p>
                     <a class="xref" href="#fig-bawcc-state-transitions" title="Figure 4.13. ">Figure 4.13, “”</a>
                     shows the state transitions of a WS-BA
                     <code class="systemitem">BusinessAgreementWithCoordinatorCompletion</code>
                     participant and the message exchanges between
                     coordinator and participant. Messages generated by the coordinator are shown with solid lines, while the
                     participants' messages are illustrated with dashed lines.
-                </p><div class="figure"><a id="fig-bawcc-state-transitions"/><p class="title"><strong>Figure 4.13. </strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/xts-fig-bawcc-state-transitions.png" longdesc="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e15462.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="C:\Users\tom\tmp\narayana\5.3.0.Final\sources\documentation\project\target\docbook\publish\en-US\html_single\ld-d0e15462.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/></div></div><div class="section" title="4.3.2.4. Application Messages"><div class="titlepage"><div><div><h4 class="title"><a id="d0e15470"/>4.3.2.4. Application Messages</h4></div></div></div><p>
+                </p><div class="figure"><a id="fig-bawcc-state-transitions"/><p class="title"><strong>Figure 4.13. </strong></p><div class="figure-contents"><div class="mediaobject"><img src="images/xts-fig-bawcc-state-transitions.png" longdesc="/Users/gytis/tmp/narayana/5.3.1.Final/sources/documentation/project/target/docbook/publish/en-US/html_single/ld-d0e15462.html"/><div class="longdesc-link" align="right"><br clear="all"/><span class="longdesc-link">[<a href="ld-d0e15462.html" target="longdesc">D</a>]</span></div></div></div></div><br class="figure-break"/></div></div><div class="section" title="4.3.2.4. Application Messages"><div class="titlepage"><div><div><h4 class="title"><a id="d0e15470"/>4.3.2.4. Application Messages</h4></div></div></div><p>
                 <em class="firstterm">Application messages</em>
                 are the requests and responses sent between parties, that constitute the
                 work of a business process. Any such messages are considered opaque by XTS, and there is no mandatory message format,
@@ -18212,7 +18283,8 @@ strcmp(value, "test");
 		&lt;depends optional-attribute-name="ServerPeer"&gt;jboss.messaging:service=ServerPeer&lt;/depends&gt;
 		&lt;depends&gt;jboss.messaging:service=PostOffice&lt;/depends&gt;
 	&lt;/mbean&gt;
-&lt;/server&gt;</pre><p>
+&lt;/server&gt;
+</pre><p>
             </p></div></div><div class="section" title="7.3.4. How to use topics"><div class="titlepage"><div><div><h3 class="title"><a id="d0e16635"/>7.3.4. How to use topics
         </h3></div></div></div><p>Basically, topics are used to burst out messages to multiple XATMI services
             that do not necessarily expect a reponse.
@@ -18342,7 +18414,8 @@ strcmp(value, "test");
 			&lt;/instance&gt;
 		&lt;/instances&gt;
 	&lt;/server&gt;
-&lt;/servers&gt;</pre><p>
+&lt;/servers&gt;
+</pre><p>
 					</p></li><li class="listitem"><p>[SERVER_NAME] is a arbitrary length character string</p></li><li class="listitem"><p>[ID] is a server id</p></li><li class="listitem"><p>[STATUS] is equal to 0 (Idle) or 1 (Running)</p></li></ul></div></div><div class="section" title="7.5.1.2. The following operations perform functionality at the server level"><div class="titlepage"><div><div><h4 class="title"><a id="d0e16903"/>7.5.1.2. The following operations perform functionality at the server
 				level</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist"><li class="listitem"><p>getServiceCounter (service name):</p><p>Retrieves the counter for a service from all servers</p></li><li class="listitem"><p>listRunningInstanceIds (server name):</p><p>Get the list of ids of currently running servers</p></li><li class="listitem"><p>serverdone:</p><p>Calls server_sigint_handler_callback</p><p>Returns 1</p></li><li class="listitem"><p>reloadServer:</p><p>requires an external shell script to repeatedly start server
 						processes dependent upon exit status of server</p><p>If the server exits with the reloadServer code, then an svn
@@ -18361,7 +18434,8 @@ strcmp(value, "test");
 			&lt;status&gt;[STATUS]&lt;/status&gt;
 		&lt;/service&gt;
 	&lt;/services&gt;
-&lt;/server&gt;</pre><p>
+&lt;/server&gt;
+</pre><p>
 					</p></li><li class="listitem"><p>[SERVICE_NAME] is a 15 character length name</p></li><li class="listitem"><p>[STATUS] is equal to 0 (unadvertised) or 1 (advertised)
 					</p></li></ul></div></div><div class="section" title="7.5.1.3. Viewing Transaction Statistics"><div class="titlepage"><div><div><h4 class="title"><a id="d0e16998"/>7.5.1.3. Viewing Transaction Statistics</h4></div></div></div><p>In a typical BlackTie installation the transaction service will
 				be running in the WildFly Application server where you installed the
@@ -18770,7 +18844,8 @@ public abstract class ObjectStore implements BaseStore, ParticipantStore,
                                                    OutputObjectState buff)
         throws ObjectStoreException;
     public static void printState (PrintStream strm, int res);
-};</pre></div></div><br class="example-break"/><p>
+};
+</pre></div></div><br class="example-break"/><p>
       Narayana
             programmers do not usually need to interact with any of the object store implementations
             directly, apart from possibly creating them in the first place. Even this is not necessary if the default store
@@ -18925,7 +19000,8 @@ public abstract class ObjectStore implements BaseStore, ParticipantStore,
     public Connection getConnection () throws SQLException;
     public void putConnection (Connection conn) throws SQLException;
     public void initialise (Object[] objName);
-}</pre></div></div><br class="example-break"/><p>
+}
+</pre></div></div><br class="example-break"/><p>
                     The implementation of this class is responsible for providing the
                     <code class="classname">Connection</code>
                     which the
@@ -19076,7 +19152,8 @@ public abstract class LockManager extends StateManager
     protected LockManager (Uid storeUid, int ot, int objectModel);
 
     protected void terminate ();
-};</pre></div></div><br class="example-break"/><div class="example"><a id="d0e18028"/><p class="title"><strong>Example B.2. 
+};
+</pre></div></div><br class="example-break"/><div class="example"><a id="d0e18028"/><p class="title"><strong>Example B.2. 
             Class
             <code class="classname">StateManager</code>
         </strong></p><div class="example-contents"><pre class="programlisting">public class ObjectStatus
@@ -19120,7 +19197,8 @@ public abstract class StateManager
     protected StateManager (Uid objUid, int ot);
     protected StateManager (Uid objUid, int ot, int objectModel);
     protected synchronized final void modified ();
-};</pre></div></div><br class="example-break"/><div class="example"><a id="d0e18036"/><p class="title"><strong>Example B.3. 
+};
+</pre></div></div><br class="example-break"/><div class="example"><a id="d0e18036"/><p class="title"><strong>Example B.3. 
             Classes
             <code class="classname">OutputObjectState</code>
             and
@@ -19142,7 +19220,8 @@ class InputObjectState extends ObjectState
     public int size ();
     public Uid stateUid ();
     public String type ();
-};</pre></div></div><br class="example-break"/><div class="example"><a id="d0e18047"/><p class="title"><strong>Example B.4. 
+};
+</pre></div></div><br class="example-break"/><div class="example"><a id="d0e18047"/><p class="title"><strong>Example B.4. 
             Classes
             <code class="classname">OutputBuffer</code>
             and
@@ -19188,7 +19267,8 @@ public class InputBuffer
     public synchronized float unpackFloat () throws IOException;
     public synchronized double unpackDouble () throws IOException;
     public synchronized String unpackString () throws IOException;
-};</pre></div></div><br class="example-break"/><div class="example"><a id="d0e18058"/><p class="title"><strong>Example B.5. 
+};
+</pre></div></div><br class="example-break"/><div class="example"><a id="d0e18058"/><p class="title"><strong>Example B.5. 
             Class
             <code class="classname">Uid</code>
         </strong></p><div class="example-contents"><pre class="programlisting">public class Uid implements Cloneable
@@ -19211,7 +19291,8 @@ public class InputBuffer
 
     public synchronized final boolean valid ();
     public static synchronized Uid nullUid ();
-};</pre></div></div><br class="example-break"/><div class="example"><a id="d0e18066"/><p class="title"><strong>Example B.6. 
+};
+</pre></div></div><br class="example-break"/><div class="example"><a id="d0e18066"/><p class="title"><strong>Example B.6. 
             Class
             <code class="classname">AtomicAction</code>
         </strong></p><div class="example-contents"><pre class="programlisting">public class AtomicAction
@@ -19234,7 +19315,8 @@ public class InputBuffer
         throws SystemException, NotSubtransaction;
     public void registerSynchronization (Synchronization s) throws SystemException,
                                                                    Inactive;
-};</pre></div></div><br class="example-break"/></div><div class="appendix" title="Appendix C. IDL definitions"><div class="titlepage"><div><div><h2 class="title"><a id="d0e18074"/>Appendix C. IDL definitions</h2></div></div></div><p>
+};
+</pre></div></div><br class="example-break"/></div><div class="appendix" title="Appendix C. IDL definitions"><div class="titlepage"><div><div><h2 class="title"><a id="d0e18074"/>Appendix C. IDL definitions</h2></div></div></div><p>
         Because of differences between ORBs, and errors in certain ORBs, the idl available with 
         may differ from that
         shown below. You should always inspect the idl files prior to implementation to determine what, if any, differences
