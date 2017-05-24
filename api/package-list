@@ -126,3 +126,5 @@ org.jboss.jbossts
 org.jboss.jbossts.star.provider
 org.jboss.jbossts.star.resource
 org.jboss.jbossts.star.service
+org.jboss.narayana.jta.jms
+org.jboss.narayana.tomcat.jta
