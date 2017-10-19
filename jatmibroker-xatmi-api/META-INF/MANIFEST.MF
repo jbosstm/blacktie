@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Implementation-Title: Blacktie Java XATMI Implementation
-Implementation-Version: 5.7.0.Final
+Implementation-Version: 5.7.1.Final
 Archiver-Version: Plexus Archiver
 Java-Version: 1.8.0_144
 Built-By: still
@@ -19,7 +19,7 @@ Os-Version: 10.0
 Scm-Revision: UNKNOWN
 Created-By: Apache Maven 3.5.0
 Build-Jdk: 1.8.0_144
-Specification-Version: 5.7.0.Final
+Specification-Version: 5.7.1.Final
 Implementation-URL: http://www.jboss.org/blacktie/blacktie-jatmibroker
  -xatmi
 
