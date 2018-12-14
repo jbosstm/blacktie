@@ -2,7 +2,6 @@ com.arjuna.ats.arjuna
 com.arjuna.ats.arjuna.common
 com.arjuna.ats.arjuna.coordinator
 com.arjuna.ats.arjuna.coordinator.abstractrecord
-com.arjuna.ats.arjuna.coordinator.internal
 com.arjuna.ats.arjuna.coordinator.listener
 com.arjuna.ats.arjuna.exceptions
 com.arjuna.ats.arjuna.logging
@@ -19,6 +18,10 @@ com.arjuna.ats.arjuna.tools.osb.mbean
 com.arjuna.ats.arjuna.tools.osb.util
 com.arjuna.ats.arjuna.tools.stats
 com.arjuna.ats.arjuna.utils
+com.arjuna.ats.jbossatx
+com.arjuna.ats.jbossatx.jta
+com.arjuna.ats.jbossatx.jts
+com.arjuna.ats.jbossatx.logging
 com.arjuna.ats.jdbc
 com.arjuna.ats.jdbc.common
 com.arjuna.ats.jdbc.logging
@@ -122,9 +125,3 @@ com.arjuna.wst11.messaging
 com.arjuna.wst11.messaging.deploy
 com.arjuna.wst11.messaging.engines
 com.arjuna.wst11.stub
-org.jboss.jbossts
-org.jboss.jbossts.star.provider
-org.jboss.jbossts.star.resource
-org.jboss.jbossts.star.service
-org.jboss.narayana.jta.jms
-org.jboss.narayana.tomcat.jta

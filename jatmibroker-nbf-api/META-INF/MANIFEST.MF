@@ -1,9 +1,8 @@
 Manifest-Version: 1.0
 Implementation-Title: Blacktie Java NBF Implementation
-Implementation-Version: 5.9.0.Final
-Archiver-Version: Plexus Archiver
-Java-Version: 1.8.0_144
-Built-By: still
+Implementation-Version: 5.9.2.Final
+Java-Version: 1.8.0_191
+Built-By: ochaloup
 Scm-Connection: scm:svn:http://anonsvn.jboss.org/repos/blacktie/trunk/
  blacktie/blacktie-jatmibroker-nbf
 Specification-Vendor: JBoss by Red Hat
@@ -11,15 +10,15 @@ Os-Arch: amd64
 Specification-Title: Blacktie Java NBF Implementation
 Implementation-Vendor-Id: org.jboss.narayana.blacktie
 Java-Vendor: Oracle Corporation
-Os-Name: Windows 10
+Os-Name: Linux
 Scm-Url: http://viewvc.jboss.org/cgi-bin/viewvc.cgi/blacktie/trunk/bla
  cktie/blacktie-jatmibroker-nbf
 Implementation-Vendor: JBoss by Red Hat
-Os-Version: 10.0
+Os-Version: 4.19.7-200.fc28.x86_64
 Scm-Revision: UNKNOWN
-Created-By: Apache Maven 3.5.0
-Build-Jdk: 1.8.0_144
-Specification-Version: 5.9.0.Final
+Created-By: Apache Maven 3.5.2
+Build-Jdk: 1.8.0_191
+Specification-Version: 5.9
 Implementation-URL: http://www.jboss.org/blacktie/blacktie-jatmibroker
  -nbf
 
