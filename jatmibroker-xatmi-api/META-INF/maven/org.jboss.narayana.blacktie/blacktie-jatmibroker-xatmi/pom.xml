@@ -15,7 +15,7 @@
     <parent>
         <groupId>org.jboss.narayana.blacktie</groupId>
         <artifactId>blacktie-all</artifactId>
-        <version>5.9.2.Final</version>
+        <version>5.9.3.Final</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -249,7 +249,7 @@
         <profile>
             <id>j9</id>
             <activation>
-                <jdk>[1.9,)</jdk>
+                <jdk>[1.9,11)</jdk>
             </activation>
             <build>
                 <plugins>

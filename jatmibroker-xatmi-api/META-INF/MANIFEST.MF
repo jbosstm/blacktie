@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Implementation-Title: Blacktie Java XATMI Implementation
-Implementation-Version: 5.9.2.Final
-Java-Version: 1.8.0_191
-Built-By: ochaloup
+Implementation-Version: 5.9.3.Final
+Java-Version: 1.8.0_144
+Built-By: still
 Scm-Connection: scm:svn:http://anonsvn.jboss.org/repos/blacktie/trunk/
  blacktie/blacktie-jatmibroker-xatmi
 Specification-Vendor: JBoss by Red Hat
@@ -10,14 +10,14 @@ Os-Arch: amd64
 Specification-Title: Blacktie Java XATMI Implementation
 Implementation-Vendor-Id: org.jboss.narayana.blacktie
 Java-Vendor: Oracle Corporation
-Os-Name: Linux
+Os-Name: Windows 10
 Scm-Url: http://viewvc.jboss.org/cgi-bin/viewvc.cgi/blacktie/trunk/bla
  cktie/blacktie-jatmibroker-xatmi
 Implementation-Vendor: JBoss by Red Hat
-Os-Version: 4.19.7-200.fc28.x86_64
+Os-Version: 10.0
 Scm-Revision: UNKNOWN
-Created-By: Apache Maven 3.5.2
-Build-Jdk: 1.8.0_191
+Created-By: Apache Maven 3.5.4
+Build-Jdk: 1.8.0_144
 Specification-Version: 5.9
 Implementation-URL: http://www.jboss.org/blacktie/blacktie-jatmibroker
  -xatmi
