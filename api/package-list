@@ -8,6 +8,7 @@ com.arjuna.ats.arjuna.logging
 com.arjuna.ats.arjuna.objectstore
 com.arjuna.ats.arjuna.objectstore.jdbc
 com.arjuna.ats.arjuna.recovery
+com.arjuna.ats.arjuna.services.recovery
 com.arjuna.ats.arjuna.state
 com.arjuna.ats.arjuna.tools
 com.arjuna.ats.arjuna.tools.log
@@ -48,6 +49,7 @@ com.arjuna.ats.jts.orbspecific.jacorb.interceptors.interposition
 com.arjuna.ats.jts.orbspecific.javaidl.interceptors.context
 com.arjuna.ats.jts.orbspecific.javaidl.interceptors.interposition
 com.arjuna.ats.jts.recovery
+com.arjuna.ats.jts.services.transactionserver
 com.arjuna.ats.jts.thread
 com.arjuna.ats.jts.tx
 com.arjuna.ats.jts.utils
