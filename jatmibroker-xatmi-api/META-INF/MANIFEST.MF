@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Implementation-Title: Blacktie Java XATMI Implementation
-Implementation-Version: 5.9.8.Final
+Implementation-Version: 5.10.0.Final
 Java-Version: 1.8.0_222
-Built-By: tom
+Built-By: mmusgrov
 Scm-Connection: scm:svn:http://anonsvn.jboss.org/repos/blacktie/trunk/
  blacktie/blacktie-jatmibroker-xatmi
 Specification-Vendor: JBoss by Red Hat
@@ -14,11 +14,11 @@ Os-Name: Linux
 Scm-Url: http://viewvc.jboss.org/cgi-bin/viewvc.cgi/blacktie/trunk/bla
  cktie/blacktie-jatmibroker-xatmi
 Implementation-Vendor: JBoss by Red Hat
-Os-Version: 5.2.9-200.fc30.x86_64
+Os-Version: 5.2.18-100.fc29.x86_64
 Scm-Revision: UNKNOWN
-Created-By: Apache Maven 3.5.4
+Created-By: Apache Maven 3.6.1
 Build-Jdk: 1.8.0_222
-Specification-Version: 5.9
+Specification-Version: 5.10
 Implementation-URL: http://www.jboss.org/blacktie/blacktie-jatmibroker
  -xatmi
 
