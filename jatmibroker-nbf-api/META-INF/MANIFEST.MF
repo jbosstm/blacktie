@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Implementation-Title: Blacktie Java NBF Implementation
-Implementation-Version: 5.10.1.Final
+Implementation-Version: 5.10.4.Final
 Java-Version: 1.8.0_232
 Built-By: tom
 Scm-Connection: scm:svn:http://anonsvn.jboss.org/repos/blacktie/trunk/
@@ -14,9 +14,9 @@ Os-Name: Linux
 Scm-Url: http://viewvc.jboss.org/cgi-bin/viewvc.cgi/blacktie/trunk/bla
  cktie/blacktie-jatmibroker-nbf
 Implementation-Vendor: JBoss by Red Hat
-Os-Version: 5.3.12-200.fc30.x86_64
+Os-Version: 5.4.12-100.fc30.x86_64
 Scm-Revision: UNKNOWN
-Created-By: Apache Maven 3.5.4
+Created-By: Apache Maven 3.6.1
 Build-Jdk: 1.8.0_232
 Specification-Version: 5.10
 Implementation-URL: http://www.jboss.org/blacktie/blacktie-jatmibroker
