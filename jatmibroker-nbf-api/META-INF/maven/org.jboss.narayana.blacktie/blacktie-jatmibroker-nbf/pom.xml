@@ -15,7 +15,7 @@
     <parent>
         <groupId>org.jboss.narayana.blacktie</groupId>
         <artifactId>blacktie-all</artifactId>
-        <version>5.11.2.Final</version>
+        <version>5.12.0.Final</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -231,13 +231,6 @@
                             <excludePackageNames>org.jboss.narayana.blacktie.jatmibroker.core</excludePackageNames>
                         </configuration>
                     </plugin>
-    <plugin>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-deploy-plugin</artifactId>
-      <configuration>
-        <skip>true</skip>
-      </configuration>
-    </plugin>
                 </plugins>
             </build>
         </profile>
