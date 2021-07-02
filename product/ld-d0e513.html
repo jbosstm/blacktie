@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Long Description</title><link rel="stylesheet" type="text/css" href="css/jbossorg.css"/><meta name="generator" content="DocBook XSL Stylesheets V1.76.1"/><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/></head><body><div class="itemizedlist"><ul class="itemizedlist"><li class="listitem"><p>A transaction is started, and some work is performed.</p></li><li class="listitem"><p>Once the work is finished, the two-phase commit begins.</p></li><li class="listitem"><p>The coordinator (transaction manager) of the transaction asks each resource taking
-                                part in the
-                                transaction whether it is prepared to commit.</p></li><li class="listitem"><p>If all resources respond positively, the coordinator instructs the resources to make
-                                all work performed durable (usually committed to a database).</p></li><li class="listitem"><p>If not, all work performed is rolled back (undone) such that the underlying data
-                                structures are
-                                in their original states.</p></li></ul></div></body></html>
